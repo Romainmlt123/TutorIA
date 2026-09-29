@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Bienvenue · choix du profil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button,input{font-family:inherit}
+input::placeholder{color:#798398}
+input:focus{outline:none;border-color:#2E6BE6;box-shadow:var(--shadow-focus)}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<main style="display: flex; flex-direction: column; gap: 24px; padding: 56px 20px 32px; box-sizing: border-box; min-height: 844px">
+<div aria-hidden="true" style="position: relative; height: 176px"><span style="position: absolute; left: 28px; top: 36px; transform: rotate(-8deg); width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(160deg, #E95555 0%, #C21A1A 60%, #980B0B 100%); box-shadow: var(--shadow-md); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"></path></svg></span><span style="position: absolute; left: 118px; top: 8px; transform: rotate(6deg); width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(160deg, #4D81EA 0%, #1750C4 60%, #0A3B9D 100%); box-shadow: var(--shadow-md); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5M8 7h7M8 11h5"></path></svg></span><span style="position: absolute; right: 112px; top: 30px; transform: rotate(-4deg); width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(160deg, #1BC85B 0%, #0C9E42 45%, #03702B 100%); box-shadow: var(--shadow-md); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg></span><span style="position: absolute; right: 26px; top: 4px; transform: rotate(9deg); width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(160deg, #8558EA 0%, #521DC8 60%, #3B0DA2 100%); box-shadow: var(--shadow-md); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7.5 15h9"></path></svg></span><span style="position: absolute; left: 64px; top: 124px; transform: rotate(7deg); width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(160deg, #A3640D 0%, #6E4204 65%, #3D2400 100%); box-shadow: var(--shadow-md); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-14 15-15-1 10-7 15-15 15zM5 19l8-8"></path></svg></span><span style="position: absolute; right: 58px; top: 118px; transform: rotate(-7deg); width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(160deg, #17A5BE 0%, #09879D 45%, #026273 100%); box-shadow: var(--shadow-md); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9M8.5 3v2M11 5c-1 4-3.5 7-7 8.5M6 8.5c1.5 2.5 3.5 4 6 5M13 21l4-9 4 9M14.5 18h5"></path></svg></span>
+<span style="position: absolute; left: 50%; top: 64px; transform: translateX(-50%); width: 96px; height: 96px; border-radius: 28px; background: #FFFFFF; box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: center; overflow: hidden"><img src="../../assets/logo/Logo_tutoria_fond_blanc.png" alt="" width="92" height="92" style="display: block; width: 92px; height: 92px; object-fit: contain"></span>
+</div>
+<header style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+<h1 style="margin: 0; font-size: 36px; line-height: 40px; font-weight: 900; letter-spacing: -0.01em">Bienvenue sur Tutor'IA</h1>
+</header>
+<section aria-label="Choisir un profil" style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 18px; line-height: 24px; font-weight: 900">Qui utilise l'app ?</h2>
+<button type="button" onClick="{{ pickEleve }}" aria-pressed="{{ isEleve }}" style="position: relative; overflow: hidden; width: 100%; min-height: 96px; padding: 20px; box-sizing: border-box; border: none; border-radius: var(--radius-3xl); background: linear-gradient(160deg, #4D81EA 0%, #1750C4 60%, #0A3B9D 100%); color: #FFFFFF; text-align: left; display: flex; align-items: center; gap: 16px; cursor: pointer; box-shadow: {{ ringEleve }}; transition: box-shadow 0.2s ease"><svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: -30px; bottom: -40px; opacity: 0.14"><path d="M2 9l10-5 10 5-10 5zM6 11.5v4.5c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5M22 9v5"></path></svg><span style="position: relative; flex-shrink: 0; width: 56px; height: 56px; border-radius: 18px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5zM6 11.5v4.5c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5M22 9v5"></path></svg></span><span style="position: relative; flex-grow: 1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 24px; line-height: 30px; font-weight: 900">Je suis élève</span></span><span style="position: relative; flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px; background: {{ dotEleve }}; border: 2px solid #FFFFFF; box-sizing: border-box; color: #1750C4; display: flex; align-items: center; justify-content: center"><sc-if value="{{ isEleve }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"></path></svg></sc-if></span></button>
+<button type="button" onClick="{{ pickParent }}" aria-pressed="{{ isParent }}" style="position: relative; overflow: hidden; width: 100%; min-height: 96px; padding: 20px; box-sizing: border-box; border: none; border-radius: var(--radius-3xl); background: linear-gradient(160deg, #8558EA 0%, #521DC8 60%, #3B0DA2 100%); color: #FFFFFF; text-align: left; display: flex; align-items: center; gap: 16px; cursor: pointer; box-shadow: {{ ringParent }}; transition: box-shadow 0.2s ease"><svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: -30px; bottom: -40px; opacity: 0.14"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21c.8-3.5 3.6-5.5 7-5.5s6.2 2 7 5.5M16 3.5a4 4 0 0 1 0 7M18 15.8c2 .8 3.4 2.6 4 5.2"></path></svg><span style="position: relative; flex-shrink: 0; width: 56px; height: 56px; border-radius: 18px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21c.8-3.5 3.6-5.5 7-5.5s6.2 2 7 5.5M16 3.5a4 4 0 0 1 0 7M18 15.8c2 .8 3.4 2.6 4 5.2"></path></svg></span><span style="position: relative; flex-grow: 1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 24px; line-height: 30px; font-weight: 900">Je suis parent</span></span><span style="position: relative; flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px; background: {{ dotParent }}; border: 2px solid #FFFFFF; box-sizing: border-box; color: #1750C4; display: flex; align-items: center; justify-content: center"><sc-if value="{{ isParent }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"></path></svg></sc-if></span></button>
+</section>
+<div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto">
+<button type="button" onClick="{{ go }}" style="width: 100%; height: 52px; border: none; border-radius: var(--radius-2xl); background: {{ ctaBg }}; box-shadow: {{ ctaShadow }}; color: {{ ctaColor }}; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">{{ ctaLabel }}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+<p style="margin: 0; text-align: center; font-size: 12px; line-height: 16px; color: var(--text-secondary)">En continuant, vous acceptez les <a href="#" style="font-weight: 700; text-decoration: none">conditions d'utilisation</a> et la <a href="#" style="font-weight: 700; text-decoration: none">politique de confidentialité</a>.</p>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { who: 'eleve' }; }
+renderVals() {
+const w = this.state.who;
+const ring = (on, c) => on ? '0 0 0 3px #F5F8FF, 0 0 0 6px ' + c + ', var(--shadow-lg)' : 'var(--shadow-md)';
+return {
+isEleve: w === 'eleve', isParent: w === 'parent',
+ringEleve: ring(w === 'eleve', '#1750C4'), ringParent: ring(w === 'parent', '#521DC8'),
+dotEleve: w === 'eleve' ? '#FFFFFF' : 'transparent', dotParent: w === 'parent' ? '#FFFFFF' : 'transparent',
+pickEleve: () => this.setState({ who: 'eleve' }), pickParent: () => this.setState({ who: 'parent' }),
+noPick: !w,
+ctaBg: w === 'parent' ? '#662EE6' : '#2E6BE6',
+ctaShadow: w === 'parent' ? '0 8px 20px rgba(102,46,230,0.30)' : 'var(--shadow-brand)',
+ctaColor: '#FFFFFF',
+ctaLabel: w === 'parent' ? 'Continuer comme parent' : 'Continuer comme élève',
+go: () => {}
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!-- @dsCard height=320 -->
+<div class="tia-cover">
+  <style>
+    .tia-cover { position: relative; width: 960px; height: 320px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); }
+    .tia-cover svg { position: absolute; left: 0; top: 0; }
+    .tia-cover .brand { fill: var(--brand); }
+    .tia-cover .accent { fill: var(--accent); }
+    .tia-cover .streak { fill: var(--orange-500); }
+    .tia-cover .ink { fill: var(--gray-800); }
+    .tia-cover .tint { fill: var(--blue-100); }
+    .tia-cover .cut { fill: var(--bg); }
+    .tia-cover .r3 { rx: var(--radius-3xl); }
+    .tia-cover .name { position: absolute; left: 40px; bottom: 70px; max-width: 440px; margin: 0; font-size: 116px; line-height: 0.92; font-weight: 900; letter-spacing: -0.02em; color: var(--text); }
+    .tia-cover .tag { position: absolute; left: 40px; bottom: 40px; max-width: 440px; margin: 0; font-size: 14px; line-height: 20px; color: var(--text-secondary); }
+  </style>
+  <svg width="960" height="320" viewBox="0 0 960 320" aria-hidden="true">
+    <!--
+      Blocs : brand (blue-500) 208×280, accent (violet-500) 248×144, orange-500 144×96 (la série), gray-800 96×96, blue-100 208×48 : un peu moins de la moitié de la couverture.
+      Disposition : une grande dalle bleue qui déborde en haut, satellites à droite qui débordent du bord droit ; tout à droite de x = 480.
+      Motif : pilules (« formes arrondies, coins généreux », radius-2xl/3xl, barre de navigation en pilule) posées comme des bulles de chat alternées dans la dalle bleue, découpées dans le fond bg.
+      Échelles : pas de 48 (space-12), gouttière 16 (space-4), coins radius-3xl (24) ; pilules et disque à la moitié du petit côté.
+    -->
+    <rect class="brand r3" x="512" y="-24" width="208" height="280" />
+    <rect class="accent r3" x="736" y="32" width="248" height="144" />
+    <rect class="streak" x="736" y="192" width="144" height="96" rx="48" />
+    <rect class="ink" x="896" y="192" width="96" height="96" rx="48" />
+    <rect class="tint r3" x="512" y="272" width="208" height="72" />
+    <rect class="cut" x="536" y="40" width="120" height="32" rx="16" />
+    <rect class="cut" x="576" y="88" width="120" height="32" rx="16" />
+    <rect class="cut" x="536" y="136" width="96" height="32" rx="16" />
+    <rect class="cut" x="592" y="184" width="104" height="32" rx="16" />
+  </svg>
+  <h1 class="name">Tutor'IA</h1>
+  <p class="tag">Le compagnon de révision par IA, du primaire au lycée.</p>
+</div>

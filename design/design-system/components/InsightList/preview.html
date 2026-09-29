@@ -1,0 +1,13 @@
+<!-- @dsCard group="Stats" height=412 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 342, display: 'flex', flexDirection: 'column', gap: 16 } },
+  h(T.InsightList, { tone: 'strengths', items: [{ title: 'Présent simple', meta: 'Anglais', value: '95 %' }, { title: 'Fractions', meta: 'Maths', value: '90 %' }] }),
+  h(T.InsightList, { tone: 'review', items: [{ title: 'Pythagore', meta: 'Maths · 2 erreurs', actionLabel: 'Réviser' }] }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

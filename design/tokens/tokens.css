@@ -1,0 +1,126 @@
+/*
+ * Tutor'IA — tokens CSS
+ * Partie 1 : tokens du design system Tutor'IA (source : tokens.json).
+ * Partie 2 : tokens propres à l'app élève, validés sur le canevas (matières, jeu, dégradés).
+ * Utiliser les RÔLES (var(--primary)) plutôt que les nuances (var(--blue-500)).
+ */
+
+@font-face { font-family: "Satoshi"; src: url("../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Satoshi"; src: url("../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Satoshi"; src: url("../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Satoshi"; src: url("../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Satoshi"; src: url("../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Satoshi"; src: url("../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2") format("woff2"); font-weight: 900; font-style: normal; font-display: swap; }
+
+:root {
+  /* ---------- Partie 1 : design system Tutor'IA ---------- */
+  /* Rôles */
+  --bg: var(--gray-100);
+  --surface: #ffffff;
+  --text: var(--gray-900);
+  --text-secondary: var(--gray-500);
+  --text-disabled: var(--gray-400);
+  --text-on-color: #ffffff;
+  --border: var(--gray-200);
+  --border-strong: var(--gray-400);
+  --brand: var(--blue-500);
+  --primary: var(--blue-500);
+  --primary-hover: var(--blue-600);
+  --primary-pressed: var(--blue-700);
+  --primary-soft: var(--blue-100);
+  --accent: var(--violet-500);
+  --accent-soft: var(--violet-100);
+  --success: var(--green-700);
+  --success-strong: var(--green-800);
+  --success-soft: var(--green-100);
+  --warning: var(--orange-700);
+  --warning-strong: var(--orange-800);
+  --warning-soft: var(--orange-100);
+  --error: var(--red-500);
+  --error-strong: var(--red-600);
+  --error-soft: var(--red-100);
+
+  /* Palette */
+  --gray-100: #f5f8ff; --gray-200: #ced4e2; --gray-300: #9da6b9; --gray-400: #798398; --gray-500: #5d677d; --gray-600: #343f55; --gray-700: #1c263b; --gray-800: #091122; --gray-900: #000612;
+  --blue-100: #ebf1ff; --blue-200: #b2c9f6; --blue-300: #7da3f0; --blue-400: #4d81ea; --blue-500: #2e6be6; --blue-600: #1750c4; --blue-700: #0a3b9d; --blue-800: #03276e; --blue-900: #00143d;
+  --cyan-100: #ebfcff; --cyan-200: #a9e9f4; --cyan-300: #7addee; --cyan-400: #51d1e6; --cyan-500: #2ecbe6; --cyan-600: #17a5be; --cyan-700: #09879d; --cyan-800: #026273; --cyan-900: #00353d;
+  --violet-100: #f1ebff; --violet-200: #cab6f6; --violet-300: #a787f2; --violet-400: #8558ea; --violet-500: #662ee6; --violet-600: #521dc8; --violet-700: #3b0da2; --violet-800: #210267; --violet-900: #13003d;
+  --green-100: #ebfff2; --green-200: #aff3c8; --green-300: #7eefa8; --green-400: #50e687; --green-500: #2ee671; --green-600: #1bc85b; --green-700: #0c9e42; --green-800: #03702b; --green-900: #003d16;
+  --orange-100: #fff7eb; --orange-200: #f4dab5; --orange-300: #eec181; --orange-400: #e9a951; --orange-500: #e6992e; --orange-600: #d08825; --orange-700: #a3640d; --orange-800: #6e4204; --orange-900: #3d2400;
+  --red-100: #ffebeb; --red-200: #f8b6b6; --red-300: #ef8181; --red-400: #e95555; --red-500: #e62e2e; --red-600: #c21a1a; --red-700: #980b0b; --red-800: #680303; --red-900: #3d0000;
+  --azure-100: #ebf2ff; --azure-200: #b4cefd; --azure-300: #77a6fa; --azure-400: #3f83fb; --azure-500: #035cf9; --azure-600: #004bd0; --azure-700: #023ca3; --azure-800: #022b73; --azure-900: #00163d;
+
+  /* Espacements (multiples de 4px) */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px; --space-16: 64px;
+
+  /* Rayons */
+  --radius-2xl: 16px;   /* cartes, champs, boutons, bulles */
+  --radius-3xl: 24px;   /* grandes surfaces, cartes colorées, barre de nav */
+  --radius-full: 999px; /* pastilles, avatars, boutons ronds */
+
+  /* Ombres */
+  --shadow-sm: 0 1px 2px rgba(9,17,34,0.06);
+  --shadow-md: 0 4px 16px rgba(9,17,34,0.06);
+  --shadow-lg: 0 12px 32px rgba(9,17,34,0.10);
+  --shadow-brand: 0 8px 20px rgba(46,107,230,0.25);
+  --shadow-focus: 0 0 0 3px rgba(46,107,230,0.35);
+
+  /* Typographie */
+  --font-sans: "Satoshi", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* ---------- Partie 2 : app élève (ajouts validés sur le canevas) ---------- */
+  /* Matières : dégradé de carte (160deg, clair -> foncé), fond doux, encre (icône / texte sur fond doux), barre de progression */
+  --subject-maths-gradient: linear-gradient(160deg, #e95555 0%, #c21a1a 60%, #980b0b 100%);
+  --subject-maths-soft: var(--red-100);  --subject-maths-ink: var(--red-600);  --subject-maths-bar: var(--red-500);
+
+  --subject-francais-gradient: linear-gradient(160deg, #4d81ea 0%, #1750c4 60%, #0a3b9d 100%);
+  --subject-francais-soft: var(--blue-100);  --subject-francais-ink: var(--blue-600);  --subject-francais-bar: var(--blue-500);
+
+  --subject-histoire-geo-gradient: linear-gradient(160deg, #1bc85b 0%, #0c9e42 45%, #03702b 100%);
+  --subject-histoire-geo-soft: var(--green-100);  --subject-histoire-geo-ink: var(--green-800);  --subject-histoire-geo-bar: var(--green-700);
+
+  --subject-anglais-gradient: linear-gradient(160deg, #17a5be 0%, #09879d 45%, #026273 100%);
+  --subject-anglais-soft: var(--cyan-100);  --subject-anglais-ink: var(--cyan-800);  --subject-anglais-bar: var(--cyan-700);
+
+  --subject-svt-gradient: linear-gradient(160deg, #a3640d 0%, #6e4204 65%, #3d2400 100%);
+  --subject-svt-soft: var(--orange-100);  --subject-svt-ink: var(--orange-800);  --subject-svt-bar: var(--orange-700);
+
+  --subject-physique-chimie-gradient: linear-gradient(160deg, #8558ea 0%, #521dc8 60%, #3b0da2 100%);
+  --subject-physique-chimie-soft: var(--violet-100);  --subject-physique-chimie-ink: var(--violet-600);  --subject-physique-chimie-bar: var(--violet-500);
+
+  /* Jeu */
+  --streak: var(--orange-500);          /* orange UNI, sans dégradé, texte blanc */
+  --level-card: var(--gray-600);        /* carte Niveau */
+  --xp: var(--green-500);               /* jauge d'XP */
+
+  /* Cartes de stats (KPI) */
+  --kpi-time-gradient: linear-gradient(160deg, #2e6be6 0%, #1750c4 55%, #0a3b9d 100%);
+  --kpi-sessions-gradient: var(--subject-anglais-gradient);
+  --kpi-cards-gradient: var(--subject-physique-chimie-gradient);
+  --mastery-gradient: linear-gradient(160deg, #2e6be6 0%, #1750c4 50%, #3b0da2 100%);
+  --strengths-gradient: var(--subject-histoire-geo-gradient);
+
+  /* Tuteur vocal */
+  --voice-bar-gradient: linear-gradient(180deg, #2e6be6 0%, #662ee6 100%);
+
+  /* Cartes « héros » (résumé, vue d'ensemble, espace Parents) */
+  --hero-gradient: linear-gradient(160deg, #2e6be6 0%, #1750c4 50%, #3b0da2 100%);
+
+  /* Statuts de progression (espace Parents) et résultats de session */
+  --status-acquired: var(--green-700);      /* Acquis · Compris */
+  --status-in-progress: var(--blue-500);    /* En cours · En progrès */
+  --status-to-consolidate: var(--orange-500); /* À consolider · À revoir */
+  --status-not-started: var(--gray-200);    /* Pas commencé (texte gray-700) */
+
+  /* Tuteur visuel : graphique et tableau blanc */
+  --graph-grid: var(--blue-100);
+  --graph-axis: var(--gray-300);
+  --whiteboard-bg: #fbfcff;
+  --whiteboard-dots: var(--gray-200);
+  --whiteboard-operation: var(--blue-500);
+  --whiteboard-annotation: var(--blue-600);
+
+  /* Voiles blancs sur fonds colorés */
+  --on-color-veil: rgba(255,255,255,0.24);
+  --on-color-track: rgba(255,255,255,0.30);
+}

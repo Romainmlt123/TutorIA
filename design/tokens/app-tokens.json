@@ -1,0 +1,41 @@
+{
+  "name": "Tutor'IA — app élève",
+  "description": "Tokens ajoutés pour l'app élève, en complément de tokens.json (design system Tutor'IA). Les valeurs {nuance} renvoient à la palette de tokens.json.",
+  "radius": { "radius-full": "999px" },
+  "subjects": [
+    { "id": "maths", "name": "Maths", "gradient": ["#e95555", "#c21a1a 60%", "#980b0b"], "soft": "{red-100}", "ink": "{red-600}", "bar": "{red-500}", "icon": "calculatrice" },
+    { "id": "francais", "name": "Français", "gradient": ["#4d81ea", "#1750c4 60%", "#0a3b9d"], "soft": "{blue-100}", "ink": "{blue-600}", "bar": "{blue-500}", "icon": "livre" },
+    { "id": "histoire-geo", "name": "Histoire-Géo", "gradient": ["#1bc85b", "#0c9e42 45%", "#03702b"], "soft": "{green-100}", "ink": "{green-800}", "bar": "{green-700}", "icon": "globe" },
+    { "id": "anglais", "name": "Anglais", "gradient": ["#17a5be", "#09879d 45%", "#026273"], "soft": "{cyan-100}", "ink": "{cyan-800}", "bar": "{cyan-700}", "icon": "langues" },
+    { "id": "svt", "name": "SVT", "gradient": ["#a3640d", "#6e4204 65%", "#3d2400"], "soft": "{orange-100}", "ink": "{orange-800}", "bar": "{orange-700}", "icon": "feuille" },
+    { "id": "physique-chimie", "name": "Physique-Chimie", "gradient": ["#8558ea", "#521dc8 60%", "#3b0da2"], "soft": "{violet-100}", "ink": "{violet-600}", "bar": "{violet-500}", "icon": "fiole" }
+  ],
+  "gradientAngle": "160deg",
+  "game": {
+    "streak": { "background": "{orange-500}", "text": "#ffffff", "note": "Orange uni, jamais de dégradé." },
+    "level": { "background": "{gray-600}", "text": "#ffffff", "xp": "{green-500}" }
+  },
+  "kpi": {
+    "time": ["#2e6be6", "#1750c4 55%", "#0a3b9d"],
+    "sessions": "subjects.anglais.gradient",
+    "flashcards": "subjects.physique-chimie.gradient",
+    "record": "game.streak",
+    "mastery": ["#2e6be6", "#1750c4 50%", "#3b0da2"]
+  },
+  "voice": { "bars": ["{blue-500}", "{violet-500}"], "barWidth": "40px", "barGap": "20px", "idleSize": "40px" },
+  "onColor": { "veil": "rgba(255,255,255,0.24)", "track": "rgba(255,255,255,0.30)" },
+  "hero": { "gradient": ["#2e6be6", "#1750c4 50%", "#3b0da2"], "text": "#ffffff", "note": "Cartes résumé / vue d'ensemble (espace Parents, maîtrise)." },
+  "statuses": {
+    "acquired": { "label": "Acquis", "background": "{green-700}", "text": "#ffffff" },
+    "inProgress": { "label": "En cours", "background": "{blue-500}", "text": "#ffffff" },
+    "toConsolidate": { "label": "À consolider", "background": "{orange-500}", "text": "#ffffff" },
+    "notStarted": { "label": "Pas commencé", "background": "{gray-200}", "text": "{gray-700}" },
+    "sessionOutcome": { "understood": "acquired", "progressing": "inProgress", "toReview": "toConsolidate" }
+  },
+  "settingTiles": { "screenTime": "{orange-500}", "night": "violet", "voice": "blue", "camera": "cyan", "visuals": "red", "email": "green", "alerts": "{orange-500}" },
+  "visualPanel": {
+    "graph": { "grid": "{blue-100}", "axis": "{gray-300}", "mainCurve": "subject.ink, 3px", "secondaryCurve": "{blue-500}, 2.5px, dash 7 5", "keyPoint": "#ffffff fill, subject.ink 3px stroke", "halo": "scale 0.6→2.2, 1.6s" },
+    "whiteboard": { "background": "#fbfcff", "dots": "{gray-200}, r1, 16px", "ink": "{gray-900}", "operations": "{blue-500}", "result": "subject.ink, 30px Black", "annotations": "{blue-600}" }
+  },
+  "navigation": { "height": "72px", "inset": "20px", "radius": "{radius-3xl}", "shadow": "{shadow-lg}", "activeBubble": "52px (60px pour l'onglet Tutor'IA)" }
+}

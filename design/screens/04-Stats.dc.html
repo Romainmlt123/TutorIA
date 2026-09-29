@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Statistiques</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button{font-family:inherit}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 2480px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<main style="display: flex; flex-direction: column; gap: 16px; padding: 56px 20px 0; box-sizing: border-box">
+
+<header style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 900">Tes stats</h1></header>
+
+<div role="group" aria-label="Période" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-sm)">
+<sc-for list="{{ periods }}" as="o" hint-placeholder-count="3">
+<button type="button" onClick="{{ o.pick }}" aria-pressed="{{ o.selected }}" style="height: 40px; border: none; border-radius: 20px; background: {{ o.bg }}; color: {{ o.color }}; font-size: 14px; font-weight: 500; cursor: pointer">{{ o.name }}</button>
+</sc-for>
+</div>
+
+<section aria-label="Chiffres clés" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<div style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 55%, #0A3B9D 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<svg width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" style="position: absolute; right: -22px; bottom: -22px; opacity: 0.16"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="width: 32px; height: 32px; border-radius: 999px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500">Temps d'étude</span>
+</div>
+<span style="font-size: 28px; line-height: 36px; font-weight: 900">{{ p.time }}</span>
+<span style="align-self: flex-start; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,0.24); font-size: 12px; line-height: 16px; font-weight: 700">{{ p.timeD }} {{ p.cmp }}</span>
+</div>
+<div style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: linear-gradient(160deg, #17A5BE 0%, #09879D 45%, #026273 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<svg width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.5" aria-hidden="true" style="position: absolute; right: -22px; bottom: -22px; opacity: 0.16"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="width: 32px; height: 32px; border-radius: 999px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg></span>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500">Sessions</span>
+</div>
+<span style="font-size: 28px; line-height: 36px; font-weight: 900">{{ p.sessions }}</span>
+<span style="align-self: flex-start; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,0.24); font-size: 12px; line-height: 16px; font-weight: 700">{{ p.sessionsD }} {{ p.cmp }}</span>
+</div>
+<div style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: linear-gradient(160deg, #8558EA 0%, #521DC8 60%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<svg width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: -22px; bottom: -22px; opacity: 0.16"><rect x="8" y="3" width="12" height="15" rx="2"></rect><path d="M5 7v11a3 3 0 0 0 3 3h8"></path></svg>
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="width: 32px; height: 32px; border-radius: 999px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="12" height="15" rx="2"></rect><path d="M5 7v11a3 3 0 0 0 3 3h8"></path></svg></span>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500">Flashcards révisées</span>
+</div>
+<span style="font-size: 28px; line-height: 36px; font-weight: 900">{{ p.cards }}</span>
+<span style="align-self: flex-start; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,0.24); font-size: 12px; line-height: 16px; font-weight: 700">{{ p.cardsD }} {{ p.cmp }}</span>
+</div>
+<div style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: #E6992E; border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<svg width="96" height="96" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true" style="position: absolute; right: -22px; bottom: -22px; opacity: 0.22"><path d="M12 2.5c1 3.2 5.5 5.6 5.5 10.5a5.5 5.5 0 0 1-11 0c0-2.2 1-3.8 2.2-4.9 0 2.1 1 3.3 2.1 3.3 0-3.3-1-5.4 1.2-8.9z"></path></svg>
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="width: 32px; height: 32px; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#E6992E" aria-hidden="true"><path d="M12 2.5c1 3.2 5.5 5.6 5.5 10.5a5.5 5.5 0 0 1-11 0c0-2.2 1-3.8 2.2-4.9 0 2.1 1 3.3 2.1 3.3 0-3.3-1-5.4 1.2-8.9z"></path></svg></span>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500">Série record</span>
+</div>
+<span style="font-size: 28px; line-height: 36px; font-weight: 900">15 jours</span>
+<span style="align-self: flex-start; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,0.24); font-size: 12px; line-height: 16px; font-weight: 700">Encore 4 jours pour la battre</span>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-md)">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 900">{{ p.chartTitle }}</h2>
+<span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ p.avg }}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="position: relative; height: 140px">
+<div style="position: absolute; left: 44px; right: 0; top: 0; border-top: 1px dashed #CED4E2"></div>
+<div style="position: absolute; left: 44px; right: 0; top: 70px; border-top: 1px dashed #CED4E2"></div>
+<div style="position: absolute; left: 44px; right: 0; top: 139px; border-top: 1px solid #CED4E2"></div>
+<span style="position: absolute; left: 0; top: -8px; font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ p.axis0 }}</span>
+<span style="position: absolute; left: 0; top: 62px; font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ p.axis1 }}</span>
+<span style="position: absolute; left: 0; top: 132px; font-size: 12px; line-height: 16px; color: var(--text-secondary)">0</span>
+<div style="position: absolute; left: 52px; right: 8px; top: 0; bottom: 1px; display: flex; align-items: flex-end; gap: 12px">
+<sc-for list="{{ p.bars }}" as="b" hint-placeholder-count="7">
+<div title="{{ b.tip }}" style="flex: 1 1 0; height: {{ b.h }}px; border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, #662EE6 0%, #2E6BE6 100%)"></div>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; gap: 12px; padding: 0 8px 0 52px">
+<sc-for list="{{ p.bars }}" as="b" hint-placeholder-count="7">
+<span style="flex: 1 1 0; text-align: center; font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ b.l }}</span>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-md)">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 900">Progression par matière</h2>
+<span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Maîtrise moyenne des chapitres travaillés</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px; background: #EBFCFF; color: #09879D; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9M8.5 3v2M11 5c-1 4-3.5 7-7 8.5M6 8.5c1.5 2.5 3.5 4 6 5M13 21l4-9 4 9M14.5 18h5"></path></svg></span><span style="width: 104px; font-size: 14px; line-height: 20px; font-weight: 500">Anglais</span><div style="flex-grow: 1; height: 12px; border-radius: 999px; background: #EBFCFF; overflow: hidden"><div style="width: 81%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #2ECBE6 0%, #09879D 100%)"></div></div><span style="width: 40px; text-align: right; font-size: 14px; font-weight: 700">81 %</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px; background: #FFEBEB; color: #E62E2E; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"></path></svg></span><span style="width: 104px; font-size: 14px; line-height: 20px; font-weight: 500">Maths</span><div style="flex-grow: 1; height: 12px; border-radius: 999px; background: #FFEBEB; overflow: hidden"><div style="width: 72%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #E95555 0%, #C21A1A 100%)"></div></div><span style="width: 40px; text-align: right; font-size: 14px; font-weight: 700">72 %</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px; background: #FFF7EB; color: #A3640D; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-14 15-15-1 10-7 15-15 15zM5 19l8-8"></path></svg></span><span style="width: 104px; font-size: 14px; line-height: 20px; font-weight: 500">SVT</span><div style="flex-grow: 1; height: 12px; border-radius: 999px; background: #FFF7EB; overflow: hidden"><div style="width: 69%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #D08825 0%, #6E4204 100%)"></div></div><span style="width: 40px; text-align: right; font-size: 14px; font-weight: 700">69 %</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px; background: #EBF1FF; color: #2E6BE6; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5M8 7h7M8 11h5"></path></svg></span><span style="width: 104px; font-size: 14px; line-height: 20px; font-weight: 500">Français</span><div style="flex-grow: 1; height: 12px; border-radius: 999px; background: #EBF1FF; overflow: hidden"><div style="width: 64%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #4D81EA 0%, #1750C4 100%)"></div></div><span style="width: 40px; text-align: right; font-size: 14px; font-weight: 700">64 %</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px; background: #EBFFF2; color: #0C9E42; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg></span><span style="width: 104px; font-size: 14px; line-height: 20px; font-weight: 500">Histoire-Géo</span><div style="flex-grow: 1; height: 12px; border-radius: 999px; background: #EBFFF2; overflow: hidden"><div style="width: 58%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #2EE671 0%, #0C9E42 100%)"></div></div><span style="width: 40px; text-align: right; font-size: 14px; font-weight: 700">58 %</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px; background: #F1EBFF; color: #662EE6; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7.5 15h9"></path></svg></span><span style="width: 104px; font-size: 14px; line-height: 20px; font-weight: 500">Physique-Chimie</span><div style="flex-grow: 1; height: 12px; border-radius: 999px; background: #F1EBFF; overflow: hidden"><div style="width: 47%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #8558EA 0%, #521DC8 100%)"></div></div><span style="width: 40px; text-align: right; font-size: 14px; font-weight: 700">47 %</span></div>
+</div>
+</section>
+
+<section style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 20px 16px 16px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 50%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<div style="display: flex; align-items: flex-start; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 900">Évolution de ta maîtrise</h2>
+<span style="font-size: 36px; line-height: 44px; font-weight: 900; letter-spacing: -0.01em">68 %</span>
+</div>
+<span style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; background: #2EE671; color: #003D16; font-size: 12px; line-height: 16px; font-weight: 700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"></path></svg>+26 pts en 8 sem.</span>
+</div>
+<svg width="318" height="160" viewBox="0 0 318 160" role="img" aria-label="Maîtrise globale passée de 42 % à 68 % entre le 3 août et le 21 septembre" style="display: block; font-family: Satoshi, system-ui, sans-serif">
+<defs><linearGradient id="aire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.35"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></linearGradient></defs>
+<line x1="40" y1="10" x2="318" y2="10" stroke="#FFFFFF" stroke-opacity="0.3" stroke-dasharray="3 3"></line>
+<line x1="40" y1="70" x2="318" y2="70" stroke="#FFFFFF" stroke-opacity="0.3" stroke-dasharray="3 3"></line>
+<line x1="40" y1="130" x2="318" y2="130" stroke="#FFFFFF" stroke-opacity="0.5"></line>
+<text x="0" y="14" font-size="12" fill="#FFFFFF" fill-opacity="0.85">80 %</text>
+<text x="0" y="74" font-size="12" fill="#FFFFFF" fill-opacity="0.85">60 %</text>
+<text x="0" y="134" font-size="12" fill="#FFFFFF" fill-opacity="0.85">40 %</text>
+<polygon points="40,124 78,115 116,97 154,103 192,82 230,67 268,58 306,46 306,130 40,130" fill="url(#aire)"></polygon>
+<polyline points="40,124 78,115 116,97 154,103 192,82 230,67 268,58 306,46" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>
+<circle cx="40" cy="124" r="3" fill="#FFFFFF"></circle>
+<circle cx="78" cy="115" r="3" fill="#FFFFFF"></circle>
+<circle cx="116" cy="97" r="3" fill="#FFFFFF"></circle>
+<circle cx="154" cy="103" r="3" fill="#FFFFFF"></circle>
+<circle cx="192" cy="82" r="3" fill="#FFFFFF"></circle>
+<circle cx="230" cy="67" r="3" fill="#FFFFFF"></circle>
+<circle cx="268" cy="58" r="3" fill="#FFFFFF"></circle>
+<circle cx="306" cy="46" r="7" fill="#2EE671" stroke="#FFFFFF" stroke-width="3"></circle>
+<text x="40" y="152" font-size="12" fill="#FFFFFF" fill-opacity="0.85" text-anchor="middle">3 août</text>
+<text x="116" y="152" font-size="12" fill="#FFFFFF" fill-opacity="0.85" text-anchor="middle">17 août</text>
+<text x="192" y="152" font-size="12" fill="#FFFFFF" fill-opacity="0.85" text-anchor="middle">31 août</text>
+<text x="268" y="152" font-size="12" fill="#FFFFFF" fill-opacity="0.85" text-anchor="middle">14 sept.</text>
+</svg>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-md)">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 900">Ton activité</h2>
+<span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ activeDays }} jours actifs sur 91</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="position: relative; height: 16px; font-size: 12px; line-height: 16px; color: var(--text-secondary)">
+<span style="position: absolute; left: 46px">Juil.</span>
+<span style="position: absolute; left: 134px">Août</span>
+<span style="position: absolute; left: 222px">Sept.</span>
+</div>
+<div style="display: flex; gap: 8px">
+<div style="width: 16px; display: flex; flex-direction: column; gap: 4px; font-size: 12px; line-height: 18px; color: var(--text-secondary)">
+<span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+</div>
+<div style="display: flex; gap: 4px">
+<sc-for list="{{ weeks }}" as="w" hint-placeholder-count="13">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{ w.days }}" as="d" hint-placeholder-count="7">
+<span title="{{ d.tip }}" style="display: block; width: 18px; height: 18px; border-radius: 4px; background: {{ d.c }}"></span>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 8px; font-size: 12px; line-height: 16px; color: var(--text-secondary)">
+<span style="margin-right: 4px">Moins</span>
+<span style="width: 12px; height: 12px; border-radius: 3px; background: #EBF1FF"></span>
+<span style="width: 12px; height: 12px; border-radius: 3px; background: #B2C9F6"></span>
+<span style="width: 12px; height: 12px; border-radius: 3px; background: #7DA3F0"></span>
+<span style="width: 12px; height: 12px; border-radius: 3px; background: #2E6BE6"></span>
+<span style="width: 12px; height: 12px; border-radius: 3px; background: #0A3B9D"></span>
+<span style="margin-left: 4px">Plus</span>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: linear-gradient(160deg, #1BC85B 0%, #0C9E42 45%, #03702B 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
+<h2 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 900; color: #FFFFFF"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z"></path></svg>Tes points forts</h2>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+<li style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px 8px 8px; background: #FFFFFF; border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm)">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-2xl); background: #EBFFF2; color: var(--success); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 14px; line-height: 20px; font-weight: 500">Le prétérit simple</span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Anglais</span></span>
+<span style="font-size: 14px; font-weight: 700; color: var(--success-strong)">92 %</span>
+</li>
+<li style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px 8px 8px; background: #FFFFFF; border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm)">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-2xl); background: #EBFFF2; color: var(--success); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 14px; line-height: 20px; font-weight: 500">Calcul littéral</span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Maths</span></span>
+<span style="font-size: 14px; font-weight: 700; color: var(--success-strong)">88 %</span>
+</li>
+<li style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px 8px 8px; background: #FFFFFF; border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm)">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-2xl); background: #EBFFF2; color: var(--success); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 14px; line-height: 20px; font-weight: 500">La digestion</span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">SVT</span></span>
+<span style="font-size: 14px; font-weight: 700; color: var(--success-strong)">85 %</span>
+</li>
+</ul>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: #E6992E; border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 900; color: #FFFFFF"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>À retravailler</h2>
+<span style="font-size: 14px; line-height: 20px; font-weight: 500; color: #FFFFFF">Quelques cartes et c'est réglé.</span>
+</div>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+<li style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px 8px 8px; background: #FFFFFF; border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm)">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-2xl); background: #FFF7EB; color: var(--warning); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 14px; line-height: 20px; font-weight: 500">La masse volumique</span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Physique-Chimie · 41 %</span></span>
+<a href="03a-Flashcards-Choix.dc.html" style="flex-shrink: 0; height: 48px; padding: 0 16px; border-radius: var(--radius-2xl); background: var(--primary); color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 700; text-decoration: none">Réviser</a>
+</li>
+<li style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px 8px 8px; background: #FFFFFF; border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm)">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-2xl); background: #FFF7EB; color: var(--warning); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 14px; line-height: 20px; font-weight: 500">La Révolution : dates clés</span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Histoire-Géo · 48 %</span></span>
+<a href="03a-Flashcards-Choix.dc.html" style="flex-shrink: 0; height: 48px; padding: 0 16px; border-radius: var(--radius-2xl); background: var(--primary); color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 700; text-decoration: none">Réviser</a>
+</li>
+<li style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px 8px 8px; background: #FFFFFF; border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm)">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-2xl); background: #FFF7EB; color: var(--warning); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 14px; line-height: 20px; font-weight: 500">Accord du participe passé</span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Français · 52 %</span></span>
+<a href="03a-Flashcards-Choix.dc.html" style="flex-shrink: 0; height: 48px; padding: 0 16px; border-radius: var(--radius-2xl); background: var(--primary); color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 700; text-decoration: none">Réviser</a>
+</li>
+</ul>
+</section>
+
+</main>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="eleve" active="stats" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"periode":{"editor":"enum","options":["semaine","mois","trimestre"],"default":"semaine"},"$preview":{"width":390,"height":2480}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { period: null };
+}
+renderVals() {
+const P = {
+semaine: { name: 'Semaine', label: 'Du 21 au 27 septembre', time: '4 h 40', timeD: '+38 min', sessions: '14', sessionsD: '+3', cards: '186', cardsD: '+24', cmp: 'vs sem. passée', chartTitle: 'Temps d’étude par jour', avg: 'Moy. 40 min / jour', axis0: '80 min', axis1: '40 min', max: 80,
+raw: [['L', 35, '35 min'], ['M', 50, '50 min'], ['M', 20, '20 min'], ['J', 65, '1 h 05'], ['V', 40, '40 min'], ['S', 55, '55 min'], ['D', 15, '15 min']] },
+mois: { name: 'Mois', label: 'Septembre 2026', time: '17 h 50', timeD: '+2 h 10', sessions: '52', sessionsD: '+8', cards: '734', cardsD: '+96', cmp: 'vs août', chartTitle: 'Temps d’étude par semaine', avg: 'Moy. 4 h 28 / sem.', axis0: '6 h', axis1: '3 h', max: 360,
+raw: [['1–7', 250, '4 h 10'], ['8–14', 235, '3 h 55'], ['15–21', 310, '5 h 10'], ['22–27', 275, '4 h 35']] },
+trimestre: { name: 'Trimestre', label: 'De juillet à septembre', time: '38 h 20', timeD: '+6 h', sessions: '118', sessionsD: '+21', cards: '1 642', cardsD: '+310', cmp: 'vs avril-juin', chartTitle: 'Temps d’étude par mois', avg: 'Moy. 12 h 46 / mois', axis0: '20 h', axis1: '10 h', max: 1200,
+raw: [['Juil.', 720, '12 h'], ['Août', 510, '8 h 30'], ['Sept.', 1070, '17 h 50']] }
+};
+const key = this.state.period ?? (this.props.periode ?? 'semaine');
+const p = Object.assign({}, P[key]);
+p.bars = p.raw.map((r) => ({ l: r[0], h: Math.round(r[1] / p.max * 139), tip: r[2] }));
+const periods = ['semaine', 'mois', 'trimestre'].map((k) => ({
+name: P[k].name, selected: k === key,
+bg: k === key ? '#2E6BE6' : 'transparent',
+color: k === key ? '#FFFFFF' : '#5D677D',
+pick: () => this.setState({ period: k })
+}));
+const colors = ['#EBF1FF', '#B2C9F6', '#7DA3F0', '#2E6BE6', '#0A3B9D'];
+const start = new Date(2026, 5, 29);
+const mois = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+let activeDays = 0;
+const weeks = [];
+for (let w = 0; w < 13; w++) {
+const days = [];
+for (let d = 0; d < 7; d++) {
+const x = Math.sin(w * 12.9898 + d * 78.233) * 43758.5453;
+const r = x - Math.floor(x);
+let lvl = r < 0.22 ? 0 : r < 0.45 ? 1 : r < 0.7 ? 2 : r < 0.9 ? 3 : 4;
+if (w === 11 && d === 1) lvl = 0;
+if ((w === 11 && d >= 2) || w === 12) lvl = Math.max(lvl, 1);
+if (lvl > 0) activeDays++;
+const dt = new Date(start.getTime() + (w * 7 + d) * 86400000);
+days.push({ c: colors[lvl], tip: dt.getDate() + ' ' + mois[dt.getMonth()] });
+}
+weeks.push({ days });
+}
+return { p, periods, weeks, activeDays };
+}
+}
+</script>
+</body>
+</html>

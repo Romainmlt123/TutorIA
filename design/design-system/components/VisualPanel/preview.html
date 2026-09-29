@@ -1,0 +1,12 @@
+<!-- @dsCard group="Tuteur" height=366 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 350 } }, h(T.VisualPanel, { kind: 'graph', subject: 'maths', title: 'y = 2x + 1', defaultOpen: true },
+  h(T.MathGraph, { subject: 'maths', xRange: [-3, 3], yRange: [-4, 6], lines: [{ m: 2, b: 1, label: 'y = 2x + 1' }], points: [{ x: 1, y: 3, pulse: true, guide: true, label: '(1 ; 3)' }], description: 'Droite y = 2x + 1 passant par le point (1 ; 3).' })));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

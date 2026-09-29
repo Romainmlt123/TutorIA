@@ -1,0 +1,13 @@
+<!-- @dsCard group="Élève" height=474 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+var list = [['maths',68],['francais',54],['histoire-geo',41],['physique-chimie',35],['svt',62],['anglais',77]];
+return h('div', { style: { width: 342, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 } },
+  list.map(function (x, i) { return h(T.SubjectCard, { key: x[0], subject: x[0], progress: x[1], selected: i === 0 }); }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

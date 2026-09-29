@@ -1,0 +1,14 @@
+<!-- @dsCard group="Flashcards" height=500 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+function Demo() { var p = React.useState(null);
+  return h('div', { style: { width: 342 } }, h(T.QuizCard, { subject: 'maths', question: 'Résous 3x + 5 = 20', options: ['x = 3', 'x = 5', 'x = 15', 'x = 25'], answer: 1, picked: p[0], onAnswer: p[1],
+    hint: 'Commence par enlever 5 des deux côtés.', explanation: '3x = 15, donc x = 15 ÷ 3 = 5.' })); }
+return h(Demo);
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

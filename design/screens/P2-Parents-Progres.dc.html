@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Parents · Progrès par matière</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button{font-family:inherit}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 1840px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<main style="display: flex; flex-direction: column; gap: 24px; padding: 56px 20px 0; box-sizing: border-box">
+
+<header style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 900">Progrès de Léa</h1>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: var(--text-secondary)">Maîtrise par matière, comparée à la période précédente.</p>
+</header>
+
+<div role="group" aria-label="Période" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-sm)">
+<sc-for list="{{ periods }}" as="o" hint-placeholder-count="2">
+<button type="button" onClick="{{ o.pick }}" aria-pressed="{{ o.selected }}" style="height: 40px; border: none; border-radius: 20px; background: {{ o.bg }}; color: {{ o.color }}; font-size: 14px; font-weight: 500; cursor: pointer">{{ o.name }}</button>
+</sc-for>
+</div>
+
+<section aria-label="Vue d'ensemble" style="position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px; padding: 24px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 50%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<div style="position: relative; width: 96px; height: 96px; flex-shrink: 0">
+<svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="10"></circle><circle cx="48" cy="48" r="40" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" stroke-dasharray="163.4 251.3" transform="rotate(-90 48 48)"></circle></svg>
+<span style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900">65 %</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 18px; line-height: 24px; font-weight: 900">Maîtrise globale</span>
+<span style="align-self: flex-start; padding: 4px 10px; border-radius: 999px; background: #2EE671; color: #003D16; font-size: 12px; font-weight: 700">+9 points en un mois</span>
+<span style="font-size: 13px; line-height: 18px; font-weight: 500; opacity: 0.9">7 notions acquises · 4 à consolider</span>
+</div>
+</section>
+
+<section aria-label="Matières" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 900">Par matière</h2>
+<span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Touchez pour le détail</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="height: 26px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: #0C9E42; color: #FFFFFF; font-size: 12px; font-weight: 700">Acquis</span>
+<span style="height: 26px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: #2E6BE6; color: #FFFFFF; font-size: 12px; font-weight: 700">En cours</span>
+<span style="height: 26px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: #E6992E; color: #FFFFFF; font-size: 12px; font-weight: 700">À consolider</span>
+<span style="height: 26px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: #CED4E2; color: #1C263B; font-size: 12px; font-weight: 700">Pas commencé</span>
+</div>
+<sc-for list="{{ subjects }}" as="s" hint-placeholder-count="6">
+<div style="display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); overflow: hidden">
+<button type="button" onClick="{{ s.toggle }}" aria-expanded="{{ s.open }}" style="display: flex; flex-direction: column; gap: 14px; padding: 18px 20px; border: none; background: transparent; text-align: left; color: var(--text); cursor: pointer">
+<span style="width: 100%; display: flex; align-items: center; gap: 14px">
+<span style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 16px; background: {{ s.grad }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ s.icon }}"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 17px; line-height: 22px; font-weight: 900">{{ s.name }}</span>
+<span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ s.meta }}</span>
+</span>
+<span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+<span style="font-size: 18px; line-height: 22px; font-weight: 900">{{ s.pct }} %</span>
+<span style="padding: 2px 8px; border-radius: 999px; background: {{ s.deltaBg }}; color: {{ s.deltaColor }}; font-size: 11px; font-weight: 700">{{ s.delta }}</span>
+</span>
+</span>
+<span aria-hidden="true" style="width: 100%; display: flex; gap: 4px; height: 10px">
+<sc-for list="{{ s.seg }}" as="g" hint-placeholder-count="5">
+<span style="flex: 1 1 0; border-radius: 999px; background: {{ g.c }}"></span>
+</sc-for>
+</span>
+<span style="align-self: center; display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: {{ s.ink }}">{{ s.cta }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{ s.chevron }}deg); transition: transform 0.25s ease"><path d="M6 9l6 6 6-6"></path></svg></span>
+</button>
+<sc-if value="{{ s.open }}" hint-placeholder-val="{{ false }}">
+<ul style="margin: 0; padding: 0 20px 20px; list-style: none; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{ s.chapters }}" as="c" hint-placeholder-count="4">
+<li style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 12px 10px 14px; border-radius: 16px; background: {{ s.soft }}">
+<span style="flex-grow: 1; display: flex; flex-direction: column">
+<span style="font-size: 14px; line-height: 20px; font-weight: 700">{{ c.t }}</span>
+<span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ c.meta }}</span>
+</span>
+<span style="flex-shrink: 0; height: 26px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: {{ c.bg }}; color: {{ c.color }}; font-size: 12px; font-weight: 700">{{ c.status }}</span>
+</li>
+</sc-for>
+</ul>
+</sc-if>
+</div>
+</sc-for>
+</section>
+
+</main>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="parents" active="progres" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1840}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { open: 0, period: 'mois' };
+}
+renderVals() {
+const ST = {
+a: { status: 'Acquis', bg: '#0C9E42', color: '#FFFFFF', seg: '#0C9E42' },
+e: { status: 'En cours', bg: '#2E6BE6', color: '#FFFFFF', seg: '#2E6BE6' },
+c: { status: 'À consolider', bg: '#E6992E', color: '#FFFFFF', seg: '#E6992E' },
+n: { status: 'Pas commencé', bg: '#CED4E2', color: '#1C263B', seg: '#CED4E2' }
+};
+const data = [
+{ name: 'Maths', pct: 72, d: 12, grad: 'linear-gradient(160deg, #E95555 0%, #C21A1A 60%, #980B0B 100%)', soft: '#FFF5F5', ink: '#C21A1A', icon: 'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01',
+ch: [['Calcul littéral', 'a', '88 % · 6 sessions'], ['Équations du 1er degré', 'a', '82 % · 5 sessions'], ['Théorème de Pythagore', 'e', '61 % · 3 sessions'], ['Puissances', 'c', '48 % · 2 sessions'], ['Proportionnalité', 'n', 'Au programme en novembre']] },
+{ name: 'Anglais', pct: 81, d: 6, grad: 'linear-gradient(160deg, #17A5BE 0%, #09879D 45%, #026273 100%)', soft: '#F2FDFF', ink: '#026273', icon: 'M4 5h9M8.5 3v2M11 5c-1 4-3.5 7-7 8.5M6 8.5c1.5 2.5 3.5 4 6 5M13 21l4-9 4 9M14.5 18h5',
+ch: [['Le prétérit simple', 'a', '92 % · 4 sessions'], ['Les comparatifs', 'a', '85 % · 3 sessions'], ['Vocabulaire : le voyage', 'e', '70 % · 2 sessions'], ['Le present perfect', 'n', 'Pas encore travaillé']] },
+{ name: 'SVT', pct: 69, d: 9, grad: 'linear-gradient(160deg, #A3640D 0%, #6E4204 65%, #3D2400 100%)', soft: '#FFFAF2', ink: '#6E4204', icon: 'M5 19c0-8 5-14 15-15-1 10-7 15-15 15zM5 19l8-8',
+ch: [['La digestion', 'a', '85 % · 3 sessions'], ['La reproduction humaine', 'e', '64 % · 2 sessions'], ['Séismes et volcans', 'e', '58 % · 1 session'], ['Le système nerveux', 'n', 'Pas encore travaillé']] },
+{ name: 'Français', pct: 64, d: 4, grad: 'linear-gradient(160deg, #4D81EA 0%, #1750C4 60%, #0A3B9D 100%)', soft: '#F3F7FF', ink: '#1750C4', icon: 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5M8 7h7M8 11h5',
+ch: [['Les figures de style', 'a', '80 % · 3 sessions'], ['Le récit fantastique', 'e', '66 % · 2 sessions'], ['Accord du participe passé', 'c', '52 % · 4 sessions'], ['Les subordonnées', 'n', 'Pas encore travaillé']] },
+{ name: 'Histoire-Géo', pct: 58, d: 7, grad: 'linear-gradient(160deg, #1BC85B 0%, #0C9E42 45%, #03702B 100%)', soft: '#F2FFF6', ink: '#03702B', icon: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18',
+ch: [['L’Empire napoléonien', 'a', '78 % · 3 sessions'], ['La Révolution française', 'c', '48 % · 3 sessions'], ['L’urbanisation du monde', 'e', '60 % · 1 session'], ['Les mobilités humaines', 'n', 'Pas encore travaillé']] },
+{ name: 'Physique-Chimie', pct: 47, d: -3, grad: 'linear-gradient(160deg, #8558EA 0%, #521DC8 60%, #3B0DA2 100%)', soft: '#F7F3FF', ink: '#521DC8', icon: 'M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7.5 15h9',
+ch: [['Atomes et molécules', 'e', '62 % · 2 sessions'], ['La masse volumique', 'c', '41 % · 3 sessions'], ['Les circuits électriques', 'e', '55 % · 2 sessions'], ['La combustion', 'n', 'Pas encore travaillé']] }
+];
+const subjects = data.map((s, i) => {
+const counts = { a: 0, e: 0, c: 0, n: 0 };
+s.ch.forEach((c) => { counts[c[1]]++; });
+const parts = [];
+if (counts.a) parts.push(counts.a + ' acquis');
+if (counts.e) parts.push(counts.e + ' en cours');
+if (counts.c) parts.push(counts.c + ' à consolider');
+const open = this.state.open === i;
+return {
+name: s.name, pct: s.pct, grad: s.grad, soft: s.soft, ink: s.ink, icon: s.icon,
+meta: parts.join(' · '),
+delta: (s.d > 0 ? '+' : '') + s.d + ' pts',
+deltaBg: s.d >= 0 ? '#EBFFF2' : '#FFF7EB',
+deltaColor: s.d >= 0 ? '#03702B' : '#6E4204',
+seg: s.ch.map((c) => ({ c: ST[c[1]].seg })),
+chapters: s.ch.map((c) => Object.assign({ t: c[0], meta: c[2] }, ST[c[1]])),
+open,
+cta: open ? 'Masquer les chapitres' : 'Voir les ' + s.ch.length + ' chapitres',
+chevron: open ? 180 : 0,
+toggle: () => this.setState({ open: this.state.open === i ? -1 : i })
+};
+});
+const periods = [['mois', 'Ce mois-ci'], ['trimestre', 'Ce trimestre']].map(([k, name]) => ({
+name, selected: this.state.period === k,
+bg: this.state.period === k ? '#2E6BE6' : 'transparent',
+color: this.state.period === k ? '#FFFFFF' : '#5D677D',
+pick: () => this.setState({ period: k })
+}));
+return { subjects, periods };
+}
+}
+</script>
+</body>
+</html>

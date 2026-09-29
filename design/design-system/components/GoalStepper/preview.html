@@ -1,0 +1,12 @@
+<!-- @dsCard group="Actions" height=194 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+function Demo() { var v = React.useState(20); return h('div', { style: { width: 342 } }, h(T.GoalStepper, { title: 'Temps par jour', hint: 'Recommandé en 4e : 20 à 30 min', value: v[0], onChange: v[1], min: 10, max: 60, unit: 'min' })); }
+return h(Demo);
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

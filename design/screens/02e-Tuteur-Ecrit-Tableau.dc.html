@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tuteur · Écrit avec tableau blanc</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button,input{font-family:inherit}
+input::placeholder{color:#798398}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+
+<header style="position: absolute; top: 56px; left: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 2">
+<dc-import name="../components/ModeToggle" mode="ecrit" variante="tableau" hint-size="214px,48px"></dc-import>
+
+<section aria-label="Tableau blanc du tuteur" style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
+<dc-import name="../components/PanelHeader" type="tableau" titre="3x + 5 = 20" kicker="Tableau · Maths" open="{{ open }}" on-toggle="{{ toggle }}" hint-size="318px,44px"></dc-import>
+
+<sc-if value="{{ open }}" hint-placeholder-val="{{ true }}">
+<svg width="318" height="210" viewBox="0 0 318 210" role="img" aria-label="Tableau blanc. Étape 1 : 3x + 5 = 20, on retire 5 des deux côtés. Étape 2 : 3x = 15, on divise par 3. Étape 3 : x = 5, entouré en rouge." style="display: block; border-radius: 16px; font-family: Satoshi, system-ui, sans-serif">
+<defs>
+<pattern id="points" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="1" fill="#CED4E2"></circle></pattern>
+</defs>
+<rect x="0" y="0" width="318" height="210" rx="16" fill="#FBFCFF"></rect>
+<rect x="0" y="0" width="318" height="210" rx="16" fill="url(#points)"></rect>
+<line x1="206" y1="18" x2="206" y2="196" stroke="#CED4E2" stroke-width="1.5" stroke-dasharray="4 5"></line>
+
+<g font-size="26" font-weight="700" fill="#000612">
+<text x="20" y="46">3x</text><text x="62" y="46">+ 5</text><text x="118" y="46">=</text><text x="146" y="46">20</text>
+</g>
+<g font-size="16" font-weight="700" fill="#2E6BE6">
+<text x="66" y="72">− 5</text><text x="148" y="72">− 5</text>
+</g>
+
+<g font-size="26" font-weight="700" fill="#000612">
+<text x="20" y="116">3x</text><text x="118" y="116">=</text><text x="146" y="116">15</text>
+</g>
+<g font-size="16" font-weight="700" fill="#2E6BE6">
+<text x="22" y="142">÷ 3</text><text x="148" y="142">÷ 3</text>
+</g>
+
+<g font-size="30" font-weight="900" fill="#C21A1A">
+<text x="34" y="186">x</text><text x="118" y="186">=</text><text x="150" y="186">5</text>
+</g>
+<path d="M22 176 C 20 158, 92 154, 132 156 C 172 158, 190 164, 186 178 C 183 194, 110 200, 70 198 C 36 196, 20 190, 24 172" fill="none" stroke="#E62E2E" stroke-width="2.5" stroke-linecap="round"></path>
+
+<g font-size="12" font-weight="700" fill="#1750C4">
+<text x="216" y="44">① On retire 5</text>
+<text x="230" y="60" font-weight="500" fill="#5D677D">des 2 côtés</text>
+<text x="216" y="114">② On divise</text>
+<text x="230" y="130" font-weight="500" fill="#5D677D">par 3</text>
+<text x="216" y="182" fill="#C21A1A">③ Solution !</text>
+</g>
+<path d="M290 70 C 300 84, 300 94, 290 104" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round"></path>
+<path d="M285 99 L290 105 L296 100" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M290 138 C 300 152, 300 162, 290 172" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round"></path>
+<path d="M285 167 L290 173 L296 168" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<div style="display: flex; gap: 8px">
+<span style="height: 28px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: var(--primary-soft); color: var(--primary-hover); font-size: 12px; font-weight: 700">① Retirer 5</span>
+<span style="height: 28px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: var(--primary-soft); color: var(--primary-hover); font-size: 12px; font-weight: 700">② Diviser par 3</span>
+<span style="height: 28px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: #FFEBEB; color: #C21A1A; font-size: 12px; font-weight: 700">③ x = 5</span>
+</div>
+</sc-if>
+</section>
+</header>
+
+<section aria-label="Conversation avec le tuteur" style="position: absolute; top: {{ chatTop }}px; left: 20px; right: 20px; bottom: 176px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 28px); mask-image: linear-gradient(to bottom, transparent 0, #000 28px); transition: top 0.25s ease">
+
+<div style="align-self: flex-start; display: flex; align-items: flex-end; gap: 8px">
+<img src="../../assets/logo/Logo_tutoria_fond_bleu.png" alt="Tutor'IA" width="32" height="32" style="flex-shrink: 0; display: block; width: 32px; height: 32px; border-radius: 999px; box-shadow: var(--shadow-sm)">
+<div style="max-width: 256px; padding: 12px 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm); font-size: 16px; line-height: 24px">Je t'écris les étapes au tableau. D'abord, on retire 5 des deux côtés.</div>
+</div>
+
+<div style="align-self: flex-end; max-width: 280px; padding: 12px 16px; background: var(--primary); color: #FFFFFF; border-radius: var(--radius-2xl); font-size: 16px; line-height: 24px">Donc 3x = 15, et je divise par 3 ?</div>
+
+<div style="align-self: flex-start; display: flex; align-items: flex-end; gap: 8px">
+<img src="../../assets/logo/Logo_tutoria_fond_bleu.png" alt="Tutor'IA" width="32" height="32" style="flex-shrink: 0; display: block; width: 32px; height: 32px; border-radius: 999px; box-shadow: var(--shadow-sm)">
+<div style="max-width: 256px; padding: 12px 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm); font-size: 16px; line-height: 24px">Propre ! Tu obtiens x = 5. Je l'ai entouré en <strong style="color: #C21A1A">rouge</strong>.</div>
+</div>
+</section>
+
+<form aria-label="Répondre au tuteur" style="position: absolute; left: 20px; right: 20px; bottom: 108px; display: flex; align-items: center; gap: 8px; margin: 0">
+<label for="reponse" class="sr-only">Ta réponse</label>
+<input id="reponse" type="text" placeholder="Pose une question sur le tableau…" style="flex-grow: 1; height: 48px; padding: 0 16px; box-sizing: border-box; border: 1px solid var(--border); border-radius: var(--radius-2xl); background: var(--surface); box-shadow: var(--shadow-sm); font-size: 16px; color: var(--text)">
+<button type="button" aria-label="Envoyer" style="flex-shrink: 0; width: 48px; height: 48px; border: none; border-radius: 999px; background: var(--primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"></path></svg>
+</button>
+</form>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="eleve" active="tuteur" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { open: true };
+}
+renderVals() {
+const open = this.state.open;
+return {
+open,
+chatTop: open ? 470 : 204,
+chevron: open ? 0 : 180,
+toggleLabel: open ? 'Réduire le tableau' : 'Afficher le tableau',
+toggle: () => this.setState({ open: !this.state.open })
+};
+}
+}
+</script>
+</body>
+</html>
