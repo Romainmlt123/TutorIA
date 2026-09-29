@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Composant · Contrôles d'appel vocal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+body{margin:0}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(46,107,230,0.35)}
+</style>
+</helmet>
+<div style="width: 350px; height: 96px; display: flex; align-items: flex-start; justify-content: center; gap: 32px; font-family: Satoshi, system-ui, -apple-system, sans-serif; color: #000612">
+<div style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 8px">
+<button type="button" onClick="{{ mute }}" aria-pressed="{{ muted }}" aria-label="{{ muteLabel }}" style="width: 56px; height: 56px; border: none; border-radius: 999px; background: {{ micBg }}; box-shadow: 0 4px 16px rgba(9,17,34,0.06); color: {{ micColor }}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ micIcon }}"></path></svg>
+</button>
+<span style="font-size: 12px; line-height: 16px; color: #5D677D; white-space: nowrap">{{ muteCaption }}</span>
+</div>
+<div style="width: 80px; display: flex; flex-direction: column; align-items: center; gap: 8px">
+<a href="{{ hangupHref }}" aria-label="Raccrocher et revenir au chat écrit" style="width: 72px; height: 72px; border-radius: 999px; background: #C21A1A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(9,17,34,0.06)">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+</a>
+<span style="font-size: 12px; line-height: 16px; color: #5D677D">Raccrocher</span>
+</div>
+<div style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 8px">
+<button type="button" onClick="{{ cam }}" aria-pressed="{{ camOn }}" aria-label="{{ camLabel }}" style="width: 56px; height: 56px; border: none; border-radius: 999px; background: {{ camBg }}; box-shadow: 0 4px 16px rgba(9,17,34,0.06); color: {{ camColor }}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ camIcon }}"></path></svg>
+</button>
+<span style="font-size: 12px; line-height: 16px; color: #5D677D; white-space: nowrap">{{ camCaption }}</span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"muted":{"editor":"boolean","default":false},"camOn":{"editor":"boolean","default":false},"hangupHref":{"editor":"text","default":"Tuteur-Ecrit.dc.html"},"onMute":{"editor":null},"onCam":{"editor":null},"$preview":{"width":350,"height":96}}'>
+class Component extends DCLogic {
+renderVals() {
+const muted = !!this.props.muted;
+const camOn = !!this.props.camOn;
+const mic = 'M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3';
+const video = 'M5 6h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM15 10l6-3v10l-6-3z';
+return {
+muted, camOn,
+micIcon: muted ? mic + 'M4 4l16 16' : mic,
+camIcon: camOn ? video : video + 'M3 3l18 18',
+muteLabel: muted ? 'Réactiver le micro' : 'Couper le micro',
+muteCaption: muted ? 'Micro coupé' : 'Micro',
+micColor: muted ? '#FFFFFF' : '#5D677D',
+micBg: muted ? '#000612' : '#FFFFFF',
+camLabel: camOn ? 'Couper la caméra' : 'Activer la caméra',
+camCaption: camOn ? 'Caméra activée' : 'Caméra',
+camColor: camOn ? '#FFFFFF' : '#5D677D',
+camBg: camOn ? '#2E6BE6' : '#FFFFFF',
+hangupHref: this.props.hangupHref ?? '../screens/02a-Tuteur-Ecrit.dc.html',
+mute: () => { if (this.props.onMute) this.props.onMute(); },
+cam: () => { if (this.props.onCam) this.props.onCam(); }
+};
+}
+}
+</script>
+</body>
+</html>

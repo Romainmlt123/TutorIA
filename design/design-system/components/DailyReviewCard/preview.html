@@ -1,0 +1,11 @@
+<!-- @dsCard group="Flashcards" height=214 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 342 } }, h(T.DailyReviewCard, { count: 18, minutes: 8, streak: 12, subjects: ['maths', 'anglais', 'svt'], extra: 2 }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

@@ -1,0 +1,88 @@
+import { useRouter } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
+
+import { ScreenContainer } from '@/components/ScreenContainer';
+import { ConsentBanner } from '@/features/access/ConsentBanner';
+import { SectionHeader } from '@/components/SectionHeader';
+import { SubjectCard } from '@/components/subject/SubjectCard';
+import { TwoColumnGrid } from '@/components/TwoColumnGrid';
+import { fr } from '@/i18n/fr';
+import { theme } from '@/theme';
+
+import { GoalCard } from './components/GoalCard';
+import { HomeHeader } from './components/HomeHeader';
+import { LevelCard } from './components/LevelCard';
+import { QuoteOfTheDay } from './components/QuoteOfTheDay';
+import { ResumeCard } from './components/ResumeCard';
+import { StreakCard } from './components/StreakCard';
+import { useHomeData } from './hooks/useHomeData';
+
+/** 01 · Accueil (design/screens/01-Accueil.dc.html). */
+export function HomeScreen() {
+  const router = useRouter();
+  const { student, quote, subjects, resume } = useHomeData();
+
+  return (
+    <ScreenContainer contentStyle={styles.content}>
+      <HomeHeader
+        firstName={student.firstName}
+        unreadNotifications={student.unreadNotifications}
+        onNotifications={() =>
+          router.push({ pathname: '/bientot', params: { sujet: 'notifications' } })
+        }
+        onProfile={() => router.push('/profil')}
+      />
+      <ConsentBanner />
+      {quote ? <QuoteOfTheDay quote={quote} /> : null}
+
+      <View accessibilityLabel={fr.home.gameSection} style={styles.gameRow}>
+        <StreakCard days={student.streakDays} />
+        <LevelCard level={student.level} xp={student.xp} xpForNextLevel={student.xpForNextLevel} />
+      </View>
+
+      <ResumeCard
+        subjectId={resume.subjectId}
+        chapterTitle={resume.chapterTitle}
+        subtitle={resume.subtitle}
+        progress={resume.chapterProgress}
+        onResume={() =>
+          router.push({
+            pathname: '/tuteur',
+            params: { subject: resume.subjectId, chapter: resume.chapterId },
+          })
+        }
+      />
+
+      <GoalCard {...student.dailyGoal} />
+
+      <View style={styles.subjects}>
+        <SectionHeader
+          title={fr.home.subjects}
+          actionLabel={fr.home.seeAll}
+          onAction={() => router.push('/revisions')}
+        />
+        <TwoColumnGrid
+          items={subjects}
+          keyOf={(s) => s.id}
+          renderItem={(subject) => (
+            <SubjectCard
+              mode="progress"
+              subjectId={subject.id}
+              name={subject.name}
+              mastery={subject.mastery}
+              onPress={() =>
+                router.push({ pathname: '/revisions', params: { subject: subject.id } })
+              }
+            />
+          )}
+        />
+      </View>
+    </ScreenContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: { gap: theme.space[4] },
+  gameRow: { flexDirection: 'row', gap: theme.space[3] },
+  subjects: { gap: theme.space[3], marginTop: theme.space[4] },
+});

@@ -1,0 +1,11 @@
+<!-- @dsCard group="Flashcards" height=80 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 342 } }, h(T.SessionProgress, { value: 4, total: 12, subject: 'maths' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

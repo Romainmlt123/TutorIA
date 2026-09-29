@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Parents · Réglages</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button{font-family:inherit}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 1620px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<main style="display: flex; flex-direction: column; gap: 24px; padding: 56px 20px 0; box-sizing: border-box">
+
+<header style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 900">Réglages</h1>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: var(--text-secondary)">Adaptez Tutor'IA aux habitudes de votre famille.</p>
+</header>
+
+<section aria-label="Profil de l'enfant" style="position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px; padding: 20px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 50%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: -26px; bottom: -34px; opacity: 0.12"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"></path></svg>
+<span style="flex-shrink: 0; width: 56px; height: 56px; border-radius: 999px; background: #FFFFFF; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900">L</span>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 18px; line-height: 24px; font-weight: 900">Léa Martin</span><span style="font-size: 13px; line-height: 18px; font-weight: 500; opacity: 0.9">Classe de 4e · 6 matières suivies</span></span>
+<a href="#" style="position: relative; height: 44px; padding: 0 14px; display: flex; align-items: center; border-radius: 14px; background: rgba(255,255,255,0.24); color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none">Modifier</a>
+</section>
+
+<section aria-label="Objectif hebdomadaire" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 20px; background: linear-gradient(160deg, #1BC85B 0%, #0C9E42 45%, #03702B 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.2" aria-hidden="true" style="position: absolute; right: -28px; top: -30px; opacity: 0.14"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.9">Objectif hebdomadaire</span>
+<span style="font-size: 14px; line-height: 20px; font-weight: 500">Fixé avec Léa · soit {{ perDay }} min par jour</span>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<button type="button" onClick="{{ minus }}" aria-label="Diminuer l'objectif" style="width: 52px; height: 52px; border: none; border-radius: 16px; background: rgba(255,255,255,0.24); color: #FFFFFF; font-size: 24px; font-weight: 700; cursor: pointer">−</button>
+<span aria-live="polite" style="font-size: 40px; line-height: 48px; font-weight: 900">{{ goal }} h</span>
+<button type="button" onClick="{{ plus }}" aria-label="Augmenter l'objectif" style="width: 52px; height: 52px; border: none; border-radius: 16px; background: #FFFFFF; color: #03702B; font-size: 24px; font-weight: 700; cursor: pointer">+</button>
+</div>
+</section>
+
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
+<section style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 18px; line-height: 24px; font-weight: 900">{{ sec.title }}</h2>
+<div style="display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); padding: 6px 0">
+<sc-for list="{{ sec.rows }}" as="r" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 20px; min-height: 72px; box-sizing: border-box; border-top: {{ r.divider }}">
+<span style="flex-shrink: 0; width: 44px; height: 44px; border-radius: 14px; background: {{ r.tile }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ r.icon }}"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 22px; font-weight: 700">{{ r.label }}</span><span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">{{ r.hint }}</span></span>
+<button type="button" role="switch" onClick="{{ r.toggle }}" aria-checked="{{ r.on }}" aria-label="{{ r.label }}" style="flex-shrink: 0; position: relative; width: 52px; height: 32px; padding: 0; border: none; border-radius: 999px; background: {{ r.track }}; cursor: pointer; transition: background 0.2s ease">
+<span style="position: absolute; top: 4px; left: {{ r.knob }}px; width: 24px; height: 24px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(9,17,34,0.25); transition: left 0.2s ease"></span>
+</button>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+
+<section style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 18px; line-height: 24px; font-weight: 900">Compte</h2>
+<div style="display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); padding: 6px 0">
+<a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 20px; min-height: 72px; box-sizing: border-box; text-decoration: none; color: var(--text)">
+<span style="flex-shrink: 0; width: 44px; height: 44px; border-radius: 14px; background: #E6992E; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 22px; font-weight: 700">Abonnement</span><span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">Formule Famille · renouvellement le 12 octobre</span></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; color: var(--text-secondary)"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+<a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 20px; min-height: 72px; box-sizing: border-box; border-top: 1px solid #EBF1FF; text-decoration: none; color: var(--text)">
+<span style="flex-shrink: 0; width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(160deg, #4D81EA 0%, #1750C4 100%); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 22px; font-weight: 700">Données personnelles</span><span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">Consulter, exporter ou effacer les données de Léa</span></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; color: var(--text-secondary)"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+<a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 20px; min-height: 72px; box-sizing: border-box; border-top: 1px solid #EBF1FF; text-decoration: none; color: var(--text)">
+<span style="flex-shrink: 0; width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(160deg, #1BC85B 0%, #03702B 100%); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 22px; font-weight: 700">Ajouter un enfant</span><span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">Jusqu'à 4 profils avec la formule Famille</span></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; color: var(--text-secondary)"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+</div>
+<a href="#" style="margin-top: 4px; min-height: 48px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-2xl); background: #FFEBEB; font-size: 14px; font-weight: 700; color: var(--error-strong); text-decoration: none">Supprimer le compte</a>
+</section>
+
+</main>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="parents" active="reglages" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1620}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { goal: 4, on: { limit: true, late: true, vocal: true, camera: false, visual: true, weekly: true, alerts: true } };
+}
+renderVals() {
+const on = this.state.on;
+const I = {
+clock: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM12 7v5l3 2',
+moon: 'M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z',
+mic: 'M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3',
+cam: 'M5 6h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM15 10l6-3v10l-6-3',
+chart: 'M4 4v16h16M7 16l4-5 3 3 5-7',
+mail: 'M4 6h16v12H4zM4 7l8 6 8-6',
+bell: 'M6 16v-5a6 6 0 1 1 12 0v5l2 2H4zM10 21h4'
+};
+const G = {
+orange: '#E6992E',
+violet: 'linear-gradient(160deg, #8558EA 0%, #521DC8 100%)',
+blue: 'linear-gradient(160deg, #4D81EA 0%, #1750C4 100%)',
+cyan: 'linear-gradient(160deg, #17A5BE 0%, #026273 100%)',
+red: 'linear-gradient(160deg, #E95555 0%, #C21A1A 100%)',
+green: 'linear-gradient(160deg, #1BC85B 0%, #03702B 100%)'
+};
+const row = (key, label, hint, icon, tile, i) => ({
+label, hint, icon: I[icon], tile: G[tile], on: !!on[key],
+track: on[key] ? '#2E6BE6' : '#CED4E2',
+knob: on[key] ? 24 : 4,
+divider: i === 0 ? 'none' : '1px solid #EBF1FF',
+toggle: () => this.setState({ on: Object.assign({}, this.state.on, { [key]: !this.state.on[key] }) })
+});
+const sections = [
+{ title: 'Temps d’écran', rows: [
+row('limit', 'Limiter le temps par jour', on.limit ? '1 h 30 maximum, de 17 h à 21 h' : 'Aucune limite', 'clock', 'orange', 0),
+row('late', 'Pause après 21 h', 'Le tuteur propose de reprendre demain', 'moon', 'violet', 1)
+] },
+{ title: 'Fonctionnalités', rows: [
+row('vocal', 'Tuteur vocal', 'Conversation à la voix avec le tuteur', 'mic', 'blue', 0),
+row('camera', 'Caméra', 'Filmer un exercice pendant un appel', 'cam', 'cyan', 1),
+row('visual', 'Graphiques et tableau blanc', 'Le tuteur illustre ses explications', 'chart', 'red', 2)
+] },
+{ title: 'Notifications', rows: [
+row('weekly', 'Bilan de la semaine', 'Par e-mail, chaque dimanche à 19 h', 'mail', 'green', 0),
+row('alerts', 'Alertes', 'Baisse d’activité ou notion bloquante', 'bell', 'orange', 1)
+] }
+];
+const goal = this.state.goal;
+return {
+goal,
+perDay: Math.round(goal * 60 / 7),
+minus: () => this.setState({ goal: Math.max(1, this.state.goal - 1) }),
+plus: () => this.setState({ goal: Math.min(10, this.state.goal + 1) }),
+sections
+};
+}
+}
+</script>
+</body>
+</html>

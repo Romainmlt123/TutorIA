@@ -1,0 +1,11 @@
+<!-- @dsCard group="Tuteur" height=140 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 350 } }, h(T.TipCard, { inChat: true }, 'Ce que tu fais d’un côté du signe =, fais-le aussi de l’autre.'));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

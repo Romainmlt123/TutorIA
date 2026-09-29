@@ -1,0 +1,13 @@
+<!-- @dsCard group="Flashcards" height=268 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 342, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, padding: 16, background: 'var(--surface)', borderRadius: 24, boxShadow: 'var(--shadow-md)' } },
+  h(T.AnswerOption, { letter: 'A' }, 'x = 3'), h(T.AnswerOption, { letter: 'B', state: 'correct' }, 'x = 5'),
+  h(T.AnswerOption, { letter: 'C', state: 'wrong', chosen: true }, 'x = 15'), h(T.AnswerOption, { letter: 'D', state: 'dimmed' }, 'x = 25'));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Flashcards · Session</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button{font-family:inherit}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<main style="display: flex; flex-direction: column; padding: 56px 20px 0; box-sizing: border-box">
+
+<header style="display: flex; align-items: center; gap: 8px">
+<a href="03a-Flashcards-Choix.dc.html" style="flex-shrink: 0; width: 96px; height: 48px; display: flex; align-items: center; gap: 4px; color: var(--text); font-size: 16px; font-weight: 700; text-decoration: none">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+Quitter
+</a>
+<div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center">
+<span style="font-size: 16px; line-height: 24px; font-weight: 900">Maths</span>
+<span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ pos }}</span>
+</div>
+<span style="flex-shrink: 0; width: 96px; display: flex; justify-content: flex-end">
+<span style="display: flex; align-items: center; gap: 4px; height: 32px; padding: 0 12px; box-sizing: border-box; border-radius: 999px; background: #E6992E; color: #FFFFFF; font-size: 14px; font-weight: 700">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true"><path d="M12 2.5c1 3.2 5.5 5.6 5.5 10.5a5.5 5.5 0 0 1-11 0c0-2.2 1-3.8 2.2-4.9 0 2.1 1 3.3 2.1 3.3 0-3.3-1-5.4 1.2-8.9z"></path></svg>
+12
+</span>
+</span>
+</header>
+
+<div aria-hidden="true" style="margin-top: 12px; height: 8px; border-radius: 999px; background: #FFEBEB; overflow: hidden">
+<div style="width: {{ pct }}%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #E95555 0%, #C21A1A 100%); transition: width 0.4s ease"></div>
+</div>
+
+<sc-if value="{{ active }}" hint-placeholder-val="{{ true }}">
+<section aria-label="Question" style="position: relative; overflow: hidden; margin-top: 20px; display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-lg)">
+<div aria-hidden="true" style="height: 8px; background: linear-gradient(90deg, #E95555 0%, #C21A1A 100%)"></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px">
+<span style="width: 48px; height: 48px; border-radius: 999px; background: #FFEBEB; color: #C21A1A; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"></path></svg></span>
+<h2 style="margin: 0; min-height: 64px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 24px; line-height: 32px; font-weight: 900">{{ card.q }}</h2>
+<div role="group" aria-label="Choisis ta réponse" style="width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+<button type="button" onClick="{{ o.pick }}" disabled="{{ answered }}" aria-pressed="{{ o.chosen }}" style="position: relative; min-height: 88px; padding: 12px; box-sizing: border-box; border: 2px solid {{ o.border }}; border-radius: var(--radius-2xl); background: {{ o.bg }}; color: {{ o.color }}; opacity: {{ o.opacity }}; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 18px; line-height: 24px; font-weight: 700; cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease">
+<span style="position: absolute; top: 8px; left: 10px; font-size: 12px; line-height: 16px; font-weight: 700; color: {{ o.letterColor }}">{{ o.letter }}</span>
+{{ o.label }}
+<sc-if value="{{ o.good }}" hint-placeholder-val="{{ false }}">
+<span aria-hidden="true" style="position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 999px; background: #0C9E42; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"></path></svg></span>
+</sc-if>
+</button>
+</sc-for>
+</div>
+<div aria-live="polite" style="width: 100%; min-height: 48px; box-sizing: border-box; padding: 12px 16px; border-radius: var(--radius-2xl); background: {{ fb.bg }}; color: {{ fb.color }}; display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 20px; font-weight: 500">
+<span style="flex-grow: 1">{{ fb.text }}</span>
+</div>
+</div>
+</section>
+
+<button type="button" onClick="{{ next }}" disabled="{{ notAnswered }}" style="margin-top: 16px; height: 48px; border: none; border-radius: var(--radius-2xl); background: var(--primary); color: #FFFFFF; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: {{ nextOpacity }}; box-shadow: var(--shadow-brand); cursor: pointer">
+Carte suivante
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</button>
+
+<div style="display: flex; justify-content: center; gap: 8px; margin-top: 12px">
+<span style="display: flex; align-items: center; gap: 4px; height: 28px; padding: 0 12px; border-radius: 999px; background: var(--success-soft); color: var(--success-strong); font-size: 12px; font-weight: 700">Je sais · {{ tally.k }}</span>
+<span style="display: flex; align-items: center; gap: 4px; height: 28px; padding: 0 12px; border-radius: 999px; background: var(--warning-soft); color: var(--warning-strong); font-size: 12px; font-weight: 700">À revoir · {{ tally.r }}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+<section style="position: relative; overflow: hidden; margin-top: 20px; height: 540px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: linear-gradient(160deg, #1BC85B 0%, #0C9E42 45%, #03702B 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-lg); text-align: center; color: #FFFFFF">
+<span style="width: 72px; height: 72px; border-radius: 999px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"></path></svg></span>
+<h2 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 900">Session terminée !</h2>
+<p style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 500">{{ tally.k }} cartes maîtrisées, {{ tally.r }} à revoir demain. Bien joué, on passe à la suite ?</p>
+<span style="padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.24); font-size: 14px; font-weight: 700">+60 XP</span>
+<button type="button" onClick="{{ restart }}" style="margin-top: 8px; height: 48px; padding: 0 24px; border: none; border-radius: var(--radius-2xl); background: #FFFFFF; color: #03702B; font-size: 16px; font-weight: 700; cursor: pointer">Recommencer</button>
+</section>
+</sc-if>
+</main>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="eleve" active="revisions" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"apercu":{"editor":"enum","options":["question","bonne","fausse"],"default":"question"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { i: 0, picked: null, tally: { k: 2, r: 1 } };
+}
+renderVals() {
+const cards = [
+{ q: 'Résous : 2x − 7 = 9', o: ['x = 1', 'x = 8', 'x = 16', 'x = −8'], a: 1, e: 'On ajoute 7 des deux côtés : 2x = 16, puis on divise par 2.' },
+{ q: 'Que vaut x si 5x = −35 ?', o: ['x = −7', 'x = 7', 'x = −30', 'x = −40'], a: 0, e: 'On divise les deux membres par 5 : −35 ÷ 5 = −7.' },
+{ q: 'Résous : x + 12 = 4', o: ['x = 16', 'x = 8', 'x = −8', 'x = −16'], a: 2, e: 'On retire 12 des deux côtés : 4 − 12 = −8.' },
+{ q: 'Résous : 4x + 3 = 2x + 11', o: ['x = 7', 'x = 1', 'x = 2', 'x = 4'], a: 3, e: 'On regroupe les x : 2x + 3 = 11, donc 2x = 8 et x = 4.' },
+{ q: 'x = 3 est-il solution de 2x + 1 = 7 ?', o: ['Oui', 'Non', 'Seulement si x > 0', 'On ne peut pas savoir'], a: 0, e: '2 × 3 + 1 = 7 : l’égalité est vraie.' }
+];
+const total = 12;
+const num = 4 + this.state.i;
+const done = num > total;
+const card = cards[((this.state.i % cards.length) + cards.length) % cards.length];
+let picked = this.state.picked;
+if (picked === null && this.state.i === 0) {
+const ap = this.props.apercu ?? 'question';
+if (ap === 'bonne') picked = card.a;
+if (ap === 'fausse') picked = (card.a + 2) % 4;
+}
+const answered = picked !== null;
+const right = answered && picked === card.a;
+const letters = ['A', 'B', 'C', 'D'];
+const options = card.o.map((label, j) => {
+const isGood = answered && j === card.a;
+const isBadPick = answered && j === picked && !right;
+let bg = '#F5F8FF', border = '#F5F8FF', color = '#000612', letterColor = '#798398', opacity = 1;
+if (isGood) { bg = '#EBFFF2'; border = '#0C9E42'; color = '#03702B'; letterColor = '#03702B'; }
+else if (isBadPick) { bg = '#FFF7EB'; border = '#A3640D'; color = '#6E4204'; letterColor = '#6E4204'; }
+else if (answered) { opacity = 0.45; }
+return {
+label, letter: letters[j], bg, border, color, letterColor, opacity,
+good: isGood, chosen: j === picked,
+pick: () => { if (this.state.picked === null) this.setState({ picked: j }); }
+};
+});
+let fb = { bg: '#F5F8FF', color: '#5D677D', text: 'Choisis la bonne réponse parmi les 4 propositions.' };
+if (answered && right) fb = { bg: '#EBFFF2', color: '#03702B', text: 'Bien joué ! ' + card.e + ' Carte rangée dans « Je sais ».' };
+if (answered && !right) fb = { bg: '#FFF7EB', color: '#6E4204', text: 'Pas tout à fait : c’était ' + card.o[card.a] + '. ' + card.e + ' On la revoit demain.' };
+return {
+pos: done ? 'Session terminée' : 'Carte ' + num + ' sur ' + total,
+pct: Math.round(((done ? total : num - 1) / total) * 100),
+active: !done,
+done,
+card,
+options,
+answered,
+notAnswered: !answered,
+nextOpacity: answered ? 1 : 0.4,
+fb,
+tally: this.state.tally,
+next: () => {
+if (this.state.picked === null && picked === null) return;
+const t = Object.assign({}, this.state.tally);
+if (right) t.k = t.k + 1; else t.r = t.r + 1;
+this.setState({ i: this.state.i + 1, picked: null, tally: t });
+},
+restart: () => this.setState({ i: -3, picked: null, tally: { k: 0, r: 0 } })
+};
+}
+}
+</script>
+</body>
+</html>

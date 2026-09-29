@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Composant · Barre de navigation</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+body{margin:0}
+</style>
+</helmet>
+<nav aria-label="{{ navLabel }}" style="position: relative; width: 350px; height: 72px; padding: 0 4px; box-sizing: border-box; background: #FFFFFF; border-radius: 24px; box-shadow: 0 12px 32px rgba(9,17,34,0.10); display: flex; align-items: stretch; font-family: Satoshi, system-ui, -apple-system, sans-serif; color: #000612">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+<a href="{{ t.href }}" aria-current="{{ t.current }}" style="flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; padding-bottom: 12px; text-decoration: none; color: #798398">
+<sc-if value="{{ t.active }}" hint-placeholder-val="{{ false }}">
+<span style="width: {{ t.bubble }}px; height: {{ t.bubble }}px; box-sizing: border-box; border-radius: 999px; background: #2E6BE6; border: 4px solid #FFFFFF; box-shadow: 0 4px 16px rgba(9,17,34,0.06); overflow: hidden; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<sc-if value="{{ t.logo }}" hint-placeholder-val="{{ false }}"><img src="../../assets/logo/Logo_tutoria_fond_bleu.png" alt="" width="42" height="42" style="display: block; width: 42px; height: 42px; border-radius: 12px"></sc-if>
+<sc-if value="{{ t.svg }}" hint-placeholder-val="{{ true }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ t.icon }}"></path></svg></sc-if>
+</span>
+</sc-if>
+<sc-if value="{{ t.inactive }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ t.logo }}" hint-placeholder-val="{{ false }}"><img src="../../assets/logo/Logo_tutoria_fond_blanc.png" alt="" width="30" height="30" style="display: block; width: 30px; height: 30px; margin-bottom: -2px; object-fit: contain"></sc-if>
+<sc-if value="{{ t.svg }}" hint-placeholder-val="{{ true }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ t.icon }}"></path></svg></sc-if>
+</sc-if>
+<span style="font-size: 12px; line-height: 16px; font-weight: {{ t.weight }}; color: {{ t.labelColor }}">{{ t.label }}</span>
+</a>
+</sc-for>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"espace":{"editor":"enum","options":["eleve","parents"],"default":"eleve"},"active":{"editor":"enum","options":["accueil","parcours","tuteur","revisions","stats","progres","sessions","reglages"],"default":"accueil"},"$preview":{"width":350,"height":72}}'>
+class Component extends DCLogic {
+renderVals() {
+const I = {
+home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+map: 'M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5zM9 4v13M15 6.5v13',
+cards: 'M10 3h8a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM5 7v11a3 3 0 0 0 3 3h8',
+stats: 'M3 21h18M6 11h1a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1zM11.5 5h1a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM17 14h1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z',
+trend: 'M3 17l6-6 4 4 8-8M15 7h6v6',
+sessions: 'M21 11.5a8.5 8.5 0 0 1-12.4 7.6L4 20l1-4.3A8.5 8.5 0 1 1 21 11.5zM8.5 10h7M8.5 13.5h4.5',
+settings: 'M4 7h10M18 7h2M4 17h2M10 17h10M18 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM10 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0z'
+};
+const espace = this.props.espace ?? 'eleve';
+const active = this.props.active ?? 'accueil';
+const defs = espace === 'parents' ? [
+{ id: 'accueil', label: 'Accueil', href: '../screens/P1-Parents-Accueil.dc.html', icon: I.home },
+{ id: 'progres', label: 'Progrès', href: '../screens/P2-Parents-Progres.dc.html', icon: I.trend },
+{ id: 'sessions', label: 'Sessions', href: '../screens/P3-Parents-Sessions.dc.html', icon: I.sessions },
+{ id: 'reglages', label: 'Réglages', href: '../screens/P4-Parents-Reglages.dc.html', icon: I.settings }
+] : [
+{ id: 'accueil', label: 'Accueil', href: '../screens/01-Accueil.dc.html', icon: I.home },
+{ id: 'parcours', label: 'Parcours', href: '#', icon: I.map },
+{ id: 'tuteur', label: 'Tutor\'IA', href: '../screens/02a-Tuteur-Ecrit.dc.html', logo: true },
+{ id: 'revisions', label: 'Révisions', href: '../screens/03a-Flashcards-Choix.dc.html', icon: I.cards },
+{ id: 'stats', label: 'Stats', href: '../screens/04-Stats.dc.html', icon: I.stats }
+];
+const tabs = defs.map((d) => {
+const on = d.id === active;
+return {
+label: d.label, href: d.href, icon: d.icon || '',
+logo: !!d.logo, svg: !d.logo,
+active: on, inactive: !on,
+current: on ? 'page' : null,
+bubble: d.logo ? 60 : 52,
+weight: on ? 700 : 500,
+labelColor: on ? '#2E6BE6' : '#5D677D'
+};
+});
+return { tabs, navLabel: espace === 'parents' ? 'Navigation Parents' : 'Navigation principale' };
+}
+}
+</script>
+</body>
+</html>

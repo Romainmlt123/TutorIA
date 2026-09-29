@@ -1,0 +1,15 @@
+<!-- @dsCard group="Onboarding" height=216 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+function Demo() { var a = React.useState(true), b = React.useState(false);
+  return h('div', { style: { width: 350, display: 'flex', flexDirection: 'column', gap: 10 } },
+    h(T.ChoiceRow, { icon: 'mic', tone: 'violet', label: 'À la voix', hint: 'Je parle avec le tuteur comme au téléphone', selected: a[0], onClick: function () { a[1](!a[0]); } }),
+    h(T.ChoiceRow, { icon: 'cards', tone: 'cyan', label: 'Avec des quiz', hint: 'Flashcards et QCM rapides', selected: b[0], onClick: function () { b[1](!b[0]); } })); }
+return h(Demo);
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tuteur · Écrit avec graphique</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button,input{font-family:inherit}
+input::placeholder{color:#798398}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@keyframes halo{0%{transform:scale(0.6);opacity:0.55}100%{transform:scale(2.2);opacity:0}}
+.halo{transform-box:fill-box;transform-origin:center;animation:halo 1.6s ease-out infinite}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+
+<header style="position: absolute; top: 56px; left: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 2">
+<dc-import name="../components/ModeToggle" mode="ecrit" variante="graphique" hint-size="214px,48px"></dc-import>
+
+<section aria-label="Graphique du tuteur" style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
+<dc-import name="../components/PanelHeader" type="graphique" titre="3x + 5 = 20" kicker="Graphique · Maths" open="{{ open }}" on-toggle="{{ toggle }}" hint-size="318px,44px"></dc-import>
+
+<sc-if value="{{ open }}" hint-placeholder-val="{{ true }}">
+<svg width="318" height="210" viewBox="0 0 318 210" role="img" aria-label="Droite y = 3x + 5 en rouge et droite horizontale y = 20 en bleu. Elles se croisent au point x = 5, y = 20 : c'est la solution de l'équation." style="display: block; font-family: Satoshi, system-ui, sans-serif">
+<g stroke="#EBF1FF" stroke-width="1">
+<line x1="30" y1="10" x2="30" y2="190"></line><line x1="100" y1="10" x2="100" y2="190"></line><line x1="135" y1="10" x2="135" y2="190"></line><line x1="170" y1="10" x2="170" y2="190"></line><line x1="205" y1="10" x2="205" y2="190"></line><line x1="240" y1="10" x2="240" y2="190"></line><line x1="275" y1="10" x2="275" y2="190"></line><line x1="310" y1="10" x2="310" y2="190"></line>
+<line x1="30" y1="158" x2="310" y2="158"></line><line x1="30" y1="126" x2="310" y2="126"></line><line x1="30" y1="94" x2="310" y2="94"></line><line x1="30" y1="62" x2="310" y2="62"></line><line x1="30" y1="30" x2="310" y2="30"></line>
+</g>
+<line x1="30" y1="190" x2="314" y2="190" stroke="#9DA6B9" stroke-width="1.5"></line>
+<line x1="65" y1="194" x2="65" y2="8" stroke="#9DA6B9" stroke-width="1.5"></line>
+<g font-size="11" fill="#5D677D">
+<text x="100" y="205" text-anchor="middle">1</text><text x="135" y="205" text-anchor="middle">2</text><text x="170" y="205" text-anchor="middle">3</text><text x="205" y="205" text-anchor="middle">4</text><text x="240" y="205" text-anchor="middle" font-weight="700" fill="#C21A1A">5</text><text x="275" y="205" text-anchor="middle">6</text><text x="310" y="205" text-anchor="middle">7</text>
+<text x="58" y="205" text-anchor="end">0</text>
+<text x="58" y="162" text-anchor="end">5</text><text x="58" y="130" text-anchor="end">10</text><text x="58" y="98" text-anchor="end">15</text><text x="58" y="66" text-anchor="end" font-weight="700" fill="#1750C4">20</text><text x="58" y="34" text-anchor="end">25</text>
+</g>
+<line x1="240" y1="62" x2="240" y2="190" stroke="#C21A1A" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6"></line>
+<line x1="30" y1="62" x2="310" y2="62" stroke="#2E6BE6" stroke-width="2.5" stroke-dasharray="7 5" stroke-linecap="round"></line>
+<line x1="30" y1="177.2" x2="310" y2="23.6" stroke="#E62E2E" stroke-width="3" stroke-linecap="round"></line>
+<circle cx="65" cy="158" r="4" fill="#E62E2E"></circle>
+<circle class="halo" cx="240" cy="62" r="8" fill="#E62E2E"></circle>
+<circle cx="240" cy="62" r="6.5" fill="#FFFFFF" stroke="#C21A1A" stroke-width="3"></circle>
+<rect x="190" y="72" width="44" height="22" rx="11" fill="#C21A1A"></rect>
+<text x="212" y="87" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">x = 5</text>
+</svg>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--text-secondary)">
+<span style="display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 16px; height: 3px; border-radius: 999px; background: #E62E2E"></span>y = 3x + 5</span>
+<span style="display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 16px; height: 0; border-top: 3px dashed #2E6BE6"></span>y = 20</span>
+<span style="display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 10px; height: 10px; box-sizing: border-box; border-radius: 999px; border: 2.5px solid #C21A1A; background: #FFFFFF"></span>Solution</span>
+</div>
+</sc-if>
+</section>
+</header>
+
+<section aria-label="Conversation avec le tuteur" style="position: absolute; top: {{ chatTop }}px; left: 20px; right: 20px; bottom: 176px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 28px); mask-image: linear-gradient(to bottom, transparent 0, #000 28px); transition: top 0.25s ease">
+
+<div style="align-self: flex-start; display: flex; align-items: flex-end; gap: 8px">
+<img src="../../assets/logo/Logo_tutoria_fond_bleu.png" alt="Tutor'IA" width="32" height="32" style="flex-shrink: 0; display: block; width: 32px; height: 32px; border-radius: 999px; box-shadow: var(--shadow-sm)">
+<div style="max-width: 256px; padding: 12px 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm); font-size: 16px; line-height: 24px">J'ai tracé les deux côtés de l'équation. Où la droite <strong style="color: #C21A1A">rouge</strong> croise-t-elle la ligne <strong style="color: #1750C4">bleue</strong> ?</div>
+</div>
+
+<div style="align-self: flex-end; max-width: 280px; padding: 12px 16px; background: var(--primary); color: #FFFFFF; border-radius: var(--radius-2xl); font-size: 16px; line-height: 24px">Au point où x = 5 !</div>
+
+<div style="align-self: flex-start; display: flex; align-items: flex-end; gap: 8px">
+<img src="../../assets/logo/Logo_tutoria_fond_bleu.png" alt="Tutor'IA" width="32" height="32" style="flex-shrink: 0; display: block; width: 32px; height: 32px; border-radius: 999px; box-shadow: var(--shadow-sm)">
+<div style="max-width: 256px; padding: 12px 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm); font-size: 16px; line-height: 24px">Propre ! On vérifie : 3 × 5 + 5 = 20. Le graphique te donne la solution.</div>
+</div>
+</section>
+
+<form aria-label="Répondre au tuteur" style="position: absolute; left: 20px; right: 20px; bottom: 108px; display: flex; align-items: center; gap: 8px; margin: 0">
+<label for="reponse" class="sr-only">Ta réponse</label>
+<input id="reponse" type="text" placeholder="Pose une question sur le graphique…" style="flex-grow: 1; height: 48px; padding: 0 16px; box-sizing: border-box; border: 1px solid var(--border); border-radius: var(--radius-2xl); background: var(--surface); box-shadow: var(--shadow-sm); font-size: 16px; color: var(--text)">
+<button type="button" aria-label="Envoyer" style="flex-shrink: 0; width: 48px; height: 48px; border: none; border-radius: 999px; background: var(--primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"></path></svg>
+</button>
+</form>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="eleve" active="tuteur" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { open: true };
+}
+renderVals() {
+const open = this.state.open;
+return {
+open,
+chatTop: open ? 450 : 204,
+chevron: open ? 0 : 180,
+toggleLabel: open ? 'Réduire le graphique' : 'Afficher le graphique',
+toggle: () => this.setState({ open: !this.state.open })
+};
+}
+}
+</script>
+</body>
+</html>

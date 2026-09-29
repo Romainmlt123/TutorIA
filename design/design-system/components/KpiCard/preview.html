@@ -1,0 +1,15 @@
+<!-- @dsCard group="Stats" height=304 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 342, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 } },
+  h(T.KpiCard, { tone: 'blue', icon: 'clock', label: 'Temps cette semaine', value: '3 h 20', delta: '+12 %' }),
+  h(T.KpiCard, { tone: 'green', icon: 'check', label: 'Notions acquises', value: '14', delta: '+3' }),
+  h(T.KpiCard, { tone: 'violet', icon: 'cards', label: 'Cartes revues', value: '126' }),
+  h(T.KpiCard, { tone: 'orange', icon: 'flame', label: 'Série', value: '12 j' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

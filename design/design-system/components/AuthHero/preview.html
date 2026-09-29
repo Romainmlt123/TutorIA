@@ -1,0 +1,13 @@
+<!-- @dsCard group="Connexion" height=350 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 350, display: 'flex', flexDirection: 'column', gap: 16 } },
+  h(T.AuthHero, { space: 'eleve', title: 'Content de te revoir !', subtitle: 'Connecte-toi pour reprendre tes révisions.' }),
+  h(T.AuthHero, { space: 'parents', title: 'Bon retour parmi nous', subtitle: 'Connectez-vous pour suivre les progrès de votre enfant.' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

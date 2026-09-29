@@ -1,0 +1,15 @@
+<!-- @dsCard group="Actions" height=80 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+function Demo() {
+  var a = React.useState(true), b = React.useState(false);
+  return h('div', { style: { display: 'flex', gap: 24 } }, h(T.Switch, { checked: a[0], onChange: a[1], label: 'Rappels' }), h(T.Switch, { checked: b[0], onChange: b[1], label: 'Résumé hebdo' }));
+}
+return h(Demo);
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

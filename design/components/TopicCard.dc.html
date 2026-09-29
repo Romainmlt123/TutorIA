@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Composant · Carte sujet de discussion</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+body{margin:0}
+</style>
+</helmet>
+<div aria-label="Sujet de la discussion" style="width: 350px; height: 64px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 16px rgba(9,17,34,0.06); font-family: Satoshi, system-ui, -apple-system, sans-serif; color: #000612">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; background: {{ s.grad }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ s.icon }}"></path></svg></span>
+<span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+<span style="font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: {{ s.ink }}">{{ s.name }}</span>
+<span style="font-size: 16px; line-height: 24px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ titre }}</span>
+</span>
+<span style="flex-shrink: 0; display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; background: {{ s.soft }}; color: {{ s.deep }}; font-size: 12px; line-height: 16px; font-weight: 700">
+<sc-if value="{{ live }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 999px; background: {{ s.dot }}"></span></sc-if>
+{{ badge }}
+</span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"matiere":{"editor":"enum","options":["maths","francais","histoire-geo","anglais","svt","physique-chimie"],"default":"maths"},"titre":{"editor":"text","default":"Équations du 1er degré"},"badge":{"editor":"text","default":"Leçon 3/5"},"live":{"editor":"boolean","default":false},"$preview":{"width":350,"height":64}}'>
+class Component extends DCLogic {
+renderVals() {
+const S = {
+maths: { name: 'Maths', grad: 'linear-gradient(160deg, #E95555 0%, #C21A1A 100%)', ink: '#C21A1A', soft: '#FFEBEB', deep: '#980B0B', dot: '#E62E2E', icon: 'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01' },
+francais: { name: 'Français', grad: 'linear-gradient(160deg, #4D81EA 0%, #1750C4 100%)', ink: '#1750C4', soft: '#EBF1FF', deep: '#0A3B9D', dot: '#2E6BE6', icon: 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5M8 7h7M8 11h5' },
+'histoire-geo': { name: 'Histoire-Géo', grad: 'linear-gradient(160deg, #1BC85B 0%, #03702B 100%)', ink: '#03702B', soft: '#EBFFF2', deep: '#003D16', dot: '#0C9E42', icon: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18' },
+anglais: { name: 'Anglais', grad: 'linear-gradient(160deg, #17A5BE 0%, #026273 100%)', ink: '#026273', soft: '#EBFCFF', deep: '#00353D', dot: '#17A5BE', icon: 'M4 5h9M8.5 3v2M11 5c-1 4-3.5 7-7 8.5M6 8.5c1.5 2.5 3.5 4 6 5M13 21l4-9 4 9M14.5 18h5' },
+svt: { name: 'SVT', grad: 'linear-gradient(160deg, #A3640D 0%, #3D2400 100%)', ink: '#6E4204', soft: '#FFF7EB', deep: '#3D2400', dot: '#A3640D', icon: 'M5 19c0-8 5-14 15-15-1 10-7 15-15 15zM5 19l8-8' },
+'physique-chimie': { name: 'Physique-Chimie', grad: 'linear-gradient(160deg, #8558EA 0%, #3B0DA2 100%)', ink: '#521DC8', soft: '#F1EBFF', deep: '#3B0DA2', dot: '#662EE6', icon: 'M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7.5 15h9' }
+};
+return {
+s: S[this.props.matiere ?? 'maths'] || S.maths,
+titre: this.props.titre ?? 'Équations du 1er degré',
+badge: this.props.badge ?? 'Leçon 3/5',
+live: !!this.props.live
+};
+}
+}
+</script>
+</body>
+</html>

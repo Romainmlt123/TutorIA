@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="fr">
+  <body style="margin:0;padding:24px;background:#F5F8FF;font-family:Arial,Helvetica,sans-serif;color:#000612">
+    <table role="presentation" width="100%" style="max-width:480px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:24px">
+      <tr>
+        <td>
+          {{ if eq .Data.role "parent" }}
+          <h1 style="font-size:22px;margin:0 0 12px">Bienvenue sur Tutor'IA</h1>
+          <p style="font-size:16px;line-height:24px;margin:0 0 16px">Saisissez ce code dans l'application pour confirmer votre adresse e-mail :</p>
+          {{ else }}
+          <h1 style="font-size:22px;margin:0 0 12px">Bienvenue sur Tutor'IA !</h1>
+          <p style="font-size:16px;line-height:24px;margin:0 0 16px">Saisis ce code dans l'application pour confirmer ton adresse e-mail :</p>
+          {{ end }}
+          <p style="font-size:32px;font-weight:bold;letter-spacing:8px;margin:0 0 16px;color:#1750C4">{{ .Token }}</p>
+          <p style="font-size:14px;line-height:20px;margin:0;color:#5D677D">Ce code est valable 1 heure. Si vous n'avez pas créé de compte Tutor'IA, ignorez cet e-mail.</p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

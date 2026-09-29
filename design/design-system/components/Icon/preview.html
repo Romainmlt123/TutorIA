@@ -1,0 +1,17 @@
+<!-- @dsCard group="Fondations" height=283 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+var names = ['home','map','cards','stats','chat','mic','video','flame','star','bulb','graph','pen','bell','target','clock','calendar','shield','sliders','sessions','trend','check','retry','flip','keyboard'];
+var subjects = ['maths','francais','histoire-geo','anglais','svt','physique-chimie'];
+var cell = function (n, color) { return h('div', { key: n, style: { width: 72, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 } }, h(T.Icon, { name: n, size: 24, color: color || 'var(--gray-600)' }), h('span', { style: { fontSize: 11, color: 'var(--text-secondary)' } }, n)); };
+var colors = { maths: 'var(--red-600)', francais: 'var(--blue-600)', 'histoire-geo': 'var(--green-800)', anglais: 'var(--cyan-800)', svt: 'var(--orange-800)', 'physique-chimie': 'var(--violet-600)' };
+return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 16 } },
+  h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 12 } }, names.map(function (n) { return cell(n, n === 'flame' ? 'var(--orange-500)' : null); })),
+  h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 12 } }, subjects.map(function (n) { return cell(n, colors[n]); })));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

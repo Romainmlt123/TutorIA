@@ -1,0 +1,14 @@
+<!-- @dsCard group="Fondations" height=128 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { display: 'flex', alignItems: 'center', gap: 24 } },
+  h(T.ProgressRing, { value: 2 / 3, label: '2/3' }),
+  h(T.ProgressRing, { value: 0.45, size: 72, stroke: 8, label: '45 %', color: 'var(--green-700)' }),
+  h('div', { style: { padding: 12, borderRadius: 24, background: 'var(--blue-600)' } }, h(T.ProgressRing, { value: 0.8, label: '80 %', onColor: true })));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

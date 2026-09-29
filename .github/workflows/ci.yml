@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Tokens à jour
+        run: npm run tokens && git diff --exit-code src/theme/tokens.generated.ts
+      # expo-env.d.ts est généré par `expo start` et ignoré par git : il apporte les types d'Expo
+      # (dont les styles de transition de Reanimated). La CI le recrée à l'identique.
+      - name: Types Expo
+        run: echo '/// <reference types="expo/types" />' > expo-env.d.ts
+      - run: npm run check
