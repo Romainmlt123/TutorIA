@@ -60,6 +60,7 @@ function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
       <Stack.Screen name="bientot" options={{ presentation: 'modal' }} />
       <Stack.Protected guard={__DEV__}>
         <Stack.Screen name="dev/catalogue" />
+        <Stack.Screen name="dev/explorer-atelier" />
       </Stack.Protected>
     </Stack>
   );

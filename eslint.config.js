@@ -54,4 +54,10 @@ module.exports = defineConfig([
       ],
     },
   },
+  {
+    // Scènes 3D (React Three Fiber) : les éléments JSX sont des objets three.js (mesh, args, position…),
+    // inconnus de la règle React DOM.
+    files: ['src/features/explorer/hd2d/**/*.tsx', 'src/features/explorer/dev/**/*.tsx'],
+    rules: { 'react/no-unknown-property': 'off' },
+  },
 ]);
