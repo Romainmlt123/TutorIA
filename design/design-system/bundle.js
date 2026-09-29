@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"PlanRow"}]} */
+/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"PlanRow"},{"name":"Stars"},{"name":"IslandIllustration"},{"name":"IslandCarousel"},{"name":"IslandProgressCard"},{"name":"ExplorerHud"},{"name":"LevelNode"},{"name":"MapAvatar"},{"name":"CityBanner"},{"name":"RegionSign"},{"name":"WorldMap"},{"name":"LevelTypePill"},{"name":"LevelSheet"},{"name":"IslandBackdrop"},{"name":"LevelProgressHeader"},{"name":"VoiceBoardCard"},{"name":"LevelResultCard"},{"name":"TutorFeedback"}]} */
 (function () {
   'use strict';
   var React = window.React;
@@ -22,6 +22,12 @@
 
   /* ---------- Icônes (contour, grille 24) ---------- */
   var ICONS = {
+    pencil: 'M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16zM13.5 6.5l4 4',
+    crown: 'M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5zM5 19h14',
+    compass: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM15.5 8.5l-2 5-5 2 2-5z',
+    checkCircle: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM8 12.5l2.7 2.7L16 10',
+    list: 'M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01',
+    flag: 'M5 21V4M5 4h11l-2 4 2 4H5',
     home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
     map: 'M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5zM9 4v13M15 6.5v13',
     cards: 'M10 3h8a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM5 7v11a3 3 0 0 0 3 3h8',
@@ -191,7 +197,7 @@
 
   var NAV_TABS = {
     eleve: [
-      { id: 'accueil', label: 'Accueil', icon: 'home' }, { id: 'parcours', label: 'Parcours', icon: 'map' },
+      { id: 'accueil', label: 'Accueil', icon: 'home' }, { id: 'explorer', label: 'Explorer', icon: 'compass' },
       { id: 'tuteur', label: "Tutor'IA", logo: true }, { id: 'revisions', label: 'Révisions', icon: 'cards' }, { id: 'stats', label: 'Stats', icon: 'stats' }
     ],
     parents: [
@@ -205,7 +211,7 @@
       'aria-label': p.space === 'parents' ? 'Navigation Parents' : 'Navigation principale',
       style: { position: 'relative', height: 72, padding: '0 4px', boxSizing: 'border-box', background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-lg)', display: 'flex', alignItems: 'stretch', fontFamily: FONT }
     }, tabs.map(function (t) {
-      var on = t.id === p.active;
+      var on = t.id === (p.active === 'parcours' ? 'explorer' : p.active);
       var bubble = t.logo ? 60 : 52;
       var glyph;
       if (on) {
@@ -1012,6 +1018,274 @@
   }
 
 
+  /* ---------- Explorer : la carte d'aventure ---------- */
+  var LEVEL_TYPES = {
+    lecon: { label: 'Leçon', icon: 'book', grad: 'linear-gradient(160deg, var(--green-400) 0%, var(--green-600) 45%, var(--green-700) 100%)', solid: 'var(--green-700)', soft: 'var(--green-100)', ink: 'var(--green-800)', ring: 'var(--green-200)' },
+    exercices: { label: 'Exercices', icon: 'pencil', grad: 'linear-gradient(160deg, var(--blue-400) 0%, var(--blue-500) 45%, var(--blue-600) 100%)', solid: 'var(--blue-500)', soft: 'var(--blue-100)', ink: 'var(--blue-600)', ring: 'var(--blue-200)' },
+    evaluation: { label: 'Évaluation', icon: 'crown', grad: 'linear-gradient(160deg, var(--red-300) 0%, var(--red-500) 45%, var(--red-600) 100%)', solid: 'var(--red-500)', soft: 'var(--red-100)', ink: 'var(--red-600)', ring: 'var(--red-200)' }
+  };
+  function ltype(t) { return LEVEL_TYPES[t] || LEVEL_TYPES.lecon; }
+  var SUBJECT_MOTIFS = { francais: 'book', 'histoire-geo': 'histoire-geo', 'physique-chimie': 'physique-chimie', svt: 'svt', anglais: 'anglais' };
+
+  function Stars(p) {
+    var n = p.value || 0, size = p.size || 16, out = [];
+    for (var i = 0; i < 3; i++) out.push(h('svg', { key: i, width: size, height: size, viewBox: '0 0 24 24', 'aria-hidden': 'true' },
+      h('path', { d: ICONS.star, fill: i < n ? (p.onColor ? '#fff' : 'var(--orange-500)') : (p.onColor ? 'rgba(255,255,255,0.3)' : 'var(--gray-200)'), stroke: p.outline ? '#fff' : 'none', strokeWidth: 2, strokeLinejoin: 'round' })));
+    return h('span', { role: 'img', 'aria-label': n + ' étoile' + (n > 1 ? 's' : '') + ' sur 3', style: { display: 'inline-flex', alignItems: 'center', gap: p.gap != null ? p.gap : 2 } }, out);
+  }
+
+  function IslandIllustration(p) {
+    var w = p.size || 300, id = 'isl-' + (p.subject || 'maths') + (p.idSuffix || '');
+    var e = [];
+    e.push(h('defs', { key: 'd' },
+      h('linearGradient', { id: id + '-fall', x1: 0, y1: 0, x2: 0, y2: 1 }, h('stop', { offset: 0, stopColor: 'var(--azure-300)' }), h('stop', { offset: 1, stopColor: 'var(--azure-300)', stopOpacity: 0 })),
+      h('linearGradient', { id: id + '-grass', x1: 0, y1: 0, x2: 0, y2: 1 }, h('stop', { offset: 0, stopColor: 'var(--green-200)' }), h('stop', { offset: 1, stopColor: 'var(--green-400)' }))));
+    e.push(h('path', { key: 'rock', d: 'M26 128 C 40 190, 112 252, 160 284 C 208 252, 280 190, 294 128 Z', fill: 'var(--gray-300)' }));
+    [['26,128 92,138 118,214', 'var(--gray-200)', 1], ['170,146 250,138 212,232', 'var(--gray-400)', 0.55], ['250,138 294,128 262,176', 'var(--gray-200)', 1], ['118,214 160,284 146,214', 'var(--gray-400)', 0.35],
+      ['76,176 86,160 96,178 86,192', 'var(--blue-200)', 1], ['226,196 236,178 246,198 236,210', 'var(--violet-200)', 1], ['190,240 197,228 204,242 197,250', 'var(--blue-200)', 1]].forEach(function (f, i) {
+      e.push(h('polygon', { key: 'f' + i, points: f[0], fill: f[1], opacity: f[2] }));
+    });
+    e.push(h('ellipse', { key: 'earth', cx: 160, cy: 134, rx: 136, ry: 40, fill: 'var(--orange-600)' }));
+    e.push(h('ellipse', { key: 'grass', cx: 160, cy: 120, rx: 136, ry: 42, fill: 'url(#' + id + '-grass)' }));
+    e.push(h('ellipse', { key: 'shine', cx: 140, cy: 108, rx: 92, ry: 22, fill: '#fff', opacity: 0.18 }));
+    e.push(h('path', { key: 'river', d: 'M162 92 C 178 106, 152 120, 168 152 L 182 152 C 166 120, 192 106, 174 92 Z', fill: 'var(--azure-200)' }));
+    e.push(h('rect', { key: 'fall', x: 165, y: 150, width: 18, height: 104, rx: 9, fill: 'url(#' + id + '-fall)' }));
+    if (p.motifs !== false) {
+      function tree(k, x, y, r) { return h('g', { key: k }, h('rect', { x: x - 2, y: y, width: 4, height: 12, rx: 2, fill: 'var(--orange-700)' }), h('circle', { cx: x, cy: y - 2, r: r, fill: 'var(--green-700)' }), h('circle', { cx: x - 3, cy: y - 5, r: r - 5, fill: 'var(--green-600)' })); }
+      function tile(k, x, y, s, fill, text) { return h('g', { key: k, transform: 'translate(' + x + ' ' + y + ')' }, h('rect', { width: s, height: s, rx: 8, fill: fill }), h('text', { x: s / 2, y: s * 0.72, textAnchor: 'middle', fontSize: s * 0.68, fontWeight: 900, fill: '#fff', fontFamily: FONT }, text)); }
+      if ((p.subject || 'maths') === 'maths') {
+        var ticks = []; for (var i = 0; i < 8; i++) ticks.push(h('line', { key: i, x1: 56 + i * 12, y1: 62, x2: 56 + i * 12, y2: i % 2 ? 70 : 74, stroke: 'var(--orange-700)', strokeWidth: 2, strokeLinecap: 'round' }));
+        e.push(h('g', { key: 'ruler', transform: 'rotate(-18 96 70)' }, h('rect', { x: 46, y: 62, width: 104, height: 18, rx: 5, fill: 'var(--orange-300)' }), ticks));
+        e.push(h('polygon', { key: 'sq', points: '232,56 282,108 232,108', fill: 'var(--blue-300)', stroke: '#fff', strokeWidth: 4, strokeLinejoin: 'round' }));
+        e.push(h('polygon', { key: 'sq2', points: '243,84 259,100 243,100', fill: 'var(--blue-100)' }));
+        e.push(h('g', { key: 'cube', transform: 'translate(70 96)' }, h('polygon', { points: '0,10 18,0 36,10 18,20', fill: 'var(--violet-200)' }), h('polygon', { points: '0,10 18,20 18,42 0,32', fill: 'var(--violet-400)' }), h('polygon', { points: '36,10 18,20 18,42 36,32', fill: 'var(--violet-300)' })));
+        e.push(h('text', { key: 'pi', x: 116, y: 140, fontSize: 34, fontWeight: 900, fill: 'var(--blue-500)', fontFamily: FONT }, 'π'));
+        e.push(tile('plus', 222, 120, 26, 'var(--cyan-700)', '+'));
+        e.push(tile('times', 38, 118, 24, 'var(--violet-500)', '×'));
+        [[188, 74], [206, 82]].forEach(function (c, i) { e.push(h('g', { key: 'h' + i }, h('rect', { x: c[0], y: c[1], width: 16, height: 14, rx: 2, fill: '#fff' }), h('polygon', { points: (c[0] - 3) + ',' + (c[1] + 1) + ' ' + (c[0] + 8) + ',' + (c[1] - 9) + ' ' + (c[0] + 19) + ',' + (c[1] + 1), fill: 'var(--blue-500)' }))); });
+        e.push(tree('t1', 292, 114, 12)); e.push(tree('t2', 206, 146, 9)); e.push(tree('t3', 140, 98, 9));
+      } else {
+        var s = subj(p.subject);
+        e.push(h('g', { key: 'm1', transform: 'translate(206 72)', color: '#fff' }, h('rect', { width: 52, height: 52, rx: 16, fill: s.bar }), h('g', { transform: 'translate(12 12) scale(1.17)' }, h('path', { d: ICONS[SUBJECT_MOTIFS[p.subject]] || ICONS[p.subject], fill: 'none', stroke: '#fff', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }))));
+        e.push(h('g', { key: 'm2', transform: 'translate(70 92)' }, h('rect', { width: 34, height: 34, rx: 11, fill: s.ink }), h('g', { transform: 'translate(7 7) scale(0.83)' }, h('path', { d: ICONS[p.subject], fill: 'none', stroke: '#fff', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }))));
+        e.push(tree('t1', 292, 114, 12)); e.push(tree('t2', 140, 98, 10)); e.push(tree('t3', 40, 118, 11));
+      }
+    }
+    return h('svg', { width: w, height: Math.round(w * 290 / 320), viewBox: '0 0 320 290', role: p.label ? 'img' : undefined, 'aria-label': p.label, 'aria-hidden': p.label ? undefined : 'true', style: { display: 'block', overflow: 'visible' } }, e);
+  }
+
+  function IslandCarousel(p) {
+    var list = p.subjects || ['maths', 'francais', 'histoire-geo', 'physique-chimie', 'svt', 'anglais'];
+    var st = useState(p.defaultIndex || 0);
+    var i = p.index != null ? p.index : st[0];
+    function go(j) { var k = (j + list.length) % list.length; st[1](k); if (p.onChange) p.onChange(k, list[k]); }
+    var s = subj(list[i]);
+    var arrow = { position: 'absolute', top: 196, width: 48, height: 48, border: 'none', borderRadius: 999, background: 'var(--surface)', boxShadow: 'var(--shadow-md)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' };
+    var sideName = function (k) { return list[(i + k + list.length) % list.length]; };
+    return h('section', { 'aria-roledescription': 'carrousel', 'aria-label': 'Îles des matières', style: { position: 'relative', width: '100%', maxWidth: 350, height: 440, fontFamily: FONT } },
+      h('div', { style: { display: 'flex', justifyContent: 'center' } }, h('span', { 'aria-live': 'polite', style: { height: 48, padding: '0 28px', display: 'flex', alignItems: 'center', borderRadius: 999, background: s.gradient, color: '#fff', fontSize: 22, fontWeight: 900, boxShadow: 'var(--shadow-md)' } }, SUBJECT_FULL[list[i]] || s.name)),
+      h('div', { 'aria-hidden': 'true', style: { position: 'absolute', left: -96, top: 150, opacity: 0.35, transform: 'scale(0.5)', transformOrigin: 'left center' } }, h(IslandIllustration, { subject: sideName(-1), motifs: false, idSuffix: '-l' })),
+      h('div', { 'aria-hidden': 'true', style: { position: 'absolute', right: -96, top: 150, opacity: 0.35, transform: 'scale(0.5)', transformOrigin: 'right center' } }, h(IslandIllustration, { subject: sideName(1), motifs: false, idSuffix: '-r' })),
+      h('div', { className: 'tia-float', style: { position: 'absolute', left: '50%', marginLeft: -150, top: 84 } }, h(IslandIllustration, { subject: list[i], label: 'Île ' + (s.name === 'Maths' ? 'des Maths' : 'de ' + s.name) })),
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', left: '50%', marginLeft: -80, top: 368, width: 160, height: 22, borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(9,17,34,0.18), rgba(9,17,34,0))' } }),
+      h('button', { type: 'button', onClick: function () { go(i - 1); }, 'aria-label': 'Île précédente', style: assign({}, arrow, { left: -8 }) }, h(Icon, { name: 'chevronLeft', size: 22, strokeWidth: 2.25 })),
+      h('button', { type: 'button', onClick: function () { go(i + 1); }, 'aria-label': 'Île suivante', style: assign({}, arrow, { right: -8 }) }, h(Icon, { name: 'chevronRight', size: 22, strokeWidth: 2.25 })),
+      h('div', { role: 'tablist', 'aria-label': 'Matières', style: { position: 'absolute', left: 0, right: 0, top: 410, display: 'flex', justifyContent: 'center', gap: 6 } },
+        list.map(function (id, j) {
+          return h('button', { key: id, type: 'button', role: 'tab', 'aria-selected': j === i, 'aria-label': subj(id).name, onClick: function () { go(j); },
+            style: { width: j === i ? 24 : 8, height: 8, padding: 0, border: 'none', borderRadius: 999, background: j === i ? subj(id).ink : 'var(--gray-200)', cursor: 'pointer', transition: 'width 0.2s ease' } });
+        })));
+  }
+  var SUBJECT_FULL = { maths: 'Mathématiques' };
+
+  function IslandProgressCard(p) {
+    var s = subj(p.subject);
+    var pct = p.total ? Math.round(100 * (p.done || 0) / p.total) : 0;
+    return h(Card, { style: { display: 'flex', flexDirection: 'column', gap: 14, padding: '18px 20px 20px' } },
+      h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 } },
+        h('span', { style: { display: 'flex', flexDirection: 'column', gap: 2 } },
+          h('span', { style: { fontSize: 17, lineHeight: '22px', fontWeight: 900 } }, (p.done || 0) + ' villes sur ' + p.total + ' validées'),
+          p.next ? h('span', { style: { fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } }, p.next) : null),
+        h(Pill, { background: 'var(--orange-100)', color: 'var(--orange-800)', height: 32 }, h(Icon, { name: 'star', size: 16, color: 'var(--orange-500)', filled: true }), p.stars || 0)),
+      h('span', { 'aria-hidden': 'true', style: { display: 'block', height: 10, borderRadius: 999, background: s.soft, overflow: 'hidden' } }, h('span', { style: { display: 'block', width: pct + '%', height: '100%', borderRadius: 999, background: s.gradient } })),
+      h(Button, { brand: true, fullWidth: true, iconRight: 'arrowRight', onClick: p.onExplore, href: p.href }, p.actionLabel || "Explorer l'île"));
+  }
+
+  function ExplorerHud(p) {
+    return h('header', { style: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px 8px 8px', background: 'rgba(255,255,255,0.94)', borderRadius: 20, boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' } },
+      h('button', { type: 'button', onClick: p.onBack, 'aria-label': p.backLabel || 'Retour aux îles', style: { width: 44, height: 44, flexShrink: 0, border: 'none', borderRadius: 14, background: 'var(--bg)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, h(Icon, { name: 'chevronLeft', size: 22, strokeWidth: 2.25 })),
+      h('span', { style: { flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' } },
+        h('span', { style: { fontSize: 11, lineHeight: '14px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: p.subject ? subj(p.subject).ink : 'var(--primary)', whiteSpace: 'nowrap' } }, p.island),
+        h('span', { 'aria-live': 'polite', style: { fontSize: 16, lineHeight: '20px', fontWeight: 900, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, p.city),
+        p.region ? h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 500, color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, p.region) : null),
+      h('span', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
+        h(Pill, { background: 'var(--orange-500)', color: '#fff', height: 32, style: { fontWeight: 900 } }, h(Icon, { name: 'flame', size: 16, color: '#fff' }), p.streak),
+        h(Pill, { background: 'var(--gray-600)', color: '#fff', height: 32, style: { whiteSpace: 'nowrap' } }, 'Niv. ' + p.level)));
+  }
+
+  function LevelNode(p) {
+    var t = ltype(p.type), boss = p.type === 'evaluation', size = boss ? 68 : 52;
+    var state = p.state || 'locked', locked = state === 'locked';
+    var stLabel = { completed: 'terminé' + (p.stars ? ', ' + p.stars + ' étoile' + (p.stars > 1 ? 's' : '') + ' sur 3' : ''), active: 'en cours', locked: 'verrouillé' }[state];
+    var ring = boss ? '0 0 0 4px #fff, 0 0 0 8px ' + (locked ? 'var(--gray-200)' : t.ring) + ', 0 6px 0 4px rgba(9,17,34,0.14)' : '0 0 0 4px #fff, 0 5px 0 3px rgba(9,17,34,0.14)';
+    return h('span', { style: { position: 'relative', width: size, height: size, display: 'inline-block' } },
+      state === 'active' ? h('span', { className: 'tia-pulse', 'aria-hidden': 'true', style: { position: 'absolute', inset: 0, borderRadius: 999, background: t.solid } }) : null,
+      h('button', { type: 'button', onClick: p.onClick, 'aria-label': t.label + ', ' + p.title + ', ' + stLabel,
+        style: { position: 'absolute', inset: 0, border: 'none', padding: 0, borderRadius: 999, background: locked ? 'var(--gray-100)' : t.grad, boxShadow: ring, color: locked ? 'var(--gray-400)' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } },
+        h(Icon, { name: locked && !boss ? 'lock' : t.icon, size: boss ? 30 : 24, strokeWidth: 2 }),
+        locked && boss ? h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: -4, bottom: -4, width: 24, height: 24, borderRadius: 999, background: '#fff', color: 'var(--gray-400)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)' } }, h(Icon, { name: 'lock', size: 14, strokeWidth: 2.25 })) : null,
+        state === 'completed' ? h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: -6, top: -6, width: 22, height: 22, borderRadius: 999, background: '#fff', color: t.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)' } }, h(Icon, { name: 'check', size: 14, strokeWidth: 3 })) : null),
+      state === 'completed' && p.stars ? h('span', { 'aria-hidden': 'true', style: { position: 'absolute', left: '50%', top: size + 8, transform: 'translateX(-50%)' } }, h(Stars, { value: p.stars, outline: true, gap: 1 })) : null);
+  }
+
+  function MapAvatar(p) {
+    return h('span', { className: 'tia-bob', 'aria-hidden': 'true', style: { width: 44, display: 'inline-flex', flexDirection: 'column', alignItems: 'center', fontFamily: FONT } },
+      h('span', { style: { width: 40, height: 40, boxSizing: 'border-box', borderRadius: 999, background: 'var(--primary)', border: '3px solid #fff', boxShadow: 'var(--shadow-lg)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900 } }, (p.initial || 'L').slice(0, 1)),
+      h('span', { style: { width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderTop: '9px solid #fff', marginTop: -1 } }));
+  }
+
+  function CityBanner(p) {
+    var st = p.status || 'current';
+    var color = st === 'done' ? 'var(--green-800)' : st === 'locked' ? 'var(--text-secondary)' : st === 'consolidate' ? 'var(--orange-800)' : 'var(--red-600)';
+    return h('span', { style: { height: 32, padding: '0 12px', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: st === 'consolidate' ? 'var(--orange-100)' : '#fff', boxShadow: 'var(--shadow-md)', color: color, fontFamily: FONT, fontSize: 13, fontWeight: 900, whiteSpace: 'nowrap' } },
+      h(Icon, { name: st === 'done' ? 'checkCircle' : st === 'consolidate' ? 'retry' : 'flag', size: 16, strokeWidth: 2.25 }), p.name);
+  }
+
+  function RegionSign(p) {
+    return h('span', { style: { display: 'inline-flex', flexDirection: 'column', padding: '8px 12px', borderRadius: 16, background: 'rgba(255,255,255,0.85)', boxShadow: 'var(--shadow-sm)', fontFamily: FONT } },
+      h(Overline, { color: p.color || 'var(--blue-600)' }, 'Région ' + p.index),
+      h('span', { style: { fontSize: 14, lineHeight: '18px', fontWeight: 900, color: 'var(--text)' } }, p.name));
+  }
+
+  function WorldMap(p) {
+    var levels = p.levels || [], dx = p.step || 82, left = 36, height = p.height || 844, cy = p.centerY || 452, amp = p.amplitude || 66;
+    var pos = levels.map(function (l, i) { return { x: left + i * dx + (l.gapBefore || 0), y: cy + amp * Math.sin(i * 1.05 + 0.2) }; });
+    var extra = 0; levels.forEach(function (l, i) { if (l.gapBefore) { extra += l.gapBefore; } pos[i].x = left + i * dx + extra; });
+    var width = (pos.length ? pos[pos.length - 1].x : 0) + 120;
+    var activeIdx = levels.findIndex(function (l) { return l.state === 'active'; });
+    function curve(pts) { if (!pts.length) return ''; var d = 'M ' + pts[0].x + ' ' + pts[0].y; for (var i = 1; i < pts.length; i++) { var mx = (pts[i - 1].x + pts[i].x) / 2; d += ' C ' + mx + ' ' + pts[i - 1].y + ', ' + mx + ' ' + pts[i].y + ', ' + pts[i].x + ' ' + pts[i].y; } return d; }
+    var ext = [{ x: -40, y: cy + amp * Math.sin(-1.05 + 0.2) }].concat(pos, [{ x: width + 40, y: cy }]);
+    var cut = activeIdx >= 0 ? activeIdx + 2 : ext.length;
+    var done = ext.slice(0, cut), todo = ext.slice(cut - 1);
+    var waves = [];
+    [220, 262, 690, 730, 770].forEach(function (y, r) { for (var x = (r % 2) * 45; x < width; x += 90) waves.push(h('path', { key: r + '-' + x, d: 'M' + x + ' ' + y + ' q 10 -8 20 0 t 20 0', fill: 'none', stroke: '#fff', strokeWidth: 3, strokeLinecap: 'round', opacity: 0.8 })); });
+    return h('div', { role: 'region', 'aria-label': p.label || 'Carte de l’île', style: { position: 'relative', width: '100%', height: height, overflowX: 'auto', overflowY: 'hidden', fontFamily: FONT } },
+      h('div', { style: { position: 'relative', width: width, height: height } },
+        h('svg', { width: width, height: height, 'aria-hidden': 'true', style: { position: 'absolute', left: 0, top: 0, display: 'block' } },
+          h('defs', null, h('linearGradient', { id: 'tia-sea', x1: 0, y1: 0, x2: 0, y2: 1 }, h('stop', { offset: 0, stopColor: 'var(--azure-100)' }), h('stop', { offset: 1, stopColor: 'var(--azure-200)' }))),
+          h('rect', { width: width, height: height, fill: 'url(#tia-sea)' }), waves,
+          h('rect', { x: -40, y: cy - 150, width: width + 80, height: 300, rx: 140, fill: 'var(--green-200)' }),
+          h('rect', { x: -40, y: cy - 160, width: width + 80, height: 296, rx: 140, fill: 'var(--green-100)' }),
+          h('path', { d: curve(todo), fill: 'none', stroke: 'var(--gray-200)', strokeWidth: 18, strokeLinecap: 'round' }),
+          h('path', { d: curve(todo), fill: 'none', stroke: '#fff', strokeWidth: 3, strokeLinecap: 'round', strokeDasharray: '1 12' }),
+          h('path', { d: curve(done), fill: 'none', stroke: 'var(--orange-300)', strokeWidth: 18, strokeLinecap: 'round' }),
+          h('path', { d: curve(done), fill: 'none', stroke: '#fff', strokeWidth: 3, strokeLinecap: 'round', strokeDasharray: '1 12' })),
+        (p.cities || []).map(function (c) { var at = pos[c.startIndex] || { x: 0 }; return h('span', { key: 'c' + c.name, style: { position: 'absolute', left: at.x - 20, top: cy - 190 } }, h(CityBanner, { name: c.name, status: c.status })); }),
+        levels.map(function (l, i) {
+          var size = l.type === 'evaluation' ? 68 : 52;
+          return h('span', { key: l.id, style: { position: 'absolute', left: pos[i].x - size / 2, top: pos[i].y - size / 2 } },
+            h(LevelNode, { type: l.type, state: l.state, stars: l.stars, title: l.title, onClick: function () { if (p.onSelect) p.onSelect(l); } }));
+        }),
+        activeIdx >= 0 ? h('span', { style: { position: 'absolute', left: pos[activeIdx].x - 22, top: pos[activeIdx].y - 82 } }, h(MapAvatar, { initial: p.initial })) : null));
+  }
+
+  function LevelTypePill(p) {
+    var t = ltype(p.type);
+    return h('span', { style: { alignSelf: 'flex-start', height: 30, padding: '0 12px 0 8px', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: t.soft, color: t.ink, fontFamily: FONT, fontSize: 13, fontWeight: 900 } },
+      h('span', { style: { width: 20, height: 20, borderRadius: 999, background: t.grad, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: t.icon, size: 12, strokeWidth: 2.5 })), t.label);
+  }
+
+  function LevelSheet(p) {
+    var t = ltype(p.type), locked = !!p.lockedMessage;
+    var big = { flex: '1 1 0', height: 52, borderRadius: 16, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: FONT, fontSize: 16, fontWeight: 700, cursor: locked ? 'default' : 'pointer' };
+    var ecritFirst = (p.lastMode || 'ecrit') === 'ecrit';
+    function launch(mode, primaryBtn) {
+      var style = locked ? { background: 'var(--gray-100)', color: 'var(--gray-400)' } : primaryBtn ? { background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-brand)', flexGrow: 1.3 } : { background: 'var(--primary-soft)', color: 'var(--blue-600)' };
+      return h('button', { key: mode, type: 'button', disabled: locked, 'aria-disabled': locked, onClick: mode === 'ecrit' ? p.onWritten : p.onVoice, style: assign({}, big, style) },
+        h(Icon, { name: mode === 'ecrit' ? 'keyboard' : 'mic', size: 20 }), mode === 'ecrit' ? 'À l’écrit' : 'À la voix');
+    }
+    return h('section', { role: 'dialog', 'aria-modal': 'true', 'aria-label': p.title, style: { display: 'flex', flexDirection: 'column', gap: 16, padding: '12px 20px 32px', background: '#fff', borderRadius: '28px 28px 0 0', boxShadow: '0 -12px 32px rgba(9,17,34,0.12)', fontFamily: FONT, color: 'var(--text)' } },
+      h('span', { 'aria-hidden': 'true', style: { alignSelf: 'center', width: 44, height: 5, borderRadius: 999, background: 'var(--gray-200)' } }),
+      h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } }, h(LevelTypePill, { type: p.type }),
+        h('button', { type: 'button', onClick: p.onClose, 'aria-label': 'Fermer', style: { width: 40, height: 40, border: 'none', borderRadius: 999, background: 'var(--bg)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, h(Icon, { name: 'close', size: 20, strokeWidth: 2.25 }))),
+      h('div', { style: { display: 'flex', flexDirection: 'column', gap: 4 } },
+        h('h2', { style: { margin: 0, fontSize: 26, lineHeight: '32px', fontWeight: 900 } }, p.title),
+        p.where ? h('span', { style: { fontSize: 14, lineHeight: '20px', color: 'var(--text-secondary)' } }, p.where) : null),
+      h('div', { style: { display: 'flex', gap: 8 } },
+        h(Pill, { background: 'var(--bg)', color: 'var(--gray-600)', height: 32 }, h(Icon, { name: 'clock', size: 16, strokeWidth: 2 }), '~' + p.minutes + ' min'),
+        h(Pill, { background: 'var(--orange-100)', color: 'var(--orange-800)', height: 32 }, h(Stars, { value: p.stars || 0 }))),
+      (p.objectives || []).length ? h('section', { 'aria-label': 'Objectifs', style: { display: 'flex', flexDirection: 'column', gap: 10 } },
+        h(Overline, { color: 'var(--text-secondary)' }, 'Objectifs'),
+        h('ul', { style: { margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 } },
+          p.objectives.map(function (o, i) { return h('li', { key: i, style: { display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 15, lineHeight: '22px', color: 'var(--gray-700)' } }, h('span', { style: { flexShrink: 0, marginTop: 1, color: t.solid, display: 'flex' } }, h(Icon, { name: 'checkCircle', size: 20, strokeWidth: 2 })), o); }))) : null,
+      p.rule ? h('p', { style: { margin: 0, display: 'flex', gap: 10, padding: '12px 14px', borderRadius: 16, background: 'var(--red-100)', color: 'var(--red-700)', fontSize: 14, lineHeight: '20px', fontWeight: 500 } }, h('span', { style: { flexShrink: 0, display: 'flex', color: 'var(--red-600)' } }, h(Icon, { name: 'crown', size: 18, strokeWidth: 2 })), p.rule) : null,
+      locked ? h('p', { style: { margin: 0, display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 16, background: 'var(--bg)', color: 'var(--gray-600)', fontSize: 14, lineHeight: '20px', fontWeight: 700 } }, h('span', { style: { flexShrink: 0, display: 'flex', color: 'var(--gray-400)' } }, h(Icon, { name: 'lock', size: 18, strokeWidth: 2 })), p.lockedMessage) : null,
+      h('div', { style: { display: 'flex', gap: 10 } }, ecritFirst ? [launch('ecrit', true), launch('vocal', false)] : [launch('vocal', true), launch('ecrit', false)]),
+      locked ? null : h('p', { style: { margin: '-4px 0 0', textAlign: 'center', fontSize: 12, lineHeight: '16px', color: 'var(--text-secondary)' } }, 'Dernier mode utilisé : ' + (ecritFirst ? 'à l’écrit' : 'à la voix')));
+  }
+
+  function IslandBackdrop(p) {
+    var s = subj(p.subject);
+    return h('div', { style: { position: 'relative', width: '100%', height: p.height || '100%', overflow: 'hidden', background: 'linear-gradient(180deg, ' + s.soft + ' 0%, ' + s.soft + ' 12%, var(--bg) 62%)' } },
+      h('svg', { 'aria-hidden': 'true', width: 390, height: 220, viewBox: '0 0 390 220', style: { position: 'absolute', left: 0, top: 0, display: 'block', opacity: 0.55 } },
+        h('g', { fill: 'none', stroke: 'currentColor', strokeWidth: 3, strokeLinecap: 'round', strokeLinejoin: 'round', style: { color: SUBJECT_TINT[p.subject] || 'var(--red-200)' } },
+          h('polygon', { points: '24,40 52,40 24,68' }), h('path', { d: 'M310 26v18M301 35h18' }), h('path', { d: 'M44 170l12 12M56 170l-12 12' }), h('circle', { cx: 360, cy: 176, r: 10 }))),
+      h('div', { 'aria-hidden': 'true', style: { position: 'absolute', right: -26, top: 108, transform: 'scale(0.34)', transformOrigin: 'right top', opacity: 0.9 } }, h(IslandIllustration, { subject: p.subject, idSuffix: '-bd' })),
+      h('div', { style: { position: 'relative', height: '100%' } }, p.children));
+  }
+  var SUBJECT_TINT = { maths: 'var(--red-200)', francais: 'var(--blue-200)', 'histoire-geo': 'var(--green-200)', 'physique-chimie': 'var(--violet-200)', svt: 'var(--orange-200)', anglais: 'var(--cyan-200)' };
+
+  function LevelProgressHeader(p) {
+    var t = ltype(p.type), total = p.total || 4, segs = [];
+    for (var i = 0; i < total; i++) segs.push(h('span', { key: i, style: { flex: '1 1 0', height: 6, borderRadius: 999, background: i < (p.step || 0) ? t.solid : '#fff' } }));
+    var unit = { lecon: 'Étape', exercices: 'Exercice', evaluation: 'Question' }[p.type] || 'Étape';
+    var mode = p.mode || 'ecrit';
+    function tog(m, icon, label) { var on = mode === m; return h('button', { key: m, type: 'button', 'aria-pressed': on, 'aria-label': label, onClick: function () { if (p.onModeChange) p.onModeChange(m); }, style: { width: 40, height: 40, border: 'none', borderRadius: 999, background: on ? 'var(--primary)' : 'transparent', color: on ? '#fff' : 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, h(Icon, { name: icon, size: 20 })); }
+    return h('header', { style: { display: 'flex', flexDirection: 'column', gap: 12, fontFamily: FONT, color: 'var(--text)' } },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
+        h('button', { type: 'button', onClick: p.onBack, 'aria-label': 'Revenir à la carte', style: { width: 44, height: 44, flexShrink: 0, border: 'none', borderRadius: 14, background: '#fff', boxShadow: 'var(--shadow-sm)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, h(Icon, { name: 'chevronLeft', size: 22, strokeWidth: 2.25 })),
+        h('span', { style: { flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 } }, h(LevelTypePill, { type: p.type }), h('span', { style: { fontSize: 20, lineHeight: '24px', fontWeight: 900 } }, p.title)),
+        h('div', { role: 'group', 'aria-label': 'Mode de discussion', style: { flexShrink: 0, display: 'flex', gap: 2, padding: 3, borderRadius: 999, background: '#fff', boxShadow: 'var(--shadow-sm)' } }, tog('ecrit', 'keyboard', 'À l’écrit'), tog('vocal', 'mic', 'À la voix'))),
+      h('div', { style: { display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 232 } },
+        h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 700, color: t.ink } }, unit + ' ' + p.step + ' sur ' + total + (p.city ? ' · ' + p.city : '')),
+        h('span', { 'aria-hidden': 'true', style: { display: 'flex', gap: 4 } }, segs)));
+  }
+
+  function VoiceBoardCard(p) {
+    return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10, padding: 16, background: '#fff', borderRadius: 24, boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' } },
+      h(Overline, { color: 'var(--text-secondary)' }, p.title || 'Au tableau du tuteur'),
+      (p.lines || []).map(function (l, i) {
+        var done = l.state === 'done', todo = l.state === 'todo';
+        return h('span', { key: i, style: { display: 'flex', alignItems: 'center', gap: 8, fontSize: i === 0 ? 26 : 20, lineHeight: i === 0 ? '32px' : '26px', fontWeight: 900, color: done ? 'var(--green-700)' : todo ? 'var(--gray-400)' : 'var(--text)' } }, done ? h(Icon, { name: 'check', size: 20, strokeWidth: 3 }) : null, l.expr);
+      }));
+  }
+
+  function LevelResultCard(p) {
+    var t = ltype(p.type), ok = p.validated !== false;
+    var kicker = ok ? (t.label + ' · ' + (p.type === 'evaluation' ? 'ville validée' : 'réussie')) : (t.label + ' · à consolider');
+    return h('section', { 'aria-label': 'Résultat', style: { position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '28px 24px 24px', borderRadius: 28, background: ok ? TONES.green : 'linear-gradient(160deg, var(--orange-300) 0%, var(--orange-500) 50%, var(--orange-600) 100%)', color: '#fff', textAlign: 'center', boxShadow: 'var(--shadow-lg)', fontFamily: FONT } },
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', left: -40, top: -40, width: 140, height: 140, borderRadius: 999, background: 'rgba(255,255,255,0.12)' } }),
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: -50, bottom: -60, width: 180, height: 180, borderRadius: 999, background: 'rgba(255,255,255,0.10)' } }),
+      h(Overline, { color: 'rgba(255,255,255,0.92)', style: { position: 'relative' } }, kicker),
+      h('span', { style: { position: 'relative' } }, h(Stars, { value: p.stars || 0, size: 40, onColor: true, gap: 4 })),
+      h('h1', { style: { position: 'relative', margin: 0, fontSize: 30, lineHeight: '36px', fontWeight: 900 } }, p.headline || (ok ? 'Bien joué !' : 'Presque !')),
+      p.message ? h('p', { style: { position: 'relative', margin: 0, fontSize: 15, lineHeight: '22px', fontWeight: 500, opacity: 0.95 } }, p.message) : null,
+      h('div', { style: { position: 'relative', display: 'flex', gap: 8 } },
+        p.score ? h(Pill, { background: VEIL, color: '#fff', height: 34, style: { fontSize: 15, fontWeight: 900 } }, p.score) : null,
+        h(Pill, { background: '#fff', color: 'var(--green-800)', height: 34, style: { fontSize: 15, fontWeight: 900 } }, '+' + (p.xp || 0) + ' XP')));
+  }
+
+  function TutorFeedback(p) {
+    var ok = p.kind !== 'review';
+    return h('div', { style: { display: 'flex', gap: 12, padding: '14px 16px', borderRadius: 20, background: ok ? 'var(--green-100)' : 'var(--orange-100)', fontFamily: FONT } },
+      h('span', { style: { flexShrink: 0, width: 32, height: 32, borderRadius: 999, background: ok ? 'var(--green-700)' : 'var(--orange-500)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: ok ? 'check' : 'retry', size: 18, strokeWidth: ok ? 3 : 2.25 })),
+      h('span', { style: { display: 'flex', flexDirection: 'column', gap: 2 } },
+        h(Overline, { color: ok ? 'var(--green-700)' : 'var(--orange-800)' }, p.title || (ok ? 'Réussi' : 'À revoir')),
+        h('span', { style: { fontSize: 15, lineHeight: '22px', color: 'var(--gray-700)' } }, p.children)));
+  }
+
+
+
   window.TutorIA = {
     Icon: Icon, Logo: Logo, Button: Button, IconButton: IconButton, SegmentedControl: SegmentedControl, ModeToggle: ModeToggle,
     BottomNav: BottomNav, Switch: Switch, GoalStepper: GoalStepper, StatusChip: StatusChip, ProgressRing: ProgressRing, Quote: Quote,
@@ -1023,6 +1297,7 @@
     ChildSwitcher: ChildSwitcher, HeroCard: HeroCard, AlertCard: AlertCard, AdviceCard: AdviceCard, SubjectProgressCard: SubjectProgressCard,
     SessionSummaryCard: SessionSummaryCard, SettingRow: SettingRow,
     TextField: TextField, PasswordRules: PasswordRules, Checkbox: Checkbox, OrDivider: OrDivider, AuthProviderButtons: AuthProviderButtons, AuthHero: AuthHero, ProfileChoiceCard: ProfileChoiceCard, SubjectCluster: SubjectCluster, StepHeader: StepHeader, GradePicker: GradePicker, SelfAssessmentRow: SelfAssessmentRow, GoalTile: GoalTile, DurationPicker: DurationPicker, ChoiceRow: ChoiceRow, ToggleChip: ToggleChip, ParentCodeCard: ParentCodeCard, StepList: StepList, PlanRow: PlanRow,
-    SUBJECTS: SUBJECTS, ICONS: ICONS
+    Stars: Stars, IslandIllustration: IslandIllustration, IslandCarousel: IslandCarousel, IslandProgressCard: IslandProgressCard, ExplorerHud: ExplorerHud, LevelNode: LevelNode, MapAvatar: MapAvatar, CityBanner: CityBanner, RegionSign: RegionSign, WorldMap: WorldMap, LevelTypePill: LevelTypePill, LevelSheet: LevelSheet, IslandBackdrop: IslandBackdrop, LevelProgressHeader: LevelProgressHeader, VoiceBoardCard: VoiceBoardCard, LevelResultCard: LevelResultCard, TutorFeedback: TutorFeedback,
+    LEVEL_TYPES: LEVEL_TYPES, SUBJECTS: SUBJECTS, ICONS: ICONS
   };
 })();

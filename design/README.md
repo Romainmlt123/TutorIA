@@ -1,7 +1,7 @@
 # Tutor'IA — dossier design (app élève)
 
 Maquettes validées de l'application mobile élève Tutor'IA, prêtes à être implémentées.
-Source de vérité visuelle : le canevas Design « Tutor'IA · App mobile élève » sur claude.ai. Il contient 26 écrans iPhone de 390 px de large : 10 côté élève, 4 dans l'espace Parents et 12 pour la connexion, l'inscription et l'onboarding.
+Source de vérité visuelle : le canevas Design « Tutor'IA · App mobile élève » sur claude.ai. Il contient 34 écrans iPhone de 390 px de large : 10 côté élève, 8 pour l'onglet Explorer, 4 dans l'espace Parents et 12 pour la connexion, l'inscription et l'onboarding.
 
 ## Contenu
 
@@ -10,7 +10,7 @@ design/
 ├── README.md            ← ce fichier : vue d'ensemble, écrans, règles
 ├── COMPONENTS.md        ← inventaire des composants à créer, avec leurs specs
 ├── DESIGN_SYSTEM.md     ← README du design system Tutor'IA (règles de marque, couleurs des matières, écarts validés)
-├── design-system/       ← les 64 composants publiés dans le design system (référence : bundle, props typées, fiches)
+├── design-system/       ← les 81 composants publiés dans le design system (référence : bundle, props typées, fiches)
 ├── tokens/
 │   ├── tokens.json      ← tokens officiels du design system (couleurs, type, espaces, rayons, ombres)
 │   ├── app-tokens.json  ← ajouts propres à l'app (matières, jeu, KPI, vocal)
@@ -20,7 +20,8 @@ design/
 │   ├── ModeToggle.dc.html    ← bascule Écrit / Vocal (props mode, variante)
 │   ├── TopicCard.dc.html     ← carte sujet de discussion (props matiere, titre, badge, live)
 │   ├── PanelHeader.dc.html   ← en-tête graphique / tableau blanc (props type, titre, kicker, live, open, onToggle)
-│   └── CallControls.dc.html  ← micro / raccrocher / caméra (props muted, camOn, onMute, onCam, hangupHref)
+│   ├── CallControls.dc.html  ← micro / raccrocher / caméra (props muted, camOn, onMute, onCam, hangupHref)
+│   └── ExplorerMap.dc.html   ← carte d'une île (mer, chemin, villes, niveaux, avatar), partagée par X2 et X3
 └── screens/             ← source HTML de chaque écran (format « Design Component »)
     ├── 01-Accueil.dc.html
     ├── 02a-Tuteur-Ecrit.dc.html
@@ -47,7 +48,15 @@ design/
     ├── O2-Onboarding-Matieres.dc.html
     ├── O3-Onboarding-Objectifs.dc.html
     ├── O4-Onboarding-Style.dc.html
-    └── O5-Onboarding-Pret.dc.html
+    ├── O5-Onboarding-Pret.dc.html
+    ├── X1-Explorer-Iles.dc.html        ← onglet Explorer
+    ├── X2-Explorer-Carte.dc.html
+    ├── X3-Explorer-Niveau.dc.html
+    ├── X3b-Explorer-Niveau-Evaluation.dc.html
+    ├── X4-Explorer-Discussion.dc.html
+    ├── X4b-Explorer-Discussion-Vocal.dc.html
+    ├── X5-Explorer-Bilan.dc.html
+    └── X5b-Explorer-Bilan-Consolider.dc.html
 ```
 
 ## Historique des mises à jour
@@ -74,6 +83,12 @@ design/
   - **Inscription élève et onboarding** (E1, O1 à O5) : création de compte autonome, puis classe, auto-évaluation par matière, objectifs, façon d'apprendre et plan personnalisé.
   - 18 nouveaux composants dans le design system (64 au total) et dans `COMPONENTS.md`, section « Connexion et onboarding ».
   - Les écrans des versions précédentes et `tokens/` n'ont pas changé.
+- **v2.4**
+  - **Onglet Explorer** (X1 à X5b), qui remplace « Parcours » : carrousel des îles-matières, carte d'aventure de l'île, fiche d'un niveau, discussion de niveau à l'écrit et à la voix, bilan réussi ou à consolider.
+  - La barre de navigation élève affiche **Explorer** avec une boussole (`active="explorer"` ; `parcours` reste accepté comme alias). Les autres écrans élève n'ont pas changé.
+  - Nouveau composant partagé `components/ExplorerMap.dc.html`.
+  - 17 nouveaux composants dans le design system (81 au total) et dans `COMPONENTS.md`, section « Explorer ».
+  - `tokens/` n'a pas changé : les couleurs des types de niveau et de la carte sont à ajouter dans `tokens/app-tokens.json` au moment du développement (voir la section Explorer).
 
 Les logos et les polices ne sont pas dupliqués : les écrans pointent vers `../../assets/logo/` et `../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/`.
 
@@ -262,10 +277,49 @@ Tout en bleu. Chaque étape de l'onboarding a un **StepHeader** (retour, « Éta
 ### O5 · Parcours prêt — `O5-Onboarding-Pret.dc.html`
 - Carte héros « Ton parcours est prêt », plan en **PlanRow** qui commence par la matière la moins à l'aise, objectif du jour et jour 1 de la série. Boutons « Commencer ma première séance » et « Relier mon compte à un parent ».
 
+## Explorer (X1 à X5b)
+
+L'onglet Explorer transforme le programme en carte d'aventure. **Une île = une matière**, découpée en régions (thèmes), villes (chapitres) et niveaux. L'exemple des maquettes est l'île des Maths de 4e.
+
+**Trois types de niveaux**, toujours avec leur couleur, leur icône et leur libellé :
+
+| Type | Couleur | Icône | Comportement du tuteur |
+| --- | --- | --- | --- |
+| Leçon | vert (`green-700`, dégradé green-400 → green-700) | livre | Explique, donne des exemples, vérifie la compréhension. |
+| Exercices | bleu (`blue-500`, dégradé blue-400 → blue-600) | crayon | Laisse chercher, donne des indices progressifs. |
+| Évaluation | rouge (`red-500`, dégradé red-300 → red-600) | couronne | Exigeant : ni indice ni correction pendant l'épreuve, correction dans le bilan. |
+
+L'évaluation ferme chaque ville : son point est plus grand (68 px contre 52) avec un double anneau.
+
+**Chaque point lance un chat sans quitter l'onglet Explorer.** On ne renvoie jamais vers l'onglet Tutor'IA : la discussion garde le fond de l'île et la progression du niveau.
+
+Tokens à ajouter dans `tokens/app-tokens.json` : `level-lecon` = green-700, `level-exercices` = blue-500, `level-evaluation` = red-500, `map-sea` = azure-100 (dégradé vers azure-200), `map-land` = green-100 (bord green-200), `map-path` = orange-300 (chemin à venir en gray-200).
+
+### X1 · Les îles — `X1-Explorer-Iles.dc.html`
+- **IslandCarousel** : nom de la matière en pastille dégradée, île flottante animée, îles voisines estompées, flèches et points.
+- **IslandProgressCard** : villes validées, étoiles, barre aux couleurs de la matière et bouton « Explorer l'île ».
+
+### X2 · Carte de l'île — `X2-Explorer-Carte.dc.html`
+- **ExplorerHud** flottant (retour, île, ville, région, série, niveau) et carte **ExplorerMap** qui défile horizontalement.
+- Chemin en vague : orange jusqu'au niveau en cours, gris ensuite. Villes en **CityBanner**, régions en **RegionSign**, avatar **MapAvatar** au-dessus du niveau en cours.
+- États des points : terminé (coche et étoiles), en cours (halo pulsé), verrouillé (gris et cadenas).
+
+### X3 / X3b · Fiche d'un niveau — `X3-…`, `X3b-…`
+- **LevelSheet** en feuille du bas sur la carte assombrie : type, titre, lieu, durée, étoiles, objectifs, puis « À l'écrit » et « À la voix » (le dernier mode utilisé en premier).
+- X3b montre une évaluation encore verrouillée : règle en rouge (le tuteur n'aide pas, quitter avant la fin oblige à recommencer) et message de déblocage (terminer d'abord les étapes de la ville).
+
+### X4 / X4b · Discussion de niveau — `X4-…`, `X4b-…`
+- Fond **IslandBackdrop** aux couleurs de l'île et **LevelProgressHeader** (retour à la carte, type, titre, bascule écrit / vocal, progression en segments).
+- X4 : chat écrit avec les bulles et la saisie de l'onglet Tutor'IA. X4b : visualiseur vocal, **VoiceBoardCard** (le tuteur écrit les étapes) et contrôles d'appel ; raccrocher ramène à la carte.
+
+### X5 / X5b · Bilan — `X5-…`, `X5b-…`
+- **LevelResultCard** : « Bien joué ! » sur vert (X5) ou « Presque ! » sur orange (X5b), étoiles, score et XP, puis des **TutorFeedback** réussi / à revoir.
+- Il faut 70 % à l'évaluation pour valider la ville. En dessous, la ville passe « à consolider » (orange) : on revoit la notion et on retente quand on veut.
+
 ## Barre de navigation (tous les écrans)
 
 Flottante : `left/right/bottom: 20px`, hauteur 72 px, `radius-3xl`, `shadow-lg`, fond blanc.
-5 onglets : **Accueil · Parcours · Tutor'IA · Révisions · Stats**, avec des icônes au contour (`gray-400`) et un libellé de 12 px en `text-secondary`.
+5 onglets : **Accueil · Explorer · Tutor'IA · Révisions · Stats** (Explorer avec une icône boussole), avec des icônes au contour (`gray-400`) et un libellé de 12 px en `text-secondary`.
 L'onglet actif a une pastille ronde `primary` de 52 px qui dépasse de la barre (bord blanc de 4 px), avec une icône blanche et un libellé en `primary` Bold.
 L'onglet **Tutor'IA** utilise le **logo** au lieu d'une icône : le logo sur fond blanc (30 px) au repos, et le logo sur fond bleu (42 px) dans une pastille de 60 px quand il est actif.
 

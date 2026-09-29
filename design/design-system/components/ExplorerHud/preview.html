@@ -1,0 +1,11 @@
+<!-- @dsCard group="Explorer" height=114 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 358 } }, h(T.ExplorerHud, { subject: 'maths', island: 'Île des Maths', city: 'Repère-sur-Mer', region: 'Région 2 · Géométrie', streak: 12, level: 4 }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>
