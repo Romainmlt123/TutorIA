@@ -68,7 +68,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - des commits petits et cohérents, un sujet par commit ;
   - ne jamais commit ni push sans que je l'aie demandé.
 - **Déploiement GitHub (rigueur obligatoire, sans protection côté serveur : le dépôt privé gratuit ne bloque rien) :**
-  1. créer chaque branche depuis `dev` à jour (`git fetch` puis `git switch -c <branche> origin/dev`), avec un nom clair en français ;
+  1. créer chaque branche depuis `dev` à jour (`git fetch` puis `git switch --no-track -c <branche> origin/dev`, pour qu'un `git push` ne vise jamais `dev`), avec un nom clair en français ;
   2. ne jamais pousser directement sur `main` ni sur `dev`, ne jamais faire de force push ;
   3. ne rien envoyer sans ma demande ; une fois la branche poussée, ouvrir une pull request vers `dev` et vérifier que la CI est verte (`gh pr checks`) avant de me la présenter ;
   4. c'est moi qui fusionne : la pull request dans `dev`, puis `dev` dans `main` par une pull request dédiée. Tu ne fusionnes jamais toi-même.
