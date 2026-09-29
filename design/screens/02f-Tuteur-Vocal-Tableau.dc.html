@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tuteur · Vocal avec tableau blanc</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button{font-family:inherit}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+@keyframes halo{0%{transform:scale(0.6);opacity:0.55}100%{transform:scale(2.2);opacity:0}}
+.halo{transform-box:fill-box;transform-origin:center;animation:halo 1.4s ease-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+.live{animation:blink 1.4s ease-in-out infinite}
+.ink{transition:opacity 0.45s ease}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+
+<header style="position: absolute; top: 56px; left: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 2">
+<dc-import name="../components/ModeToggle" mode="vocal" variante="tableau" hint-size="214px,48px"></dc-import>
+
+<section aria-label="Tableau blanc du tuteur" style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
+<dc-import name="../components/PanelHeader" type="tableau" titre="3x + 5 = 20" kicker="En direct · {{ timer }}" live="{{ yes }}" open="{{ open }}" on-toggle="{{ toggle }}" hint-size="318px,44px"></dc-import>
+
+<sc-if value="{{ open }}" hint-placeholder-val="{{ true }}">
+<svg width="318" height="210" viewBox="0 0 318 210" role="img" aria-label="Tableau blanc écrit en direct par le tuteur : 3x + 5 = 20, on retire 5, 3x = 15, on divise par 3, x = 5 entouré en rouge." style="display: block; border-radius: 16px; font-family: Satoshi, system-ui, sans-serif">
+<defs>
+<pattern id="points" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="1" fill="#CED4E2"></circle></pattern>
+</defs>
+<rect x="0" y="0" width="318" height="210" rx="16" fill="#FBFCFF"></rect>
+<rect x="0" y="0" width="318" height="210" rx="16" fill="url(#points)"></rect>
+<line x1="206" y1="18" x2="206" y2="196" stroke="#CED4E2" stroke-width="1.5" stroke-dasharray="4 5"></line>
+
+<g class="ink" opacity="{{ o1 }}" font-size="26" font-weight="700" fill="#000612">
+<text x="20" y="46">3x</text><text x="62" y="46">+ 5</text><text x="118" y="46">=</text><text x="146" y="46">20</text>
+</g>
+<g class="ink" opacity="{{ o2 }}">
+<g font-size="16" font-weight="700" fill="#2E6BE6"><text x="66" y="72">− 5</text><text x="148" y="72">− 5</text></g>
+<text x="216" y="44" font-size="12" font-weight="700" fill="#1750C4">① On retire 5</text>
+<text x="230" y="60" font-size="12" font-weight="500" fill="#5D677D">des 2 côtés</text>
+</g>
+<g class="ink" opacity="{{ o3 }}">
+<g font-size="26" font-weight="700" fill="#000612"><text x="20" y="116">3x</text><text x="118" y="116">=</text><text x="146" y="116">15</text></g>
+<g font-size="16" font-weight="700" fill="#2E6BE6"><text x="22" y="142">÷ 3</text><text x="148" y="142">÷ 3</text></g>
+<text x="216" y="114" font-size="12" font-weight="700" fill="#1750C4">② On divise</text>
+<text x="230" y="130" font-size="12" font-weight="500" fill="#5D677D">par 3</text>
+<path d="M290 70 C 300 84, 300 94, 290 104" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round"></path>
+<path d="M285 99 L290 105 L296 100" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</g>
+<g class="ink" opacity="{{ o4 }}">
+<g font-size="30" font-weight="900" fill="#C21A1A"><text x="34" y="186">x</text><text x="118" y="186">=</text><text x="150" y="186">5</text></g>
+<text x="216" y="182" font-size="12" font-weight="700" fill="#C21A1A">③ Solution !</text>
+<path d="M290 138 C 300 152, 300 162, 290 172" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round"></path>
+<path d="M285 167 L290 173 L296 168" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</g>
+<path d="M22 176 C 20 158, 92 154, 132 156 C 172 158, 190 164, 186 178 C 183 194, 110 200, 70 198 C 36 196, 20 190, 24 172" fill="none" stroke="#E62E2E" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="520" stroke-dashoffset="{{ circleOffset }}" style="transition: stroke-dashoffset 1s ease"></path>
+
+<circle class="halo" cx="{{ pen.x }}" cy="{{ pen.y }}" r="{{ pen.r }}" fill="#2E6BE6"></circle>
+<circle cx="{{ pen.x }}" cy="{{ pen.y }}" r="{{ pen.dot }}" fill="#2E6BE6" stroke="#FFFFFF" stroke-width="2"></circle>
+</svg>
+<div style="display: flex; gap: 8px">
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="3">
+<span style="height: 28px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: {{ c.bg }}; color: {{ c.color }}; font-size: 12px; font-weight: 700; transition: background 0.3s ease">{{ c.label }}</span>
+</sc-for>
+</div>
+</sc-if>
+</section>
+</header>
+
+<button type="button" onClick="{{ interrupt }}" aria-label="{{ stageLabel }}" style="position: absolute; top: {{ stageTop }}px; left: 0; right: 0; bottom: 220px; border: none; background: transparent; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--text); transition: top 0.25s ease">
+<span aria-hidden="true" style="height: {{ stageH }}px; display: flex; align-items: center; justify-content: center; gap: {{ barGap }}px">
+<sc-for list="{{ bars }}" as="bar" hint-placeholder-count="4">
+<span style="display: block; width: {{ bar.w }}px; height: {{ bar.h }}px; border-radius: 999px; background: linear-gradient(180deg, #2E6BE6 0%, #662EE6 100%); transition: height 0.14s ease-out"></span>
+</sc-for>
+</span>
+<span style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+<span aria-live="polite" style="font-size: 18px; line-height: 24px; font-weight: 500; color: var(--text-secondary)">{{ status }}</span>
+<span style="font-size: 14px; line-height: 20px; color: var(--text-secondary)">Touche l'écran pour interrompre</span>
+</span>
+</button>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 116px; height: 96px">
+<dc-import name="../components/CallControls" muted="{{ muted }}" cam-on="{{ camOn }}" on-mute="{{ toggleMute }}" on-cam="{{ toggleCam }}" hangup-href="../screens/02e-Tuteur-Ecrit-Tableau.dc.html" hint-size="350px,96px"></dc-import>
+</div>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="eleve" active="tuteur" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"etat":{"editor":"enum","options":["auto","parle","ecoute","repos"],"default":"auto"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { tick: 0, muted: false, cam: false, open: true, interruptAt: -1000 };
+}
+componentDidMount() {
+this.timer = setInterval(() => this.setState({ tick: this.state.tick + 1 }), 100);
+}
+componentWillUnmount() {
+clearInterval(this.timer);
+}
+mode() {
+const etat = this.props.etat ?? 'auto';
+const tick = this.state.tick;
+let m;
+if (etat === 'parle') m = 'ai';
+else if (etat === 'ecoute') m = 'user';
+else if (etat === 'repos') m = 'idle';
+else if (tick - this.state.interruptAt < 50) m = 'user';
+else m = (tick % 120) < 70 ? 'ai' : 'user';
+if (m === 'user' && this.state.muted) m = 'muted';
+return m;
+}
+renderVals() {
+const tick = this.state.tick;
+const t = tick * 0.1;
+const m = this.mode();
+const open = this.state.open;
+const auto = (this.props.etat ?? 'auto') === 'auto';
+let step = 4;
+if (m === 'ai') step = auto ? Math.min(4, 1 + Math.floor((tick % 120) / 15)) : 1 + Math.floor(tick / 15) % 4;
+const writing = m === 'ai' && step <= 4 && ((tick % 120) < 60 || !auto);
+const penPos = [null, { x: 192, y: 38 }, { x: 186, y: 66 }, { x: 186, y: 108 }, { x: 188, y: 176 }];
+const p = penPos[step];
+const pen = writing ? { x: p.x, y: p.y, r: 7, dot: 4 } : { x: p.x, y: p.y, r: 0, dot: 0 };
+const w = open ? 28 : 40;
+const max = open ? 72 : 150;
+const bars = [0, 1, 2, 3].map((i) => {
+let h = w;
+if (m === 'ai') {
+const env = 0.55 + 0.45 * Math.sin(t * 1.3 + i * 0.4);
+const wave = 0.5 + 0.5 * (0.6 * Math.sin(t * 7.1 + i * 1.7) + 0.4 * Math.sin(t * 3.3 + i * 2.9));
+const pause = Math.sin(t * 0.8) > 0.92 ? 0.15 : 1;
+h = w + max * wave * env * pause;
+} else if (m === 'user') {
+const wave = 0.5 + 0.5 * Math.sin(t * 3.2 + i * 1.3);
+const env = 0.6 + 0.4 * Math.sin(t * 0.9 + i);
+h = w + max * 0.4 * wave * env;
+}
+return { h: Math.round(h), w };
+});
+const chipDefs = [['① Retirer 5', 2], ['② Diviser par 3', 3], ['③ x = 5', 4]];
+const chips = chipDefs.map(([label, s], j) => {
+const current = step === s || (step === 1 && j === 0);
+const isLast = j === 2;
+if (current && isLast) return { label, bg: '#C21A1A', color: '#FFFFFF' };
+if (current) return { label, bg: '#2E6BE6', color: '#FFFFFF' };
+if (isLast) return { label, bg: '#FFEBEB', color: '#C21A1A' };
+return { label, bg: '#EBF1FF', color: '#1750C4' };
+});
+const labels = { ai: 'Le tuteur écrit au tableau…', user: 'Le tuteur t’écoute…', muted: 'Ton micro est coupé', idle: 'En pause' };
+const secs = 212 + Math.floor(tick / 10);
+const timer = String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0');
+const muted = this.state.muted;
+const cam = this.state.cam;
+return {
+yes: true,
+bars,
+barGap: open ? 14 : 20,
+stageH: w + max,
+stageTop: open ? 462 : 200,
+open,
+chevron: open ? 0 : 180,
+toggleLabel: open ? 'Réduire le tableau' : 'Afficher le tableau',
+toggle: () => this.setState({ open: !this.state.open }),
+o1: 1,
+o2: step >= 2 ? 1 : 0,
+o3: step >= 3 ? 1 : 0,
+o4: step >= 4 ? 1 : 0,
+circleOffset: step >= 4 ? 0 : 520,
+pen,
+chips,
+timer,
+status: labels[m],
+stageLabel: m === 'ai' ? 'Interrompre le tuteur' : 'Le tuteur t’écoute',
+muted,
+notMuted: !muted,
+muteLabel: muted ? 'Réactiver le micro' : 'Couper le micro',
+muteCaption: muted ? 'Micro coupé' : 'Micro',
+micColor: muted ? '#FFFFFF' : '#5D677D',
+micBg: muted ? '#000612' : '#FFFFFF',
+camOn: cam,
+camOff: !cam,
+camLabel: cam ? 'Couper la caméra' : 'Activer la caméra',
+camCaption: cam ? 'Caméra activée' : 'Caméra',
+camColor: cam ? '#FFFFFF' : '#5D677D',
+camBg: cam ? '#2E6BE6' : '#FFFFFF',
+interrupt: () => this.setState({ interruptAt: this.state.tick }),
+toggleMute: () => this.setState({ muted: !this.state.muted }),
+toggleCam: () => this.setState({ cam: !this.state.cam })
+};
+}
+}
+</script>
+</body>
+</html>

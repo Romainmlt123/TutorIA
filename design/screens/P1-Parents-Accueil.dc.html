@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Parents · Tableau de bord</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button{font-family:inherit}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 1420px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<main style="display: flex; flex-direction: column; gap: 24px; padding: 56px 20px 0; box-sizing: border-box">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<button type="button" aria-label="Changer d'enfant, enfant affiché : Léa" style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 12px 0 6px; border: none; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-sm); color: var(--text); cursor: pointer">
+<span style="width: 36px; height: 36px; border-radius: 999px; background: linear-gradient(160deg, #4D81EA 0%, #1750C4 100%); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900">L</span>
+<span style="display: flex; flex-direction: column; align-items: flex-start"><span style="font-size: 14px; line-height: 18px; font-weight: 700">Léa</span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">4e</span></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--text-secondary)"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<span style="display: flex; align-items: center; gap: 8px">
+<span style="height: 28px; padding: 0 12px; display: flex; align-items: center; border-radius: 999px; background: var(--primary); color: #FFFFFF; font-size: 12px; font-weight: 700">Espace Parents</span>
+<button type="button" aria-label="Notifications, 1 nouvelle" style="position: relative; width: 48px; height: 48px; border: none; border-radius: var(--radius-2xl); background: var(--surface); box-shadow: var(--shadow-sm); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l2 2H4z"></path><path d="M10 21h4"></path></svg>
+<span style="position: absolute; top: 10px; right: 12px; width: 10px; height: 10px; border-radius: 999px; background: var(--accent); border: 2px solid var(--surface)"></span>
+</button>
+</span>
+</div>
+
+<header style="display: flex; flex-direction: column; gap: 4px; margin-top: -4px">
+<h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 900">Bonjour Claire</h1>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: var(--text-secondary)">Voici la semaine de Léa, du 21 au 27 septembre.</p>
+</header>
+
+<section aria-label="Résumé de la semaine" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 24px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 50%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: -36px; top: -30px; opacity: 0.12"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z"></path></svg>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 44px; height: 44px; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; overflow: hidden"><img src="../../assets/logo/Logo_tutoria_fond_blanc.png" alt="" width="36" height="36" style="display: block; width: 36px; height: 36px; object-fit: contain"></span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 18px; line-height: 24px; font-weight: 900">Résumé de la semaine</span><span style="font-size: 12px; line-height: 16px; font-weight: 500; opacity: 0.85">Rédigé par Tutor'IA · dimanche 27 sept.</span></span>
+</div>
+<p style="margin: 0; font-size: 16px; line-height: 26px">Léa a travaillé <strong>4 h 40</strong> cette semaine, surtout en Maths et en Anglais. Elle a bien progressé sur les <strong>équations du 1er degré</strong>, qu'elle résout maintenant seule.</p>
+<span style="align-self: flex-start; display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #2EE671; color: #003D16; font-size: 12px; font-weight: 700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"></path></svg>Une très bonne semaine</span>
+</section>
+
+<section aria-label="Chiffres clés" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+<div style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px 12px; background: linear-gradient(160deg, #17A5BE 0%, #09879D 45%, #026273 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<span style="width: 32px; height: 32px; border-radius: 999px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+<span style="font-size: 22px; line-height: 28px; font-weight: 900; white-space: nowrap">4 h 40</span>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500">d'étude · <strong>+38 min</strong></span>
+</div>
+<div style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px 12px; background: linear-gradient(160deg, #1BC85B 0%, #0C9E42 45%, #03702B 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<span style="width: 32px; height: 32px; border-radius: 999px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg></span>
+<span style="font-size: 22px; line-height: 28px; font-weight: 900">6 / 7</span>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500">jours actifs · <strong>+1</strong></span>
+</div>
+<div style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px 12px; background: linear-gradient(160deg, #8558EA 0%, #521DC8 60%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<span style="width: 32px; height: 32px; border-radius: 999px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"></path></svg></span>
+<span style="font-size: 22px; line-height: 28px; font-weight: 900">3</span>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500">notions acquises</span>
+</div>
+</section>
+
+<section aria-label="Point à surveiller" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 20px; background: #E6992E; border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
+<svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: -24px; bottom: -28px; opacity: 0.18"><path d="M12 3 2 20h20z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 999px; background: #FFFFFF; color: #E6992E; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20z"></path><path d="M12 10v4M12 17h.01"></path></svg></span>
+<span style="font-size: 18px; line-height: 24px; font-weight: 900">À surveiller</span>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 22px; font-weight: 500">La <strong>masse volumique</strong> (Physique-Chimie) reste difficile : 41 % de réussite après 3 sessions.</p>
+<a href="P2-Parents-Progres.dc.html" style="align-self: flex-start; height: 44px; padding: 0 16px; display: flex; align-items: center; gap: 6px; border-radius: 14px; background: #FFFFFF; color: #6E4204; font-size: 14px; font-weight: 700; text-decoration: none">Voir le détail<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</section>
+
+<section aria-label="Conseil pour l'encourager" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--accent-soft); border-radius: var(--radius-3xl)">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 999px; background: linear-gradient(160deg, #8558EA 0%, #521DC8 100%); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"></path></svg></span>
+<span style="font-size: 18px; line-height: 24px; font-weight: 900; color: #521DC8">Comment l'encourager</span>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 22px; color: #210267">Demandez-lui de vous expliquer comment résoudre 3x + 5 = 20. Expliquer à quelqu'un aide à retenir.</p>
+</section>
+
+<section aria-label="Temps d'étude par jour" style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 18px; line-height: 24px; font-weight: 900">Temps d'étude par jour</h2>
+<span style="height: 24px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: var(--primary-soft); color: var(--primary-hover); font-size: 12px; font-weight: 700">Objectif 40 min</span>
+</div>
+<div style="position: relative; height: 130px">
+<div style="position: absolute; left: 0; right: 0; top: 65px; border-top: 1.5px dashed #9DA6B9"></div>
+<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: flex; align-items: flex-end; gap: 12px">
+<sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+<div title="{{ d.tip }}" style="flex: 1 1 0; height: {{ d.h }}px; border-radius: 8px 8px 3px 3px; background: {{ d.c }}"></div>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; gap: 12px">
+<sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+<span style="flex: 1 1 0; text-align: center; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--text-secondary)">{{ d.l }}</span>
+</sc-for>
+</div>
+<p style="margin: 0; padding: 12px 14px; border-radius: 14px; background: var(--bg); font-size: 13px; line-height: 18px; color: var(--text-secondary)">Léa travaille surtout entre 17 h et 19 h. Aucune session après 21 h.</p>
+</section>
+
+</main>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="parents" active="accueil" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1420}}'>
+class Component extends DCLogic {
+renderVals() {
+const raw = [['L', 35], ['M', 50], ['M', 20], ['J', 80], ['V', 40], ['S', 55], ['D', 0]];
+const days = raw.map(([l, v]) => ({
+l,
+h: Math.max(6, Math.round(v / 80 * 130)),
+c: v === 0 ? '#CED4E2' : (v >= 40 ? 'linear-gradient(180deg, #662EE6 0%, #2E6BE6 100%)' : '#B2C9F6'),
+tip: v === 0 ? 'Pas de session' : v + ' min'
+}));
+return { days };
+}
+}
+</script>
+</body>
+</html>

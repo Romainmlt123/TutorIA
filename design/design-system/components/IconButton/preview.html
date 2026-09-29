@@ -1,0 +1,15 @@
+<!-- @dsCard group="Actions" height=96 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { display: 'flex', gap: 12, alignItems: 'center' } },
+  h(T.IconButton, { icon: 'chevronLeft', label: 'Retour' }),
+  h(T.IconButton, { icon: 'bell', label: 'Notifications', badge: true }),
+  h(T.IconButton, { icon: 'sliders', label: 'Réglages', tone: 'soft' }),
+  h(T.IconButton, { icon: 'expand', label: 'Agrandir', size: 40 }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

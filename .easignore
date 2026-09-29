@@ -1,0 +1,16 @@
+# Fichiers exclus de l'envoi vers EAS Build (en plus de ce qu'EAS ignore déjà).
+# Secrets : ne jamais envoyer
+.env
+.env.*
+!.env.example
+
+# Générés ou locaux
+node_modules/
+.expo/
+dist/
+web-build/
+coverage/
+/ios
+/android
+.git/
+*.log

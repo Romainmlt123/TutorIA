@@ -1,0 +1,12 @@
+<!-- @dsCard group="Parents" height=242 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 342 } }, h(T.SessionSummaryCard, { subject: 'maths', title: 'Équations du 1er degré', meta: 'Hier · 18 min', outcome: 'understood', modes: ['vocal', 'tableau'],
+  summary: 'Léa a résolu 4 équations seule après deux exemples guidés.' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

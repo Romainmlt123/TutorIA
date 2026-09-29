@@ -1,0 +1,18 @@
+<!-- @dsCard group="Onboarding" height=298 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+function Demo() { var s = React.useState({ a: true, b: false, c: false, d: true });
+  function t(k) { return function () { var n = Object.assign({}, s[0]); n[k] = !n[k]; s[1](n); }; }
+  return h('div', { style: { width: 350, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 } },
+    h(T.GoalTile, { label: 'Remonter mes notes', icon: 'trend', tone: 'green', selected: s[0].a, onClick: t('a') }),
+    h(T.GoalTile, { label: 'Préparer mes contrôles', icon: 'target', tone: 'red', selected: s[0].b, onClick: t('b') }),
+    h(T.GoalTile, { label: 'Viser le brevet', icon: 'medal', tone: 'brown', selected: s[0].c, onClick: t('c') }),
+    h(T.GoalTile, { label: 'Prendre de l’avance', icon: 'rocket', tone: 'cyan', selected: s[0].d, onClick: t('d') })); }
+return h(Demo);
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

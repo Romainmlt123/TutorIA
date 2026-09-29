@@ -1,0 +1,12 @@
+<!-- @dsCard group="Parents" height=252 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 342 } }, h(T.HeroCard, { logo: true, kicker: 'Semaine du 21 septembre', title: 'Belle semaine pour Léa', badge: '+8 pts en maths' },
+  'Léa a travaillé 3 h 20 en 9 séances, surtout en maths et en anglais.'));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

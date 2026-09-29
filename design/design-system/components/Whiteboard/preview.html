@@ -1,0 +1,12 @@
+<!-- @dsCard group="Tuteur" height=302 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 318 } }, h(T.Whiteboard, { subject: 'maths',
+  steps: [{ expr: '3x + 5 = 20', note: 'On part de l’équation' }, { expr: '3x = 15', op: '− 5 des deux côtés', note: 'On isole 3x' }, { expr: 'x = 5', op: '÷ 3 des deux côtés', note: 'On isole x' }], result: 'x = 5', resultNote: 'Vérifie : 3 × 5 + 5 = 20' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

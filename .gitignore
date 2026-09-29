@@ -1,0 +1,30 @@
+# Secrets — ne jamais versionner
+.env
+.env.*
+!.env.example
+
+# Dépendances
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Builds natifs générés (prebuild)
+/ios
+/android
+
+# Métro / TypeScript
+.metro-health-check*
+*.tsbuildinfo
+
+# Tests
+coverage/
+
+# Divers
+.DS_Store
+*.log
+*.pem
+.vscode/

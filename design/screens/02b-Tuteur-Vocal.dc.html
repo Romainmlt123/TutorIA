@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tuteur · Vocal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button{font-family:inherit}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+
+<header style="position: absolute; top: 56px; left: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 2">
+<dc-import name="../components/ModeToggle" mode="vocal" variante="simple" hint-size="214px,48px"></dc-import>
+<dc-import name="../components/TopicCard" matiere="maths" titre="Équations du 1er degré" badge="{{ timer }}" live="{{ yes }}" hint-size="350px,64px"></dc-import>
+</header>
+
+<button type="button" onClick="{{ interrupt }}" aria-label="{{ stageLabel }}" style="position: absolute; top: 196px; left: 0; right: 0; height: 424px; border: none; background: transparent; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 36px; color: var(--text)">
+<span aria-hidden="true" style="height: 200px; display: flex; align-items: center; justify-content: center; gap: 20px">
+<sc-for list="{{ bars }}" as="bar" hint-placeholder-count="4">
+<span style="display: block; width: 40px; height: {{bar.h}}px; border-radius: 999px; background: linear-gradient(180deg, #2E6BE6 0%, #662EE6 100%); transition: height 0.14s ease-out"></span>
+</sc-for>
+</span>
+<span style="display: flex; flex-direction: column; align-items: center; gap: 12px">
+<span aria-live="polite" style="font-size: 18px; line-height: 28px; font-weight: 500; color: var(--text-secondary)">{{ status }}</span>
+<span style="font-size: 14px; line-height: 20px; color: var(--text-secondary)">Touche l'écran pour interrompre</span>
+</span>
+</button>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 116px; height: 96px">
+<dc-import name="../components/CallControls" muted="{{ muted }}" cam-on="{{ camOn }}" on-mute="{{ toggleMute }}" on-cam="{{ toggleCam }}" hangup-href="../screens/02a-Tuteur-Ecrit.dc.html" hint-size="350px,96px"></dc-import>
+</div>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="eleve" active="tuteur" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"etat":{"editor":"enum","options":["auto","parle","ecoute","repos"],"default":"auto"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { tick: 0, muted: false, cam: false, interruptAt: -1000 };
+}
+componentDidMount() {
+this.timer = setInterval(() => this.setState({ tick: this.state.tick + 1 }), 100);
+}
+componentWillUnmount() {
+clearInterval(this.timer);
+}
+mode() {
+const etat = this.props.etat ?? 'auto';
+const tick = this.state.tick;
+let m;
+if (etat === 'parle') m = 'ai';
+else if (etat === 'ecoute') m = 'user';
+else if (etat === 'repos') m = 'idle';
+else if (tick - this.state.interruptAt < 50) m = 'user';
+else m = (Math.floor(tick / 10) % 12) < 7 ? 'ai' : 'user';
+if (m === 'user' && this.state.muted) m = 'muted';
+return m;
+}
+renderVals() {
+const t = this.state.tick * 0.1;
+const m = this.mode();
+const bars = [0, 1, 2, 3].map((i) => {
+let h = 40;
+if (m === 'ai') {
+const env = 0.55 + 0.45 * Math.sin(t * 1.3 + i * 0.4);
+const wave = 0.5 + 0.5 * (0.6 * Math.sin(t * 7.1 + i * 1.7) + 0.4 * Math.sin(t * 3.3 + i * 2.9));
+const pause = Math.sin(t * 0.8) > 0.92 ? 0.15 : 1;
+h = 40 + 150 * wave * env * pause;
+} else if (m === 'user') {
+const wave = 0.5 + 0.5 * Math.sin(t * 3.2 + i * 1.3);
+const env = 0.6 + 0.4 * Math.sin(t * 0.9 + i);
+h = 40 + 60 * wave * env;
+}
+return { h: Math.round(h) };
+});
+const labels = { ai: 'Le tuteur parle…', user: 'Le tuteur t’écoute…', muted: 'Ton micro est coupé', idle: 'En pause' };
+const secs = 134 + Math.floor(this.state.tick / 10);
+const timer = String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0');
+const muted = this.state.muted;
+const cam = this.state.cam;
+return {
+yes: true,
+bars,
+timer,
+status: labels[m],
+stageLabel: m === 'ai' ? 'Interrompre le tuteur' : 'Le tuteur t’écoute',
+muted,
+notMuted: !muted,
+muteLabel: muted ? 'Réactiver le micro' : 'Couper le micro',
+muteCaption: muted ? 'Micro coupé' : 'Micro',
+micColor: muted ? '#FFFFFF' : '#5D677D',
+micBg: muted ? '#000612' : '#FFFFFF',
+camOn: cam,
+camOff: !cam,
+camLabel: cam ? 'Couper la caméra' : 'Activer la caméra',
+camCaption: cam ? 'Caméra activée' : 'Caméra',
+camColor: cam ? '#FFFFFF' : '#5D677D',
+camBg: cam ? '#2E6BE6' : '#FFFFFF',
+interrupt: () => this.setState({ interruptAt: this.state.tick }),
+toggleMute: () => this.setState({ muted: !this.state.muted }),
+toggleCam: () => this.setState({ cam: !this.state.cam })
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+/* Tutor'IA · styles partagés des composants (animations uniquement : le reste est porté par les tokens). */
+@keyframes tia-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@keyframes tia-halo { 0% { transform: scale(0.6); opacity: 0.55; } 100% { transform: scale(2.2); opacity: 0; } }
+@keyframes tia-wave { 0%, 100% { transform: scaleY(0.45); } 50% { transform: scaleY(1); } }
+.tia-blink { animation: tia-blink 1.4s ease-in-out infinite; }
+.tia-halo { transform-box: fill-box; transform-origin: center; animation: tia-halo 1.6s ease-out infinite; }
+.tia-wave { transform-origin: center; animation: tia-wave 1.1s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .tia-blink, .tia-halo, .tia-wave { animation: none; }
+}

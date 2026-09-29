@@ -1,0 +1,16 @@
+<!-- @dsCard group="Parents" height=272 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+function Demo() { var a = React.useState(true), b = React.useState(false);
+  return h('div', { style: { width: 342, background: 'var(--surface)', borderRadius: 24, boxShadow: 'var(--shadow-md)', padding: '4px 16px' } },
+    h(T.SettingRow, { icon: 'bell', tone: 'orange', label: 'Rappel quotidien', hint: 'À 17 h 30', checked: a[0], onChange: a[1] }),
+    h(T.SettingRow, { icon: 'mail', tone: 'violet', label: 'Résumé hebdomadaire', hint: 'Chaque dimanche', checked: b[0], onChange: b[1], divider: true }),
+    h(T.SettingRow, { icon: 'shield', tone: 'blue', label: 'Confidentialité', onClick: function () {}, divider: true })); }
+return h(Demo);
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

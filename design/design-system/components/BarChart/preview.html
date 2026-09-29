@@ -1,0 +1,12 @@
+<!-- @dsCard group="Stats" height=244 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 342, padding: 16, boxSizing: 'border-box', background: 'var(--surface)', borderRadius: 24, boxShadow: 'var(--shadow-md)' } },
+  h(T.BarChart, { max: 60, goal: 30, data: [{ label: 'L', value: 25 }, { label: 'M', value: 40 }, { label: 'M', value: 15 }, { label: 'J', value: 35 }, { label: 'V', value: 30 }, { label: 'S', value: 50 }, { label: 'D', value: 20, tip: '20 min' }] }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>
