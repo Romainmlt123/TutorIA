@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.expo/
+coverage/
+design/
+assets/
+package-lock.json
+src/theme/tokens.generated.ts
+CLAUDE.md
+PROMPT_CLAUDE_CODE.md
+expo-env.d.ts
