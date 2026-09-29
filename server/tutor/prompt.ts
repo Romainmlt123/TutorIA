@@ -3,13 +3,15 @@
  * (clé de cache et traçabilité des signalements).
  * Aucune donnée personnelle : seulement la classe, la matière et le chapitre.
  */
-export const TUTOR_PROMPT_VERSION = '2026-09-28.2';
+export const TUTOR_PROMPT_VERSION = '2026-09-29.1';
 
 export type PromptContext = {
   mode: 'text' | 'voice';
   grade: string;
   subject: string;
   chapter: string;
+  /** Consignes d'un niveau d'Explorer (server/tutor/level.ts), construites par le serveur seul. */
+  level?: string;
 };
 
 const COMMON = `Tu es Tutor'IA, un tuteur de révision pour un élève de collège en France.
@@ -46,7 +48,15 @@ const VOICE_FORMAT = `À l'oral
 - Commence l'appel en saluant l'élève en une phrase, puis propose de reprendre le chapitre avec une question.
 - Si l'élève t'envoie la photo d'un exercice, décris en une phrase ce que tu vois, puis commence par la première étape.`;
 
-export function buildTutorInstructions({ mode, grade, subject, chapter }: PromptContext): string {
+export function buildTutorInstructions({
+  mode,
+  grade,
+  subject,
+  chapter,
+  level,
+}: PromptContext): string {
   const context = `Contexte : l'élève est en ${grade}. Matière : ${subject}. Chapitre : ${chapter}.`;
-  return [COMMON, mode === 'voice' ? VOICE_FORMAT : TEXT_FORMAT, context].join('\n\n');
+  const parts = [COMMON, mode === 'voice' ? VOICE_FORMAT : TEXT_FORMAT, context];
+  if (level) parts.push(level);
+  return parts.join('\n\n');
 }

@@ -3,14 +3,19 @@ import { student } from '@/data/mock/student';
 import { subjects } from '@/data/mock/subjects';
 import type { TutorTopic } from '@/services/tutor/api-contract';
 
+import { levelOfTopic } from './level';
 import type { PromptContext } from './prompt';
 
-/** Contexte pédagogique transmis au prompt (sans le prénom de l'élève). */
+/**
+ * Contexte pédagogique transmis au prompt (sans le prénom de l'élève). Pour un niveau d'Explorer,
+ * la classe et le chapitre viennent du contenu du niveau.
+ */
 export function promptContextOf(topic: TutorTopic, mode: PromptContext['mode']): PromptContext {
+  const place = levelOfTopic(topic);
   return {
     mode,
-    grade: student.grade,
+    grade: place?.island.grade ?? student.grade,
     subject: subjects.find((s) => s.id === topic.subjectId)?.name ?? topic.subjectId,
-    chapter: chapters.find((c) => c.id === topic.chapterId)?.title ?? '',
+    chapter: place?.city.name ?? chapters.find((c) => c.id === topic.chapterId)?.title ?? '',
   };
 }

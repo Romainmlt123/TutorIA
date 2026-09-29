@@ -4,6 +4,7 @@ import { errorResponse, jsonResponse } from '../http';
 import { serverLog } from '../log';
 import { getAdminClient, type AdminClient } from '../supabase';
 import { requireTutorAccess } from './access';
+import { levelOfTopic } from './level';
 import { handleRealtimeSession, type RealtimeDeps } from './realtime';
 
 /** Plafond d'un appel vocal (TUTOR_LIMITS.voiceCallMaxMs), en secondes. */
@@ -63,6 +64,10 @@ export async function handleVoiceSessionStart(
   }
   const topic = parseTopic(topicBody);
   if (!topic.ok) return errorResponse(topic.code);
+  // Explorer : à la voix, seulement les leçons. Les appels d'outils de l'API Realtime arrivent sur
+  // le téléphone, qui pourrait les falsifier : exercices notés et évaluations restent à l'écrit.
+  const place = levelOfTopic(topic.value);
+  if (place && place.level.type !== 'lecon') return errorResponse('not_allowed');
 
   const response = await handleRealtimeSession(request, deps.realtime);
   if (!response.ok) return response;

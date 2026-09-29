@@ -8,6 +8,8 @@ import {
   type TutorTopic,
 } from '@/services/tutor/api-contract';
 
+import { levelOfTopic } from '../tutor/level';
+
 const SUBJECT_IDS = [
   'maths',
   'francais',
@@ -17,7 +19,11 @@ const SUBJECT_IDS = [
   'physique-chimie',
 ] as const;
 
-const topicSchema = z.object({ subjectId: z.enum(SUBJECT_IDS), chapterId: z.string().max(64) });
+const topicSchema = z.object({
+  subjectId: z.enum(SUBJECT_IDS),
+  chapterId: z.string().max(64),
+  levelId: z.string().max(128).optional(),
+});
 
 const chatSchema = z.object({
   topic: topicSchema,
@@ -37,8 +43,12 @@ export function redactPersonalData(text: string): string {
   return text.replace(EMAIL, '[e-mail]').replace(PHONE, '[téléphone]');
 }
 
-/** Le chapitre doit exister et appartenir à la matière annoncée. */
+/**
+ * Le chapitre doit exister et appartenir à la matière annoncée. Pour un niveau d'Explorer, le niveau
+ * doit exister, appartenir à ce chapitre et se jouer déjà.
+ */
 export function isKnownTopic(topic: TutorTopic): boolean {
+  if (topic.levelId !== undefined) return levelOfTopic(topic) !== null;
   return chapters.some((c) => c.id === topic.chapterId && c.subjectId === topic.subjectId);
 }
 

@@ -4,7 +4,24 @@
  */
 import type { SubjectId } from '@/data/types';
 
-export type TutorTopic = { subjectId: SubjectId; chapterId: string };
+/**
+ * Sujet d'une discussion. `levelId` : niveau d'Explorer (île, ville, niveau) ; le serveur en déduit
+ * seul le type, la notion et les consignes du tuteur. L'app n'envoie jamais de consigne.
+ */
+export type TutorTopic = { subjectId: SubjectId; chapterId: string; levelId?: string };
+
+/** Bilan d'un niveau d'Explorer, calculé par le serveur à partir des réponses enregistrées. */
+export type LevelOutcome = {
+  levelId: string;
+  /** De 0 à 1. */
+  score: number;
+  stars: 0 | 1 | 2 | 3;
+  passed: boolean;
+  xp: number;
+  /** Réponses justes et nombre de questions (« 5 sur 8 ») ; étapes réussies pour une leçon. */
+  correct: number;
+  total: number;
+};
 
 export type ChatTurn = { role: 'student' | 'tutor'; text: string };
 
@@ -40,6 +57,10 @@ export type TutorStreamEvent =
   | { type: 'delta'; text: string }
   | { type: 'done' }
   | { type: 'retract' }
+  /** Niveau d'Explorer : étape, exercice ou question validés (barre de progression). */
+  | { type: 'step'; done: number; total: number }
+  /** Niveau d'Explorer terminé : vers le bilan (X5, X5b). */
+  | { type: 'levelResult'; outcome: LevelOutcome }
   | { type: 'error'; code: TutorErrorCode };
 
 export type ErrorResponse = { error: TutorErrorCode };

@@ -174,6 +174,8 @@ export function useTutorChat(
         )) {
           // L'identifiant de conversation est géré par le service ; rien à afficher.
           if (event.type === 'conversation') continue;
+          // Progression d'un niveau d'Explorer : gérée par l'écran de niveau, pas par le chat.
+          if (event.type === 'step' || event.type === 'levelResult') continue;
           if (event.type === 'delta') {
             received = true;
             dispatch({ type: 'delta', id, text: event.text });

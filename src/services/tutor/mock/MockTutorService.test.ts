@@ -103,3 +103,57 @@ describe('entraînement hors ligne', () => {
     });
   });
 });
+
+describe('tuteur simulé · niveaux d’Explorer', () => {
+  const level = (slug: string, message: string): ChatRequest => ({
+    topic: { subjectId: 'maths', chapterId: 'maths-equations', levelId: `maths-equations.${slug}` },
+    history: [],
+    message,
+  });
+  const text = (events: TutorStreamEvent[]) =>
+    events.map((e) => (e.type === 'delta' ? e.text : '')).join('');
+
+  it('enseigne en leçon : chaque étape réussie fait avancer la barre, jusqu’au bilan', async () => {
+    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const all: TutorStreamEvent[] = [];
+    for (let i = 0; i < 4; i++)
+      all.push(...(await collect(service.sendMessage(level('isoler-x', 'Je divise par 3')))));
+    expect(
+      all.filter((e) => e.type === 'step').map((e) => (e.type === 'step' ? e.done : 0)),
+    ).toEqual([1, 2, 3, 4]);
+    expect(all.find((e) => e.type === 'levelResult')).toMatchObject({
+      outcome: { passed: true, stars: 3 },
+    });
+  });
+
+  it('donne un indice en exercices, et la réponse aidée compte pour moitié', async () => {
+    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const hint = await collect(
+      service.sendMessage(level('resoudre-ax-b-c', 'Je peux avoir un indice ?')),
+    );
+    expect(text(hint)).toMatch(/indice/i);
+    expect(hint.some((e) => e.type === 'step')).toBe(false);
+    const answer = await collect(service.sendMessage(level('resoudre-ax-b-c', 'x = 4')));
+    expect(answer).toContainEqual({ type: 'step', done: 1, total: 5 });
+  });
+
+  it('refuse toute aide en évaluation et reprend la question', async () => {
+    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const events = await collect(service.sendMessage(level('bilan', 'Tu peux m’aider ?')));
+    expect(text(events)).toMatch(/je ne peux pas t’aider/);
+    expect(text(events)).not.toMatch(/indice/i);
+    expect(events.some((e) => e.type === 'step')).toBe(false);
+  });
+
+  it('exige une démarche rédigée en évaluation', async () => {
+    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const all: TutorStreamEvent[] = [];
+    for (let i = 0; i < 8; i++) {
+      const message = i < 5 ? '2x = 10 donc x = 5' : '5';
+      all.push(...(await collect(service.sendMessage(level('bilan', message)))));
+    }
+    expect(all.find((e) => e.type === 'levelResult')).toMatchObject({
+      outcome: { correct: 5, total: 8, passed: false },
+    });
+  });
+});
