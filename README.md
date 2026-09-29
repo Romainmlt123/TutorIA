@@ -180,7 +180,7 @@ Les conventions (thème, nommage, frontière app / serveur, Supabase) sont déta
 
 - `main` : toujours stable, ne reçoit que des fusions depuis `dev` (pull request, CI verte).
 - `dev` : intégration des fonctionnalités.
-- Une branche par fonctionnalité, créée depuis `dev` : `feat/…`, `fix/…`, `chore/…`, `docs/…`, fusionnée dans `dev` par pull request.
+- Une branche par fonctionnalité, créée depuis `dev`, nommée en français après son préfixe (`feat/espace-parents`, `fix/pause-du-soir`, `docs/guide-installation`), fusionnée dans `dev` par pull request.
 - Messages de commit au format Conventional Commits. La CI (lint, types, tests, tokens à jour) tourne sur chaque pull request et sur `main` et `dev`.
 
 ## Avant une publication sur les stores

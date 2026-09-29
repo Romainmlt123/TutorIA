@@ -62,7 +62,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - dépôt : `https://github.com/Romainmlt123/TutorIA` ;
   - `main` est toujours stable : elle ne reçoit que des fusions depuis `dev`, par pull request, CI verte ;
   - `dev` est la branche d'intégration : chaque fonctionnalité y arrive par pull request, CI verte ;
-  - une branche courte par fonctionnalité, créée depuis `dev` (`feat/…`, `fix/…`, `chore/…`, `docs/…`) ;
+  - une branche courte par fonctionnalité, créée depuis `dev`, avec un préfixe Conventional et un nom clair en français : `feat/espace-parents`, `fix/pause-du-soir`, `chore/mise-a-jour-expo`, `docs/guide-installation` ;
   - aucun commit direct sur `main` ni sur `dev`, jamais de force push sur ces deux branches ;
   - messages au format **Conventional Commits** ;
   - des commits petits et cohérents, un sujet par commit ;
