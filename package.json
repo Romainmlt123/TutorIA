@@ -9,7 +9,7 @@
     "ios": "expo start --go --ios",
     "web": "expo start --web",
     "tokens": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-tokens.ts",
-    "explorer:models": "blender -b -P tools/explorer-3d/island_maths.py && npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/island-maths-3d.glb assets/explorer/models/island-maths-3d.glb && EXPLORER_FALLBACK=$PWD/assets/explorer/images/island-maths.webp blender -b -P tools/explorer-3d/island_maths.py && blender -b -P tools/explorer-3d/wood_panel.py",
+    "explorer:models": "blender -b -P tools/explorer-3d/island_maths.py && npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/island-maths-3d.glb assets/explorer/models/island-maths-3d.glb && EXPLORER_FALLBACK=$PWD/assets/explorer/images/island-maths.webp blender -b -P tools/explorer-3d/island_maths.py && blender -b -P tools/explorer-3d/wood_panel.py && blender -b -P tools/explorer-3d/islet_algo.py && npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/islet-algo.glb assets/explorer/models/islet-algo.glb",
     "lint": "expo lint",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
