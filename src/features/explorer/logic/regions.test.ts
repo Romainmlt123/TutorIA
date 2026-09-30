@@ -1,11 +1,11 @@
 import {
-  edgeOf,
-  regionAt,
-  regionMask,
+  focusOf,
+  ISLET,
   MASK_EXTENT,
   MASK_SIZE,
   PLATEAU_REGIONS,
-  signOf,
+  regionAt,
+  regionMask,
 } from './regions';
 
 /** Objets du décor de l'île (tools/explorer-3d/island_maths.py) et la région où ils doivent tomber. */
@@ -31,9 +31,9 @@ describe('régions du plateau de l’île des Maths', () => {
     expect(regionAt(x, z)).toBe(region);
   });
 
-  it('pose chaque panneau dans sa propre région', () => {
+  it('pose le point de visée de chaque région dans cette région', () => {
     for (const id of PLATEAU_REGIONS) {
-      const [x, z] = signOf(id)!;
+      const [x, z] = focusOf(id)!;
       expect(regionAt(x, z)).toBe(id);
     }
   });
@@ -80,14 +80,9 @@ describe('régions du plateau de l’île des Maths', () => {
     expect(area.get('maths-espace')! / total).toBeGreaterThan(0.25);
   });
 
-  it('pose le point de bord de chaque région dans sa direction, au bord de l’île', () => {
-    for (const id of PLATEAU_REGIONS) {
-      const [sx, sz] = signOf(id)!;
-      const [ex, ez] = edgeOf(id)!;
-      expect(Math.hypot(ex, ez)).toBeCloseTo(3.2);
-      expect(ex * sz - ez * sx).toBeCloseTo(0);
-      expect(ex * sx + ez * sz).toBeGreaterThan(0);
-    }
-    expect(edgeOf('maths-algo')).toBeNull();
+  it('vise l’îlot de l’Algorithmique, à l’écart du plateau', () => {
+    const [x, z] = focusOf(ISLET.region)!;
+    expect(Math.hypot(x, z)).toBeGreaterThan(4);
+    expect(focusOf('maths-lune')).toBeNull();
   });
 });

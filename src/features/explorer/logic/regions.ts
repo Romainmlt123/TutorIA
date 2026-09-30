@@ -7,23 +7,22 @@ import layout from '../stylized3d/regions.json';
  */
 
 type Point = readonly [number, number];
-type RegionLayout = { id: string; polygon: readonly Point[]; sign: Point };
+type RegionLayout = { id: string; polygon: readonly Point[]; focus: Point };
 
 const REGIONS: readonly RegionLayout[] = layout.regions.map((r) => ({
   id: r.id,
   polygon: r.polygon as unknown as Point[],
-  sign: r.sign as unknown as Point,
+  focus: r.focus as unknown as Point,
 }));
 
 /** Les régions de la terre de l'île, dans l'ordre des canaux du masque (R, V, B). */
 export const PLATEAU_REGIONS: readonly string[] = REGIONS.map((r) => r.id);
 
-/** L'îlot flottant d'une région d'un seul chapitre (Algorithmique) : position, échelle, panneau. */
+/** L'îlot flottant d'une région d'un seul chapitre (Algorithmique) : position et échelle. */
 export const ISLET = {
   region: layout.islet.region,
   position: layout.islet.position as unknown as readonly [number, number, number],
   scale: layout.islet.scale,
-  sign: layout.islet.sign as unknown as readonly [number, number, number],
 };
 
 function inside(polygon: readonly Point[], x: number, z: number): boolean {
@@ -40,23 +39,13 @@ export function regionAt(x: number, z: number): string | null {
   return REGIONS.find((r) => inside(r.polygon, x, z))?.id ?? null;
 }
 
-/** Point du plateau où poser le panneau d'une région (repère de l'app). */
-export function signOf(regionId: string): Point | null {
-  return REGIONS.find((r) => r.id === regionId)?.sign ?? null;
-}
-
-/** Rayon moyen du plateau (mètres) : là où se pose le point de bord d'une région. */
-const PLATEAU_RADIUS = 3.2;
-
 /**
- * Point du bord de l'île dans la direction du panneau d'une région, vu du centre (repère de l'app) :
- * le panneau de la région se pose au-delà de ce point, hors de l'île.
+ * Point (x, z) vers lequel la caméra dérive quand la région est choisie : le cœur de la région sur
+ * le plateau, ou l'îlot lui-même.
  */
-export function edgeOf(regionId: string): Point | null {
-  const sign = signOf(regionId);
-  if (!sign) return null;
-  const length = Math.hypot(sign[0], sign[1]) || 1;
-  return [(sign[0] / length) * PLATEAU_RADIUS, (sign[1] / length) * PLATEAU_RADIUS];
+export function focusOf(regionId: string): Point | null {
+  if (regionId === ISLET.region) return [ISLET.position[0], ISLET.position[2]];
+  return REGIONS.find((r) => r.id === regionId)?.focus ?? null;
 }
 
 /** Côté, en mètres, de la zone du plateau couverte par le masque, centrée sur l'île. */

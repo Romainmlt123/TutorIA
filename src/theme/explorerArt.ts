@@ -52,8 +52,7 @@ export const explorerArt = {
     pawn: '#2e6be6',
     village: { wall: '#f5ead2', roof: '#d9733c' },
   },
-  /** Brume sur les régions pas encore visitées, et pointillé des frontières. */
-  mist: '#dbe8fa',
+  /** Pointillé des frontières de région. */
   regionBorder: '#ffffff',
   /**
    * HUD de l'onglet Explorer, façon jeu vidéo : textes blancs cernés de bleu nuit, boutons brillants
@@ -83,6 +82,10 @@ export const explorerArt = {
       parchmentInk: '#5b3713',
     },
     gem: '#ffffff',
+    /** Voile gris sur les cartes de région non choisies du carrousel. */
+    grayVeil: 'rgba(120, 128, 142, 0.62)',
+    /** Fondu au noir qui cache le passage d'une scène à l'autre (île ↔ carte d'une région). */
+    blackVeil: '#04060c',
     /** Pastilles d'état des panneaux de région (X2a). */
     status: {
       discover: { face: '#dce8ff', ink: '#1f3a78' },

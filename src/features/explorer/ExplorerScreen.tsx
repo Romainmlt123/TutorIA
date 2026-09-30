@@ -12,10 +12,10 @@ import { explorerArt } from '@/theme/explorerArt';
 
 import { CarouselHud } from './components/CarouselHud';
 import { IslandStage, type ScreenPoint, type StageAnchor } from './components/IslandStage';
-import { CENTRE_ID, edgeId, RegionSigns } from './components/RegionSigns';
 import { cityAnchorId, MapOverlay } from './components/map/MapOverlay';
 import { RegionMapHud } from './components/map/RegionMapHud';
 import { RegionsHud } from './components/RegionsHud';
+import { SkyVeil, useSkyVeil } from './components/SkyVeil';
 import { StageFallback } from './components/StageFallback';
 import { ISLANDS } from './content';
 import { SceneBoundary } from './hd2d/SceneBoundary';
@@ -38,8 +38,8 @@ import {
 } from './logic/mapScroll';
 import { beginDrag, createOrbit, drag, release } from './logic/orbit';
 import type { MapCity } from './logic/regionMap';
-import { edgeOf, ISLET, PLATEAU_REGIONS, signOf } from './logic/regions';
-import { shotFor } from './logic/shots';
+import { focusOf } from './logic/regions';
+import { diveShot, shotFor } from './logic/shots';
 import { DEFAULT_FRAME, frameFor } from './logic/stageFrame';
 import type { RegionLook } from './stylized3d/regionTint';
 
@@ -60,27 +60,8 @@ const MONUMENT_HEIGHT = 1.15;
 /** Positions à l'écran des points de la carte, prises quand la caméra s'est posée sur une région. */
 type MapSnapshot = { points: ScreenPoint[]; cameraX: number; regionId: string };
 
-/** Hauteur au-dessus du plateau où se termine le trait d'un panneau (mètres). */
-const GROUND = 0.12;
-
-/**
- * Points que la caméra projette à l'écran : le centre de l'île, et pour chaque région de la terre
- * le point où son trait se termine et le bord de l'île dans sa direction (le panneau se pose
- * au-delà). Le panneau de l'îlot se pose juste à côté de lui.
- */
-const ANCHORS: readonly StageAnchor[] = [
-  { id: CENTRE_ID, position: [0, 0, 0] },
-  ...PLATEAU_REGIONS.flatMap((id) => {
-    const [x, z] = signOf(id)!;
-    const [ex, ez] = edgeOf(id)!;
-    return [
-      { id, position: [x, GROUND, z] as const },
-      { id: edgeId(id), position: [ex, GROUND, ez] as const },
-    ];
-  }),
-  { id: ISLET.region, position: ISLET.sign },
-  { id: edgeId(ISLET.region), position: ISLET.sign },
-];
+/** Délai avant que le fondu au noir commence, en plein plongeon : le fondu accompagne le zoom (ms). */
+const DIVE_MS = 100;
 
 /**
  * L'onglet Explorer : un seul écran et une seule scène 3D pour les trois vues (carrousel des îles,
@@ -116,9 +97,13 @@ export function ExplorerScreen() {
   const slide = slides[index] ?? slides[0];
   const subjectId = view.kind === 'carousel' ? (slide?.subjectId ?? 'maths') : view.subjectId;
   const { regions, markSeen } = useIslandRegions(subjectId);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [points, setPoints] = useState<ScreenPoint[] | null>(null);
-  const selected = regions.find((r) => r.regionId === selectedId) ?? null;
+  // Région choisie dans le carrousel de X2a ; par défaut celle où l'élève doit jouer ensuite.
+  const [choice, setChoice] = useState<string | null>(null);
+  const selectedId =
+    choice ?? regions.find((r) => r.next)?.regionId ?? regions[0]?.regionId ?? null;
+  // Région vers laquelle la caméra plonge après validation, le temps du zoom.
+  const [diving, setDiving] = useState<string | null>(null);
+  const veil = useSkyVeil(animated);
   // Carte de la région ouverte (X2b) : positions à l'écran de ses points quand la caméra s'est posée.
   const map = useRegionMap(subjectId, view.kind === 'region' ? view.regionId : null);
   const [snapshot, setSnapshot] = useState<MapSnapshot | null>(null);
@@ -150,36 +135,49 @@ export function ExplorerScreen() {
     [map],
   );
 
-  const open = (next: ExplorerView) => {
-    if (next.kind === 'carousel') setSelectedId(null);
-    router.setParams(paramsOf(next));
-  };
+  const open = (next: ExplorerView) => router.setParams(paramsOf(next));
   const up = upOf(view);
-  useViewBack(up !== null, () => up && open(up));
+  // Entrer dans une région ou en sortir change de scène : le fondu au noir cache le changement.
+  const goBack = () => {
+    if (!up) return;
+    if (view.kind === 'region') veil.pass(() => open(up));
+    else open(up);
+  };
+  useViewBack(up !== null, goBack);
+
+  const { pass } = veil;
+  useEffect(() => {
+    if (!diving) return;
+    const timer = setTimeout(
+      () =>
+        pass(() => {
+          setDiving(null);
+          router.setParams(paramsOf({ kind: 'region', subjectId, regionId: diving }));
+        }),
+      DIVE_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [diving, pass, router, subjectId]);
 
   const select = (regionId: string) => {
     markSeen(regionId);
-    setSelectedId(regionId);
+    setChoice(regionId);
   };
+  // Valider une région : la caméra plonge vers elle, puis le voile passe sur la carte de la région.
   const enter = (regionId: string) => {
     markSeen(regionId);
-    open({ kind: 'region', subjectId, regionId });
+    setChoice(regionId);
+    if (animated && webgl) setDiving(regionId);
+    else open({ kind: 'region', subjectId, regionId });
   };
 
-  // Teinte des régions, région choisie et brume sur celles que l'élève n'a pas encore visitées.
+  // Teinte des régions : la région choisie est allumée, les autres sont grises.
   const look = useMemo<RegionLook>(
-    () => ({
-      mix: view.kind === 'carousel' ? 0 : 1,
-      focus: selectedId,
-      mist: regions.filter((r) => r.status === 'discover').map((r) => r.regionId),
-    }),
-    [view.kind, selectedId, regions],
+    () => ({ mix: view.kind === 'carousel' ? 0 : 1, focus: selectedId }),
+    [view.kind, selectedId],
   );
-  const focusPoint = useMemo<readonly [number, number] | null>(() => {
-    if (!selectedId) return null;
-    if (selectedId === ISLET.region) return [ISLET.sign[0], ISLET.sign[2]];
-    return signOf(selectedId);
-  }, [selectedId]);
+  const focusPoint = useMemo(() => (selectedId ? focusOf(selectedId) : null), [selectedId]);
+  const diveFocus = diving ? focusOf(diving) : null;
 
   if (!slide) return null;
   const pxPerMeter = screen.width / VISIBLE_WIDTH;
@@ -191,7 +189,7 @@ export function ExplorerScreen() {
     .onUpdate((event) => dragScroll(MAP_SCROLL, event.translationX, pxPerMeter))
     .onFinalize((event) => releaseScroll(MAP_SCROLL, event.velocityX, pxPerMeter, animated));
   // Glisser le doigt fait tourner l'île (on change d'île avec les flèches), dans la plage de la vue.
-  const shot = shotFor(view, frame, focusPoint);
+  const shot = diveFocus ? diveShot(diveFocus) : shotFor(view, frame, focusPoint);
   const rotate = Gesture.Pan()
     .runOnJS(true)
     .activeOffsetX([-8, 8])
@@ -199,19 +197,16 @@ export function ExplorerScreen() {
     .onUpdate((event) => drag(STAGE_ORBIT, event.translationX, shot.azimuthRange))
     .onFinalize((event) => release(STAGE_ORBIT, event.velocityX, animated));
 
-  // Sous la banderole et la consigne, au-dessus du panneau de région.
-  const signsTop = (Platform.OS === 'web' ? 56 : insets.top + theme.layout.screenTopGap) + 100;
-  const listMode = !webgl || screenReader;
-  const signs = view.kind === 'regions' && !listMode ? points : null;
-  const mapListMode = listMode || showList;
+  const mapListMode = !webgl || screenReader || showList;
   const readyMap =
     map && snapshot && snapshot.regionId === map.regionId && !mapListMode ? snapshot : null;
   const openLevel = () => router.push({ pathname: '/bientot', params: { sujet: 'niveau' } });
   const goToCity = (city: MapCity) => goTo(MAP_SCROLL, (city.from + city.to) / 2);
-  // Les points projetés servent aux panneaux de région (île) ou aux boutons de la carte (bande).
+  // Les points projetés servent aux boutons et bandeaux posés sur la carte d'une région.
   const onProject = (projected: ScreenPoint[] | null, cameraX: number) => {
-    if (view.kind !== 'region') setPoints(projected);
-    else if (projected) setSnapshot({ points: projected, cameraX, regionId: view.regionId });
+    if (view.kind === 'region' && projected) {
+      setSnapshot({ points: projected, cameraX, regionId: view.regionId });
+    }
   };
 
   return (
@@ -229,7 +224,7 @@ export function ExplorerScreen() {
             shot={shot}
             orbit={STAGE_ORBIT}
             regions={look}
-            anchors={view.kind === 'region' ? mapAnchors : ANCHORS}
+            anchors={mapAnchors}
             onProject={onProject}
             strip={
               map && view.kind === 'region'
@@ -272,18 +267,17 @@ export function ExplorerScreen() {
           <RegionsHud
             subjectId={view.subjectId}
             regions={regions}
-            selected={selected}
+            selectedId={selectedId}
             onSelect={select}
             onEnter={enter}
-            onBack={() => up && open(up)}
+            onBack={goBack}
             rotate={rotate}
-            listMode={listMode}
           />
         ) : map ? (
           <RegionMapHud
             map={map}
             regionName={regions.find((r) => r.regionId === map.regionId)?.region.name ?? ''}
-            onBack={() => up && open(up)}
+            onBack={goBack}
             pan={pan}
             listMode={mapListMode}
             onToggleList={() => setShowList((value) => !value)}
@@ -293,16 +287,6 @@ export function ExplorerScreen() {
           />
         ) : null}
       </View>
-      {signs ? (
-        <RegionSigns
-          points={signs}
-          regions={regions}
-          selectedId={selectedId}
-          onSelect={select}
-          screen={screen}
-          bounds={{ top: signsTop, bottom: screen.height * 0.57 }}
-        />
-      ) : null}
       {readyMap && map ? (
         <MapOverlay
           map={map}
@@ -312,6 +296,7 @@ export function ExplorerScreen() {
           onCity={goToCity}
         />
       ) : null}
+      <SkyVeil style={veil.style} />
     </GestureHandlerRootView>
   );
 }

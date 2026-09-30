@@ -7,19 +7,17 @@ import { MASK_EXTENT, MASK_SIZE, PLATEAU_REGIONS, regionMask } from '../logic/re
 /*
  * Teinte des régions sur l'herbe (X2a) : le matériau de l'île, cuit dans Blender, est complété par
  * un masque des régions vu de dessus (logic/regions.ts). Sans nouvelle cuisson, le shader y ajoute
- * une teinte légère par région, des frontières en pointillés, une brume sur les régions pas encore
- * visitées, et la désaturation des autres régions quand l'une est choisie.
+ * une teinte légère par région, des frontières en pointillés, et, quand une région est choisie,
+ * son éclat : elle s'allume, et les autres passent en gris.
  */
 
 export type RegionTintUniforms = {
   uMix: { value: number };
   uHasFocus: { value: number };
   uFocusMask: { value: THREE.Vector3 };
-  uMist: { value: THREE.Vector3 };
   uLocal: { value: THREE.Matrix4 };
   uRegionMask: { value: THREE.DataTexture };
   uColors: { value: THREE.Color[] };
-  uMistColor: { value: THREE.Color };
   uBorderColor: { value: THREE.Color };
 };
 
@@ -41,10 +39,8 @@ const FRAGMENT_HEADER = /* glsl */ `
   uniform float uMix;
   uniform float uHasFocus;
   uniform vec3 uFocusMask;
-  uniform vec3 uMist;
   uniform sampler2D uRegionMask;
   uniform vec3 uColors[3];
-  uniform vec3 uMistColor;
   uniform vec3 uBorderColor;
   varying vec3 vRegionPos;
 `;
@@ -60,14 +56,13 @@ const FRAGMENT_TINT = /* glsl */ `
     vec3 tint = uColors[0] * region.r + uColors[1] * region.g + uColors[2] * region.b;
     vec3 rgb = diffuseColor.rgb;
     float grey = dot(rgb, vec3(0.299, 0.587, 0.114));
-    // Désaturation des régions non choisies.
+    // La région choisie est allumée (teinte, éclat) ; les autres passent en gris, un peu plus sombres.
     float chosen = dot(region.rgb, uFocusMask);
     float faded = uHasFocus * (1.0 - chosen) * inside;
-    rgb = mix(rgb, vec3(grey), 0.65 * faded * uMix * above);
-    rgb = mix(rgb, tint, 0.2 * inside * uMix * above * (1.0 - 0.6 * faded));
-    // Brume sur les régions pas encore visitées.
-    float mist = dot(region.rgb, uMist);
-    rgb = mix(rgb, uMistColor, 0.3 * mist * uMix * above);
+    float lit = uHasFocus * chosen * inside;
+    rgb = mix(rgb, vec3(grey) * 0.8, 0.9 * faded * uMix * above);
+    rgb = mix(rgb, tint, (0.2 - 0.12 * faded) * inside * uMix * above);
+    rgb *= 1.0 + 0.16 * lit * uMix * above;
     // Frontières en pointillés, sur le sol seulement.
     float ground = step(abs(vRegionPos.y), 0.06);
     float dots = step(0.5, fract((vRegionPos.x + vRegionPos.z) * 7.0));
@@ -89,7 +84,6 @@ export function applyRegionTint(
     uMix: { value: 0 },
     uHasFocus: { value: 0 },
     uFocusMask: { value: new THREE.Vector3() },
-    uMist: { value: new THREE.Vector3() },
     uLocal: { value: local },
     uRegionMask: { value: maskTexture() },
     uColors: {
@@ -97,7 +91,6 @@ export function applyRegionTint(
         (id) => new THREE.Color(explorerArt.regions[id as keyof typeof explorerArt.regions]),
       ),
     },
-    uMistColor: { value: new THREE.Color(explorerArt.mist) },
     uBorderColor: { value: new THREE.Color(explorerArt.regionBorder) },
   };
   material.onBeforeCompile = (shader) => {
@@ -117,11 +110,10 @@ export function applyRegionTint(
   return uniforms;
 }
 
-/** Ce que la vue demande au shader : intensité, région choisie, régions sous la brume. */
+/** Ce que la vue demande au shader : intensité et région choisie (allumée, les autres en gris). */
 export type RegionLook = {
   mix: number;
   focus: string | null;
-  mist: readonly string[];
 };
 
 const channel = (regionId: string | null) =>
@@ -131,7 +123,6 @@ export function setRegionLook(uniforms: RegionTintUniforms, look: RegionLook): v
   uniforms.uMix.value = look.mix;
   uniforms.uHasFocus.value = look.focus && PLATEAU_REGIONS.includes(look.focus) ? 1 : 0;
   uniforms.uFocusMask.value.copy(channel(look.focus));
-  uniforms.uMist.value.fromArray(PLATEAU_REGIONS.map((id) => (look.mist.includes(id) ? 1 : 0)));
 }
 
 export function disposeRegionTint(uniforms: RegionTintUniforms): void {

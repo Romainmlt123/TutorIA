@@ -54,7 +54,7 @@ type World = {
 };
 
 /** Sans demande de la vue : pas de teinte, l'île telle qu'elle a été cuite. */
-const NO_REGIONS: RegionLook = { mix: 0, focus: null, mist: [] };
+const NO_REGIONS: RegionLook = { mix: 0, focus: null };
 
 /** L'île apparaît en 0,7 s : elle monte un peu en grandissant, puis se pose. */
 const APPEAR_SECONDS = 0.7;

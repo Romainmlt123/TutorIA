@@ -9,35 +9,31 @@ import type { IslandRegion } from '../hooks/useIslandRegions';
 import { GameButton } from './hud/GameButton';
 import { GameText } from './hud/GameText';
 import { IslandBanner } from './hud/IslandBanner';
-import { RegionList } from './RegionList';
-import { RegionPanel } from './RegionPanel';
+import { RegionCarousel } from './RegionCarousel';
 
 type Props = {
   subjectId: SubjectId;
   regions: readonly IslandRegion[];
-  selected: IslandRegion | null;
+  selectedId: string | null;
   onSelect: (regionId: string) => void;
   onEnter: (regionId: string) => void;
   onBack: () => void;
   /** Geste qui fait tourner l'île. */
   rotate: ReturnType<typeof Gesture.Pan>;
-  /** Liste à la place des panneaux posés sur l'île : sans WebGL ou avec un lecteur d'écran. */
-  listMode: boolean;
 };
 
 /**
- * X2a · les régions de l'île : retour, banderole, consigne, puis le panneau de la région choisie.
- * Les panneaux posés sur l'île sont dessinés à part (RegionSign), à la position où la caméra les voit.
+ * X2a · les régions de l'île : retour, banderole et consigne en haut, l'île au milieu (qu'on fait
+ * tourner au doigt), et en bas le carrousel des régions, dont la région choisie est allumée sur l'île.
  */
 export function RegionsHud({
   subjectId,
   regions,
-  selected,
+  selectedId,
   onSelect,
   onEnter,
   onBack,
   rotate,
-  listMode,
 }: Props) {
   return (
     <>
@@ -57,27 +53,20 @@ export function RegionsHud({
       <GameText size={18} align="center" stroke={2} drop={2}>
         {fr.explorer.regionsCaption}
       </GameText>
-      {listMode ? (
-        <View style={styles.list}>
-          <RegionList
-            regions={regions}
-            selectedId={selected?.regionId ?? null}
-            onSelect={onSelect}
-          />
-        </View>
-      ) : (
-        <GestureDetector gesture={rotate}>
-          <View
-            accessible
-            accessibilityLabel={fr.explorer.islandLabel(fr.explorer.islandNames[subjectId])}
-            accessibilityHint={fr.explorer.rotateHint}
-            style={styles.zone}
-          />
-        </GestureDetector>
-      )}
-      {selected ? (
-        <RegionPanel region={selected} onEnter={() => onEnter(selected.regionId)} />
-      ) : null}
+      <GestureDetector gesture={rotate}>
+        <View
+          accessible
+          accessibilityLabel={fr.explorer.islandLabel(fr.explorer.islandNames[subjectId])}
+          accessibilityHint={fr.explorer.rotateHint}
+          style={styles.zone}
+        />
+      </GestureDetector>
+      <RegionCarousel
+        regions={regions}
+        selectedId={selectedId}
+        onSelect={onSelect}
+        onEnter={onEnter}
+      />
     </>
   );
 }
@@ -85,6 +74,5 @@ export function RegionsHud({
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
   banner: { flex: 1, alignItems: 'center', marginRight: 48 + theme.space[3] },
-  zone: { flex: 1, justifyContent: 'center' },
-  list: { flex: 1, justifyContent: 'center' },
+  zone: { flex: 1 },
 });

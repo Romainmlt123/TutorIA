@@ -72,6 +72,21 @@ export function regionsShot(focus: readonly [number, number] | null): Shot {
   return { ...REGIONS_SHOT, lookX: focus[0] * DRIFT, lookZ: focus[1] * DRIFT };
 }
 
+/**
+ * Plongeon vers une région, quand l'élève la valide : la caméra descend et s'approche de son point
+ * de visée, à peu près à la hauteur de la carte de la région. Le fondu au noir prend le relais.
+ */
+export function diveShot(focus: readonly [number, number]): Shot {
+  return {
+    ...REGIONS_SHOT,
+    elevation: 40,
+    fill: 2.3,
+    aimY: 0.44,
+    lookX: focus[0],
+    lookZ: focus[1],
+  };
+}
+
 export function shotFor(
   view: ExplorerView,
   frame: IslandFrame,

@@ -234,6 +234,8 @@ export const fr = {
     backToIslands: 'Retour aux îles',
     regionsCaption: 'Choisis une région',
     regionNumber: (n: number) => `RÉGION ${n}`,
+    previousRegion: 'Région précédente',
+    nextRegion: 'Région suivante',
     islet: 'ÎLOT',
     regionStatus: {
       discover: 'À découvrir',

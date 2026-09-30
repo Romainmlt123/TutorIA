@@ -1,4 +1,4 @@
-import { carouselShot, easeShot, REGION_SHOT, REGIONS_SHOT, shotFor } from './shots';
+import { carouselShot, diveShot, easeShot, REGION_SHOT, REGIONS_SHOT, shotFor } from './shots';
 import { DEFAULT_FRAME } from './stageFrame';
 
 describe('cadrage de la caméra par vue', () => {
@@ -46,5 +46,13 @@ describe('cadrage de la caméra par vue', () => {
     expect(shot.azimuth).toBe(0);
     expect(shot.azimuthRange).toBe(0);
     expect(7.4 / shot.fill).toBeCloseTo(4.3);
+  });
+
+  it('plonge vers la région validée : plus bas, plus près, braqué sur elle', () => {
+    const dive = diveShot([-1.7, 1.2]);
+    expect(dive.lookX).toBe(-1.7);
+    expect(dive.lookZ).toBe(1.2);
+    expect(dive.fill).toBeGreaterThan(REGIONS_SHOT.fill * 2);
+    expect(dive.elevation).toBeLessThan(REGIONS_SHOT.elevation);
   });
 });

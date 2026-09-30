@@ -175,7 +175,14 @@ function StageCamera({
   const current = useRef<CameraState | null>(null);
   // Points d'ancrage déjà projetés : une nouvelle liste (autre vue, autre région) se projette aussi.
   const projected = useRef<readonly StageAnchor[] | null>(null);
+  // Entrer dans une région ou en sortir est une coupure, cachée par le voile : la caméra ne traverse
+  // pas la scène, elle se pose directement sur son nouveau cadrage.
+  const hadScroll = useRef(scroll !== null);
   useFrame((state, delta) => {
+    if (hadScroll.current !== (scroll !== null)) {
+      hadScroll.current = scroll !== null;
+      current.current = null;
+    }
     const before = current.current?.settled ?? false;
     const next = moveCamera(
       state,
