@@ -18,6 +18,8 @@ export type Shot = {
   lookZ: number;
   /** Demi-plage de rotation au doigt autour de la vue de départ (radians) ; Infinity : libre. */
   azimuthRange: number;
+  /** Azimut imposé (radians), ou null pour celui du doigt. La carte d'une région est toujours de face. */
+  azimuth: number | null;
 };
 
 /** Vue d'ensemble du plateau : plus haute, l'île entière et les panneaux de région visibles. */
@@ -29,6 +31,22 @@ export const REGIONS_SHOT: Shot = {
   lookX: 0,
   lookZ: 0,
   azimuthRange: 0.61,
+  azimuth: null,
+};
+
+/**
+ * Carte d'une région : de face et à 38°, 4,3 m de bande à l'écran (un peu plus de cinq points). La
+ * caméra glisse le long de la bande (défilement), sans jamais tourner.
+ */
+export const REGION_SHOT: Shot = {
+  elevation: 38,
+  fill: 7.4 / 4.3,
+  aimY: 0.42,
+  lookY: 0,
+  lookX: 0,
+  lookZ: 0,
+  azimuthRange: 0,
+  azimuth: 0,
 };
 
 /** Part du chemin que la caméra parcourt vers la région choisie. */
@@ -44,6 +62,7 @@ export function carouselShot(frame: IslandFrame): Shot {
     lookX: 0,
     lookZ: 0,
     azimuthRange: FREE_RANGE,
+    azimuth: null,
   };
 }
 
@@ -64,7 +83,7 @@ export function shotFor(
     case 'regions':
       return regionsShot(focus);
     case 'region':
-      return REGIONS_SHOT;
+      return REGION_SHOT;
   }
 }
 
@@ -80,5 +99,6 @@ export function easeShot(current: Shot, target: Shot, delta: number, animated: b
     lookX: current.lookX + (target.lookX - current.lookX) * k,
     lookZ: current.lookZ + (target.lookZ - current.lookZ) * k,
     azimuthRange: target.azimuthRange,
+    azimuth: target.azimuth,
   };
 }

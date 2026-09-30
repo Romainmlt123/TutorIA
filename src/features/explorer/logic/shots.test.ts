@@ -1,4 +1,4 @@
-import { carouselShot, easeShot, REGIONS_SHOT, shotFor } from './shots';
+import { carouselShot, easeShot, REGION_SHOT, REGIONS_SHOT, shotFor } from './shots';
 import { DEFAULT_FRAME } from './stageFrame';
 
 describe('cadrage de la caméra par vue', () => {
@@ -11,6 +11,7 @@ describe('cadrage de la caméra par vue', () => {
       lookX: 0,
       lookZ: 0,
       azimuthRange: Infinity,
+      azimuth: null,
     });
   });
 
@@ -34,5 +35,16 @@ describe('cadrage de la caméra par vue', () => {
     expect(shot.lookX).toBeCloseTo(0.6);
     expect(shot.lookZ).toBeCloseTo(0.45);
     expect(shot.azimuthRange).toBeLessThan(1);
+  });
+
+  it('cadre la carte d’une région de face, sur 4,3 m de bande', () => {
+    const shot = shotFor(
+      { kind: 'region', subjectId: 'maths', regionId: 'maths-espace' },
+      DEFAULT_FRAME,
+    );
+    expect(shot).toBe(REGION_SHOT);
+    expect(shot.azimuth).toBe(0);
+    expect(shot.azimuthRange).toBe(0);
+    expect(7.4 / shot.fill).toBeCloseTo(4.3);
   });
 });

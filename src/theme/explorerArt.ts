@@ -41,6 +41,17 @@ export const explorerArt = {
     'maths-espace': '#9163e0',
     'maths-algo': '#1fb3a6',
   },
+  /** Carte d'une région (X2b) : terre flottante, chemin et points de niveau par type et par état. */
+  map: {
+    land: '#79ad49',
+    cliff: '#7b5636',
+    pathDone: '#f0a13f',
+    pathTodo: '#dfe3ec',
+    node: { lecon: '#2fbf5f', exercices: '#3f86f0', evaluation: '#e0504f', locked: '#aab2c0' },
+    nodeRim: '#1c2a52',
+    pawn: '#2e6be6',
+    village: { wall: '#f5ead2', roof: '#d9733c' },
+  },
   /** Brume sur les régions pas encore visitées, et pointillé des frontières. */
   mist: '#dbe8fa',
   regionBorder: '#ffffff',

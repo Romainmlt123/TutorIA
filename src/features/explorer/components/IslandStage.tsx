@@ -8,11 +8,15 @@ import { explorerArt } from '@/theme/explorerArt';
 import { distanceToFit, orbit } from '../hd2d/camera';
 import { Hd2dPost } from '../hd2d/Hd2dPost';
 import { Clouds, type CloudSpec } from '../stylized3d/Clouds';
+import { coastScroll, type MapScroll } from '../logic/mapScroll';
 import { coast, type Orbit } from '../logic/orbit';
+import type { RegionMap } from '../logic/regionMap';
 import { easeShot, type Shot } from '../logic/shots';
+import { MAP_SCROLL_X } from '../hooks/mapScrollValue';
 import { IsletAlgo } from '../stylized3d/IsletAlgo';
 import { MathsIsland3D } from '../stylized3d/MathsIsland3D';
 import type { RegionLook } from '../stylized3d/regionTint';
+import { RegionStrip } from '../stylized3d/RegionStrip';
 
 /*
  * Scène du carrousel (X1) : les îles alignées sur l'axe x, une tous les SPACING mètres, et la
@@ -43,8 +47,11 @@ type CameraState = { x: number; shot: Shot; settled: boolean };
 
 /** Point de la scène (repère de l'île) où l'interface pose un panneau, avec son identifiant. */
 export type StageAnchor = { id: string; position: readonly [number, number, number] };
-/** Position à l'écran (pixels) d'un point d'ancrage. */
-export type ScreenPoint = { id: string; x: number; y: number };
+/**
+ * Position à l'écran (pixels) d'un point d'ancrage, et `k` : pixels par mètre le long de la bande à
+ * sa profondeur (pour placer une interface sur la carte d'une région pendant le défilement).
+ */
+export type ScreenPoint = { id: string; x: number; y: number; k: number };
 
 /** Projection des points d'ancrage à l'écran, caméra comprise (décalage de vue inclus). */
 function projectAnchors(
@@ -54,13 +61,15 @@ function projectAnchors(
   size: { width: number; height: number },
 ): ScreenPoint[] {
   const point = new THREE.Vector3();
+  const toScreen = (v: THREE.Vector3) => ({
+    x: (v.x * 0.5 + 0.5) * size.width,
+    y: (1 - (v.y * 0.5 + 0.5)) * size.height,
+  });
   return anchors.map((anchor) => {
-    point.set(anchor.position[0] + origin, anchor.position[1], anchor.position[2]).project(camera);
-    return {
-      id: anchor.id,
-      x: (point.x * 0.5 + 0.5) * size.width,
-      y: (1 - (point.y * 0.5 + 0.5)) * size.height,
-    };
+    const [ax, ay, az] = anchor.position;
+    const here = toScreen(point.set(ax + origin, ay, az).project(camera));
+    const meterLater = toScreen(point.set(ax + origin + 1, ay, az).project(camera));
+    return { id: anchor.id, x: here.x, y: here.y, k: meterLater.x - here.x };
   });
 }
 
@@ -98,23 +107,35 @@ function moveCamera(
   current: CameraState | null,
   target: { x: number; shot: Shot },
   orbitState: Orbit,
+  scroll: MapScroll | null,
   delta: number,
   animated: boolean,
 ): CameraState {
   coast(orbitState, delta, target.shot.azimuthRange);
+  // Carte d'une région : la caméra suit le défilement à la lettre, sans lissage (le doigt la mène).
+  if (scroll) {
+    coastScroll(scroll, delta, animated);
+    MAP_SCROLL_X.value = scroll.x;
+  }
   const camera = state.camera as THREE.PerspectiveCamera;
   const { width, height } = state.size;
   const k = 1 - Math.exp(-delta * 5);
-  const x = current === null || !animated ? target.x : current.x + (target.x - current.x) * k;
+  const x = scroll
+    ? scroll.x
+    : current === null || !animated
+      ? target.x
+      : current.x + (target.x - current.x) * k;
   const shot =
     current === null ? target.shot : easeShot(current.shot, target.shot, delta, animated);
   const distance = distanceToFit(7.4, FOV, width / height, shot.fill);
   const aim: [number, number, number] = [x + shot.lookX, shot.lookY, shot.lookZ];
-  camera.position.set(...orbit(aim, distance, shot.elevation, orbitState.azimuth));
+  camera.position.set(...orbit(aim, distance, shot.elevation, shot.azimuth ?? orbitState.azimuth));
   camera.lookAt(new THREE.Vector3(...aim));
   camera.far = distance * 4;
   camera.setViewOffset(width, height, 0, (0.5 - shot.aimY) * height, width, height);
   camera.updateProjectionMatrix();
+  // À jour tout de suite : la projection des points d'ancrage se fait avant le rendu de l'image.
+  camera.updateMatrixWorld();
   state.scene.userData.focus = 1 - shot.aimY;
   if (state.scene.fog instanceof THREE.Fog) {
     state.scene.fog.near = distance + 4;
@@ -122,7 +143,9 @@ function moveCamera(
   } else {
     state.scene.fog = new THREE.Fog(explorerArt.fog, distance + 4, distance + 30);
   }
-  return { x, shot, settled: isSettled({ x, shot }, target, orbitState) };
+  // Sur une carte de région la caméra suit le défilement : sa position est toujours son but.
+  const goal = scroll ? { x, shot: target.shot } : target;
+  return { x, shot, settled: isSettled({ x, shot }, goal, orbitState) };
 }
 
 type CameraProps = {
@@ -131,8 +154,13 @@ type CameraProps = {
   orbit: Orbit;
   animated: boolean;
   anchors: readonly StageAnchor[];
-  /** Appelée quand la caméra se met au repos (avec les positions à l'écran) ou se remet en route (null). */
-  onProject?: (points: ScreenPoint[] | null) => void;
+  /** Défilement de la carte d'une région, ou null sur l'île. */
+  scroll: MapScroll | null;
+  /**
+   * Appelée quand la caméra se met au repos (avec les positions à l'écran, et la position de la
+   * caméra le long de la bande) ou se remet en route (null).
+   */
+  onProject?: (points: ScreenPoint[] | null, cameraX: number) => void;
 };
 
 function StageCamera({
@@ -141,9 +169,12 @@ function StageCamera({
   orbit: orbitState,
   animated,
   anchors,
+  scroll,
   onProject,
 }: CameraProps) {
   const current = useRef<CameraState | null>(null);
+  // Points d'ancrage déjà projetés : une nouvelle liste (autre vue, autre région) se projette aussi.
+  const projected = useRef<readonly StageAnchor[] | null>(null);
   useFrame((state, delta) => {
     const before = current.current?.settled ?? false;
     const next = moveCamera(
@@ -151,14 +182,21 @@ function StageCamera({
       current.current,
       { x: index * SPACING, shot },
       orbitState,
+      scroll,
       delta,
       animated,
     );
     current.current = next;
-    if (next.settled === before) return;
-    onProject?.(
-      next.settled ? projectAnchors(state.camera, anchors, index * SPACING, state.size) : null,
-    );
+    if (next.settled && projected.current !== anchors) {
+      projected.current = anchors;
+      onProject?.(
+        projectAnchors(state.camera, anchors, scroll ? 0 : index * SPACING, state.size),
+        next.x + next.shot.lookX,
+      );
+    } else if (!next.settled && before) {
+      projected.current = null;
+      onProject?.(null, next.x + next.shot.lookX);
+    }
   });
   return null;
 }
@@ -174,7 +212,9 @@ type Props = {
   regions: RegionLook;
   /** Points d'ancrage des panneaux, et rappel de leur position à l'écran quand la caméra est au repos. */
   anchors?: readonly StageAnchor[];
-  onProject?: (points: ScreenPoint[] | null) => void;
+  onProject?: (points: ScreenPoint[] | null, cameraX: number) => void;
+  /** Carte de la région ouverte (X2b), sa couleur et son défilement : elle remplace l'île à l'écran. */
+  strip?: { map: RegionMap; color: string; scroll: MapScroll } | null;
   /** Faux quand l'onglet est caché ou l'app en arrière-plan : plus aucune image n'est calculée. */
   active: boolean;
   animated: boolean;
@@ -188,10 +228,12 @@ export function IslandStage({
   regions,
   anchors = [],
   onProject,
+  strip = null,
   active,
   animated,
 }: Props) {
-  const { clouds, wrap } = useMemo(() => stageClouds(slides.length), [slides.length]);
+  const cloudCount = strip ? Math.ceil(strip.map.width / 8) : slides.length;
+  const { clouds, wrap } = useMemo(() => stageClouds(cloudCount), [cloudCount]);
   const mathsIndex = slides.findIndex((slide) => slide.subjectId === 'maths');
   return (
     <Canvas
@@ -207,17 +249,19 @@ export function IslandStage({
         orbit={orbit}
         animated={animated}
         anchors={anchors}
+        scroll={strip?.scroll ?? null}
         onProject={onProject}
       />
       <Clouds clouds={clouds} wrap={wrap} animated={animated} />
       {mathsIndex >= 0 ? (
-        <group position={[mathsIndex * SPACING, 0, 0]}>
+        <group position={[mathsIndex * SPACING, 0, 0]} visible={!strip}>
           <Suspense fallback={null}>
             <MathsIsland3D animated={animated} regions={regions} />
             <IsletAlgo mix={regions.mix} animated={animated} />
           </Suspense>
         </group>
       ) : null}
+      {strip ? <RegionStrip map={strip.map} regionColor={strip.color} animated={animated} /> : null}
       <Hd2dPost focus={1 - shot.aimY} band={0.62} look={explorerArt.post.natural} />
     </Canvas>
   );

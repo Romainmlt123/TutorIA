@@ -82,36 +82,6 @@ export function RegionsHud({
   );
 }
 
-type RegionViewProps = { region: IslandRegion | undefined; onBack: () => void };
-
-/** X2b · carte d'une région : pour l'instant le retour et le nom ; la carte arrive à l'étape suivante. */
-export function RegionPlaceholderHud({ region, onBack }: RegionViewProps) {
-  return (
-    <>
-      <View style={styles.top}>
-        <GameButton
-          tone="yellow"
-          round
-          size={48}
-          icon="chevron-gauche"
-          accessibilityLabel={fr.explorer.backToRegions}
-          onPress={onBack}
-        />
-        <View style={styles.banner}>
-          <GameText size={22} align="center" numberOfLines={2}>
-            {region?.region.name ?? ''}
-          </GameText>
-        </View>
-      </View>
-      <View style={styles.zone}>
-        <GameText size={16} align="center" stroke={2} drop={2}>
-          {fr.explorer.regionMapSoon}
-        </GameText>
-      </View>
-    </>
-  );
-}
-
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
   banner: { flex: 1, alignItems: 'center', marginRight: 48 + theme.space[3] },

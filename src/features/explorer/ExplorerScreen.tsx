@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useReducedMotion } from 'react-native-reanimated';
@@ -13,18 +13,31 @@ import { explorerArt } from '@/theme/explorerArt';
 import { CarouselHud } from './components/CarouselHud';
 import { IslandStage, type ScreenPoint, type StageAnchor } from './components/IslandStage';
 import { CENTRE_ID, edgeId, RegionSigns } from './components/RegionSigns';
-import { RegionPlaceholderHud, RegionsHud } from './components/RegionsHud';
+import { cityAnchorId, MapOverlay } from './components/map/MapOverlay';
+import { RegionMapHud } from './components/map/RegionMapHud';
+import { RegionsHud } from './components/RegionsHud';
 import { StageFallback } from './components/StageFallback';
 import { ISLANDS } from './content';
 import { SceneBoundary } from './hd2d/SceneBoundary';
 import { canUseWebGL } from './hd2d/webgl';
 import { useExplorer } from './hooks/useExplorer';
 import { useIslandRegions } from './hooks/useIslandRegions';
+import { useRegionMap } from './hooks/useRegionMap';
 import { useSceneActive } from './hooks/useSceneActive';
 import { useScreenReader } from './hooks/useScreenReader';
 import { useViewBack } from './hooks/useViewBack';
 import { paramsOf, upOf, viewFromParams, type ExplorerView } from './logic/explorerView';
+import {
+  beginScroll,
+  createScroll,
+  dragScroll,
+  goTo,
+  jumpTo,
+  releaseScroll,
+  setBounds,
+} from './logic/mapScroll';
 import { beginDrag, createOrbit, drag, release } from './logic/orbit';
+import type { MapCity } from './logic/regionMap';
 import { edgeOf, ISLET, PLATEAU_REGIONS, signOf } from './logic/regions';
 import { shotFor } from './logic/shots';
 import { DEFAULT_FRAME, frameFor } from './logic/stageFrame';
@@ -37,6 +50,16 @@ const noSubscription = () => () => undefined;
  * (IslandStage). Un objet de module, comme l'horloge de l'eau, et non une ref React.
  */
 const STAGE_ORBIT = createOrbit();
+/** Défilement de la carte d'une région (X2b) : même principe que la rotation de l'île. */
+const MAP_SCROLL = createScroll();
+/** Largeur de bande vue à l'écran (mètres, REGION_SHOT) : donne l'échelle du glissement du doigt. */
+const VISIBLE_WIDTH = 4.3;
+/** Hauteur où se pose le bandeau d'une ville, au-dessus de son monument (mètres). */
+const MONUMENT_HEIGHT = 1.15;
+
+/** Positions à l'écran des points de la carte, prises quand la caméra s'est posée sur une région. */
+type MapSnapshot = { points: ScreenPoint[]; cameraX: number; regionId: string };
+
 /** Hauteur au-dessus du plateau où se termine le trait d'un panneau (mètres). */
 const GROUND = 0.12;
 
@@ -96,6 +119,36 @@ export function ExplorerScreen() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [points, setPoints] = useState<ScreenPoint[] | null>(null);
   const selected = regions.find((r) => r.regionId === selectedId) ?? null;
+  // Carte de la région ouverte (X2b) : positions à l'écran de ses points quand la caméra s'est posée.
+  const map = useRegionMap(subjectId, view.kind === 'region' ? view.regionId : null);
+  const [snapshot, setSnapshot] = useState<MapSnapshot | null>(null);
+  const [showList, setShowList] = useState(false);
+  const openedRegion = useRef<string | null>(null);
+  useEffect(() => {
+    if (!map) {
+      openedRegion.current = null;
+      return;
+    }
+    // Bornes de la caméra : le premier et le dernier point restent visibles avec de la marge.
+    setBounds(MAP_SCROLL, VISIBLE_WIDTH / 2 - 0.65, map.width - VISIBLE_WIDTH / 2 + 0.3);
+    if (openedRegion.current !== map.regionId) {
+      openedRegion.current = map.regionId;
+      jumpTo(MAP_SCROLL, map.nodes[map.pawnIndex]?.x ?? 0);
+    }
+  }, [map]);
+  const mapAnchors = useMemo<readonly StageAnchor[]>(
+    () =>
+      map
+        ? [
+            ...map.nodes.map((n) => ({ id: n.levelId, position: [n.x, 0.06, n.z] as const })),
+            ...map.cities.map((c) => ({
+              id: cityAnchorId(c.id),
+              position: [c.monumentX, MONUMENT_HEIGHT, -0.72] as const,
+            })),
+          ]
+        : [],
+    [map],
+  );
 
   const open = (next: ExplorerView) => {
     if (next.kind === 'carousel') setSelectedId(null);
@@ -129,6 +182,14 @@ export function ExplorerScreen() {
   }, [selectedId]);
 
   if (!slide) return null;
+  const pxPerMeter = screen.width / VISIBLE_WIDTH;
+  // Glisser le doigt sur la carte d'une région la fait défiler, avec de l'élan.
+  const pan = Gesture.Pan()
+    .runOnJS(true)
+    .activeOffsetX([-8, 8])
+    .onBegin(() => beginScroll(MAP_SCROLL))
+    .onUpdate((event) => dragScroll(MAP_SCROLL, event.translationX, pxPerMeter))
+    .onFinalize((event) => releaseScroll(MAP_SCROLL, event.velocityX, pxPerMeter, animated));
   // Glisser le doigt fait tourner l'île (on change d'île avec les flèches), dans la plage de la vue.
   const shot = shotFor(view, frame, focusPoint);
   const rotate = Gesture.Pan()
@@ -142,6 +203,16 @@ export function ExplorerScreen() {
   const signsTop = (Platform.OS === 'web' ? 56 : insets.top + theme.layout.screenTopGap) + 100;
   const listMode = !webgl || screenReader;
   const signs = view.kind === 'regions' && !listMode ? points : null;
+  const mapListMode = listMode || showList;
+  const readyMap =
+    map && snapshot && snapshot.regionId === map.regionId && !mapListMode ? snapshot : null;
+  const openLevel = () => router.push({ pathname: '/bientot', params: { sujet: 'niveau' } });
+  const goToCity = (city: MapCity) => goTo(MAP_SCROLL, (city.from + city.to) / 2);
+  // Les points projetés servent aux panneaux de région (île) ou aux boutons de la carte (bande).
+  const onProject = (projected: ScreenPoint[] | null, cameraX: number) => {
+    if (view.kind !== 'region') setPoints(projected);
+    else if (projected) setSnapshot({ points: projected, cameraX, regionId: view.regionId });
+  };
 
   return (
     <GestureHandlerRootView style={styles.screen}>
@@ -158,8 +229,17 @@ export function ExplorerScreen() {
             shot={shot}
             orbit={STAGE_ORBIT}
             regions={look}
-            anchors={ANCHORS}
-            onProject={setPoints}
+            anchors={view.kind === 'region' ? mapAnchors : ANCHORS}
+            onProject={onProject}
+            strip={
+              map && view.kind === 'region'
+                ? {
+                    map,
+                    color: explorerArt.regions[view.regionId as keyof typeof explorerArt.regions],
+                    scroll: MAP_SCROLL,
+                  }
+                : null
+            }
             active={active}
             animated={animated}
           />
@@ -167,16 +247,6 @@ export function ExplorerScreen() {
       ) : (
         <StageFallback slide={slide} frame={frame} />
       )}
-      {signs ? (
-        <RegionSigns
-          points={signs}
-          regions={regions}
-          selectedId={selectedId}
-          onSelect={select}
-          screen={screen}
-          bounds={{ top: signsTop, bottom: screen.height * 0.57 }}
-        />
-      ) : null}
       <View
         pointerEvents="box-none"
         style={[
@@ -209,13 +279,39 @@ export function ExplorerScreen() {
             rotate={rotate}
             listMode={listMode}
           />
-        ) : (
-          <RegionPlaceholderHud
-            region={regions.find((r) => r.regionId === view.regionId)}
+        ) : map ? (
+          <RegionMapHud
+            map={map}
+            regionName={regions.find((r) => r.regionId === map.regionId)?.region.name ?? ''}
             onBack={() => up && open(up)}
+            pan={pan}
+            listMode={mapListMode}
+            onToggleList={() => setShowList((value) => !value)}
+            onNode={openLevel}
+            onCity={goToCity}
+            onGoToCity={goToCity}
           />
-        )}
+        ) : null}
       </View>
+      {signs ? (
+        <RegionSigns
+          points={signs}
+          regions={regions}
+          selectedId={selectedId}
+          onSelect={select}
+          screen={screen}
+          bounds={{ top: signsTop, bottom: screen.height * 0.57 }}
+        />
+      ) : null}
+      {readyMap && map ? (
+        <MapOverlay
+          map={map}
+          points={readyMap.points}
+          cameraX0={readyMap.cameraX}
+          onNode={openLevel}
+          onCity={goToCity}
+        />
+      ) : null}
     </GestureHandlerRootView>
   );
 }
