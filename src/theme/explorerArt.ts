@@ -34,6 +34,16 @@ export const explorerArt = {
   cloud: { top: '#ffffff', bottom: '#b9c8dc' },
   grassBlades: { base: '#34491f', tip: '#8fa04a', dry: '#b0a765' },
   digit: '#f2fbff',
+  /** Régions de l'île des Maths (X2a) : teinte sur l'herbe et couleur des panneaux. */
+  regions: {
+    'maths-nombres': '#4f86e8',
+    'maths-donnees': '#e89a2c',
+    'maths-espace': '#9163e0',
+    'maths-algo': '#1fb3a6',
+  },
+  /** Brume sur les régions pas encore visitées, et pointillé des frontières. */
+  mist: '#dbe8fa',
+  regionBorder: '#ffffff',
   /**
    * HUD de l'onglet Explorer, façon jeu vidéo : textes blancs cernés de bleu nuit, boutons brillants
    * en relief (face en dégradé, rebord plus sombre dessous), gemmes et médaille dorée.
@@ -62,6 +72,13 @@ export const explorerArt = {
       parchmentInk: '#5b3713',
     },
     gem: '#ffffff',
+    /** Pastilles d'état des panneaux de région (X2a). */
+    status: {
+      discover: { face: '#dce8ff', ink: '#1f3a78' },
+      current: { face: '#5b95ff', ink: '#ffffff' },
+      consolidate: { face: '#ffb23f', ink: '#5a3200' },
+      done: { face: '#46d06f', ink: '#0d3a1c' },
+    },
     /** Géométrie des boutons en relief : rebord, contour, arrondi. */
     button: { depth: 5, border: 2.5, radius: 18 },
   },

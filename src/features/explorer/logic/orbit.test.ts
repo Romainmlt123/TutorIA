@@ -47,4 +47,22 @@ describe('rotation de l’île au doigt', () => {
     drag(orbit, 0);
     expect(orbit.azimuth).toBe(angle);
   });
+
+  it('reste dans la plage permise pendant le glissement', () => {
+    const orbit = createOrbit();
+    beginDrag(orbit);
+    drag(orbit, -10_000, 0.6);
+    expect(orbit.azimuth).toBeCloseTo(DEFAULT_AZIMUTH + 0.6);
+    drag(orbit, 10_000, 0.6);
+    expect(orbit.azimuth).toBeCloseTo(DEFAULT_AZIMUTH - 0.6);
+  });
+
+  it('revient dans la plage quand l’île en est sortie, sans élan', () => {
+    const orbit = createOrbit();
+    orbit.azimuth = DEFAULT_AZIMUTH + 2;
+    orbit.velocity = 1;
+    for (let i = 0; i < 240; i++) coast(orbit, 1 / 60, 0.6);
+    expect(orbit.azimuth).toBeCloseTo(DEFAULT_AZIMUTH + 0.6);
+    expect(orbit.velocity).toBe(0);
+  });
 });

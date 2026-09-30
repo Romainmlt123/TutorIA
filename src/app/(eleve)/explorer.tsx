@@ -1,3 +1,3 @@
-import { IslandsScreen } from '@/features/explorer/IslandsScreen';
+import { ExplorerScreen } from '@/features/explorer/ExplorerScreen';
 
-export default IslandsScreen;
+export default ExplorerScreen;

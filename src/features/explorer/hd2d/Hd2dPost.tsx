@@ -86,6 +86,8 @@ type Passes = {
   quad: THREE.Mesh;
   quadScene: THREE.Scene;
   quadCamera: THREE.OrthographicCamera;
+  /** Dernier préréglage appliqué : les couleurs ne sont réécrites que s'il change. */
+  appliedLook: PostLook | null;
 };
 
 type Props = {
@@ -95,6 +97,24 @@ type Props = {
   /** Halo, étalonnage et ciel (explorerArt.post). */
   look?: PostLook;
 };
+
+/**
+ * Réglages appliqués à chaque image, sans recréer les textures des passes : hauteur et largeur de
+ * la bande nette (la caméra de la scène peut les animer en écrivant `scene.userData.focus`),
+ * puis halo, étalonnage et ciel du préréglage.
+ */
+function applyParams(passes: Passes, focus: number, band: number, look: PostLook) {
+  const { blur, bright, final } = passes;
+  blur.uniforms.uFocus!.value = focus;
+  blur.uniforms.uBand!.value = band;
+  if (passes.appliedLook === look) return;
+  passes.appliedLook = look;
+  bright.uniforms.uThreshold!.value.set(...look.bloom);
+  final.uniforms.uSkyTop!.value.set(look.sky.top);
+  final.uniforms.uSkyMiddle!.value.set(look.sky.middle);
+  final.uniforms.uSkyBottom!.value.set(look.sky.horizon);
+  final.uniforms.uGrade!.value.set(look.saturation, look.shadowTint, look.lightTint, look.exposure);
+}
 
 export function Hd2dPost({ focus = 0.5, band = 0.42, look = explorerArt.post.hd2d }: Props) {
   const gl = useThree((s) => s.gl);
@@ -119,8 +139,8 @@ export function Hd2dPost({ focus = 0.5, band = 0.42, look = explorerArt.post.hd2
         uInput: { value: null },
         uDirection: { value: new THREE.Vector2() },
         uTilt: { value: 0 },
-        uFocus: { value: focus },
-        uBand: { value: band },
+        uFocus: { value: 0.5 },
+        uBand: { value: 0.42 },
       },
       vertexShader: quadVertex,
       fragmentShader: blurFragment,
@@ -130,7 +150,7 @@ export function Hd2dPost({ focus = 0.5, band = 0.42, look = explorerArt.post.hd2
     const bright = new THREE.ShaderMaterial({
       uniforms: {
         uInput: { value: null },
-        uThreshold: { value: new THREE.Vector2(...look.bloom) },
+        uThreshold: { value: new THREE.Vector2() },
       },
       vertexShader: quadVertex,
       fragmentShader: brightFragment,
@@ -141,14 +161,12 @@ export function Hd2dPost({ focus = 0.5, band = 0.42, look = explorerArt.post.hd2
       uniforms: {
         uScene: { value: null },
         uBloom: { value: null },
-        uSkyTop: { value: new THREE.Color(look.sky.top) },
-        uSkyMiddle: { value: new THREE.Color(look.sky.middle) },
-        uSkyBottom: { value: new THREE.Color(look.sky.horizon) },
+        uSkyTop: { value: new THREE.Color() },
+        uSkyMiddle: { value: new THREE.Color() },
+        uSkyBottom: { value: new THREE.Color() },
         uShadowTint: { value: new THREE.Color(explorerArt.grade.shadows) },
         uLightTint: { value: new THREE.Color(explorerArt.grade.highlights) },
-        uGrade: {
-          value: new THREE.Vector4(look.saturation, look.shadowTint, look.lightTint, look.exposure),
-        },
+        uGrade: { value: new THREE.Vector4() },
       },
       vertexShader: quadVertex,
       fragmentShader: finalFragment,
@@ -160,7 +178,18 @@ export function Hd2dPost({ focus = 0.5, band = 0.42, look = explorerArt.post.hd2
     quad.frustumCulled = false;
     quadScene.add(quad);
     const quadCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    passesRef.current = { buffer, full, half, blur, bright, final, quad, quadScene, quadCamera };
+    passesRef.current = {
+      buffer,
+      full,
+      half,
+      blur,
+      bright,
+      final,
+      quad,
+      quadScene,
+      quadCamera,
+      appliedLook: null,
+    };
     // La taille du canevas recrée les textures intermédiaires ; les anciennes sont libérées.
     return () => {
       [...full, ...half].forEach((t) => t.dispose());
@@ -169,12 +198,14 @@ export function Hd2dPost({ focus = 0.5, band = 0.42, look = explorerArt.post.hd2
       final.dispose();
       passesRef.current = null;
     };
-  }, [gl, size.width, size.height, focus, band, look]);
+  }, [gl, size.width, size.height]);
 
   useFrame(() => {
     const passes = passesRef.current;
     if (!passes) return;
     const { full, half, blur, bright, final, quad, quadScene, quadCamera, buffer } = passes;
+    const animatedFocus = scene.userData.focus as number | undefined;
+    applyParams(passes, animatedFocus ?? focus, band, look);
     // En natif, `gl.render` termine l'image (endFrameEXP d'expo-gl) : on la neutralise pendant
     // les passes intermédiaires, et seule la dernière passe présente l'image.
     const context = gl.getContext() as WebGLRenderingContext & { endFrameEXP?: () => void };

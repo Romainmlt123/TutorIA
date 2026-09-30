@@ -16,6 +16,8 @@ export type Orbit = {
 
 /** Vue de départ : légèrement de trois quarts, comme dans l'atelier. */
 export const DEFAULT_AZIMUTH = -0.2;
+/** Demi-plage de rotation libre : l'île tourne sans limite. */
+export const FREE_RANGE = Infinity;
 /** Un glissement de 160 px fait tourner l'île d'un radian (environ 57°). */
 export const RADIANS_PER_PIXEL = 1 / 160;
 /** Freinage de l'élan : il perd environ 92 % de sa vitesse par seconde. */
@@ -32,9 +34,16 @@ export function beginDrag(orbit: Orbit): void {
   orbit.startAzimuth = orbit.azimuth;
 }
 
-/** Glisser vers la droite fait tourner l'île vers la droite. */
-export function drag(orbit: Orbit, translationX: number): void {
-  orbit.azimuth = orbit.startAzimuth - translationX * RADIANS_PER_PIXEL;
+function clamp(azimuth: number, range: number): number {
+  return Math.min(DEFAULT_AZIMUTH + range, Math.max(DEFAULT_AZIMUTH - range, azimuth));
+}
+
+/**
+ * Glisser vers la droite fait tourner l'île vers la droite, dans la plage `range` autour de la vue
+ * de départ (aucune limite par défaut).
+ */
+export function drag(orbit: Orbit, translationX: number, range = FREE_RANGE): void {
+  orbit.azimuth = clamp(orbit.startAzimuth - translationX * RADIANS_PER_PIXEL, range);
 }
 
 /** Au lâcher, l'élan vient de la vitesse du doigt (px/s) ; aucun élan si les animations sont réduites. */
@@ -43,10 +52,21 @@ export function release(orbit: Orbit, velocityX: number, inertia: boolean): void
   orbit.velocity = inertia ? -velocityX * RADIANS_PER_PIXEL : 0;
 }
 
-/** Une image : l'île continue sur son élan, qui s'amortit jusqu'à l'arrêt. */
-export function coast(orbit: Orbit, delta: number): void {
-  if (orbit.dragging || orbit.velocity === 0) return;
-  orbit.azimuth += orbit.velocity * delta;
-  orbit.velocity *= Math.exp(-FRICTION * delta);
-  if (Math.abs(orbit.velocity) < STOP_SPEED) orbit.velocity = 0;
+/**
+ * Une image : l'île continue sur son élan, qui s'amortit jusqu'à l'arrêt. Dans une plage limitée,
+ * elle s'arrête contre la butée, et revient doucement dedans si elle en était sortie (en quittant
+ * le carrousel, par exemple).
+ */
+export function coast(orbit: Orbit, delta: number, range = FREE_RANGE): void {
+  if (orbit.dragging) return;
+  if (orbit.velocity !== 0) {
+    orbit.azimuth += orbit.velocity * delta;
+    orbit.velocity *= Math.exp(-FRICTION * delta);
+    if (Math.abs(orbit.velocity) < STOP_SPEED) orbit.velocity = 0;
+  }
+  const inside = clamp(orbit.azimuth, range);
+  if (inside === orbit.azimuth) return;
+  orbit.velocity = 0;
+  orbit.azimuth += (inside - orbit.azimuth) * (1 - Math.exp(-delta * 6));
+  if (Math.abs(inside - orbit.azimuth) < 1e-3) orbit.azimuth = inside;
 }

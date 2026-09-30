@@ -16,6 +16,13 @@ import { explorerArt } from '@/theme/explorerArt';
 
 import { seeded } from '../hd2d/pixels';
 import { grassMaterial } from './grass';
+import {
+  applyRegionTint,
+  disposeRegionTint,
+  setRegionLook,
+  type RegionLook,
+  type RegionTintUniforms,
+} from './regionTint';
 import { SCENE_TIME } from './time';
 import { fallCurve, waterMeshes } from './water';
 
@@ -41,7 +48,13 @@ type World = {
   fall: THREE.CatmullRomCurve3;
   /** Instant de la première image, pour l'apparition de l'île. */
   shownAt: number | null;
+  /** Teinte des régions (X2a) et son intensité lissée, de 0 (carrousel) à 1 (régions). */
+  tint: RegionTintUniforms;
+  regionMix: number;
 };
+
+/** Sans demande de la vue : pas de teinte, l'île telle qu'elle a été cuite. */
+const NO_REGIONS: RegionLook = { mix: 0, focus: null, mist: [] };
 
 /** L'île apparaît en 0,7 s : elle monte un peu en grandissant, puis se pose. */
 const APPEAR_SECONDS = 0.7;
@@ -89,6 +102,8 @@ function buildWorld(gltf: GLTF): World {
   const { island, blades, digits: glyphs } = readModel(gltf);
   const root = new THREE.Group();
   const owned = [island.material as THREE.Material, blades.material as THREE.Material];
+  island.updateMatrix();
+  const tint = applyRegionTint(island.material as THREE.MeshBasicMaterial, island.matrix.clone());
   const water = waterMeshes();
   root.add(island, blades, water);
 
@@ -114,7 +129,7 @@ function buildWorld(gltf: GLTF): World {
     return { holder, material, offset: i / DIGIT_COUNT, lane };
   });
 
-  return { root, water, owned, digits, fall: fallCurve(), shownAt: null };
+  return { root, water, owned, digits, fall: fallCurve(), shownAt: null, tint, regionMix: 0 };
 }
 
 /** Libère ce que la scène a créé ; le modèle lui-même reste dans le cache de useLoader. */
@@ -126,6 +141,7 @@ function disposeWorld(w: World) {
   });
   for (const d of w.digits) d.material.dispose();
   for (const material of w.owned) material.dispose();
+  disposeRegionTint(w.tint);
 }
 
 /** Apparition : de 0 à 1, en douceur ; immédiate si les animations sont réduites. */
@@ -136,14 +152,26 @@ function appearance(w: World, t: number, animated: boolean): number {
   return 1 - (1 - p) ** 3;
 }
 
-/** Une image : apparition, flottement, eau, chiffres qui tombent. */
-function tickWorld(w: World, t: number, camera: THREE.Camera, animated: boolean) {
+/** Une image : apparition, teinte des régions, flottement, eau, chiffres qui tombent. */
+function tickWorld(
+  w: World,
+  t: number,
+  delta: number,
+  camera: THREE.Camera,
+  animated: boolean,
+  regions: RegionLook,
+) {
   const shown = appearance(w, t, animated);
   w.root.scale.setScalar(0.85 + 0.15 * shown);
   w.root.position.y = -0.6 * (1 - shown);
+  w.regionMix = animated
+    ? w.regionMix + (regions.mix - w.regionMix) * (1 - Math.exp(-delta * 5))
+    : regions.mix;
+  setRegionLook(w.tint, { ...regions, mix: w.regionMix });
   if (animated) {
     SCENE_TIME.value = t;
-    w.root.position.y += Math.sin(t * 1.1) * 0.08;
+    // L'île ne flotte plus dans les vues de région : les panneaux posés dessus restent en place.
+    w.root.position.y += Math.sin(t * 1.1) * 0.08 * (1 - w.regionMix);
     for (const d of w.digits) {
       const phase = (t * 0.16 + d.offset) % 1;
       // Position à longueur d'arc constante : les chiffres ne s'entassent pas au sommet, où la
@@ -164,11 +192,19 @@ function tickWorld(w: World, t: number, camera: THREE.Camera, animated: boolean)
   }
 }
 
-export function MathsIsland3D({ animated = true }: { animated?: boolean }) {
+type Props = {
+  animated?: boolean;
+  /** Teinte, région choisie et brume des régions (X2a) ; aucune par défaut. */
+  regions?: RegionLook;
+};
+
+export function MathsIsland3D({ animated = true, regions = NO_REGIONS }: Props) {
   const camera = useThree((s) => s.camera);
   const gltf = useLoader(GLTFLoader, ISLAND_GLB);
   const world = useMemo(() => buildWorld(gltf), [gltf]);
   useEffect(() => () => disposeWorld(world), [world]);
-  useFrame(({ clock }) => tickWorld(world, clock.elapsedTime, camera, animated));
+  useFrame(({ clock }, delta) =>
+    tickWorld(world, clock.elapsedTime, delta, camera, animated, regions),
+  );
   return <primitive object={world.root} />;
 }
