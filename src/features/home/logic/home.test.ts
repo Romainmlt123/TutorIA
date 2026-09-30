@@ -1,6 +1,6 @@
 import { quotes } from '@/data/mock/quotes';
 
-import { currentLesson, goalProgress, levelOf, quoteOfTheDay, subjectMastery } from './home';
+import { currentLesson, goalProgress, quoteOfTheDay, subjectMastery } from './home';
 
 describe('accueil', () => {
   it('change de citation chaque jour et boucle sur la liste', () => {
@@ -20,12 +20,6 @@ describe('accueil', () => {
 });
 
 describe('progression de l’accueil', () => {
-  it('passe un niveau tous les 500 XP', () => {
-    expect(levelOf(3340)).toEqual({ level: 7, xp: 340, xpForNextLevel: 500 });
-    expect(levelOf(0)).toEqual({ level: 1, xp: 0, xpForNextLevel: 500 });
-    expect(levelOf(500)).toEqual({ level: 2, xp: 0, xpForNextLevel: 500 });
-  });
-
   it('avance d’une leçon par séance, cinq au plus', () => {
     expect(currentLesson(0)).toBe(1);
     expect(currentLesson(2)).toBe(3);

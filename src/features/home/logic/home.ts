@@ -12,18 +12,6 @@ export function goalProgress(done: number, target: number): number {
   return target > 0 ? Math.min(1, done / target) : 0;
 }
 
-/** Un niveau tous les 500 XP (Léa : 3 340 XP → niveau 7, 340 / 500). */
-export const XP_PER_LEVEL = 500;
-
-export function levelOf(totalXp: number): { level: number; xp: number; xpForNextLevel: number } {
-  const xp = Math.max(0, Math.floor(totalXp));
-  return {
-    level: Math.floor(xp / XP_PER_LEVEL) + 1,
-    xp: xp % XP_PER_LEVEL,
-    xpForNextLevel: XP_PER_LEVEL,
-  };
-}
-
 /** Séances visées chaque jour (carte « Objectif du jour »). */
 export const DAILY_SESSIONS_TARGET = 3;
 
