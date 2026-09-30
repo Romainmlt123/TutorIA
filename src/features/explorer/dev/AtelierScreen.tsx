@@ -1,6 +1,6 @@
 import { Canvas, useThree } from '@react-three/fiber';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { Suspense, useEffect, useState, useSyncExternalStore } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
@@ -16,6 +16,7 @@ import { Hd2dPost } from '../hd2d/Hd2dPost';
 import { MathsIslandHD } from '../hd2d/MathsIslandHD';
 import { SceneBoundary } from '../hd2d/SceneBoundary';
 import { canUseWebGL } from '../hd2d/webgl';
+import { MathsIsland3D } from '../stylized3d/MathsIsland3D';
 
 const TARGET: [number, number, number] = [0, -0.9, 0];
 const FOV = 26;
@@ -29,9 +30,10 @@ function placeCamera(
   scene: THREE.Scene,
   aspect: number,
   azimuth: number,
+  elevation: number,
 ) {
   const distance = distanceToFit(7.4, FOV, aspect, 1.02);
-  camera.position.set(...orbit(TARGET, distance, 33, azimuth));
+  camera.position.set(...orbit(TARGET, distance, elevation, azimuth));
   camera.lookAt(new THREE.Vector3(...TARGET));
   camera.far = distance * 4;
   camera.updateProjectionMatrix();
@@ -39,13 +41,19 @@ function placeCamera(
 }
 
 /** Caméra placée et orientée à chaque changement (glisser fait tourner la vue). */
-function CameraRig({ azimuth }: { azimuth: number }) {
+function CameraRig({ azimuth, elevation }: { azimuth: number; elevation: number }) {
   const camera = useThree((s) => s.camera);
   const scene = useThree((s) => s.scene);
   const size = useThree((s) => s.size);
   useEffect(() => {
-    placeCamera(camera as THREE.PerspectiveCamera, scene, size.width / size.height, azimuth);
-  }, [azimuth, camera, scene, size.width, size.height]);
+    placeCamera(
+      camera as THREE.PerspectiveCamera,
+      scene,
+      size.width / size.height,
+      azimuth,
+      elevation,
+    );
+  }, [azimuth, elevation, camera, scene, size.width, size.height]);
   return null;
 }
 
@@ -72,8 +80,9 @@ function Lights() {
   );
 }
 
-function Hd2dView() {
-  const [azimuth, setAzimuth] = useState(-0.35);
+/** Glisser horizontalement fait tourner la caméra autour de l'île. */
+function useOrbitGesture(initial: number) {
+  const [azimuth, setAzimuth] = useState(initial);
   const start = useSharedValue(0);
   const pan = Gesture.Pan()
     .runOnJS(true)
@@ -81,6 +90,11 @@ function Hd2dView() {
       start.value = azimuth;
     })
     .onUpdate((e) => setAzimuth(start.value - e.translationX / 180));
+  return { azimuth, pan };
+}
+
+function Hd2dView() {
+  const { azimuth, pan } = useOrbitGesture(-0.35);
   return (
     <GestureDetector gesture={pan}>
       <View style={styles.screen} collapsable={false}>
@@ -90,7 +104,7 @@ function Hd2dView() {
           flat
           gl={{ antialias: false, alpha: true }}
           camera={{ fov: FOV }}>
-          <CameraRig azimuth={azimuth} />
+          <CameraRig azimuth={azimuth} elevation={33} />
           <Lights />
           <MathsIslandHD />
           <Hd2dPost focus={0.5} band={0.42} />
@@ -100,10 +114,24 @@ function Hd2dView() {
   );
 }
 
-/**
- * Atelier (développement seulement) : l'île des Maths en HD-2D (par défaut) ou en illustration
- * vectorielle, le repli 2D (?vue=vecteur).
- */
+/** 3D stylisée : tout est cuit dans le modèle, aucune lumière ni ombre en temps réel. */
+function Stylized3dView() {
+  const { azimuth, pan } = useOrbitGesture(-0.2);
+  return (
+    <GestureDetector gesture={pan}>
+      <View style={styles.screen} collapsable={false}>
+        <Canvas dpr={[1, 2]} flat gl={{ antialias: false, alpha: true }} camera={{ fov: FOV }}>
+          <CameraRig azimuth={azimuth} elevation={24} />
+          <Suspense fallback={null}>
+            <MathsIsland3D />
+          </Suspense>
+          <Hd2dPost focus={0.5} band={0.62} look={explorerArt.post.natural} />
+        </Canvas>
+      </View>
+    </GestureDetector>
+  );
+}
+
 const noSubscription = () => () => undefined;
 
 /** Repli 2D : l'illustration vectorielle, centrée. */
@@ -116,25 +144,29 @@ function VectorView() {
   );
 }
 
+const LABELS = {
+  '3d': 'Atelier · île des Maths (3D)',
+  hd2d: 'Atelier · île des Maths (HD-2D)',
+  vecteur: 'Atelier · île des Maths (vecteur)',
+} as const;
+
 /**
- * Atelier (développement seulement) : l'île des Maths en HD-2D (par défaut) ou en illustration
- * vectorielle (?vue=vecteur). Sans WebGL, ou si la scène échoue, le repli 2D s'affiche.
+ * Atelier (développement seulement) : l'île des Maths en 3D stylisée (par défaut), en HD-2D
+ * (?vue=hd2d) ou en illustration vectorielle (?vue=vecteur). Sans WebGL, ou si la scène échoue,
+ * le repli 2D s'affiche.
  */
 export function AtelierScreen() {
   const { vue } = useLocalSearchParams<{ vue?: string }>();
   // Faux au rendu serveur (web) : pas de WebGL côté serveur, pas de décalage à l'hydratation.
   const webgl = useSyncExternalStore(noSubscription, canUseWebGL, () => false);
-  const hd2d = vue !== 'vecteur' && webgl;
-  const label = hd2d
-    ? 'Atelier · île des Maths (HD-2D)'
-    : webgl
-      ? 'Atelier · île des Maths (vecteur)'
-      : 'Atelier · WebGL indisponible : repli 2D';
+  const view = vue === 'hd2d' || vue === 'vecteur' ? vue : '3d';
+  const scene = webgl && view !== 'vecteur';
+  const label = webgl ? LABELS[view] : 'Atelier · WebGL indisponible : repli 2D';
   return (
     <GestureHandlerRootView style={styles.screen}>
-      {hd2d ? (
+      {scene ? (
         <SceneBoundary fallback={<VectorView />}>
-          <Hd2dView />
+          {view === 'hd2d' ? <Hd2dView /> : <Stylized3dView />}
         </SceneBoundary>
       ) : (
         <VectorView />
