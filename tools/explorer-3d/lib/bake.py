@@ -95,6 +95,25 @@ def preview(path, width=520, height=1126, samples=32, crop=None):
     bpy.ops.render.render(write_still=True)
 
 
+def fallback(path, width=900, height=1250, samples=48):
+    """Image fixe de l'île sur fond transparent (WebP), cadrée comme dans l'app : elle remplace la
+    3D quand WebGL manque ou que la scène échoue."""
+    scene = bpy.context.scene
+    scene.render.engine = "CYCLES"
+    scene.cycles.device = "CPU"
+    scene.cycles.samples = samples
+    scene.cycles.use_denoising = True
+    scene.render.film_transparent = True
+    scene.render.resolution_x, scene.render.resolution_y = width, height
+    scene.view_settings.view_transform = "Standard"
+    scene.render.image_settings.file_format = "WEBP"
+    scene.render.image_settings.color_mode = "RGBA"
+    scene.render.image_settings.quality = 86
+    _app_camera(scene, width, height)
+    scene.render.filepath = path
+    bpy.ops.render.render(write_still=True)
+
+
 def unwrap(obj, margin=0.003):
     bpy.ops.object.select_all(action="DESELECT")
     obj.select_set(True)

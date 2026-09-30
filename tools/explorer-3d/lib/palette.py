@@ -16,11 +16,15 @@ COLORS = {
     "rock-dark": "#4a4843", "rock": "#7a766d", "rock-light": "#a7a296", "pebble": "#b2aa99",
     # bois clair, un peu vieilli
     "wood-dark": "#6a4a2e", "wood": "#a07a50", "wood-light": "#c4a57a", "ink": "#2b2520",
+    # planches du panneau « Ta quête » (HUD d'Explorer), bois chaud et contrasté
+    "plank-dark": "#5e3113", "plank": "#a8622a", "plank-light": "#d69050", "plank-back": "#2a170a",
     # objets peints, tons adoucis
     "blue": "#3d63a0", "blue-light": "#7c9cc8", "violet": "#6b5a96", "violet-light": "#a397c2",
     "cyan": "#3f8a8e", "cyan-light": "#86b8b6", "pink": "#c47b89", "pink-light": "#dca9b2",
     "yellow": "#d4ae4c", "orange": "#c47a3e", "green-toy": "#5f8f5c", "white": "#ebe5d8",
     "metal": "#a8acb0", "metal-dark": "#62666b", "graphite": "#34322f",
+    # eau (image de repli seulement : dans l'app, l'eau est animée par un shader)
+    "water": "#1f5570", "water-light": "#7fb0c4",
     # fleurs des champs
     "flower-white": "#efece2", "flower-yellow": "#e3c75a", "flower-violet": "#9f8fc4",
     # lumière

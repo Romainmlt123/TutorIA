@@ -363,6 +363,41 @@ for k in range(11):
                        z - length * f ** 1.3))
     geo.tube(points, rng.uniform(0.022, 0.04), root, "Racine", taper=[1.0, 0.9, 0.75, 0.6, 0.45, 0.3, 0.1])
 
+def water_surfaces():
+    """Eau immobile du π, de la rivière et de la cascade, pour l'image de repli seulement."""
+    still = M.water()
+    bm = bmesh.new()
+    bm.faces.new([bm.verts.new(app(x, z, 0.022)) for x, z in pi_outline])
+    for (ax, az), (bx, bz) in zip(river, river[1:]):
+        tx, tz = bx - ax, bz - az
+        n = math.hypot(tx, tz)
+        sx, sz = -tz / n * (half + 0.01), tx / n * (half + 0.01)
+        bm.faces.new([bm.verts.new(app(x, z, 0.026)) for x, z in
+                      ((ax + sx, az + sz), (ax - sx, az - sz), (bx - sx, bz - sz), (bx + sx, bz + sz))])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    M.assign(geo.link("Eau", bm), still)
+    # Cascade : un ruban qui s'évase en tombant, de plus en plus transparent.
+    ex, ez = river[-1]
+    length = math.hypot(ex, ez)
+    ox, oz = ex / length, ez / length
+    fall = WATER["fall"]
+    bm = bmesh.new()
+    rows = []
+    for k, (d, y) in enumerate(fall):
+        w = WATER["river"]["width"] * (1 + k / (len(fall) - 1) * 1.1) / 2
+        cx, cz = ex + ox * d, ez + oz * d
+        rows.append([bm.verts.new(app(cx - oz * w * s, cz + ox * w * s, y)) for s in (1, -1)])
+    for (a1, b1), (a2, b2) in zip(rows, rows[1:]):
+        bm.faces.new((a1, b1, b2, a2))
+    M.assign(geo.link("Cascade", bm), M.waterfall(fall[-1][1]))
+
+
+if os.environ.get("EXPLORER_FALLBACK"):
+    water_surfaces()
+    bake.lights()
+    bake.fallback(os.environ["EXPLORER_FALLBACK"])
+    raise SystemExit(0)
+
 if os.environ.get("EXPLORER_PREVIEW"):
     bake.lights()
     crop = os.environ.get("EXPLORER_PREVIEW_CROP")

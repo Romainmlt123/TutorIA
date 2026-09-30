@@ -78,6 +78,15 @@ class Graph:
         self.link(centered.outputs[0], moved.inputs[1])
         return moved.outputs[0]
 
+    def stretched(self, x, y, z):
+        """Position dans la scène étirée par axe (fibres du bois, allongées le long des planches).
+        La position du monde, et non de l'objet : chaque planche a ainsi son propre motif."""
+        m = self.nodes.new("ShaderNodeVectorMath")
+        m.operation = "MULTIPLY"
+        self.link(_output(self.geometry, "Position"), m.inputs[0])
+        m.inputs[1].default_value = (x, y, z)
+        return m.outputs[0]
+
     def wave(self, scale, direction="X", distortion=4.0, vector=None, detail=2.0):
         w = self.nodes.new("ShaderNodeTexWave")
         w.wave_type = "BANDS"
@@ -276,6 +285,24 @@ def wood():
     return _cached("bois", build)
 
 
+def plank():
+    """Planche du panneau « Ta quête » : fibres allongées, veines irrégulières, quelques nœuds."""
+    def build():
+        g = Graph("planche")
+        fibres = g.stretched(0.35, 7.0, 1.0)
+        streaks = g.stretched(0.12, 2.2, 1.0)
+        tone = g.ramp(g.noise(1.6, 3, streaks), [(0.3, "plank-dark"), (0.55, "plank"), (0.8, "plank-light")])
+        grain = g.noise(2.2, 8, fibres, roughness=0.6)
+        color = g.mix(0.45, tone, g.ramp(grain, [(0.3, "plank-dark"), (0.7, "plank-light")]), "OVERLAY")
+        veins = g.ramp(g.noise(3.0, 5, streaks), [(0.44, 0.0), (0.5, 1.0), (0.56, 0.0)])
+        color = g.mix(g.times(veins, 0.7), color, "plank-dark")
+        knots = g.mask(g.voronoi(0.9, g.stretched(0.9, 2.2, 1.0)), 0.07, 0.025)
+        color = g.mix(g.times(knots, 0.9), color, "plank-dark")
+        g.bump(g.mix(0.6, grain, veins, "SUBTRACT"), 0.45, 0.01)
+        return g.finish(g.wear(color, 0.35), 0.6)
+    return _cached("planche", build)
+
+
 def leaves(tone="grass"):
     def build():
         g = Graph(f"feuillage-{tone}")
@@ -318,6 +345,31 @@ def crystal(color_name):
         color = g.ramp(g.voronoi(6.0), [(0.0, "white"), (0.3, color_name), (1.0, color_name)])
         return g.finish(color, 0.3, emission=color_name, strength=0.6)
     return _cached(f"cristal-{color_name}", build)
+
+
+def water():
+    """Eau immobile (image de repli) : bleu profond et brillant, qui reflète le ciel."""
+    def build():
+        g = Graph("eau")
+        color = g.ramp(g.noise(3.0, 2), [(0.3, "water"), (0.8, "water-light")])
+        g.bump(g.noise(18.0, 2), 0.15, 0.005)
+        return g.finish(color, 0.08)
+    return _cached("eau", build)
+
+
+def waterfall(bottom):
+    """Cascade (image de repli) : eau claire, de plus en plus transparente jusqu'à `bottom`."""
+    def build():
+        g = Graph("cascade")
+        g.finish(g.ramp(g.noise(6.0, 2), [(0.3, "water-light"), (0.9, "white")]), 0.2)
+        fade = g.nodes.new("ShaderNodeMixShader")
+        clear = g.nodes.new("ShaderNodeBsdfTransparent")
+        g.link(g.height(0.0, bottom), fade.inputs[0])
+        g.link(g.bsdf.outputs["BSDF"], fade.inputs[1])
+        g.link(clear.outputs[0], fade.inputs[2])
+        g.link(fade.outputs[0], _input(g.out, "Surface"))
+        return g.mat
+    return _cached("cascade", build)
 
 
 def flat(color_name):
