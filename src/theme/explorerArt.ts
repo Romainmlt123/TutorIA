@@ -18,12 +18,43 @@ export const explorerArt = {
     white: ['#8a8f9e', '#aab0bd', '#c8ccd6', '#e1e4ea', '#f3f4f7', '#ffffff'],
     gold: ['#5a3a06', '#8a5c0d', '#b98317', '#e0ac2c', '#f6cf5a', '#fff0a8'],
   },
-  sky: { top: '#6fa9f5', middle: '#b9dcff', horizon: '#fff1d0' },
   light: { sun: '#ffe2a8', skyFill: '#dbeaff', groundFill: '#8a73c9', rim: '#bff0ff' },
   grade: { shadows: '#9c8ce0', highlights: '#ffe6b8' },
   crystals: ['#62e6f0', '#b98cff', '#74b4ff'],
   dust: '#fff0c8',
   fog: '#d6e8ff',
+  /** 3D réaliste : eau, nuages vaporeux, chiffres lumineux de la cascade. */
+  water3d: {
+    deep: '#1f5570',
+    shallow: '#4f8a82',
+    sky: '#b7d0e6',
+    foam: '#eef3f1',
+    glow: '#fff6dc',
+  },
+  cloud: { top: '#ffffff', bottom: '#b9c8dc' },
+  grassBlades: { base: '#34491f', tip: '#8fa04a', dry: '#b0a765' },
+  digit: '#f2fbff',
+  /** Étalonnage final (Hd2dPost) : vif pour la HD-2D, naturel pour la 3D réaliste. */
+  post: {
+    hd2d: {
+      bloom: [0.48, 0.8],
+      saturation: 1.14,
+      shadowTint: 0.22,
+      lightTint: 0.18,
+      exposure: 1.06,
+      sky: { top: '#6fa9f5', middle: '#b9dcff', horizon: '#fff1d0' },
+    },
+    natural: {
+      bloom: [0.84, 0.99],
+      saturation: 1.04,
+      shadowTint: 0.1,
+      lightTint: 0.1,
+      exposure: 1.04,
+      sky: { top: '#5b8ed6', middle: '#a8c9ee', horizon: '#e8eef2' },
+    },
+  },
 } as const;
+
+export type PostLook = (typeof explorerArt.post)[keyof typeof explorerArt.post];
 
 export type ExplorerRamp = keyof typeof explorerArt.ramps;

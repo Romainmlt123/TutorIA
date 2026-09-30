@@ -17,4 +17,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   return (defaultResolveRequest ?? context.resolveRequest)(context, moduleName, platform);
 };
 
+// Modèles 3D d'Explorer (assets/explorer/models), chargés comme des images ou des polices.
+config.resolver.assetExts.push('glb');
+
 module.exports = config;

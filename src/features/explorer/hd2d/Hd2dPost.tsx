@@ -2,7 +2,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-import { explorerArt } from '@/theme/explorerArt';
+import { explorerArt, type PostLook } from '@/theme/explorerArt';
 
 /*
  * Chaîne d'effets HD-2D, écrite à la main pour rester compatible avec expo-gl (WebGL, textures
@@ -10,8 +10,6 @@ import { explorerArt } from '@/theme/explorerArt';
  * maquette en haut et en bas de l'écran (tilt-shift), puis composition sur un ciel en dégradé,
  * vignettage et étalonnage (ombres froides, lumières chaudes).
  */
-
-const ART = explorerArt;
 
 const quadVertex = /* glsl */ `
   varying vec2 vUv;
@@ -40,11 +38,12 @@ const blurFragment = /* glsl */ `
 /** Garde les zones lumineuses (eau, cristaux, reflets) pour le halo. */
 const brightFragment = /* glsl */ `
   uniform sampler2D uInput;
+  uniform vec2 uThreshold;
   varying vec2 vUv;
   void main() {
     vec4 c = texture2D(uInput, vUv);
     float l = dot(c.rgb, vec3(0.299, 0.587, 0.114));
-    gl_FragColor = vec4(c.rgb * smoothstep(0.48, 0.8, l) * c.a, 1.0);
+    gl_FragColor = vec4(c.rgb * smoothstep(uThreshold.x, uThreshold.y, l) * c.a, 1.0);
   }`;
 
 const finalFragment = /* glsl */ `
@@ -55,6 +54,7 @@ const finalFragment = /* glsl */ `
   uniform vec3 uSkyBottom;
   uniform vec3 uShadowTint;
   uniform vec3 uLightTint;
+  uniform vec4 uGrade;
   varying vec2 vUv;
   void main() {
     vec4 scene = texture2D(uScene, vUv);
@@ -63,12 +63,13 @@ const finalFragment = /* glsl */ `
       : mix(uSkyBottom, uSkyMiddle, smoothstep(0.0, 0.45, vUv.y));
     vec3 color = mix(sky, scene.rgb / max(scene.a, 0.001), scene.a);
     color += texture2D(uBloom, vUv).rgb * 1.1;
-    // Étalonnage lumineux et vif : saturation renforcée, ombres légèrement froides, lumières dorées.
+    // Étalonnage (uGrade : saturation, teinte des ombres, teinte des lumières, exposition) :
+    // ombres légèrement froides, lumières dorées.
     float l = dot(color, vec3(0.299, 0.587, 0.114));
-    color = mix(vec3(l), color, 1.14);
-    color = mix(color, color * uShadowTint, (1.0 - smoothstep(0.0, 0.4, l)) * 0.22);
-    color = mix(color, color * uLightTint, smoothstep(0.5, 1.0, l) * 0.18);
-    color *= 1.06;
+    color = mix(vec3(l), color, uGrade.x);
+    color = mix(color, color * uShadowTint, (1.0 - smoothstep(0.0, 0.4, l)) * uGrade.y);
+    color = mix(color, color * uLightTint, smoothstep(0.5, 1.0, l) * uGrade.z);
+    color *= uGrade.w;
     float vignette = smoothstep(1.2, 0.4, length((vUv - 0.5) * vec2(1.0, 1.25)));
     color *= mix(0.9, 1.0, vignette);
     gl_FragColor = vec4(color, 1.0);
@@ -91,9 +92,11 @@ type Props = {
   /** Hauteur (0 = bas, 1 = haut) de la bande nette, et sa demi-largeur. */
   focus?: number;
   band?: number;
+  /** Halo, étalonnage et ciel (explorerArt.post). */
+  look?: PostLook;
 };
 
-export function Hd2dPost({ focus = 0.5, band = 0.42 }: Props) {
+export function Hd2dPost({ focus = 0.5, band = 0.42, look = explorerArt.post.hd2d }: Props) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const camera = useThree((s) => s.camera);
@@ -125,7 +128,10 @@ export function Hd2dPost({ focus = 0.5, band = 0.42 }: Props) {
       depthWrite: false,
     });
     const bright = new THREE.ShaderMaterial({
-      uniforms: { uInput: { value: null } },
+      uniforms: {
+        uInput: { value: null },
+        uThreshold: { value: new THREE.Vector2(...look.bloom) },
+      },
       vertexShader: quadVertex,
       fragmentShader: brightFragment,
       depthTest: false,
@@ -135,11 +141,14 @@ export function Hd2dPost({ focus = 0.5, band = 0.42 }: Props) {
       uniforms: {
         uScene: { value: null },
         uBloom: { value: null },
-        uSkyTop: { value: new THREE.Color(ART.sky.top) },
-        uSkyMiddle: { value: new THREE.Color(ART.sky.middle) },
-        uSkyBottom: { value: new THREE.Color(ART.sky.horizon) },
-        uShadowTint: { value: new THREE.Color(ART.grade.shadows) },
-        uLightTint: { value: new THREE.Color(ART.grade.highlights) },
+        uSkyTop: { value: new THREE.Color(look.sky.top) },
+        uSkyMiddle: { value: new THREE.Color(look.sky.middle) },
+        uSkyBottom: { value: new THREE.Color(look.sky.horizon) },
+        uShadowTint: { value: new THREE.Color(explorerArt.grade.shadows) },
+        uLightTint: { value: new THREE.Color(explorerArt.grade.highlights) },
+        uGrade: {
+          value: new THREE.Vector4(look.saturation, look.shadowTint, look.lightTint, look.exposure),
+        },
       },
       vertexShader: quadVertex,
       fragmentShader: finalFragment,
@@ -160,7 +169,7 @@ export function Hd2dPost({ focus = 0.5, band = 0.42 }: Props) {
       final.dispose();
       passesRef.current = null;
     };
-  }, [gl, size.width, size.height, focus, band]);
+  }, [gl, size.width, size.height, focus, band, look]);
 
   useFrame(() => {
     const passes = passesRef.current;
