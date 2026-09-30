@@ -16,6 +16,7 @@ import { Hd2dPost } from '../hd2d/Hd2dPost';
 import { MathsIslandHD } from '../hd2d/MathsIslandHD';
 import { SceneBoundary } from '../hd2d/SceneBoundary';
 import { canUseWebGL } from '../hd2d/webgl';
+import { Clouds, type CloudSpec } from '../stylized3d/Clouds';
 import { MathsIsland3D } from '../stylized3d/MathsIsland3D';
 
 const TARGET: [number, number, number] = [0, -0.9, 0];
@@ -114,6 +115,14 @@ function Hd2dView() {
   );
 }
 
+const ATELIER_CLOUDS: readonly CloudSpec[] = [
+  { x: -4.6, y: 1.9, z: -3.8, scale: 1.1, seed: 3, drift: 0.07 },
+  { x: 4.3, y: 2.8, z: -5.2, scale: 1.4, seed: 4, drift: 0.1 },
+  { x: 4.0, y: -2.4, z: 1.2, scale: 0.85, seed: 5, drift: 0.13 },
+  { x: -4.3, y: -3.4, z: 0.6, scale: 0.75, seed: 6, drift: 0.16 },
+];
+const ATELIER_WRAP = [-6.5, 6.5] as const;
+
 /** 3D stylisée : tout est cuit dans le modèle, aucune lumière ni ombre en temps réel. */
 function Stylized3dView() {
   const { azimuth, pan } = useOrbitGesture(-0.2);
@@ -122,6 +131,7 @@ function Stylized3dView() {
       <View style={styles.screen} collapsable={false}>
         <Canvas dpr={[1, 2]} flat gl={{ antialias: false, alpha: true }} camera={{ fov: FOV }}>
           <CameraRig azimuth={azimuth} elevation={24} />
+          <Clouds clouds={ATELIER_CLOUDS} wrap={ATELIER_WRAP} />
           <Suspense fallback={null}>
             <MathsIsland3D />
           </Suspense>

@@ -1,14 +1,14 @@
 /**
  * Île des Maths en 3D réaliste, façon maquette : le modèle Blender (lumière, ombres douces et
  * occlusion cuites dans une seule texture, tools/explorer-3d/island_maths.py), avec de l'eau
- * animée (π, rivière, cascade), des brins d'herbe qui ondulent au vent, quelques chiffres
- * lumineux qui tombent avec la cascade et des nuages vaporeux. Aucune lumière en temps réel :
- * tout est cuit.
+ * animée (π, rivière, cascade), des brins d'herbe qui ondulent au vent et quelques chiffres
+ * lumineux qui tombent avec la cascade. Aucune lumière en temps réel : tout est cuit. Les nuages
+ * sont à part (Clouds), pour s'afficher pendant le chargement du modèle.
  * Les effets d'image (halo, léger flou de maquette, étalonnage) viennent de Hd2dPost.
  * Repère : x vers la droite, z vers la caméra, y vers le haut ; le plateau est à y = 0.
  */
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import { type GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
@@ -34,17 +34,35 @@ type Digit = {
 
 type World = {
   root: THREE.Group;
+  water: THREE.Group;
+  /** Matériaux créés pour la scène (île, brins) : libérés avec elle, contrairement au modèle. */
+  owned: THREE.Material[];
   digits: Digit[];
   fall: THREE.CatmullRomCurve3;
-  clouds: THREE.Group[];
-  puffs: THREE.Mesh[];
+  /** Instant de la première image, pour l'apparition de l'île. */
+  shownAt: number | null;
 };
 
+/** L'île apparaît en 0,7 s : elle monte un peu en grandissant, puis se pose. */
+const APPEAR_SECONDS = 0.7;
+
 type Model = { island: THREE.Mesh; blades: THREE.Mesh; digits: THREE.Mesh[] };
+
+/** Nouvel objet qui partage la géométrie d'une pièce du modèle, à la même place. */
+function copyOf(source: THREE.Mesh, material: THREE.Material): THREE.Mesh {
+  const mesh = new THREE.Mesh(source.geometry, material);
+  mesh.position.copy(source.position);
+  mesh.quaternion.copy(source.quaternion);
+  mesh.scale.copy(source.scale);
+  return mesh;
+}
 
 /**
  * Le modèle : l'île cuite (sa texture s'affiche telle quelle, MeshBasic, sans calcul de lumière),
  * les brins d'herbe (animés par le vent) et les dix chiffres de la cascade.
+ * Le modèle chargé reste intact : useLoader le garde en cache et le rend à chaque scène qui le
+ * demande (atelier, onglet Explorer). Chaque scène crée donc ses propres objets, qui en partagent
+ * la géométrie et la texture.
  */
 function readModel(gltf: GLTF): Model {
   let island: THREE.Mesh | null = null;
@@ -58,87 +76,21 @@ function readModel(gltf: GLTF): Model {
   });
   if (!island || !blades || digits.length === 0)
     throw new Error('island-maths-3d.glb : île, brins ou chiffres absents');
-  const mesh: THREE.Mesh = island;
-  const baked = mesh.material as THREE.MeshStandardMaterial;
-  mesh.material = new THREE.MeshBasicMaterial({ map: baked.map });
-  baked.dispose();
-  const grass: THREE.Mesh = blades;
-  (grass.material as THREE.Material).dispose();
-  grass.material = grassMaterial();
-  return { island: mesh, blades: grass, digits };
-}
-
-/**
- * Bouffée de nuage : un plan face à la caméra, dont la forme vient d'un bruit fractal (bords
- * doux et irréguliers), éclairé par le haut et un peu bleuté dessous, qui se déforme lentement.
- */
-function puffMaterial(): THREE.ShaderMaterial {
-  return new THREE.ShaderMaterial({
-    uniforms: {
-      uTime: SCENE_TIME,
-      uTop: { value: new THREE.Color(ART.cloud.top) },
-      uBottom: { value: new THREE.Color(ART.cloud.bottom) },
-    },
-    vertexShader: /* glsl */ `
-      varying vec2 vUv;
-      varying vec2 vSeed;
-      void main() {
-        vUv = uv;
-        vSeed = modelMatrix[3].xy * 1.7;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }`,
-    fragmentShader: /* glsl */ `
-      uniform float uTime;
-      uniform vec3 uTop;
-      uniform vec3 uBottom;
-      varying vec2 vUv;
-      varying vec2 vSeed;
-      float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-      float noise(vec2 p) {
-        vec2 i = floor(p), f = fract(p);
-        vec2 u = f * f * (3.0 - 2.0 * f);
-        return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
-                   mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
-      }
-      float fbm(vec2 p) {
-        float sum = 0.0, amplitude = 0.5;
-        for (int i = 0; i < 4; i++) { sum += noise(p) * amplitude; p *= 2.03; amplitude *= 0.5; }
-        return sum;
-      }
-      void main() {
-        vec2 c = (vUv - 0.5) * vec2(1.0, 1.35);
-        float n = fbm(vUv * 3.2 + vSeed + uTime * 0.015);
-        float density = smoothstep(0.5, 0.12, length(c) + (n - 0.5) * 0.42);
-        if (density < 0.01) discard;
-        float lit = smoothstep(0.15, 0.8, vUv.y + (n - 0.5) * 0.5);
-        gl_FragColor = vec4(mix(uBottom, uTop, lit), density * 0.94);
-        #include <colorspace_fragment>
-      }`,
-    transparent: true,
-    depthWrite: false,
-    fog: false,
-  });
-}
-
-/** Nuage : quelques bouffées de tailles variées, serrées autour d'une grosse bouffée centrale. */
-function cloud(seed: number): THREE.Group {
-  const rand = seeded(seed);
-  const group = new THREE.Group();
-  const material = puffMaterial();
-  for (let i = 0; i < 5; i++) {
-    const size = i === 0 ? 2.4 : 1.3 + rand() * 0.7;
-    const puff = new THREE.Mesh(new THREE.PlaneGeometry(size, size), material);
-    const side = i === 0 ? 0 : (i % 2 === 0 ? 1 : -1) * (0.55 + rand() * 0.5);
-    puff.position.set(side, (rand() - 0.4) * 0.35 - Math.abs(side) * 0.2, (rand() - 0.5) * 0.4);
-    group.add(puff);
-  }
-  return group;
+  const source: THREE.Mesh = island;
+  const baked = (source.material as THREE.MeshStandardMaterial).map;
+  return {
+    island: copyOf(source, new THREE.MeshBasicMaterial({ map: baked })),
+    blades: copyOf(blades, grassMaterial()),
+    digits,
+  };
 }
 
 function buildWorld(gltf: GLTF): World {
   const { island, blades, digits: glyphs } = readModel(gltf);
   const root = new THREE.Group();
-  root.add(island, blades, waterMeshes());
+  const owned = [island.material as THREE.Material, blades.material as THREE.Material];
+  const water = waterMeshes();
+  root.add(island, blades, water);
 
   // Chiffres de la cascade : chacun dans un support, que l'on place sans toucher à la transformation
   // propre du modèle (quantification des sommets).
@@ -150,10 +102,7 @@ function buildWorld(gltf: GLTF): World {
       transparent: true,
       fog: false,
     });
-    const mesh = new THREE.Mesh(glyph.geometry, material);
-    mesh.position.copy(glyph.position);
-    mesh.quaternion.copy(glyph.quaternion);
-    mesh.scale.copy(glyph.scale);
+    const mesh = copyOf(glyph, material);
     mesh.renderOrder = 4;
     const holder = new THREE.Group();
     holder.add(mesh);
@@ -165,27 +114,36 @@ function buildWorld(gltf: GLTF): World {
     return { holder, material, offset: i / DIGIT_COUNT, lane };
   });
 
-  const clouds = [
-    { x: -4.6, y: 1.9, z: -3.8, s: 1.1 },
-    { x: 4.3, y: 2.8, z: -5.2, s: 1.4 },
-    { x: 4.0, y: -2.4, z: 1.2, s: 0.85 },
-    { x: -4.3, y: -3.4, z: 0.6, s: 0.75 },
-  ].map((c, i) => {
-    const group = cloud(i + 3);
-    group.position.set(c.x, c.y, c.z);
-    group.scale.setScalar(c.s);
-    root.add(group);
-    return group;
-  });
-  const puffs = clouds.flatMap((c) => c.children.filter((o) => o instanceof THREE.Mesh));
-  return { root, digits, fall: fallCurve(), clouds, puffs };
+  return { root, water, owned, digits, fall: fallCurve(), shownAt: null };
 }
 
-/** Une image : flottement, eau, chiffres qui tombent, nuages. */
-function tickWorld(w: World, t: number, delta: number, camera: THREE.Camera, animated: boolean) {
+/** Libère ce que la scène a créé ; le modèle lui-même reste dans le cache de useLoader. */
+function disposeWorld(w: World) {
+  w.water.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    object.geometry.dispose();
+    (object.material as THREE.Material).dispose();
+  });
+  for (const d of w.digits) d.material.dispose();
+  for (const material of w.owned) material.dispose();
+}
+
+/** Apparition : de 0 à 1, en douceur ; immédiate si les animations sont réduites. */
+function appearance(w: World, t: number, animated: boolean): number {
+  if (!animated) return 1;
+  w.shownAt ??= t;
+  const p = Math.min(1, (t - w.shownAt) / APPEAR_SECONDS);
+  return 1 - (1 - p) ** 3;
+}
+
+/** Une image : apparition, flottement, eau, chiffres qui tombent. */
+function tickWorld(w: World, t: number, camera: THREE.Camera, animated: boolean) {
+  const shown = appearance(w, t, animated);
+  w.root.scale.setScalar(0.85 + 0.15 * shown);
+  w.root.position.y = -0.6 * (1 - shown);
   if (animated) {
     SCENE_TIME.value = t;
-    w.root.position.y = Math.sin(t * 1.1) * 0.08;
+    w.root.position.y += Math.sin(t * 1.1) * 0.08;
     for (const d of w.digits) {
       const phase = (t * 0.16 + d.offset) % 1;
       // Position à longueur d'arc constante : les chiffres ne s'entassent pas au sommet, où la
@@ -197,10 +155,6 @@ function tickWorld(w: World, t: number, delta: number, camera: THREE.Camera, ani
         (1 - THREE.MathUtils.smoothstep(phase, 0.5, 1)) *
         0.9;
     }
-    w.clouds.forEach((c, i) => {
-      c.position.x += delta * (0.07 + i * 0.03);
-      if (c.position.x > 6.5) c.position.x = -6.5;
-    });
   }
   for (const d of w.digits) {
     d.holder.rotation.y = Math.atan2(
@@ -208,16 +162,13 @@ function tickWorld(w: World, t: number, delta: number, camera: THREE.Camera, ani
       camera.position.z - d.holder.position.z,
     );
   }
-  // Nuages : chaque bouffée reste face à la caméra.
-  for (const puff of w.puffs) puff.quaternion.copy(camera.quaternion);
 }
 
 export function MathsIsland3D({ animated = true }: { animated?: boolean }) {
   const camera = useThree((s) => s.camera);
   const gltf = useLoader(GLTFLoader, ISLAND_GLB);
   const world = useMemo(() => buildWorld(gltf), [gltf]);
-  useFrame(({ clock }, delta) => {
-    tickWorld(world, clock.elapsedTime, delta, camera, animated);
-  });
+  useEffect(() => () => disposeWorld(world), [world]);
+  useFrame(({ clock }) => tickWorld(world, clock.elapsedTime, camera, animated));
   return <primitive object={world.root} />;
 }
