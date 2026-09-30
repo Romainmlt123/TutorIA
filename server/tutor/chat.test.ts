@@ -431,7 +431,7 @@ describe('POST /api/tutor/chat · niveaux d’Explorer', () => {
   it('refuse un niveau inconnu, d’un autre chapitre ou encore à écrire', async () => {
     const { admin } = fakeAdmin();
     const { store } = fakeLevelStore();
-    for (const levelId of ['maths-equations.inconnu', 'maths-relatifs.lecon-1']) {
+    for (const levelId of ['maths-equations.inconnu', 'maths-relatifs.additionner-et-soustraire']) {
       const response = await handleChat(
         chatRequest(levelBody(levelId)),
         levelDeps(fakeLevelOpenAI([]), admin, store),

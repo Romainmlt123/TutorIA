@@ -33,15 +33,3 @@ type CitySpec = Omit<City, 'levels'> & { levels: readonly LevelSpec[] };
 export function city(spec: CitySpec): City {
   return { ...spec, levels: levels(spec.id, spec.levels) };
 }
-
-/** Ville encore à écrire : leçon, exercices et bilan, que la carte montre avant la version complète. */
-export function outlineCity(
-  spec: Omit<CitySpec, 'playable' | 'levels'> & { lessons: readonly string[]; bilan: string },
-): City {
-  const specs: LevelSpec[] = spec.lessons.flatMap((title, i) => [
-    { slug: `lecon-${i + 1}`, type: 'lecon' as const, title },
-    { slug: `exercices-${i + 1}`, type: 'exercices' as const, title: `S'entraîner : ${title}` },
-  ]);
-  specs.push({ slug: 'bilan', type: 'evaluation', title: spec.bilan });
-  return city({ ...spec, playable: false, levels: specs });
-}

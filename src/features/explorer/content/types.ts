@@ -37,11 +37,21 @@ export type City = {
   /** Faux tant que les niveaux ne sont pas écrits : la carte les montre, la fiche annonce « Bientôt ». */
   playable: boolean;
   levels: readonly Level[];
+  /** Chapitre du référentiel dont la ville est tirée (`M4-C06`) : une correspondance, pas une clé. */
+  ref?: string;
+  /** Villes de la même île à valider avant celle-ci (prérequis du référentiel). */
+  requires?: readonly string[];
+  /** Rappel des prérequis des années précédentes (« Rappel de 5e »), affiché sur la carte. */
+  recall?: string;
 };
 
 export type Region = {
   id: string;
   name: string;
+  /** Nom court pour les petits panneaux de la carte, quand le nom complet est trop long. */
+  shortName?: string;
+  /** Terre de l'île, ou îlot flottant à côté (région d'un seul chapitre, comme l'Algorithmique). */
+  kind?: 'terre' | 'ilot';
   cities: readonly City[];
 };
 

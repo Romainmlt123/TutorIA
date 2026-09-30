@@ -11,6 +11,7 @@ export const demoLevelRecords: readonly LevelRecord[] = [
     bestScore: 1,
     stars: 3,
     attempts: 1,
+    lastPlayedAt: '2026-09-28T17:30:00Z',
   },
   {
     levelId: 'maths-equations.tester-une-solution',
@@ -18,5 +19,6 @@ export const demoLevelRecords: readonly LevelRecord[] = [
     bestScore: 0.8,
     stars: 2,
     attempts: 2,
+    lastPlayedAt: '2026-09-29T18:10:00Z',
   },
 ];

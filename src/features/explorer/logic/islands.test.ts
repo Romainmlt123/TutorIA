@@ -22,7 +22,7 @@ describe('carrousel des îles (X1)', () => {
     expect(maths.started).toBe(false);
     expect(maths.citiesDone).toBe(0);
     expect(maths.progress).toBe(0);
-    expect(maths.next?.title).toBe('Qu’est-ce qu’une équation ?');
+    expect(maths.next?.title).toBe('Additionner et soustraire des relatifs');
   });
 
   it('reprend là où Léa s’est arrêtée, avec ses étoiles', () => {

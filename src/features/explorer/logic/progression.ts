@@ -24,6 +24,8 @@ export type LevelRecord = {
   bestScore: number | null;
   stars: Stars;
   attempts: number;
+  /** Dernière partie (date ISO) : elle place le pion et la carte « Reprendre ». */
+  lastPlayedAt?: string;
 };
 
 export type Stars = 0 | 1 | 2 | 3;
@@ -81,14 +83,17 @@ export function mergeAttempt(
   previous: LevelRecord | undefined,
   levelId: string,
   result: LevelResult,
+  playedAt?: string,
 ): LevelRecord {
   const bestScore = Math.max(previous?.bestScore ?? 0, result.score);
+  const lastPlayedAt = playedAt ?? previous?.lastPlayedAt;
   return {
     levelId,
     finished: true,
     bestScore,
     stars: Math.max(previous?.stars ?? 0, result.stars) as Stars,
     attempts: (previous?.attempts ?? 0) + 1,
+    ...(lastPlayedAt ? { lastPlayedAt } : null),
   };
 }
 
@@ -111,32 +116,86 @@ export type PlacedLevel = LevelPlace & {
 
 export type Records = ReadonlyMap<string, LevelRecord>;
 
+function evaluationOf(city: City): Level | undefined {
+  return city.levels.find((level) => level.type === 'evaluation');
+}
+
+/** Villes de l'île, dans l'ordre de la carte. */
+function citiesOf(island: Island): City[] {
+  return island.regions.flatMap((region) => region.cities);
+}
+
 /**
- * États des niveaux d'une île. Ils s'ouvrent dans l'ordre du chemin : un niveau est ouvert quand
- * tous les niveaux jouables avant lui sont franchis. Les villes encore à écrire ne bloquent pas le
- * chemin. Le niveau en cours (le pion) est le premier niveau jouable non franchi.
+ * Prérequis d'une ville qui ne sont pas encore levés : les villes à écrire ne comptent pas, et
+ * un prérequis est levé quand son évaluation a été tentée (validée ou à consolider).
+ */
+export function missingRequirements(island: Island, city: City, records: Records): City[] {
+  const byId = new Map(citiesOf(island).map((c) => [c.id, c]));
+  return (city.requires ?? [])
+    .map((id) => byId.get(id))
+    .filter((required): required is City => required !== undefined && required.playable)
+    .filter((required) => {
+      const evaluation = evaluationOf(required);
+      return !(evaluation && records.get(evaluation.id)?.finished);
+    });
+}
+
+/** Une ville est ouverte quand ses prérequis sont levés, ou dès qu'un de ses niveaux a été joué. */
+export function isCityOpen(island: Island, city: City, records: Records): boolean {
+  if (!city.playable) return false;
+  if (city.levels.some((level) => records.get(level.id)?.finished)) return true;
+  return missingRequirements(island, city, records).length === 0;
+}
+
+/**
+ * États des niveaux d'une île. Les villes s'ouvrent selon leurs prérequis (plusieurs peuvent être
+ * ouvertes en même temps) ; dans une ville, les niveaux s'ouvrent dans l'ordre : un niveau est
+ * ouvert quand tous ceux d'avant sont franchis. Les villes encore à écrire restent verrouillées et
+ * ne bloquent rien. Un niveau terminé n'est jamais reverrouillé.
  */
 export function islandPath(island: Island, records: Records): readonly PlacedLevel[] {
-  let blocked = false;
+  const open = new Map(
+    citiesOf(island).map((city) => [city.id, isCityOpen(island, city, records)]),
+  );
+  const blockedCities = new Set<string>();
   return pathOf(island).map((place) => {
     const record = records.get(place.level.id);
     const playable = place.city.playable;
     const stars = record?.stars ?? 0;
-    if (!playable) return { ...place, state: 'locked', stars, playable };
-    if (blocked)
-      return { ...place, state: record?.finished ? 'completed' : 'locked', stars, playable };
-    if (isCleared(place.level, record)) return { ...place, state: 'completed', stars, playable };
-    blocked = true;
-    return { ...place, state: 'active', stars, playable };
+    const completed = { ...place, state: 'completed' as const, stars, playable };
+    const locked = { ...place, state: 'locked' as const, stars, playable };
+    if (isCleared(place.level, record)) return completed;
+    if (!open.get(place.city.id) || blockedCities.has(place.city.id)) {
+      return record?.finished ? completed : locked;
+    }
+    blockedCities.add(place.city.id);
+    return { ...place, state: 'active' as const, stars, playable };
   });
 }
 
+/** Premier niveau ouvert de l'île, dans l'ordre de la carte. */
 export function activeLevel(path: readonly PlacedLevel[]): PlacedLevel | undefined {
   return path.find((p) => p.state === 'active');
 }
 
-function evaluationOf(city: City): Level | undefined {
-  return city.levels.find((level) => level.type === 'evaluation');
+/**
+ * Niveau du pion et de « Reprendre » : le niveau ouvert de la ville jouée le plus récemment,
+ * sinon le premier niveau ouvert de l'île.
+ */
+export function currentLevel(
+  path: readonly PlacedLevel[],
+  records: Records,
+): PlacedLevel | undefined {
+  let lastCity: string | undefined;
+  let lastTime = '';
+  for (const place of path) {
+    const playedAt = records.get(place.level.id)?.lastPlayedAt;
+    if (playedAt && playedAt > lastTime) {
+      lastTime = playedAt;
+      lastCity = place.city.id;
+    }
+  }
+  return path.find((p) => p.state === 'active' && p.city.id === lastCity) ?? activeLevel(path);
 }
 
 /** Statut d'une ville (bannière) : validée à 70 % à l'évaluation, à consolider en dessous. */
@@ -174,12 +233,60 @@ export type IslandSummary = {
 /** Carte de progression de X1 : villes validées, étoiles, prochaine étape. */
 export function islandSummary(island: Island, records: Records): IslandSummary {
   const path = islandPath(island, records);
-  const cities = island.regions.flatMap((region) => region.cities);
+  const cities = citiesOf(island);
   return {
     citiesDone: cities.filter((city) => cityStatus(city, path, records) === 'done').length,
     citiesTotal: cities.length,
     stars: path.reduce((sum, p) => sum + p.stars, 0),
-    next: activeLevel(path),
+    next: currentLevel(path, records),
     started: path.some((p) => records.get(p.level.id)?.finished),
+  };
+}
+
+export type RegionStatus = 'discover' | 'current' | 'consolidate' | 'done';
+
+export type RegionSummary = {
+  regionId: string;
+  citiesDone: number;
+  citiesTotal: number;
+  stars: number;
+  /** Villes dont le Bilan est sous 70 % : à consolider. */
+  toConsolidate: number;
+  /** Première région de la liste (ou seule) qui a du travail ouvert : la prochaine étape. */
+  next: PlacedLevel | undefined;
+  status: RegionStatus;
+};
+
+/**
+ * Résumé d'une région (panneaux de X2a) : villes validées, étoiles, villes à consolider, prochaine
+ * étape, et état. « À découvrir » tant qu'aucun niveau de la région n'a été joué et qu'elle n'a pas
+ * été visitée (`seen`, mémorisé sur l'appareil par l'écran).
+ */
+export function regionSummary(
+  island: Island,
+  regionId: string,
+  records: Records,
+  seen: ReadonlySet<string> = new Set(),
+): RegionSummary {
+  const region = island.regions.find((r) => r.id === regionId);
+  const path = islandPath(island, records);
+  const cities = region?.cities ?? [];
+  const inRegion = path.filter((p) => p.region.id === regionId);
+  const statuses = cities.map((city) => cityStatus(city, path, records));
+  const citiesDone = statuses.filter((status) => status === 'done').length;
+  const toConsolidate = statuses.filter((status) => status === 'consolidate').length;
+  const played = inRegion.some((p) => records.get(p.level.id)?.finished);
+  let status: RegionStatus = 'current';
+  if (cities.length > 0 && citiesDone === cities.length) status = 'done';
+  else if (toConsolidate > 0) status = 'consolidate';
+  else if (!played && !seen.has(regionId)) status = 'discover';
+  return {
+    regionId,
+    citiesDone,
+    citiesTotal: cities.length,
+    stars: inRegion.reduce((sum, p) => sum + p.stars, 0),
+    toConsolidate,
+    next: currentLevel(inRegion, records),
+    status,
   };
 }
