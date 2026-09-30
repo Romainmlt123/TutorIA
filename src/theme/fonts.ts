@@ -21,6 +21,12 @@ export const fontFamily = {
   blackItalic: 'Satoshi-BlackItalic',
 } as const;
 
+/**
+ * Police de jeu, épaisse et arrondie (Lilita One, licence OFL) : seulement pour le HUD de l'onglet
+ * Explorer, qui doit faire « jeu vidéo » et se distinguer du reste de l'app.
+ */
+export const gameFontFamily = 'LilitaOne-Regular';
+
 export function fontFamilyFor(weight: FontWeightName, italic = false): string {
   const key: keyof typeof fontFamily = italic ? `${weight}Italic` : weight;
   return fontFamily[key];
@@ -46,4 +52,5 @@ export const fontSources: Record<string, FontSource> = {
   [fontFamily.boldItalic]: require('../../assets/typographie/Satoshi_Complete/Fonts/OTF/Satoshi-BoldItalic.otf'),
   [fontFamily.black]: require('../../assets/typographie/Satoshi_Complete/Fonts/OTF/Satoshi-Black.otf'),
   [fontFamily.blackItalic]: require('../../assets/typographie/Satoshi_Complete/Fonts/OTF/Satoshi-BlackItalic.otf'),
+  [gameFontFamily]: require('../../assets/typographie/LilitaOne/LilitaOne-Regular.ttf'),
 };

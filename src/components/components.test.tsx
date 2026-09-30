@@ -50,7 +50,7 @@ describe('SegmentedControl', () => {
 });
 
 describe('BottomNav', () => {
-  const routes = ['index', 'parcours', 'tuteur', 'revisions', 'stats'].map((name) => ({
+  const routes = ['index', 'explorer', 'tuteur', 'revisions', 'stats'].map((name) => ({
     key: `${name}-key`,
     name,
   }));

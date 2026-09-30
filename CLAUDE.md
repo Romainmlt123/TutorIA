@@ -40,7 +40,7 @@
 - **Textes :** tout en français, avec le ton de la marque. Les textes sont centralisés (pas de chaînes éparpillées dans les composants), pour permettre une traduction plus tard.
 
 ## 5. Architecture Scalable
-- **Découpage par fonctionnalité** (accueil, tuteur, flashcards, stats, parcours, et plus tard parents), chacune avec ses écrans, composants, logique et tests. Les composants UI partagés et le thème vivent dans un espace commun.
+- **Découpage par fonctionnalité** (accueil, tuteur, flashcards, stats, explorer, parents), chacune avec ses écrans, composants, logique et tests. Les composants UI partagés et le thème vivent dans un espace commun.
 - **Services derrière des interfaces :** l'IA (texte et voix), l'API, le stockage et l'analytics passent par des modules dédiés, pour pouvoir remplacer une implémentation simulée par la vraie sans toucher aux écrans.
 - **Données :** tant qu'il n'y a pas de backend, des données fictives réalistes vivent dans un dossier dédié et clairement identifié, jamais en dur dans les écrans.
 - **Configuration par environnement** (dev, preview, production) via des variables d'environnement. Aucune URL, clé ou secret dans le code.
@@ -116,7 +116,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - `src/app/` : routes Expo Router uniquement, fichiers fins qui réexportent l'écran de leur fonctionnalité.
     - Un groupe par espace : `(auth)/` (sans session), `(compte)/` (compte à finaliser : nouveau mot de passe, parent invité), `(onboarding)/`, `(eleve)/` (seul à porter l'URL `/`) et `(parents)/` (URL `/parents/…`).
     - `dev/` = outils de développement (jamais en production). `api/` = serveur intermédiaire.
-  - `src/features/<fonctionnalité>/` : écrans, `components/`, `logic/` (fonctions pures testées), `hooks/`. Fonctionnalités : auth, onboarding, access (consentement, pause), home, tutor, flashcards, stats, parcours, profile, parents.
+  - `src/features/<fonctionnalité>/` : écrans, `components/`, `logic/` (fonctions pures testées), `hooks/`. Fonctionnalités : auth, onboarding, access (consentement, pause), home, tutor, flashcards, stats, explorer (îles 3D, villes, niveaux), comingSoon (« Bientôt »), profile, parents.
   - `src/components/` : composants UI partagés (dont `form/` : champs, cases, interrupteurs). `src/theme/` : thème. `src/i18n/fr.ts` : tous les textes. `src/services/` : services derrière des interfaces. `src/data/mock/` : données fictives. `src/lib/` : utilitaires transverses (config, session, heure de Paris…).
   - `server/` : code serveur uniquement (clés OpenAI et Supabase, prompt, garde-fous, comptes). `scripts/` : outillage (tokens, seed, Supabase local). `tools/explorer-3d/` : scripts Blender des îles 3D (sortie dans `assets/explorer/models/`, tracé de l'eau partagé avec l'app dans `src/features/explorer/stylized3d/water.json`).
   - `supabase/` : `migrations/` (schéma), `tests/database/` (pgTAP), `templates/` (e-mails en français), `config.toml` (Supabase local).
@@ -125,6 +125,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - Importer `theme` depuis `@/theme` : `theme.colors` (rôles, à privilégier), `theme.palette`, `theme.space`, `theme.radius`, `theme.shadow` (chaînes CSS pour la prop `boxShadow`), `theme.subjects`, `theme.layout`…
   - `src/theme/tokens.generated.ts` est généré par `npm run tokens` depuis `design/tokens/` : ne jamais le modifier à la main (un test vérifie qu'il est à jour).
   - Texte : toujours le composant `Text` de `@/components/Text` (`variant`, `weight`, `italic`, `color`). Ne jamais passer `fontWeight` : la graisse est portée par la famille Satoshi (`Satoshi-Bold`…).
+  - Seule exception : le HUD de l'onglet Explorer, façon jeu vidéo, utilise `GameText` (police Lilita One, `gameFontFamily`, contour et ombre portée), construit sur `Text`, et ses propres boutons en relief (`GameButton`). Ses couleurs sont dans `explorerArt.hud`.
   - ESLint refuse toute couleur en dur (`#…`, `rgb(a)`, `hsl(a)`) hors de `src/theme/`.
 - **Frontière app / serveur (ESLint) :** hors de `src/app/api/`, interdiction d'importer `server/` ou `openai`, et de lire `process.env.OPENAI_*`, `SUPABASE_SECRET_KEY`, `LINK_CODE_PEPPER` ou `SEED_*`. L'app ne connaît que `EXPO_PUBLIC_*`, qui sont publiques.
 - **Erreurs :** journaliser avec `logError(scope, error)` de `@/lib/logger`, jamais de `console.log` oublié.
@@ -162,6 +163,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - Utiliser les props `aria-*` (`aria-selected`, `aria-checked`, `aria-disabled`) plutôt que `accessibilityState` : React Native Web ignore ce dernier.
   - Pour les éléments interactifs, toujours passer par `PressableBase`, qui gère l'anneau de focus clavier sur le web.
 - **Styles :** sur le web, un raccourci (`padding`) passé avant une propriété précise (`paddingHorizontal`) peut l'écraser. Les composants posent donc des propriétés précises.
+- **Explorer en 3D :** la scène ne calcule d'images que si l'onglet est affiché et l'app au premier plan (`useSceneActive`, `frameloop="never"` sinon) ; « Réduire les animations » fige l'île ; sans WebGL ou si la scène échoue, l'image fixe rendue par Blender (`assets/explorer/images/`) la remplace.
 - **Vérification visuelle :** comparer chaque écran à sa maquette, sur le web en 390 px de large (`npm run web`), et sur un vrai téléphone via Expo Go.
 - **Hooks git :** le pre-commit lance `lint-staged` (ESLint + Prettier sur les fichiers modifiés) et `npm run typecheck`. La CI (`.github/workflows/ci.yml`) vérifie que les tokens sont à jour et lance `npm run check`.
 

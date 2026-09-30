@@ -34,6 +34,37 @@ export const explorerArt = {
   cloud: { top: '#ffffff', bottom: '#b9c8dc' },
   grassBlades: { base: '#34491f', tip: '#8fa04a', dry: '#b0a765' },
   digit: '#f2fbff',
+  /**
+   * HUD de l'onglet Explorer, façon jeu vidéo : textes blancs cernés de bleu nuit, boutons brillants
+   * en relief (face en dégradé, rebord plus sombre dessous), gemmes et médaille dorée.
+   */
+  hud: {
+    ink: '#16244f',
+    shadow: 'rgba(12, 22, 60, 0.35)',
+    white: '#ffffff',
+    shine: 'rgba(255, 255, 255, 0.38)',
+    buttons: {
+      yellow: { face: ['#ffe872', '#ffc21f'], depth: '#c98600', icon: '#5a3600' },
+      green: { face: ['#7ee86d', '#2fb84a'], depth: '#1b7f33', icon: '#ffffff' },
+    },
+    streak: { face: ['#ffb23f', '#f07a12'], depth: '#b8520a' },
+    gold: { face: ['#fff09a', '#ffc933', '#f0a500'], depth: '#b87400' },
+    xp: { track: '#16244f', fill: ['#8cf57e', '#2fd35a'] },
+    panel: { tab: ['#5b95ff', '#2e6be6'] },
+    /** Panneau « Ta quête » en bois (texture rendue par Blender : tools/explorer-3d/wood_panel.py). */
+    wood: {
+      frame: '#3f230d',
+      bevel: 'rgba(255, 220, 170, 0.45)',
+      groove: '#2d1808',
+      nail: ['#fbfbfb', '#9c9c9c'],
+      parchment: '#fff2d9',
+      parchmentBorder: '#caa06a',
+      parchmentInk: '#5b3713',
+    },
+    gem: '#ffffff',
+    /** Géométrie des boutons en relief : rebord, contour, arrondi. */
+    button: { depth: 5, border: 2.5, radius: 18 },
+  },
   /** Étalonnage final (Hd2dPost) : vif pour la HD-2D, naturel pour la 3D réaliste. */
   post: {
     hd2d: {
@@ -50,7 +81,8 @@ export const explorerArt = {
       shadowTint: 0.1,
       lightTint: 0.1,
       exposure: 1.04,
-      sky: { top: '#5b8ed6', middle: '#a8c9ee', horizon: '#e8eef2' },
+      // Ciel franchement bleu jusqu'en bas : la barre de navigation blanche s'en détache.
+      sky: { top: '#2f6fd0', middle: '#5f9ce8', horizon: '#8fc0f2' },
     },
   },
 } as const;

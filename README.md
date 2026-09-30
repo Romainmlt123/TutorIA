@@ -23,17 +23,17 @@ Mobile d'abord (iOS et Android), avec le même code pour le web. Données et com
 
 **Espace élève**
 
-| Écran                 | Route                                                     | Maquette                            |
-| --------------------- | --------------------------------------------------------- | ----------------------------------- |
-| Accueil               | `/`                                                       | `design/screens/01-Accueil.dc.html` |
-| Tuteur écrit          | `/tuteur`                                                 | `02a-Tuteur-Ecrit.dc.html`          |
-| Tuteur vocal          | `/tuteur/vocal`                                           | `02b-Tuteur-Vocal.dc.html`          |
-| Flashcards · Choix    | `/revisions`                                              | `03a-Flashcards-Choix.dc.html`      |
-| Flashcards · Session  | `/revisions/session?chapter=…` ou `?mode=daily`           | `03b-Flashcards-Session.dc.html`    |
-| Stats                 | `/stats`                                                  | `04-Stats.dc.html`                  |
-| Parcours (provisoire) | `/parcours`                                               | pas encore de maquette              |
-| Profil                | `/profil` (déconnexion, code parent, export, suppression) | pas de maquette                     |
-| Relier un parent      | `/relier-parent`                                          | pas de maquette                     |
+| Écran                | Route                                                     | Maquette                            |
+| -------------------- | --------------------------------------------------------- | ----------------------------------- |
+| Accueil              | `/`                                                       | `design/screens/01-Accueil.dc.html` |
+| Tuteur écrit         | `/tuteur`                                                 | `02a-Tuteur-Ecrit.dc.html`          |
+| Tuteur vocal         | `/tuteur/vocal`                                           | `02b-Tuteur-Vocal.dc.html`          |
+| Flashcards · Choix   | `/revisions`                                              | `03a-Flashcards-Choix.dc.html`      |
+| Flashcards · Session | `/revisions/session?chapter=…` ou `?mode=daily`           | `03b-Flashcards-Session.dc.html`    |
+| Stats                | `/stats`                                                  | `04-Stats.dc.html`                  |
+| Explorer · Les îles  | `/explorer`                                               | `X1-Explorer-Iles.dc.html`          |
+| Profil               | `/profil` (déconnexion, code parent, export, suppression) | pas de maquette                     |
+| Relier un parent     | `/relier-parent`                                          | pas de maquette                     |
 
 **Espace Parents**
 
@@ -160,7 +160,7 @@ src/
                   (auth)/ entrée · (compte)/ compte à finaliser · (onboarding)/ · (eleve)/ · (parents)/
                   api/ = serveur intermédiaire · dev/ = outils de développement
   components/     composants UI partagés (Text, Icon, Button, BottomNav, form/…)
-  features/       auth, onboarding, access, home, tutor, flashcards, stats, parcours, profile, parents :
+  features/       auth, onboarding, access, home, tutor, flashcards, stats, explorer, comingSoon, profile, parents :
                   écrans, composants, logique, hooks
   services/       services derrière des interfaces, versions Supabase et simulée :
                   auth, family, onboarding, student, parents, tutor ; db/ = types générés

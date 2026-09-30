@@ -11,7 +11,7 @@ type Shape =
 /** Jeu d'icônes au contour (grille 24), tracés repris des maquettes (design/screens). */
 const ICONS = {
   accueil: [{ d: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z' }],
-  parcours: [{ d: 'M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5z' }, { d: 'M9 4v13M15 6.5v13' }],
+  boussole: [{ d: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM15.5 8.5l-2 5-5 2 2-5z' }],
   revisions: [{ rect: [8, 3, 12, 15, 2] }, { d: 'M5 7v11a3 3 0 0 0 3 3h8' }],
   stats: [
     { d: 'M3 21h18' },

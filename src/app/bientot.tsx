@@ -1,3 +1,3 @@
-import { ComingSoonModal } from '@/features/parcours/ComingSoonModal';
+import { ComingSoonModal } from '@/features/comingSoon/ComingSoonModal';
 
 export default ComingSoonModal;

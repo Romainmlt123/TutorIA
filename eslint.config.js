@@ -60,6 +60,7 @@ module.exports = defineConfig([
     files: [
       'src/features/explorer/hd2d/**/*.tsx',
       'src/features/explorer/stylized3d/**/*.tsx',
+      'src/features/explorer/components/IslandStage.tsx',
       'src/features/explorer/dev/**/*.tsx',
     ],
     rules: { 'react/no-unknown-property': 'off' },
