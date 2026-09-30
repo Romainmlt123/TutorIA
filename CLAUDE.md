@@ -86,6 +86,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
 - `expo-dev-client` étant installé, `expo start` viserait par défaut le build de développement : les scripts passent donc `--go` (Expo Go) ou `--dev-client` explicitement.
 - Si Expo Go affiche « Failed to download remote update » : le téléphone n'atteint pas le PC (Wi-Fi qui isole les appareils, comme wifirst). Lancer `npm run start:tunnel` et scanner le nouveau QR code.
 - Régénérer le thème après une modification de `design/tokens/` : `npm run tokens`
+- Régénérer les îles 3D d'Explorer (Blender 5.2 en ligne de commande, environ 15 min de cuisson sur le processeur) : `npm run explorer:models`. Aperçu rapide d'une minute, sans cuisson : `EXPLORER_PREVIEW=/chemin/apercu.png blender -b -P tools/explorer-3d/island_maths.py`.
 - Lint / types / tests : `npm run lint` · `npm run typecheck` · `npm test` · tout d'un coup : `npm run check`
 - Formater : `npm run format`
 - Tuteur simulé (hors ligne, sans coût OpenAI) : `EXPO_PUBLIC_TUTOR_MODE=mock npm start`. Par défaut, le vrai tuteur passe par le serveur intermédiaire.
@@ -117,7 +118,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
     - `dev/` = outils de développement (jamais en production). `api/` = serveur intermédiaire.
   - `src/features/<fonctionnalité>/` : écrans, `components/`, `logic/` (fonctions pures testées), `hooks/`. Fonctionnalités : auth, onboarding, access (consentement, pause), home, tutor, flashcards, stats, parcours, profile, parents.
   - `src/components/` : composants UI partagés (dont `form/` : champs, cases, interrupteurs). `src/theme/` : thème. `src/i18n/fr.ts` : tous les textes. `src/services/` : services derrière des interfaces. `src/data/mock/` : données fictives. `src/lib/` : utilitaires transverses (config, session, heure de Paris…).
-  - `server/` : code serveur uniquement (clés OpenAI et Supabase, prompt, garde-fous, comptes). `scripts/` : outillage (tokens, seed, Supabase local).
+  - `server/` : code serveur uniquement (clés OpenAI et Supabase, prompt, garde-fous, comptes). `scripts/` : outillage (tokens, seed, Supabase local). `tools/explorer-3d/` : scripts Blender des îles 3D (sortie dans `assets/explorer/models/`, tracé de l'eau partagé avec l'app dans `src/features/explorer/stylized3d/water.json`).
   - `supabase/` : `migrations/` (schéma), `tests/database/` (pgTAP), `templates/` (e-mails en français), `config.toml` (Supabase local).
 - **Nommage :** composants et écrans en `PascalCase.tsx` (`SubjectCard.tsx`, `HomeScreen.tsx`) ; logique, hooks et utilitaires en `camelCase.ts` (`useHomeData.ts`) ; tests à côté du code en `*.test.ts(x)` ; alias d'import `@/…` (= `src/`). Code et identifiants en anglais, textes affichés en français.
 - **Thème :**

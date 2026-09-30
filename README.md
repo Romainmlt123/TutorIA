@@ -88,6 +88,7 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
 | `npm run web:local`                               | Version web branchée sur Supabase local                                                            |
 | `npm run android` / `npm run ios`                 | Émulateur ou simulateur                                                                            |
 | `npm run tokens`                                  | Régénère `src/theme/tokens.generated.ts` depuis `design/tokens/`                                   |
+| `npm run explorer:models`                         | Régénère les îles 3D d'Explorer avec Blender 5.2 (environ 15 min de cuisson de la lumière)         |
 | `npm run check`                                   | Lint, vérification des types et tests                                                              |
 | `npm run lint` / `npm run typecheck` / `npm test` | Chaque vérification séparément                                                                     |
 | `npm run format`                                  | Formate le code avec Prettier                                                                      |
@@ -170,6 +171,7 @@ src/
 server/           code serveur uniquement : clés OpenAI et Supabase, prompt, garde-fous, comptes
 supabase/         migrations, tests pgTAP, modèles d'e-mails, configuration locale
 scripts/          outillage (tokens, seed, Supabase local)
+tools/explorer-3d/ scripts Blender des îles 3D d'Explorer (modèles, matières, cuisson), sortie dans assets/explorer/models/
 design/           maquettes et design system (référence visuelle)
 assets/           logos, police Satoshi, palette
 ```
