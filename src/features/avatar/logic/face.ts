@@ -11,6 +11,11 @@ export const EYE_SPACING: readonly [number, number] = [0.27, 0.41];
 export const EYE_HEIGHT: readonly [number, number] = [-0.08, 0.14];
 /** Taille de la figurine aux deux bouts du curseur (échelle d'ensemble). */
 export const AVATAR_SIZE: readonly [number, number] = [0.9, 1.1];
+/**
+ * Influence de la forme « fort » du modèle (carrure) aux deux bouts du curseur : négative, elle
+ * affine la figurine ; à 0, c'est la carrure du modèle.
+ */
+export const AVATAR_BUILD: readonly [number, number] = [-1, 1];
 
 export type FaceParams = {
   eyeStyle: number;
@@ -40,4 +45,8 @@ export function faceParams(look: AvatarLook): FaceParams {
 
 export function avatarScale(look: AvatarLook): number {
   return lerp(AVATAR_SIZE, look.size);
+}
+
+export function avatarBuild(look: AvatarLook): number {
+  return lerp(AVATAR_BUILD, look.build);
 }

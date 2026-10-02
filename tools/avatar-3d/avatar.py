@@ -6,7 +6,8 @@ chaque élève compose (peau, coiffure, tenue ; le visage est dessiné par l'app
 - « corps » (torse, bras, mains, jambes, pieds d'un seul tenant) et « tete » (avec les oreilles) ;
 - les coiffures « cheveux-<style> » ;
 - la tenue par défaut : « haut-tshirt », « bas-short », « chaussures-baskets » ;
-- quatre animations : attente, marche, saut (victoire), salut.
+- quatre animations : attente, marche, saut (victoire), salut ;
+- la forme « fort » (carrure) sur le corps et les vêtements : l'app l'applique de -1 (fine) à 1 (large).
 
 Toutes les pièces sont liées au même squelette ; l'app affiche celles que l'élève a choisies et les
 colore d'après le nom de leurs matières (peau, cheveux, tissu, tissu-2, semelle). Pas de texture :
@@ -14,6 +15,7 @@ la lumière est calculée par l'app, la figurine bouge.
 
 Usage : blender -b -P tools/avatar-3d/avatar.py
         AVATAR_PREVIEW=/chemin/apercu.png blender -b -P tools/avatar-3d/avatar.py   (aperçu, sans export)
+        AVATAR_BUILD=-1 ou 1 : carrure des figurines de l'aperçu (fine ou large)
 Sortie : assets/avatar/avatar.glb
 """
 import math
@@ -52,12 +54,12 @@ CENTER_BONES = (
     ("head", (0, 0, 0.56), (0, 0, 0.99), "chest"),
 )
 SIDE_BONES = (
-    ("upperarm", (0.145, 0, 0.515), (0.2, 0, 0.405), "chest"),
-    ("forearm", (0.2, 0, 0.405), (0.228, 0, 0.315), "upperarm"),
-    ("hand", (0.228, 0, 0.315), (0.238, 0, 0.255), "forearm"),
+    ("upperarm", (0.15, 0, 0.515), (0.208, 0, 0.408), "chest"),
+    ("forearm", (0.208, 0, 0.408), (0.255, 0, 0.32), "upperarm"),
+    ("hand", (0.255, 0, 0.32), (0.266, 0, 0.26), "forearm"),
     ("thigh", (0.068, 0, 0.295), (0.07, 0, 0.17), "hips"),
     ("shin", (0.07, 0, 0.17), (0.07, 0, 0.07), "thigh"),
-    ("foot", (0.07, 0, 0.07), (0.07, -0.075, 0.03), "shin"),
+    ("foot", (0.07, 0, 0.07), (0.07, -0.085, 0.03), "shin"),
 )
 SIDES = (("L", 1), ("R", -1))
 BONE_NAMES = [b[0] for b in CENTER_BONES] + [f"{b[0]}.{s}" for s, _ in SIDES for b in SIDE_BONES]
@@ -170,10 +172,13 @@ def assign(obj, name):
 # ---------------------------------------------------------------------------
 # Corps : pièces, classement des points et poids des os
 # ---------------------------------------------------------------------------
-SHOULDER, WRIST = Vector((0.145, 0, 0.515)), Vector((0.228, 0, 0.315))
-HAND = Vector((0.234, 0, 0.282))
+# Les bras pendent un peu écartés du torse : collés, ils s'y fondaient sous l'aisselle, et le
+# t-shirt y gardait un bout de tissu quand le bras bougeait.
+SHOULDER, WRIST = Vector((0.15, 0, 0.515)), Vector((0.255, 0, 0.32))
+HAND = Vector((0.262, 0, 0.288))
 HIP, ANKLE = Vector((0.068, 0, 0.30)), Vector((0.07, 0, 0.075))
-HEEL, TOE = Vector((0.07, 0.0, 0.04)), Vector((0.07, -0.07, 0.04))
+# Pied de basket : talon haut, pointe longue et basse.
+HEEL, TOE = Vector((0.07, 0.0, 0.04)), Vector((0.07, -0.085, 0.03))
 HEAD_C = Vector((0, 0, 0.78))
 HEAD_R = Vector((0.205, 0.19, 0.215))
 
@@ -293,7 +298,7 @@ def torso(bm):
 def body_parts(bm):
     torso(bm)
     for side, sx in SIDES:
-        ellipsoid(bm, (0.13 * sx, 0, 0.5), 0.058)
+        ellipsoid(bm, (0.135 * sx, 0, 0.5), 0.058)
         for k in range(7):
             f = k / 6
             ellipsoid(bm, mirrored(SHOULDER.lerp(WRIST, f), sx), 0.042 + (0.035 - 0.042) * f, segments=14)
@@ -301,8 +306,10 @@ def body_parts(bm):
         for k in range(8):
             f = k / 7
             ellipsoid(bm, mirrored(HIP.lerp(ANKLE, f), sx), 0.056 + (0.045 - 0.056) * f, segments=14)
-        for k in range(4):
-            ellipsoid(bm, mirrored(HEEL.lerp(TOE, k / 3), sx), 0.042, (1.0, 1.0, 0.9), segments=14)
+        for k in range(5):
+            f = k / 4
+            ellipsoid(bm, mirrored(HEEL.lerp(TOE, f), sx), 0.042 - 0.002 * f, (1.0, 1.0, 0.92 - 0.27 * f),
+                      segments=14)
 
 
 def head_parts(bm):
@@ -366,22 +373,98 @@ def shorts(body):
                  (part == "jambe" and t < 0.46), 0.011, 0.006, "tissu", cuts)
 
 
+# Bord du bout blanc de la basket : un plan incliné, plus bas vers la pointe.
+TOE_CAP = (Vector((0, TOE.y - 0.006, 0.05)), Vector((0, -0.8, -0.6)).normalized())
+
+
+def toe_cap(shoe):
+    """Bout de la basket en blanc, comme la semelle (deuxième matière du dessus). Le maillage est
+    d'abord coupé le long du bord : la limite des deux matières est nette."""
+    shoe.data.materials.append(MATERIALS["semelle"])
+    point, normal = TOE_CAP
+    bm = bmesh.new()
+    bm.from_mesh(shoe.data)
+    geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
+    bmesh.ops.bisect_plane(bm, geom=geom, plane_co=point, plane_no=normal)
+    for face in bm.faces:
+        face.material_index = 1 if (face.calc_center_median() - point).dot(normal) > 0 else 0
+    bm.to_mesh(shoe.data)
+    bm.free()
+
+
+def laces(shoe):
+    """Trois lacets en travers du cou-de-pied, posés sur le dessus de la basket."""
+    from mathutils.bvhtree import BVHTree
+
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    tree = BVHTree.FromObject(shoe, depsgraph)
+    bm = bmesh.new()
+    for _, sx in SIDES:
+        # Devant l'ouverture de la cheville (un lacet dans l'ouverture tomberait dans la chaussure).
+        for y in (-0.052, -0.064, -0.076):
+            hit, normal, _, _ = tree.ray_cast(Vector((0.07 * sx, y, 0.2)), Vector((0, 0, -1)))
+            if hit is None:
+                continue
+            tilt = Vector((0, 0, 1)).rotation_difference(normal).to_matrix().to_4x4()
+            matrix = Matrix.Translation(hit + normal * 0.002) @ tilt @ Matrix.Diagonal((0.017, 0.0045, 0.004, 1))
+            bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=6, radius=1.0, matrix=matrix)
+    return assign_weights(assign(geo.smooth(link("lacets", bm)), "semelle"))
+
+
 def sneakers(body):
-    cuts = [leg_cut(0.95, sx) for _, sx in SIDES]
+    # Le col s'arrête à la cheville : plus haut, la basket ressemblait à une bottine.
+    cuts = [leg_cut(0.985, sx) for _, sx in SIDES]
     shoe = shell("chaussures-baskets", body, lambda p, part, side, t: part == "pied" or
-                 (part == "jambe" and t > 0.95), 0.012, 0.006, "tissu", cuts)
+                 (part == "jambe" and t > 0.985), 0.013, 0.006, "tissu", cuts)
+    toe_cap(shoe)
 
     def sole_parts(bm):
-        # Semelle arrondie qui suit le pied, un peu plus large que lui, à plat sur le sol.
+        # Semelle arrondie qui suit le pied, un peu plus large que lui, à plat sur le sol, la pointe
+        # légèrement relevée.
         for _, sx in SIDES:
-            for k in range(6):
-                c = mirrored(HEEL.lerp(TOE + Vector((0, -0.012, 0)), k / 5), sx)
-                ellipsoid(bm, (c.x, c.y, 0.014), 0.054, (1.0, 1.0, 0.32), segments=20)
+            for k in range(7):
+                f = k / 6
+                c = mirrored(HEEL.lerp(TOE + Vector((0, -0.014, 0)), f), sx)
+                ellipsoid(bm, (c.x, c.y, 0.013 + 0.005 * f * f), 0.052, (1.0, 1.0, 0.3), segments=20)
 
     sole = assign(remeshed("semelle", sole_parts, voxel=0.004, smooth=4, triangles=900), "semelle")
     assign_weights(sole)
-    # La jonction réunit les matières des deux pièces : tissu (dessus) et semelle.
-    return geo.smooth(geo.join([shoe, sole], "chaussures-baskets"))
+    # La jonction réunit les matières des pièces : tissu (dessus), semelle (semelle, bout, lacets).
+    return geo.smooth(geo.join([shoe, sole, laces(shoe)], "chaussures-baskets"))
+
+
+# ---------------------------------------------------------------------------
+# Carrure : la forme « fort »
+# ---------------------------------------------------------------------------
+def girth(p):
+    """Déplacement d'un point pour la forme « fort » : le torse s'élargit (moins vers le cou), bras
+    et jambes s'épaississent autour de leur axe ; mains, pieds et chaussures ne changent pas. Les
+    parties se fondent l'une dans l'autre (moyenne pondérée par leur proximité), comme dans le
+    corps : pas de déchirure à l'aisselle ni à l'aine. Le même champ déforme les vêtements."""
+    zero = Vector((0, 0, 0))
+    neck = smoothstep(0.58, 0.47, p.z)
+    parts = [(torso_distance(p), Vector((p.x, p.y, 0)) * (0.18 * neck))]
+    for _, sx in SIDES:
+        for a, b, r in ((SHOULDER, WRIST, 0.04), (HIP, ANKLE, 0.052)):
+            start, end = mirrored(a, sx), mirrored(b, sx)
+            d, t = segment_distance(p, start, end)
+            axis = start + (end - start) * t
+            parts.append((d - r, (p - axis) * (0.24 * smoothstep(1.0, 0.8, t))))
+        parts.append((segment_distance(p, mirrored(HAND, sx), mirrored(HAND, sx) + Vector((0, 0, 1e-4)))[0]
+                      - 0.046, zero))
+        parts.append((segment_distance(p, mirrored(HEEL, sx), mirrored(TOE, sx))[0] - 0.042, zero))
+    nearest = min(d for d, _ in parts)
+    weights = [math.exp(-(d - nearest) / 0.012) for d, _ in parts]
+    return sum((move * w for (_, move), w in zip(parts, weights)), Vector()) / sum(weights)
+
+
+def add_build_key(obj):
+    obj.shape_key_add(name="Basis")
+    key = obj.shape_key_add(name="fort")
+    key.slider_min = -1.0
+    for vertex, target in zip(obj.data.vertices, key.data):
+        target.co = vertex.co + girth(vertex.co)
+    return obj
 
 
 # ---------------------------------------------------------------------------
@@ -650,6 +733,10 @@ body = assign_weights(assign(remeshed("corps", body_parts, voxel=0.006, smooth=8
 head = assign_weights(assign(remeshed("tete", head_parts, voxel=0.006, smooth=4, triangles=2400), "peau"), "tete")
 pieces = [body, head, tshirt(body), shorts(body), sneakers(body)]
 hairs = [assign_weights(build_hair(style), "tete") for style in HAIRS]
+# Après toutes les constructions (une conversion de maillage effacerait les formes).
+# Les baskets ne bougent pas avec la carrure (le champ y est nul) : pas de forme pour elles.
+for obj in (body, pieces[2], pieces[3]):
+    add_build_key(obj)
 for obj in pieces + hairs:
     bind(obj, rig)
 for obj in pieces + hairs:
@@ -734,6 +821,9 @@ if os.environ.get("AVATAR_PREVIEW"):
         for part in face:
             part.parent = new_rig
         set_pose(new_rig, ANIMATIONS[anim][0], t)
+        for obj in objs:
+            if obj.data.shape_keys:
+                obj.data.shape_keys.key_blocks["fort"].value = float(os.environ.get("AVATAR_BUILD", "0"))
         new_rig.rotation_euler.z = math.radians(float(os.environ.get("AVATAR_TURN", "0")))
     for obj in [rig] + pieces + hairs:
         obj.hide_render = True
@@ -786,6 +876,7 @@ bpy.ops.export_scene.gltf(
     export_animations=True,
     export_animation_mode="ACTIONS",
     export_materials="EXPORT",
-    export_morph=False,
+    export_morph=True,
+    export_morph_normal=False,
 )
 print("GLB", OUT, os.path.getsize(OUT), "octets")

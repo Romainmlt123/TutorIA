@@ -51,6 +51,8 @@ export type AvatarLook = {
   freckles: boolean;
   /** Taille de la figurine, de 0 (petite) à 1 (grande). */
   size: number;
+  /** Carrure, de 0 (fine) à 1 (large). */
+  build: number;
   outfit: {
     top: Worn<(typeof TOPS)[number]>;
     bottom: Worn<(typeof BOTTOMS)[number]>;
@@ -68,6 +70,7 @@ export const DEFAULT_LOOK: AvatarLook = {
   cheeks: true,
   freckles: false,
   size: 0.5,
+  build: 0.5,
   outfit: {
     top: { item: 'tshirt', color: 0 },
     bottom: { item: 'short', color: 8 },
@@ -143,6 +146,7 @@ export function normalizeLook(raw: unknown): AvatarLook {
     cheeks: flag(r.cheeks, d.cheeks),
     freckles: flag(r.freckles, d.freckles),
     size: unit(r.size, d.size),
+    build: unit(r.build, d.build),
     outfit: {
       top: worn(TOPS, outfit.top, d.outfit.top),
       bottom: worn(BOTTOMS, outfit.bottom, d.outfit.bottom),
@@ -183,6 +187,7 @@ export function randomLook(seed: number): AvatarLook {
     cheeks: random() < 0.6,
     freckles: random() < 0.25,
     size: random(),
+    build: 0.2 + random() * 0.6,
     outfit: {
       top: { item: 'tshirt', color: index(8) },
       bottom: { item: 'short', color: 8 + index(2) },

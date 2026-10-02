@@ -136,9 +136,14 @@ const FRAGMENT_HEAD = /* glsl */ `
   vec3 drawBrow(vec3 col, vec2 q) {
     float d;
     if (uBrowStyle < 0.5) return col;
+    // Avec les yeux endormis, les sourcils montent un peu et les sourcils décidés se redressent :
+    // paupières basses et sourcils froncés donnaient un air grognon.
+    bool sleepy = uEyeStyle > 3.5 && uEyeStyle < 4.5;
+    if (sleepy) q.y -= 0.035;
     if (uBrowStyle < 1.5) d = sdArc(q, vec2(0.0, -0.26), 0.27, 0.085, 1.0) - 0.013;
     else if (uBrowStyle < 2.5) d = sdSegment(q, vec2(-0.08, -0.004), vec2(0.08, 0.008)) - 0.026;
     else if (uBrowStyle < 3.5) d = sdArc(q, vec2(0.0, -0.1), 0.125, 0.095, 1.0) - 0.018;
+    else if (sleepy) d = sdSegment(q, vec2(-0.075, -0.004), vec2(0.08, 0.014)) - 0.021;
     else d = sdSegment(q, vec2(-0.075, -0.03), vec2(0.08, 0.026)) - 0.021;
     return mix(col, uBrowColor, cover(d));
   }

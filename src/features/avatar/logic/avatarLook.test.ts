@@ -8,7 +8,7 @@ import {
   normalizeLook,
   randomLook,
 } from './avatarLook';
-import { avatarScale, EYE_HEIGHT, EYE_SPACING, faceParams } from './face';
+import { avatarBuild, avatarScale, EYE_HEIGHT, EYE_SPACING, faceParams } from './face';
 
 describe('apparence d’un avatar', () => {
   it('reprend l’apparence par défaut pour un enregistrement vide ou illisible', () => {
@@ -33,6 +33,11 @@ describe('apparence d’un avatar', () => {
     expect(look.cheeks).toBe(DEFAULT_LOOK.cheeks);
     expect(look.outfit.top).toEqual({ item: 'tshirt', color: 3 });
     expect(look.outfit.shoes).toEqual(DEFAULT_LOOK.outfit.shoes);
+  });
+
+  it('lit une apparence enregistrée avant la carrure avec la carrure moyenne', () => {
+    const { build: _ignored, ...older } = randomLook(3);
+    expect(normalizeLook(older).build).toBe(DEFAULT_LOOK.build);
   });
 
   it('refuse les rangs de couleur non entiers ou hors palette', () => {
@@ -72,5 +77,11 @@ describe('réglages du visage pour le shader', () => {
 
   it('met la figurine moyenne à l’échelle 1', () => {
     expect(avatarScale({ ...DEFAULT_LOOK, size: 0.5 })).toBeCloseTo(1);
+  });
+
+  it('garde la carrure du modèle au milieu du curseur, et l’affine ou l’élargit de part et d’autre', () => {
+    expect(avatarBuild({ ...DEFAULT_LOOK, build: 0.5 })).toBeCloseTo(0);
+    expect(avatarBuild({ ...DEFAULT_LOOK, build: 0 })).toBe(-1);
+    expect(avatarBuild({ ...DEFAULT_LOOK, build: 1 })).toBe(1);
   });
 });

@@ -8,7 +8,7 @@ import { preloadModel, useModel } from '@/lib/three/useModel';
 import { avatarArt } from '@/theme/avatarArt';
 
 import type { AvatarLook } from '../logic/avatarLook';
-import { avatarScale, faceParams } from '../logic/face';
+import { avatarBuild, avatarScale, faceParams } from '../logic/face';
 import { type FaceUniforms, faceMaterial, fitFace, setFace } from './faceMaterial';
 
 /*
@@ -37,6 +37,8 @@ type Rig = {
     THREE.MeshLambertMaterial[]
   >;
   materials: THREE.Material[];
+  /** Pièces qui ont la forme « fort » (carrure) : le maillage et le rang de la forme. */
+  builds: { mesh: THREE.Mesh; index: number }[];
   playing: string | null;
 };
 
@@ -59,9 +61,12 @@ function buildRig(gltf: GLTF): Rig {
   const colors: Rig['colors'] = { skin: [], hair: [], top: [], bottom: [], shoes: [], sole: [] };
   const materials: THREE.Material[] = [face.material];
   const pieces = new Map<string, THREE.Mesh[]>();
+  const builds: Rig['builds'] = [];
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
     const piece = pieceOf(object);
+    const build = object.morphTargetDictionary?.fort;
+    if (build !== undefined) builds.push({ mesh: object, index: build });
     const source = object.material as THREE.Material;
     let material: THREE.MeshLambertMaterial;
     if (piece === 'tete') {
@@ -94,6 +99,7 @@ function buildRig(gltf: GLTF): Rig {
     face: face.uniforms,
     colors,
     materials,
+    builds,
     playing: null,
   };
 }
@@ -130,6 +136,10 @@ function dress(rig: Rig, look: AvatarLook) {
     avatarArt.hairs[look.hair.color]!,
   );
   rig.root.scale.setScalar(avatarScale(look));
+  const build = avatarBuild(look);
+  for (const { mesh, index } of rig.builds) {
+    if (mesh.morphTargetInfluences) mesh.morphTargetInfluences[index] = build;
+  }
 }
 
 /** Passe en douceur à une autre animation ; sans animation, la figurine prend sa pose de départ. */
