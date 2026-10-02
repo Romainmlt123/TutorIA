@@ -1,9 +1,10 @@
-import { useFrame, useLoader } from '@react-three/fiber';
-import { Suspense, useEffect, useMemo } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
-import { type GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
+import { preloadModel, useModel } from '@/lib/three/useModel';
 import { explorerArt } from '@/theme/explorerArt';
 
 import type { MapNode, RegionMap } from '../logic/regionMap';
@@ -264,8 +265,12 @@ function buildDecor(gltf: GLTF, map: RegionMap, baked: boolean): Layer {
   return { root, geometries, materials };
 }
 
-function RegionDecor({ map, baked }: { map: RegionMap; baked: boolean }) {
-  const gltf = useLoader(GLTFLoader, STRIP_KIT_GLB);
+function RegionDecor(props: { map: RegionMap; baked: boolean }) {
+  const gltf = useModel(STRIP_KIT_GLB);
+  return gltf ? <LoadedDecor gltf={gltf} {...props} /> : null;
+}
+
+function LoadedDecor({ gltf, map, baked }: { gltf: GLTF; map: RegionMap; baked: boolean }) {
   const layer = useMemo(() => buildDecor(gltf, map, baked), [gltf, map, baked]);
   useEffect(() => () => disposeLayer(layer), [layer]);
   return <primitive object={layer.root} />;
@@ -309,7 +314,11 @@ function buildMonuments(gltf: GLTF, map: RegionMap): Layer {
 }
 
 function RegionMonuments({ map, asset }: { map: RegionMap; asset: string }) {
-  const gltf = useLoader(GLTFLoader, asset);
+  const gltf = useModel(asset);
+  return gltf ? <LoadedMonuments gltf={gltf} map={map} /> : null;
+}
+
+function LoadedMonuments({ gltf, map }: { gltf: GLTF; map: RegionMap }) {
   const layer = useMemo(() => buildMonuments(gltf, map), [gltf, map]);
   useEffect(() => () => disposeLayer(layer), [layer]);
   return <primitive object={layer.root} />;
@@ -384,7 +393,11 @@ function buildTerrain(gltf: GLTF, terrain: Terrain, map: RegionMap): Layer {
 }
 
 function RegionTerrain({ terrain, map }: { terrain: Terrain; map: RegionMap }) {
-  const gltf = useLoader(GLTFLoader, terrain.asset);
+  const gltf = useModel(terrain.asset);
+  return gltf ? <LoadedTerrain gltf={gltf} terrain={terrain} map={map} /> : null;
+}
+
+function LoadedTerrain({ gltf, terrain, map }: { gltf: GLTF; terrain: Terrain; map: RegionMap }) {
   const layer = useMemo(() => buildTerrain(gltf, terrain, map), [gltf, terrain, map]);
   useEffect(() => () => disposeLayer(layer), [layer]);
   return <primitive object={layer.root} />;
@@ -396,7 +409,7 @@ function RegionTerrain({ terrain, map }: { terrain: Terrain; map: RegionMap }) {
  */
 export function preloadRegion(regionId: string) {
   const assets = [STRIP_KIT_GLB, TERRAIN_MODELS[regionId]?.asset, MONUMENT_MODELS[regionId]];
-  for (const asset of assets) if (asset) useLoader.preload(GLTFLoader, asset);
+  for (const asset of assets) if (asset) preloadModel(asset);
 }
 
 type Props = { map: RegionMap; regionColor: string; animated: boolean };
@@ -423,11 +436,9 @@ export function RegionWorld({ map, regionColor, animated }: Props) {
   return (
     <>
       <primitive object={built.root} />
-      <Suspense fallback={null}>
-        {terrain ? <RegionTerrain terrain={terrain} map={map} /> : null}
-        <RegionDecor map={map} baked={terrain !== undefined} />
-        {monumentModel ? <RegionMonuments map={map} asset={monumentModel} /> : null}
-      </Suspense>
+      {terrain ? <RegionTerrain terrain={terrain} map={map} /> : null}
+      <RegionDecor map={map} baked={terrain !== undefined} />
+      {monumentModel ? <RegionMonuments map={map} asset={monumentModel} /> : null}
     </>
   );
 }

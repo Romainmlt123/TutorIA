@@ -1,6 +1,6 @@
 import { Canvas, useThree } from '@react-three/fiber';
 import { useLocalSearchParams } from 'expo-router';
-import { Suspense, useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
@@ -132,9 +132,7 @@ function Stylized3dView() {
         <Canvas dpr={[1, 2]} flat gl={{ antialias: false, alpha: true }} camera={{ fov: FOV }}>
           <CameraRig azimuth={azimuth} elevation={24} />
           <Clouds clouds={ATELIER_CLOUDS} wrap={ATELIER_WRAP} />
-          <Suspense fallback={null}>
-            <MathsIsland3D />
-          </Suspense>
+          <MathsIsland3D />
           <Hd2dPost focus={0.5} band={0.62} look={explorerArt.post.natural} />
         </Canvas>
       </View>

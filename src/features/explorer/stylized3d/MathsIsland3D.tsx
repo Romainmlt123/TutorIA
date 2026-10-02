@@ -7,11 +7,12 @@
  * Les effets d'image (halo, léger flou de maquette, étalonnage) viennent de Hd2dPost.
  * Repère : x vers la droite, z vers la caméra, y vers le haut ; le plateau est à y = 0.
  */
-import { useFrame, useLoader, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
-import { type GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
+import { useModel } from '@/lib/three/useModel';
 import { explorerArt } from '@/theme/explorerArt';
 
 import { seeded } from '../hd2d/pixels';
@@ -73,7 +74,7 @@ function copyOf(source: THREE.Mesh, material: THREE.Material): THREE.Mesh {
 /**
  * Le modèle : l'île cuite (sa texture s'affiche telle quelle, MeshBasic, sans calcul de lumière),
  * les brins d'herbe (animés par le vent) et les dix chiffres de la cascade.
- * Le modèle chargé reste intact : useLoader le garde en cache et le rend à chaque scène qui le
+ * Le modèle chargé reste intact : useModel le garde en cache et le rend à chaque scène qui le
  * demande (atelier, onglet Explorer). Chaque scène crée donc ses propres objets, qui en partagent
  * la géométrie et la texture.
  */
@@ -132,7 +133,7 @@ function buildWorld(gltf: GLTF): World {
   return { root, water, owned, digits, fall: fallCurve(), shownAt: null, tint, regionMix: 0 };
 }
 
-/** Libère ce que la scène a créé ; le modèle lui-même reste dans le cache de useLoader. */
+/** Libère ce que la scène a créé ; le modèle lui-même reste dans le cache de useModel. */
 function disposeWorld(w: World) {
   w.water.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
@@ -198,9 +199,13 @@ type Props = {
   regions?: RegionLook;
 };
 
-export function MathsIsland3D({ animated = true, regions = NO_REGIONS }: Props) {
+export function MathsIsland3D(props: Props) {
+  const gltf = useModel(ISLAND_GLB);
+  return gltf ? <LoadedIsland gltf={gltf} {...props} /> : null;
+}
+
+function LoadedIsland({ gltf, animated = true, regions = NO_REGIONS }: Props & { gltf: GLTF }) {
   const camera = useThree((s) => s.camera);
-  const gltf = useLoader(GLTFLoader, ISLAND_GLB);
   const world = useMemo(() => buildWorld(gltf), [gltf]);
   useEffect(() => () => disposeWorld(world), [world]);
   useFrame(({ clock }, delta) =>

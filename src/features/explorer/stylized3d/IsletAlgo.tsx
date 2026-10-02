@@ -1,7 +1,9 @@
-import { useFrame, useLoader } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { type GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+import { useModel } from '@/lib/three/useModel';
 
 import { ISLET } from '../logic/regions';
 
@@ -54,8 +56,12 @@ type Props = {
 };
 
 /** Îlot flottant de l'Algorithmique, à côté de l'île des Maths, visible dans la vue des régions. */
-export function IsletAlgo({ mix, animated }: Props) {
-  const gltf = useLoader(GLTFLoader, ISLET_GLB);
+export function IsletAlgo(props: Props) {
+  const gltf = useModel(ISLET_GLB);
+  return gltf ? <LoadedIslet gltf={gltf} {...props} /> : null;
+}
+
+function LoadedIslet({ gltf, mix, animated }: Props & { gltf: GLTF }) {
   const group = useMemo(() => buildIslet(gltf), [gltf]);
   const shown = useRef({ value: 0 });
   useEffect(

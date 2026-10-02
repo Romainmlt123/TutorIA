@@ -8,7 +8,7 @@ import type { Decor, DecorKind, Tuft } from '../logic/terrainLayout';
  * Kit de décor des cartes de région (modèle Blender strip-kit.glb, tools/explorer-3d/strip_kit.py) :
  * rochers, galets, touffes de fleurs, barrière, chacun avec sa texture cuite. Ici, tout ce qui
  * ne dépend que du kit : on lit ses pièces, on instancie les décors, on sème les brins d'herbe.
- * Les matériaux sont créés ici : le modèle chargé reste intact dans le cache de useLoader.
+ * Les matériaux sont créés ici : le modèle chargé reste intact dans le cache de useModel.
  */
 
 export type Kit = { decor: Record<DecorKind, THREE.Mesh> };

@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Suspense, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import * as THREE from 'three';
 
@@ -310,10 +310,8 @@ export function IslandStage({
       <Clouds clouds={clouds} wrap={wrap} animated={animated} />
       {mathsIndex >= 0 ? (
         <group position={[mathsIndex * SPACING, 0, 0]} visible={!region}>
-          <Suspense fallback={null}>
-            <MathsIsland3D animated={animated} regions={regions} />
-            <IsletAlgo mix={regions.mix} animated={animated} />
-          </Suspense>
+          <MathsIsland3D animated={animated} regions={regions} />
+          <IsletAlgo mix={regions.mix} animated={animated} />
         </group>
       ) : null}
       {region ? (

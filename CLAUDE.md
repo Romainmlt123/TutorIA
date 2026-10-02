@@ -164,6 +164,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - Pour les éléments interactifs, toujours passer par `PressableBase`, qui gère l'anneau de focus clavier sur le web.
 - **Styles :** sur le web, un raccourci (`padding`) passé avant une propriété précise (`paddingHorizontal`) peut l'écraser. Les composants posent donc des propriétés précises.
 - **Explorer en 3D :** la scène ne calcule d'images que si l'onglet est affiché et l'app au premier plan (`useSceneActive`, `frameloop="never"` sinon) ; « Réduire les animations » fige l'île ; sans WebGL ou si la scène échoue, l'image fixe rendue par Blender (`assets/explorer/images/`) la remplace.
+- **Modèles 3D :** les charger avec `useModel` / `preloadModel` de `@/lib/three/useModel`, jamais avec `useLoader` ni rien qui suspende sous un `Canvas`. Sur Android, l'app et la scène 3D partagent les valeurs de contexte : une reprise de Suspense, rendue par tranches, laisse fuir le contexte de navigation de la scène, et React Navigation s'arrête (« nested a NavigationContainer »).
 - **Vérification visuelle :** comparer chaque écran à sa maquette, sur le web en 390 px de large (`npm run web`), et sur un vrai téléphone via Expo Go.
 - **Hooks git :** le pre-commit lance `lint-staged` (ESLint + Prettier sur les fichiers modifiés) et `npm run typecheck`. La CI (`.github/workflows/ci.yml`) vérifie que les tokens sont à jour et lance `npm run check`.
 
