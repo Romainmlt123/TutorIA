@@ -197,23 +197,30 @@ def _cached(key, build):
     return _cache[key]
 
 
-def grass(shore=None):
-    """Herbe de prairie. `shore` (image vue du dessus : rouge = rive, vert = sous l'eau) assombrit
-    l'herbe humide au bord de l'eau et met de la vase sous l'eau, que l'on devine par transparence."""
+def grass(shore=None, extent=3.6, vivid=False):
+    """Herbe de prairie. `shore` (image vue du dessus : rouge = rive, vert = sous l'eau, qui couvre
+    [-extent, extent]²) assombrit l'herbe humide au bord de l'eau et met de la vase sous l'eau, que
+    l'on devine par transparence. `vivid` : verts plus clairs et saturés (cartes de région)."""
     def build():
         g = Graph("herbe-rive" if shore else "herbe")
-        color = g.ramp(g.noise(1.6, 6), [(0.32, "grass-dark"), (0.5, "grass"), (0.7, "grass-light")])
+        tone = ("vivid-dark", "vivid", "vivid-light", "vivid-tip", "vivid-dry", "vivid-moss") if vivid else (
+            "grass-dark", "grass", "grass-light", "grass-tip", "grass-dry", "moss")
+        dark, mid, light, tip, dry_c, moss = tone
+        color = g.ramp(g.noise(1.6, 6), [(0.32, dark), (0.5, mid), (0.7, light)])
         dry = g.mask(g.noise(0.7, 3), 0.56, 0.72)
-        color = g.mix(g.times(dry, 0.6), color, "grass-dry")
+        color = g.mix(g.times(dry, 0.6), color, dry_c)
         clover = g.mask(g.voronoi(9.0), 0.16, 0.05)
-        color = g.mix(g.times(clover, 0.45), color, "moss")
+        color = g.mix(g.times(clover, 0.45), color, moss)
+        # Détail fin : touffes de taille moyenne, puis brins serrés.
+        tufts = g.ramp(g.noise(14.0, 4), [(0.3, dark), (0.65, tip)])
+        color = g.mix(0.3, color, tufts, "OVERLAY")
         blades = g.noise(55.0, 2)
-        color = g.mix(0.3, color, g.ramp(blades, [(0.3, "grass-dark"), (0.75, "grass-tip")]), "OVERLAY")
+        color = g.mix(0.3, color, g.ramp(blades, [(0.3, dark), (0.75, tip)]), "OVERLAY")
         if shore:
-            color = g.shore(color, shore)
+            color = g.shore(color, shore, extent)
         g.bump(blades, 0.45, 0.015)
         return g.finish(g.wear(color, 0.15), 0.95)
-    return _cached("herbe-rive" if shore else "herbe", build)
+    return _cached(f"herbe-rive-{extent}-{vivid}" if shore else f"herbe-{vivid}", build)
 
 
 def soil(top=0.0, bottom=-3.9):
@@ -259,6 +266,76 @@ def soil(top=0.0, bottom=-3.9):
         g.bump(relief, 0.9, 0.035)
         return g.finish(g.wear(color, 0.35), 0.95)
     return _cached("terre", build)
+
+
+def meadow():
+    """Herbe des cartes de région, vue de plus près que celle de l'île : moins de grandes taches,
+    plus de grain. Les touffes qui ondulent sont ajoutées par l'app."""
+    def build():
+        g = Graph("herbe-bande")
+        color = g.ramp(g.noise(3.2, 6), [(0.3, "grass-dark"), (0.52, "grass"), (0.72, "grass-light")])
+        tufts = g.ramp(g.noise(16.0, 4), [(0.3, "grass-dark"), (0.65, "grass-tip")])
+        color = g.mix(0.4, color, tufts, "OVERLAY")
+        dry = g.mask(g.noise(0.8, 3), 0.56, 0.72)
+        color = g.mix(g.times(dry, 0.5), color, "grass-dry")
+        clover = g.mask(g.voronoi(11.0), 0.16, 0.05)
+        color = g.mix(g.times(clover, 0.4), color, "moss")
+        blades = g.noise(95.0, 2)
+        color = g.mix(0.35, color, g.ramp(blades, [(0.3, "grass-dark"), (0.75, "grass-tip")]), "OVERLAY")
+        g.bump(g.mix(0.5, blades, g.noise(16.0, 3), "ADD"), 0.55, 0.018)
+        return g.finish(g.wear(color, 0.15), 0.95)
+    return _cached("herbe-bande", build)
+
+
+def bark():
+    """Écorce sombre des troncs."""
+    def build():
+        g = Graph("ecorce")
+        grain = g.ramp(g.wave(1.2, "Z", 5.0, detail=4), [(0.2, "wood-dark"), (0.6, "dirt"), (0.95, "wood-dark")])
+        color = g.mix(0.3, grain, g.ramp(g.noise(30.0, 2), [(0.4, "earth-deep"), (0.62, "dirt-light")]), "OVERLAY")
+        g.bump(g.noise(30.0, 2), 0.4, 0.012)
+        return g.finish(g.wear(color, 0.3), 0.85)
+    return _cached("ecorce", build)
+
+
+def masonry(name, stone, light, mortar, cylindrical=False, scale=6.0, row=0.35, width=0.9):
+    """Maçonnerie (pierres, briques, tuiles) : briques de deux tons, joints en creux. Sur un objet
+    rond (`cylindrical`), le motif suit le tour ; sinon il court sur les faces verticales d'un pavé."""
+    def build():
+        g = Graph(f"maconnerie-{name}")
+        xyz = g.nodes.new("ShaderNodeSeparateXYZ")
+        g.link(g.object, _input(xyz, "Vector"))
+        if cylindrical:
+            angle = g.nodes.new("ShaderNodeMath")
+            angle.operation = "ARCTAN2"
+            g.link(_output(xyz, "Y"), angle.inputs[0])
+            g.link(_output(xyz, "X"), angle.inputs[1])
+            around = g.times(angle.outputs[0], 0.3)
+        else:
+            across = g.nodes.new("ShaderNodeMath")
+            across.operation = "ADD"
+            g.link(_output(xyz, "X"), across.inputs[0])
+            g.link(_output(xyz, "Y"), across.inputs[1])
+            around = across.outputs[0]
+        vector = g.nodes.new("ShaderNodeCombineXYZ")
+        g.link(around, _input(vector, "X"))
+        g.link(_output(xyz, "Z"), _input(vector, "Y"))
+        brick = g.nodes.new("ShaderNodeTexBrick")
+        g.link(vector.outputs[0], _input(brick, "Vector"))
+        _input(brick, "Scale").default_value = scale
+        _input(brick, "Mortar Size").default_value = 0.02
+        _input(brick, "Mortar Smooth").default_value = 0.2
+        _input(brick, "Brick Width").default_value = width
+        _input(brick, "Row Height").default_value = row
+        _input(brick, "Color1").default_value = rgba(stone)
+        _input(brick, "Color2").default_value = rgba(light)
+        _input(brick, "Mortar").default_value = rgba(mortar)
+        color = _output(brick, "Color")
+        grain = g.noise(30.0, 3)
+        color = g.mix(0.25, color, g.ramp(grain, [(0.35, mortar), (0.65, light)]), "OVERLAY")
+        g.bump(g.mix(0.7, _output(brick, "Factor"), grain, "ADD"), 0.6, 0.012)
+        return g.finish(g.wear(color, 0.35), 0.85)
+    return _cached(f"maconnerie-{name}", build)
 
 
 def rock(color_name="rock"):

@@ -166,7 +166,7 @@ def bake(obj, name, size=2048, samples=96):
     return image
 
 
-def export(filename):
+def export(filename, jpeg_quality=90):
     path = os.path.abspath(os.path.join(MODELS, filename))
     bpy.ops.object.select_all(action="DESELECT")
     for obj in bpy.context.scene.objects:
@@ -178,7 +178,7 @@ def export(filename):
         export_yup=True,
         export_apply=True,
         export_image_format="JPEG",
-        export_jpeg_quality=90,
+        export_jpeg_quality=jpeg_quality,
         export_materials="EXPORT",
     )
     return path

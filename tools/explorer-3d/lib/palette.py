@@ -25,6 +25,20 @@ COLORS = {
     "metal": "#a8acb0", "metal-dark": "#62666b", "graphite": "#34322f",
     # eau (image de repli seulement : dans l'app, l'eau est animée par un shader)
     "water": "#1f5570", "water-light": "#7fb0c4",
+    # herbe vive des cartes de région : plus claire et plus saturée que celle de l'île
+    "vivid-dark": "#2f6a2b", "vivid": "#4d9638", "vivid-light": "#73b04f", "vivid-tip": "#a5c86a",
+    "vivid-dry": "#a3b052", "vivid-moss": "#3b8a35", "vivid-leaf": "#43a53a",
+    "bush-dark": "#2d6f2e", "bush": "#3f8a3a", "bush-light": "#5aa24b",
+    "crown-dark": "#2a6a30", "crown": "#3c8a3a", "crown-light": "#62a84a", "bark-brown": "#6a4a2e",
+    "flower-red": "#e0524a", "flower-pink": "#ee7fa8", "flower-orange": "#f29a3a", "flower-blue": "#5b8fe8",
+    "mushroom": "#d8443a", "stem": "#efe6d2",
+    # monuments des cartes de région
+    "terracotta": "#b5532f", "terracotta-light": "#d77a4a", "terracotta-dark": "#7d3420", "plaster": "#efe4cc",
+    "plaster-light": "#faf3e2", "brass": "#c49a3c", "brass-light": "#e8c873", "brass-dark": "#8a6a22",
+    "cherry": "#b8283c", "cherry-light": "#de4b5a", "cream": "#fbf3e2", "crust": "#d39345", "crust-light": "#ecc07a",
+    "crust-dark": "#a8652a", "sack": "#e6dbc0", "sack-dark": "#cdb98f", "ceramic-blue": "#3b6ea8", "shutter": "#4f8a5b", "glass": "#9fcfe0",
+    "stone-warm": "#c9b99c", "stone-warm-light": "#e2d6bd", "stone-warm-dark": "#8e7f68", "brick": "#a24a32",
+    "brick-light": "#c5674a", "iron": "#4b4f55", "iron-light": "#7a8088",
     # fleurs des champs
     "flower-white": "#efece2", "flower-yellow": "#e3c75a", "flower-violet": "#9f8fc4",
     # lumière

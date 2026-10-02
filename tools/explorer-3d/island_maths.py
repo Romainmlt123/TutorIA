@@ -94,6 +94,7 @@ geo.island_body(shore=water_mask())
 # Placement : chaque objet réserve un disque, hors de l'eau et dans l'île
 # ---------------------------------------------------------------------------
 occupied = []
+claim_names = []
 
 
 def claim(x, z, radius, name):
@@ -103,6 +104,7 @@ def claim(x, z, radius, name):
     if near_water(x, z, radius * 0.6):
         print(f"ATTENTION {name} touche l'eau")
     occupied.append((x, z, radius))
+    claim_names.append(name)
 
 
 def free(x, z, radius):
@@ -392,6 +394,7 @@ def water_surfaces():
     M.assign(geo.link("Cascade", bm), M.waterfall(fall[-1][1]))
 
 
+# --- fin de la construction des accessoires (region_map.py reprend la scène jusqu'ici) ---
 if os.environ.get("EXPLORER_FALLBACK"):
     water_surfaces()
     bake.lights()
