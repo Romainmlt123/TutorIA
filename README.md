@@ -33,6 +33,7 @@ Mobile d'abord (iOS et Android), avec le même code pour le web. Données et com
 | Stats                | `/stats`                                                  | `04-Stats.dc.html`                  |
 | Explorer · Les îles  | `/explorer`                                               | `X1-Explorer-Iles.dc.html`          |
 | Profil               | `/profil` (déconnexion, code parent, export, suppression) | pas de maquette                     |
+| Crée ton avatar      | `/avatar` (`?premiere=1` à la première visite d'Explorer) | pas de maquette                     |
 | Relier un parent     | `/relier-parent`                                          | pas de maquette                     |
 
 **Espace Parents**
@@ -161,10 +162,10 @@ src/
                   (auth)/ entrée · (compte)/ compte à finaliser · (onboarding)/ · (eleve)/ · (parents)/
                   api/ = serveur intermédiaire · dev/ = outils de développement
   components/     composants UI partagés (Text, Icon, Button, BottomNav, form/…) ; game/ = HUD de jeu (Explorer, avatar)
-  features/       auth, onboarding, access, home, tutor, flashcards, stats, explorer, comingSoon, profile, parents :
+  features/       auth, onboarding, access, home, tutor, flashcards, stats, explorer, avatar, comingSoon, profile, parents :
                   écrans, composants, logique, hooks
   services/       services derrière des interfaces, versions Supabase et simulée :
-                  auth, family, onboarding, student, parents, tutor ; db/ = types générés
+                  auth, family, onboarding, student, parents, tutor, explorer ; avatar (sur l'appareil) ; db/ = types générés
   data/           types et programme (classes, chapitres) ; mock/ = données fictives de démonstration
   theme/          thème typé généré depuis design/tokens/ + police Satoshi + espaces élève et parent
   i18n/fr.ts      tous les textes de l'app

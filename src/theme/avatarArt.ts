@@ -58,4 +58,6 @@ export const avatarArt = {
   blush: '#f19a8e',
   /** Lumière des scènes où paraît un avatar : ciel, sol, soleil (sa direction suit la cuisson des îles). */
   light: { sky: '#f4f8ff', ground: '#d8cdb8', sun: '#fff1dc', fill: '#e8f0ff' },
+  /** Ombre douce sous les pieds de la figurine (aperçu de l'éditeur). */
+  shadow: '#1c2a4d',
 } as const;

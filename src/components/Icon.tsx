@@ -131,6 +131,10 @@ const ICONS = {
   sortie: [{ d: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3' }],
   telechargement: [{ d: 'M12 3v12M7 10l5 5 5-5M5 19h14' }],
   poubelle: [{ d: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3' }],
+  de: [
+    { rect: [4, 4, 16, 16, 3] },
+    { d: 'M8.5 8.5h.01M15.5 8.5h.01M12 12h.01M8.5 15.5h.01M15.5 15.5h.01' },
+  ],
 } as const satisfies Record<string, readonly Shape[]>;
 
 export type IconName = keyof typeof ICONS;

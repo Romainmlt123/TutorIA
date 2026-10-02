@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GradientSurface } from '@/components/GradientSurface';
 import { useBottomNavLayout } from '@/components/navigation/useBottomNavLayout';
+import { useAvatarOfferOnVisit } from '@/features/avatar/hooks/useAvatarOfferOnVisit';
 import { SceneBoundary } from '@/lib/three/SceneBoundary';
 import { useSceneActive } from '@/lib/three/useSceneActive';
 import { useSceneKey } from '@/lib/three/useSceneKey';
@@ -92,6 +93,8 @@ export function ExplorerScreen() {
   const active = useSceneActive();
   // Android : la scène est recréée à chaque retour sur l'écran (son contexte 3D a été détruit).
   const sceneKey = useSceneKey();
+  // Première visite sans avatar : l'éditeur « Crée ton avatar » est proposé une fois.
+  useAvatarOfferOnVisit(active && view.kind === 'carousel');
   const animated = !useReducedMotion();
   const screenReader = useScreenReader();
   // Faux au rendu serveur (web) : pas de WebGL côté serveur, pas de décalage à l'hydratation.

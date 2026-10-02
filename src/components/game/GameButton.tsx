@@ -21,6 +21,10 @@ type Props = {
   icon?: IconName;
   size?: number;
   round?: boolean;
+  /** Onglet ou choix dans un groupe : annoncé comme tel, avec son état. */
+  role?: 'button' | 'tab' | 'radio';
+  selected?: boolean;
+  disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -36,6 +40,9 @@ export function GameButton({
   icon,
   size = 56,
   round = false,
+  role = 'button',
+  selected,
+  disabled = false,
   style,
 }: Props) {
   const colors = HUD.buttons[tone];
@@ -43,9 +50,18 @@ export function GameButton({
   return (
     <PressableBase
       onPress={onPress}
-      accessibilityRole="button"
+      disabled={disabled}
+      role={role}
+      aria-selected={role === 'tab' ? selected : undefined}
+      aria-checked={role === 'radio' ? selected : undefined}
+      aria-disabled={disabled}
       accessibilityLabel={accessibilityLabel}
-      style={[{ height: size + DEPTH }, round ? { width: size } : null, style]}>
+      style={[
+        { height: size + DEPTH },
+        round ? { width: size } : null,
+        disabled && styles.disabled,
+        style,
+      ]}>
       {({ pressed }) => (
         <>
           <View
@@ -98,6 +114,7 @@ const styles = StyleSheet.create({
     borderColor: HUD.ink,
   },
   face: { overflow: 'hidden' },
+  disabled: { opacity: 0.55 },
   shine: {
     position: 'absolute',
     top: 0,

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Fragment, useState, type ReactNode } from 'react';
 import { Image, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { GradientSurface } from '@/components/GradientSurface';
@@ -14,6 +14,10 @@ const WOOD = require('../../../assets/explorer/images/wood-panel.webp');
 
 const HUD = explorerArt.hud;
 const WOOD_COLORS = HUD.wood;
+/** Rapport largeur / hauteur de la texture : trois planches. */
+const WOOD_RATIO = 1.6;
+/** Copies de la texture empilées dans un grand panneau (de quoi couvrir un écran entier). */
+const WOOD_TILES = 4;
 /** Clous aux quatre coins du panneau. */
 const NAILS: readonly ViewStyle[] = [
   { top: 8, left: 8 },
@@ -34,40 +38,66 @@ function Nail({ style }: { style: ViewStyle }) {
 }
 
 type FrameProps = {
-  /** Texte du ruban bleu posé sur le bord haut (« Ta quête »). */
-  tab: string;
+  /** Texte du ruban bleu posé sur le bord haut (« Ta quête ») ; sans ruban s'il est absent. */
+  tab?: string;
   accessibilityLabel: string;
   children: ReactNode;
+  /** Le panneau occupe toute la hauteur disponible (contenu qui défile). */
+  fill?: boolean;
 };
 
-/** Panneau de bois du HUD d'Explorer : planches, cadre, clous et ruban. Le contenu est dans `children`. */
-export function WoodFrame({ tab, accessibilityLabel, children }: FrameProps) {
+/** Panneau de bois du HUD de jeu : planches, cadre, clous et ruban. Le contenu est dans `children`. */
+export function WoodFrame({ tab, accessibilityLabel, children, fill = false }: FrameProps) {
+  // Largeur du panneau, pour donner aux planches répétées leur hauteur (le web ignore aspectRatio
+  // sur une image : elle prendrait sa hauteur d'origine).
+  const [width, setWidth] = useState(0);
   return (
-    <View accessibilityLabel={accessibilityLabel} style={styles.frame}>
-      <View style={styles.board}>
-        <Image
-          source={WOOD}
-          resizeMode="cover"
-          accessibilityIgnoresInvertColors
-          style={StyleSheet.absoluteFill}
-        />
+    <View accessibilityLabel={accessibilityLabel} style={[styles.frame, fill && styles.fill]}>
+      <View
+        onLayout={fill ? (event) => setWidth(event.nativeEvent.layout.width) : undefined}
+        style={[styles.board, fill && styles.fill]}>
+        {fill ? (
+          // Grand panneau : les planches gardent leur taille, la texture est répétée vers le bas.
+          <View style={styles.tiles}>
+            {Array.from({ length: WOOD_TILES }, (_, i) => (
+              <Fragment key={i}>
+                {i > 0 ? <View style={styles.seam} /> : null}
+                <Image
+                  source={WOOD}
+                  resizeMode="cover"
+                  accessibilityIgnoresInvertColors
+                  style={{ width, height: width / WOOD_RATIO }}
+                />
+              </Fragment>
+            ))}
+          </View>
+        ) : (
+          <Image
+            source={WOOD}
+            resizeMode="cover"
+            accessibilityIgnoresInvertColors
+            style={StyleSheet.absoluteFill}
+          />
+        )}
         <View style={styles.bevel} />
-        <View style={styles.content}>{children}</View>
+        <View style={[styles.content, fill && styles.fill]}>{children}</View>
       </View>
       {NAILS.map((corner, i) => (
         <Nail key={i} style={corner} />
       ))}
-      <View style={styles.tab}>
-        <GradientSurface
-          gradient={HUD.panel.tab}
-          angle={180}
-          radius={theme.radius.full}
-          contentStyle={styles.tabFace}>
-          <GameText size={13} stroke={2} drop={0}>
-            {tab}
-          </GameText>
-        </GradientSurface>
-      </View>
+      {tab ? (
+        <View style={styles.tab}>
+          <GradientSurface
+            gradient={HUD.panel.tab}
+            angle={180}
+            radius={theme.radius.full}
+            contentStyle={styles.tabFace}>
+            <GameText size={13} stroke={2} drop={0}>
+              {tab}
+            </GameText>
+          </GradientSurface>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -130,6 +160,9 @@ const styles = StyleSheet.create({
     boxShadow: theme.shadow.lg,
   },
   board: { borderRadius: theme.radius['3xl'], overflow: 'hidden' },
+  fill: { flex: 1 },
+  tiles: { position: 'absolute', top: 0, right: 0, left: 0 },
+  seam: { height: 4, backgroundColor: WOOD_COLORS.groove },
   bevel: {
     position: 'absolute',
     top: 0,

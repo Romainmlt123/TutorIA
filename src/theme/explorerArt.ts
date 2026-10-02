@@ -75,6 +75,8 @@ export const explorerArt = {
     buttons: {
       yellow: { face: ['#ffe872', '#ffc21f'], depth: '#c98600', icon: '#5a3600' },
       green: { face: ['#7ee86d', '#2fb84a'], depth: '#1b7f33', icon: '#ffffff' },
+      /** Boutons secondaires des écrans de jeu (onglets non choisis, − et + des curseurs). */
+      blue: { face: ['#7fb0ff', '#3f7be8'], depth: '#1f4fb5', icon: '#ffffff' },
     },
     streak: { face: ['#ffb23f', '#f07a12'], depth: '#b8520a' },
     gold: { face: ['#fff09a', '#ffc933', '#f0a500'], depth: '#b87400' },
