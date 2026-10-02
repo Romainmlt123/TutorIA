@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, type RefObject } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
@@ -6,7 +6,7 @@ import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { fr } from '@/i18n/fr';
 import { theme } from '@/theme';
 
-import { MAP_SCROLL_X } from '../../hooks/mapScrollValue';
+import { MAP_SCROLL_X, MAP_SCROLL_Z } from '../../hooks/mapScrollValue';
 import { cityAt, type MapCity, type MapNode, type RegionMap } from '../../logic/regionMap';
 import { GameButton } from '../hud/GameButton';
 import { GameText } from '../hud/GameText';
@@ -26,18 +26,23 @@ type Props = {
   onCity: (city: MapCity) => void;
   /** Fait glisser la carte jusqu'à une ville. */
   onGoToCity: (city: MapCity) => void;
+  /** Zone libre entre l'en-tête et le panneau, mesurée par l'écran pour y rogner les boutons posés sur la carte. */
+  zoneRef: RefObject<View | null>;
+  onZoneLayout: () => void;
 };
 
 /**
- * Ville au centre de l'écran, pour l'en-tête et le panneau : elle suit le défilement. Seul un
+ * Ville la plus proche du centre de l'écran, pour l'en-tête et le panneau : elle suit le déplacement. Seul un
  * changement de ville repasse par React, pas chaque image.
  */
 function useCityInView(map: RegionMap): MapCity | undefined {
-  const [id, setId] = useState(() => cityAt(map, MAP_SCROLL_X.value)?.id);
+  const [id, setId] = useState(
+    () => cityAt(map, { x: MAP_SCROLL_X.value, z: MAP_SCROLL_Z.value })?.id,
+  );
   const last = useRef(id);
   const update = useCallback(
-    (x: number) => {
-      const city = cityAt(map, x);
+    (x: number, z: number) => {
+      const city = cityAt(map, { x, z });
       if (city && city.id !== last.current) {
         last.current = city.id;
         setId(city.id);
@@ -46,9 +51,11 @@ function useCityInView(map: RegionMap): MapCity | undefined {
     [map],
   );
   useAnimatedReaction(
-    () => Math.round(MAP_SCROLL_X.value * 4),
+    () => Math.round(MAP_SCROLL_X.value * 2) * 10000 + Math.round(MAP_SCROLL_Z.value * 2),
     (value, previous) => {
-      if (value !== previous) runOnJS(update)(value / 4);
+      if (value === previous) return;
+      const column = Math.round(value / 10000);
+      runOnJS(update)(column / 2, (value - column * 10000) / 2);
     },
     [update],
   );
@@ -66,6 +73,8 @@ export function RegionMapHud({
   onNode,
   onCity,
   onGoToCity,
+  zoneRef,
+  onZoneLayout,
 }: Props) {
   const city = useCityInView(map);
   if (!city) return null;
@@ -110,7 +119,7 @@ export function RegionMapHud({
         </View>
       ) : (
         <GestureDetector gesture={pan}>
-          <View style={styles.zone} />
+          <View ref={zoneRef} collapsable={false} onLayout={onZoneLayout} style={styles.zone} />
         </GestureDetector>
       )}
       <CityPanel

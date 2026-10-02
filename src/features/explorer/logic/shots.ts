@@ -9,6 +9,8 @@ import type { IslandFrame } from './stageFrame';
  */
 
 export type Shot = {
+  /** Champ de vision vertical (degrés) : large sur l'île, très étroit sur la carte d'une région. */
+  fov: number;
   elevation: number;
   fill: number;
   aimY: number;
@@ -23,7 +25,11 @@ export type Shot = {
 };
 
 /** Vue d'ensemble du plateau : plus haute, l'île entière et les panneaux de région visibles. */
+/** Champ de vision des vues de l'île. */
+export const ISLAND_FOV = 26;
+
 export const REGIONS_SHOT: Shot = {
+  fov: ISLAND_FOV,
   elevation: 55,
   fill: 0.76,
   aimY: 0.44,
@@ -34,14 +40,21 @@ export const REGIONS_SHOT: Shot = {
   azimuth: null,
 };
 
+/** Largeur de carte vue à l'écran sur la carte d'une région (mètres : une ville tient presque à l'écran). */
+export const MAP_VISIBLE_WIDTH = 4;
+/** Élévation de la caméra sur la carte d'une région. */
+export const MAP_ELEVATION = 62;
+
 /**
- * Carte d'une région : de face et à 38°, 4,3 m de bande à l'écran (un peu plus de cinq points). La
- * caméra glisse le long de la bande (défilement), sans jamais tourner.
+ * Carte d'une région : vue plongeante à 62°, avec un champ de vision très étroit (la caméra est
+ * loin) : presque sans perspective, la carte se lit comme un plateau de jeu et les boutons posés
+ * dessus suivent le sol à la lettre. La caméra glisse au-dessus de l'île sans jamais tourner.
  */
 export const REGION_SHOT: Shot = {
-  elevation: 38,
-  fill: 7.4 / 4.3,
-  aimY: 0.42,
+  fov: 4,
+  elevation: MAP_ELEVATION,
+  fill: 7.4 / MAP_VISIBLE_WIDTH,
+  aimY: 0.45,
   lookY: 0,
   lookX: 0,
   lookZ: 0,
@@ -55,6 +68,7 @@ const DRIFT = 0.3;
 /** Carrousel : cadré dans la zone libre mesurée par l'écran (voir stageFrame). */
 export function carouselShot(frame: IslandFrame): Shot {
   return {
+    fov: ISLAND_FOV,
     elevation: 24,
     fill: frame.fill,
     aimY: frame.aimY,
@@ -107,6 +121,7 @@ export function easeShot(current: Shot, target: Shot, delta: number, animated: b
   if (!animated) return target;
   const k = 1 - Math.exp(-delta * 5);
   return {
+    fov: current.fov + (target.fov - current.fov) * k,
     elevation: current.elevation + (target.elevation - current.elevation) * k,
     fill: current.fill + (target.fill - current.fill) * k,
     aimY: current.aimY + (target.aimY - current.aimY) * k,

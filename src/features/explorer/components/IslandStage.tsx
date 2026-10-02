@@ -12,11 +12,11 @@ import { coastScroll, type MapScroll } from '../logic/mapScroll';
 import { coast, type Orbit } from '../logic/orbit';
 import type { RegionMap } from '../logic/regionMap';
 import { easeShot, type Shot } from '../logic/shots';
-import { MAP_SCROLL_X } from '../hooks/mapScrollValue';
+import { MAP_SCROLL_X, MAP_SCROLL_Z } from '../hooks/mapScrollValue';
 import { IsletAlgo } from '../stylized3d/IsletAlgo';
 import { MathsIsland3D } from '../stylized3d/MathsIsland3D';
 import type { RegionLook } from '../stylized3d/regionTint';
-import { RegionStrip } from '../stylized3d/RegionStrip';
+import { RegionWorld } from '../stylized3d/RegionWorld';
 
 /*
  * Scène du carrousel (X1) : les îles alignées sur l'axe x, une tous les SPACING mètres, et la
@@ -42,16 +42,36 @@ function stageClouds(count: number): { clouds: CloudSpec[]; wrap: readonly [numb
   return { clouds: skyClouds(count), wrap: [-8, count * SPACING + 8] };
 }
 
+/** Nuages sous l'île d'une région : on la voit de haut, ils ne doivent pas la cacher. */
+function mapClouds(bounds: RegionMap['bounds']): {
+  clouds: CloudSpec[];
+  wrap: readonly [number, number];
+} {
+  const width = bounds.maxX - bounds.minX + 16;
+  const depth = bounds.maxZ - bounds.minZ + 16;
+  const count = Math.ceil((width * depth) / 40);
+  const clouds = Array.from({ length: count }, (_, i) => ({
+    x: bounds.minX - 8 + ((i * 0.618034) % 1) * width,
+    y: -2.6 - (i % 4) * 0.5,
+    z: bounds.minZ - 8 + ((i * 0.381966 + 0.2) % 1) * depth,
+    scale: 0.9 + (i % 4) * 0.2,
+    seed: i + 3,
+    drift: 0.06 + (i % 5) * 0.02,
+  }));
+  return { clouds, wrap: [bounds.minX - 10, bounds.maxX + 10] };
+}
+
 /** État lissé de la caméra : position sur la rangée d'îles, cadrage courant, et si elle est au repos. */
-type CameraState = { x: number; shot: Shot; settled: boolean };
+type CameraState = { x: number; z: number; shot: Shot; settled: boolean };
 
 /** Point de la scène (repère de l'île) où l'interface pose un panneau, avec son identifiant. */
 export type StageAnchor = { id: string; position: readonly [number, number, number] };
 /**
- * Position à l'écran (pixels) d'un point d'ancrage, et `k` : pixels par mètre le long de la bande à
- * sa profondeur (pour placer une interface sur la carte d'une région pendant le défilement).
+ * Position à l'écran (pixels) d'un point d'ancrage, et `k` et `kz` : pixels par mètre selon x et
+ * selon z à sa profondeur (pour placer une interface sur la carte d'une région pendant le
+ * déplacement : la caméra est presque sans perspective, la position est donc une droite du déplacement).
  */
-export type ScreenPoint = { id: string; x: number; y: number; k: number };
+export type ScreenPoint = { id: string; x: number; y: number; k: number; kz: number };
 
 /** Projection des points d'ancrage à l'écran, caméra comprise (décalage de vue inclus). */
 function projectAnchors(
@@ -68,8 +88,15 @@ function projectAnchors(
   return anchors.map((anchor) => {
     const [ax, ay, az] = anchor.position;
     const here = toScreen(point.set(ax + origin, ay, az).project(camera));
-    const meterLater = toScreen(point.set(ax + origin + 1, ay, az).project(camera));
-    return { id: anchor.id, x: here.x, y: here.y, k: meterLater.x - here.x };
+    const meterRight = toScreen(point.set(ax + origin + 1, ay, az).project(camera));
+    const meterNear = toScreen(point.set(ax + origin, ay, az + 1).project(camera));
+    return {
+      id: anchor.id,
+      x: here.x,
+      y: here.y,
+      k: meterRight.x - here.x,
+      kz: meterNear.y - here.y,
+    };
   });
 }
 
@@ -77,8 +104,8 @@ const EPSILON = 0.002;
 
 /** Vrai quand la caméra a rattrapé son but (position et cadrage) et que l'île ne tourne plus. */
 function isSettled(
-  now: { x: number; shot: Shot },
-  goal: { x: number; shot: Shot },
+  now: { x: number; z: number; shot: Shot },
+  goal: { x: number; z: number; shot: Shot },
   orbitState: Orbit,
 ): boolean {
   const a = now.shot;
@@ -87,6 +114,8 @@ function isSettled(
     !orbitState.dragging &&
     orbitState.velocity === 0 &&
     Math.abs(now.x - goal.x) < EPSILON &&
+    Math.abs(now.z - goal.z) < EPSILON &&
+    Math.abs(a.fov - b.fov) < 0.05 &&
     Math.abs(a.elevation - b.elevation) < 0.05 &&
     Math.abs(a.fill - b.fill) < EPSILON &&
     Math.abs(a.aimY - b.aimY) < EPSILON &&
@@ -105,7 +134,7 @@ function isSettled(
 function moveCamera(
   state: { camera: THREE.Camera; scene: THREE.Scene; size: { width: number; height: number } },
   current: CameraState | null,
-  target: { x: number; shot: Shot },
+  target: { x: number; z: number; shot: Shot },
   orbitState: Orbit,
   scroll: MapScroll | null,
   delta: number,
@@ -116,6 +145,7 @@ function moveCamera(
   if (scroll) {
     coastScroll(scroll, delta, animated);
     MAP_SCROLL_X.value = scroll.x;
+    MAP_SCROLL_Z.value = scroll.z;
   }
   const camera = state.camera as THREE.PerspectiveCamera;
   const { width, height } = state.size;
@@ -125,13 +155,17 @@ function moveCamera(
     : current === null || !animated
       ? target.x
       : current.x + (target.x - current.x) * k;
+  const z = scroll ? scroll.z : target.z;
   const shot =
     current === null ? target.shot : easeShot(current.shot, target.shot, delta, animated);
-  const distance = distanceToFit(7.4, FOV, width / height, shot.fill);
-  const aim: [number, number, number] = [x + shot.lookX, shot.lookY, shot.lookZ];
+  const distance = distanceToFit(7.4, shot.fov, width / height, shot.fill);
+  const aim: [number, number, number] = [x + shot.lookX, shot.lookY, z + shot.lookZ];
+  camera.fov = shot.fov;
   camera.position.set(...orbit(aim, distance, shot.elevation, shot.azimuth ?? orbitState.azimuth));
   camera.lookAt(new THREE.Vector3(...aim));
   camera.far = distance * 4;
+  // Très loin, un plan proche à 0,1 m ferait trembler les surfaces posées l'une sur l'autre.
+  camera.near = shot.fov < 10 ? distance * 0.6 : 0.1;
   camera.setViewOffset(width, height, 0, (0.5 - shot.aimY) * height, width, height);
   camera.updateProjectionMatrix();
   // À jour tout de suite : la projection des points d'ancrage se fait avant le rendu de l'image.
@@ -144,8 +178,11 @@ function moveCamera(
     state.scene.fog = new THREE.Fog(explorerArt.fog, distance + 4, distance + 30);
   }
   // Sur une carte de région la caméra suit le défilement : sa position est toujours son but.
-  const goal = scroll ? { x, shot: target.shot } : target;
-  return { x, shot, settled: isSettled({ x, shot }, goal, orbitState) };
+  const goal = scroll ? { x, z, shot: target.shot } : target;
+  // Sur la carte, la caméra n'est au repos qu'une fois le doigt levé et l'élan éteint : c'est alors
+  // que les positions à l'écran sont relevées (elles servent d'origine aux boutons pendant le déplacement).
+  const still = !scroll || (!scroll.dragging && scroll.vx === 0 && scroll.vz === 0 && !scroll.goal);
+  return { x, z, shot, settled: still && isSettled({ x, z, shot }, goal, orbitState) };
 }
 
 type CameraProps = {
@@ -158,9 +195,9 @@ type CameraProps = {
   scroll: MapScroll | null;
   /**
    * Appelée quand la caméra se met au repos (avec les positions à l'écran, et la position de la
-   * caméra le long de la bande) ou se remet en route (null).
+   * caméra sur la carte) ou se remet en route (null).
    */
-  onProject?: (points: ScreenPoint[] | null, cameraX: number) => void;
+  onProject?: (points: ScreenPoint[] | null, camera: { x: number; z: number }) => void;
 };
 
 function StageCamera({
@@ -173,8 +210,10 @@ function StageCamera({
   onProject,
 }: CameraProps) {
   const current = useRef<CameraState | null>(null);
-  // Points d'ancrage déjà projetés : une nouvelle liste (autre vue, autre région) se projette aussi.
-  const projected = useRef<readonly StageAnchor[] | null>(null);
+  // Dernière projection : quels points, et d'où. Une nouvelle liste (autre vue, autre région), ou une
+  // caméra posée ailleurs, se projette à nouveau : la caméra peut arriver en une seule image (animations
+  // réduites, image très lente) sans jamais être vue en mouvement.
+  const projected = useRef<{ anchors: readonly StageAnchor[]; x: number; z: number } | null>(null);
   // Entrer dans une région ou en sortir est une coupure, cachée par le voile : la caméra ne traverse
   // pas la scène, elle se pose directement sur son nouveau cadrage.
   const hadScroll = useRef(scroll !== null);
@@ -187,22 +226,28 @@ function StageCamera({
     const next = moveCamera(
       state,
       current.current,
-      { x: index * SPACING, shot },
+      { x: index * SPACING, z: 0, shot },
       orbitState,
       scroll,
       delta,
       animated,
     );
     current.current = next;
-    if (next.settled && projected.current !== anchors) {
-      projected.current = anchors;
-      onProject?.(
-        projectAnchors(state.camera, anchors, scroll ? 0 : index * SPACING, state.size),
-        next.x + next.shot.lookX,
-      );
+    const last = projected.current;
+    const stale =
+      !last ||
+      last.anchors !== anchors ||
+      Math.abs(last.x - next.x) > EPSILON ||
+      Math.abs(last.z - next.z) > EPSILON;
+    if (next.settled && stale) {
+      projected.current = { anchors, x: next.x, z: next.z };
+      onProject?.(projectAnchors(state.camera, anchors, scroll ? 0 : index * SPACING, state.size), {
+        x: next.x + next.shot.lookX,
+        z: next.z + next.shot.lookZ,
+      });
     } else if (!next.settled && before) {
       projected.current = null;
-      onProject?.(null, next.x + next.shot.lookX);
+      onProject?.(null, { x: next.x + next.shot.lookX, z: next.z + next.shot.lookZ });
     }
   });
   return null;
@@ -219,9 +264,9 @@ type Props = {
   regions: RegionLook;
   /** Points d'ancrage des panneaux, et rappel de leur position à l'écran quand la caméra est au repos. */
   anchors?: readonly StageAnchor[];
-  onProject?: (points: ScreenPoint[] | null, cameraX: number) => void;
-  /** Carte de la région ouverte (X2b), sa couleur et son défilement : elle remplace l'île à l'écran. */
-  strip?: { map: RegionMap; color: string; scroll: MapScroll } | null;
+  onProject?: (points: ScreenPoint[] | null, camera: { x: number; z: number }) => void;
+  /** Carte de la région ouverte (X2b), sa couleur et son déplacement : elle remplace l'île à l'écran. */
+  region?: { map: RegionMap; color: string; scroll: MapScroll } | null;
   /** Faux quand l'onglet est caché ou l'app en arrière-plan : plus aucune image n'est calculée. */
   active: boolean;
   animated: boolean;
@@ -235,12 +280,15 @@ export function IslandStage({
   regions,
   anchors = [],
   onProject,
-  strip = null,
+  region = null,
   active,
   animated,
 }: Props) {
-  const cloudCount = strip ? Math.ceil(strip.map.width / 8) : slides.length;
-  const { clouds, wrap } = useMemo(() => stageClouds(cloudCount), [cloudCount]);
+  const bounds = region?.map.bounds;
+  const { clouds, wrap } = useMemo(
+    () => (bounds ? mapClouds(bounds) : stageClouds(slides.length)),
+    [bounds, slides.length],
+  );
   const mathsIndex = slides.findIndex((slide) => slide.subjectId === 'maths');
   return (
     <Canvas
@@ -256,19 +304,21 @@ export function IslandStage({
         orbit={orbit}
         animated={animated}
         anchors={anchors}
-        scroll={strip?.scroll ?? null}
+        scroll={region?.scroll ?? null}
         onProject={onProject}
       />
       <Clouds clouds={clouds} wrap={wrap} animated={animated} />
       {mathsIndex >= 0 ? (
-        <group position={[mathsIndex * SPACING, 0, 0]} visible={!strip}>
+        <group position={[mathsIndex * SPACING, 0, 0]} visible={!region}>
           <Suspense fallback={null}>
             <MathsIsland3D animated={animated} regions={regions} />
             <IsletAlgo mix={regions.mix} animated={animated} />
           </Suspense>
         </group>
       ) : null}
-      {strip ? <RegionStrip map={strip.map} regionColor={strip.color} animated={animated} /> : null}
+      {region ? (
+        <RegionWorld map={region.map} regionColor={region.color} animated={animated} />
+      ) : null}
       <Hd2dPost focus={1 - shot.aimY} band={0.62} look={explorerArt.post.natural} />
     </Canvas>
   );

@@ -47,6 +47,15 @@ export const explorerArt = {
     cliff: '#7b5636',
     pathDone: '#f0a13f',
     pathTodo: '#dfe3ec',
+    /** Pavés du chemin : pierre chaude jusqu'au pion, pierre claire ensuite, joints et bordure. */
+    paving: {
+      done: '#e2a24f',
+      todo: '#cfcdc4',
+      joint: '#6b5a44',
+      edge: '#5a4a36',
+    },
+    /** Ombre douce posée sous les rochers, galets et monuments. */
+    groundShadow: '#16240e',
     node: { lecon: '#2fbf5f', exercices: '#3f86f0', evaluation: '#e0504f', locked: '#aab2c0' },
     nodeRim: '#1c2a52',
     pawn: '#2e6be6',

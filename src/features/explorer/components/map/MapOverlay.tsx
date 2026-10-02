@@ -8,7 +8,7 @@ import { fr } from '@/i18n/fr';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
-import { MAP_SCROLL_X } from '../../hooks/mapScrollValue';
+import { MAP_SCROLL_X, MAP_SCROLL_Z } from '../../hooks/mapScrollValue';
 import type { LevelType } from '../../content';
 import type { MapCity, MapNode, RegionMap } from '../../logic/regionMap';
 import type { ScreenPoint } from '../IslandStage';
@@ -16,9 +16,10 @@ import { GameText } from '../hud/GameText';
 
 const HUD = explorerArt.hud;
 const TARGET = 48;
-/** Largeur de carte, en mètres, autour de la caméra où les boutons sont montés (±3 écrans environ). */
-const WINDOW = 4.5;
-/** La fenêtre est recalculée quand la caméra change de tranche de 1,5 m. */
+/** Demi-étendue de la carte, en mètres autour de la caméra, où les boutons sont montés (x puis z). */
+const WINDOW_X = 5;
+const WINDOW_Z = 9;
+/** La fenêtre est recalculée quand la caméra change de case de 1,5 m. */
 const BUCKET = 1.5;
 
 /** Identifiant du point où se pose le bandeau d'une ville. */
@@ -39,17 +40,20 @@ export function nodeLabel(node: MapNode): string {
   );
 }
 
+/** Position de la caméra quand les points ont été projetés. */
+type CameraAt = { x: number; z: number };
+
 /**
- * Placement sur l'écran pendant le défilement : la caméra ne fait que glisser le long de la bande,
- * donc la position d'un point est une droite de la position de la caméra (x0 - k × déplacement),
- * avec `k` en pixels par mètre à la profondeur du point. Calculée sur le fil de l'interface, sans
- * repasser par React.
+ * Placement sur l'écran pendant le déplacement : la caméra est presque sans perspective et ne fait
+ * que glisser au-dessus de l'île, donc la position d'un point est une droite de la position de la
+ * caméra, avec `k` et `kz` en pixels par mètre selon x et z à la profondeur du point. Calculée sur
+ * le fil de l'interface, sans repasser par React.
  */
-function usePlacement(point: ScreenPoint, cameraX0: number, offsetX: number, offsetY: number) {
+function usePlacement(point: ScreenPoint, camera0: CameraAt, offsetX: number, offsetY: number) {
   return useAnimatedStyle(() => ({
     transform: [
-      { translateX: point.x - point.k * (MAP_SCROLL_X.value - cameraX0) + offsetX },
-      { translateY: point.y + offsetY },
+      { translateX: point.x - point.k * (MAP_SCROLL_X.value - camera0.x) + offsetX },
+      { translateY: point.y - point.kz * (MAP_SCROLL_Z.value - camera0.z) + offsetY },
     ],
   }));
 }
@@ -57,15 +61,15 @@ function usePlacement(point: ScreenPoint, cameraX0: number, offsetX: number, off
 function NodeButton({
   node,
   point,
-  cameraX0,
+  camera0,
   onPress,
 }: {
   node: MapNode;
   point: ScreenPoint;
-  cameraX0: number;
+  camera0: CameraAt;
   onPress: () => void;
 }) {
-  const placement = usePlacement(point, cameraX0, -TARGET / 2, -TARGET / 2);
+  const placement = usePlacement(point, camera0, -TARGET / 2, -TARGET / 2);
   const icon: IconName = node.state === 'locked' ? 'cadenas' : TYPE_ICON[node.type];
   return (
     <Animated.View style={[styles.node, placement]}>
@@ -108,15 +112,15 @@ const CITY_COLORS = {
 function CityBanner({
   city,
   point,
-  cameraX0,
+  camera0,
   onPress,
 }: {
   city: MapCity;
   point: ScreenPoint;
-  cameraX0: number;
+  camera0: CameraAt;
   onPress: () => void;
 }) {
-  const placement = usePlacement(point, cameraX0, 0, 0);
+  const placement = usePlacement(point, camera0, 0, 0);
   return (
     <Animated.View style={[styles.banner, placement]} pointerEvents="box-none">
       <PressableBase
@@ -136,50 +140,57 @@ type Props = {
   map: RegionMap;
   points: readonly ScreenPoint[];
   /** Position de la caméra quand `points` a été projeté. */
-  cameraX0: number;
+  camera0: CameraAt;
   onNode: (node: MapNode) => void;
   onCity: (city: MapCity) => void;
 };
 
+/** Case de 1,5 m de la caméra, sous forme d'un seul nombre (comparable sur le fil de l'interface). */
+const bucketOf = (x: number, z: number) => Math.round(x / BUCKET) * 10000 + Math.round(z / BUCKET);
+const columnOf = (bucket: number) => Math.round(bucket / 10000);
+const rowOf = (bucket: number) => bucket - columnOf(bucket) * 10000;
+
 /**
  * Boutons de niveau (48 px, avec leur libellé complet) et bandeaux de ville posés sur la carte 3D.
- * Seuls ceux proches de la caméra sont montés : la carte d'une région peut faire plusieurs dizaines
- * d'écrans de long.
+ * Seuls ceux proches de la caméra sont montés : une carte peut faire plusieurs écrans de large.
  */
-export function MapOverlay({ map, points, cameraX0, onNode, onCity }: Props) {
-  const [bucket, setBucket] = useState(() => Math.round(cameraX0 / BUCKET));
+export function MapOverlay({ map, points, camera0, onNode, onCity }: Props) {
+  const [bucket, setBucket] = useState(() => bucketOf(camera0.x, camera0.z));
   useAnimatedReaction(
-    () => Math.round(MAP_SCROLL_X.value / BUCKET),
+    () => Math.round(MAP_SCROLL_X.value / BUCKET) * 10000 + Math.round(MAP_SCROLL_Z.value / BUCKET),
     (value, previous) => {
       if (value !== previous) runOnJS(setBucket)(value);
     },
   );
-  const centre = bucket * BUCKET;
+  const centreX = columnOf(bucket) * BUCKET;
+  const centreZ = rowOf(bucket) * BUCKET;
+  const near = (x: number, z: number) =>
+    Math.abs(x - centreX) <= WINDOW_X && Math.abs(z - centreZ) <= WINDOW_Z;
   const at = new Map(points.map((p) => [p.id, p]));
   return (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
       {map.nodes.map((node) => {
         const point = at.get(node.levelId);
-        if (!point || Math.abs(node.x - centre) > WINDOW) return null;
+        if (!point || !near(node.x, node.z)) return null;
         return (
           <NodeButton
             key={node.levelId}
             node={node}
             point={point}
-            cameraX0={cameraX0}
+            camera0={camera0}
             onPress={() => onNode(node)}
           />
         );
       })}
       {map.cities.map((city) => {
         const point = at.get(cityAnchorId(city.id));
-        if (!point || Math.abs(city.monumentX - centre) > WINDOW) return null;
+        if (!point || !near(city.center.x, city.center.z)) return null;
         return (
           <CityBanner
             key={city.id}
             city={city}
             point={point}
-            cameraX0={cameraX0}
+            camera0={camera0}
             onPress={() => onCity(city)}
           />
         );

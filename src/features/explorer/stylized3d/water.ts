@@ -84,7 +84,12 @@ const UP = new THREE.Vector3(0, 1, 0);
  * d'écume au bord. Le bord est calculé au pixel près par une distance signée à l'union du π et de
  * la rivière : pas d'écume à leur jonction.
  */
-function flatWaterMaterial(pi: readonly THREE.Vector2[], river: readonly THREE.Vector3[]) {
+/** `scale` : agrandissement de l'eau (carte d'une région) ; le tracé et les vagues restent ceux de l'île. */
+function flatWaterMaterial(
+  pi: readonly THREE.Vector2[],
+  river: readonly THREE.Vector3[],
+  scale: number,
+) {
   return new THREE.ShaderMaterial({
     defines: { PI_COUNT: pi.length, RIVER_COUNT: river.length },
     uniforms: {
@@ -92,6 +97,7 @@ function flatWaterMaterial(pi: readonly THREE.Vector2[], river: readonly THREE.V
       uPi: { value: pi.map((p) => p.clone()) },
       uRiver: { value: river.map((p) => new THREE.Vector2(p.x, p.z)) },
       uHalfWidth: { value: layout.river.width / 2 },
+      uScale: { value: scale },
       uSun: { value: SUN },
       uDeep: { value: new THREE.Color(WATER.deep) },
       uShallow: { value: new THREE.Color(WATER.shallow) },
@@ -112,6 +118,7 @@ function flatWaterMaterial(pi: readonly THREE.Vector2[], river: readonly THREE.V
       uniform vec2 uPi[PI_COUNT];
       uniform vec2 uRiver[RIVER_COUNT];
       uniform float uHalfWidth;
+      uniform float uScale;
       uniform vec3 uSun;
       uniform vec3 uDeep;
       uniform vec3 uShallow;
@@ -191,7 +198,7 @@ function flatWaterMaterial(pi: readonly THREE.Vector2[], river: readonly THREE.V
       }
 
       void main() {
-        vec2 plane = vWorld.xz;
+        vec2 plane = vWorld.xz / uScale;
         vec4 river = riverFrame(plane);
         float riverInside = uHalfWidth - river.x;
         float inside = max(-piDistance(plane), riverInside);
@@ -261,11 +268,11 @@ function fallMaterial() {
   });
 }
 
-export function waterMeshes(): THREE.Group {
+export function waterMeshes(scale = 1): THREE.Group {
   const group = new THREE.Group();
   const pi = piOutline();
   const river = riverCurve();
-  const flat = flatWaterMaterial(pi, river.getPoints(RIVER_SAMPLES - 1));
+  const flat = flatWaterMaterial(pi, river.getPoints(RIVER_SAMPLES - 1), scale);
 
   // Le π et la rivière se chevauchent au pied droit du π : un seul matériau, pas de couture visible.
   const piGeometry = new THREE.ShapeGeometry(
@@ -302,5 +309,6 @@ export function waterMeshes(): THREE.Group {
   );
   fallMesh.renderOrder = 3;
   group.add(piMesh, riverMesh, fallMesh);
+  group.scale.setScalar(scale);
   return group;
 }

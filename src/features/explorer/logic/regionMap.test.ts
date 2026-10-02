@@ -1,6 +1,7 @@
 import { demoLevelRecords } from '@/data/mock/explorer';
 
 import { islandOf } from '../content';
+import sites from '../stylized3d/regionSites.json';
 import { cityAt, buildRegionMap } from './regionMap';
 
 const maths = islandOf('maths')!;
@@ -17,12 +18,12 @@ describe('carte d’une région (X2b)', () => {
       .find((r) => r.id === 'maths-nombres')!
       .cities.flatMap((c) => c.levels);
     expect(map.nodes.map((n) => n.levelId)).toEqual(levels.map((l) => l.id));
-    expect(map.nodes[0]!.x).toBeCloseTo(0.36);
-    expect(map.nodes[1]!.x - map.nodes[0]!.x).toBeCloseTo(0.82);
-    for (const node of map.nodes) expect(Math.abs(node.z)).toBeLessThanOrEqual(0.67);
-    const xs = map.nodes.map((n) => n.x);
-    expect(xs).toEqual([...xs].sort((a, b) => a - b));
-    expect(map.width).toBeGreaterThan(xs.at(-1)!);
+    for (const node of map.nodes) {
+      expect(node.x).toBeGreaterThan(map.bounds.minX);
+      expect(node.x).toBeLessThan(map.bounds.maxX);
+      expect(node.z).toBeGreaterThan(map.bounds.minZ);
+      expect(node.z).toBeLessThan(map.bounds.maxZ);
+    }
   });
 
   it('range les villes dans l’ordre, avec de la place pour leur monument', () => {
@@ -35,8 +36,12 @@ describe('carte d’une région (X2b)', () => {
       'maths-calcul-litteral',
       'maths-equations',
     ]);
-    for (let i = 1; i < map.cities.length; i++) {
-      expect(map.cities[i]!.from).toBeGreaterThan(map.cities[i - 1]!.monumentX);
+    // Les cercles de niveaux de deux villes ne se touchent pas (la clairière a 0,6 m de marge de plus).
+    for (const [i, a] of map.cities.entries()) {
+      for (const b of map.cities.slice(i + 1)) {
+        const d = Math.hypot(a.center.x - b.center.x, a.center.z - b.center.z);
+        expect(d).toBeGreaterThan(a.radius - 0.6 + (b.radius - 0.6) + 0.5);
+      }
     }
   });
 
@@ -60,11 +65,13 @@ describe('carte d’une région (X2b)', () => {
     expect(equations).toMatchObject({ open: true, levelsDone: 2, levelsTotal: 8, stars: 5 });
   });
 
-  it('retrouve la ville visible au centre de l’écran', () => {
+  it('retrouve la ville la plus proche du centre de l’écran', () => {
     const map = buildRegionMap(maths, 'maths-nombres', new Map())!;
     const equations = map.cities.find((c) => c.id === 'maths-equations')!;
-    expect(cityAt(map, equations.from + 0.2)?.id).toBe('maths-equations');
-    expect(cityAt(map, -5)?.id).toBe('maths-relatifs');
+    expect(cityAt(map, { x: equations.center.x + 0.3, z: equations.center.z - 0.2 })?.id).toBe(
+      'maths-equations',
+    );
+    expect(cityAt(map, { x: -50, z: -50 })?.id).toBe('maths-relatifs');
   });
 
   it('couvre les quatre régions, l’îlot compris', () => {
@@ -72,6 +79,19 @@ describe('carte d’une région (X2b)', () => {
       const map = buildRegionMap(maths, region.id, new Map())!;
       expect(map.nodes.length).toBeGreaterThan(0);
       expect(map.cities).toHaveLength(region.cities.length);
+    }
+  });
+
+  it('suit les emplacements de regionSites.json, dans l’ordre du contenu', () => {
+    // Un chapitre ajouté, retiré ou déplacé doit relancer tools/explorer-3d/region_map.py (EXPLORER_PLAN=1).
+    for (const [regionId, entry] of Object.entries(sites)) {
+      const region = maths.regions.find((r) => r.id === regionId)!;
+      expect(Object.keys(entry.cities)).toEqual(region.cities.map((c) => c.id));
+      const map = buildRegionMap(maths, regionId, new Map())!;
+      for (const city of map.cities) {
+        const [x, z] = entry.cities[city.id as keyof typeof entry.cities]!.center;
+        expect(city.center).toEqual({ x, z });
+      }
     }
   });
 });

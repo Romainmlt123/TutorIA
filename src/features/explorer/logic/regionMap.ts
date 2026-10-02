@@ -1,5 +1,14 @@
-import type { City, Island, LevelType } from '../content';
-import { layoutPath, PATH_LAYOUT, type PathStop } from './layout';
+import type { Island, LevelType } from '../content';
+import sites from '../stylized3d/regionSites.json';
+import {
+  layoutCities,
+  nodeRadius,
+  pathAnchors,
+  smoothPath,
+  type CitySite,
+  type PathSample,
+  type Vec,
+} from './mapLayout';
 import {
   currentLevel,
   islandPath,
@@ -16,11 +25,8 @@ import {
  * Carte d'une région (X2b) : le chemin de ses niveaux en mètres de la scène, ses villes et leur
  * état, et la position du pion. Tout est calculé ici, une seule fois, à partir du contenu et des
  * résultats : la scène 3D, l'interface projetée et la vue en liste lisent cette même carte.
- * Repère : x le long de la bande, z vers la caméra (l'axe de la vague du chemin), en mètres.
+ * Repère : x vers la droite, z vers la caméra, en mètres, vue de haut (voir mapLayout.ts).
  */
-
-/** Mètres de la scène par unité de la maquette (82 unités d'écart entre deux points = 0,82 m). */
-export const METERS_PER_UNIT = 0.01;
 
 export type MapNode = {
   levelId: string;
@@ -38,16 +44,17 @@ export type MapNode = {
 export type MapCity = {
   id: string;
   name: string;
+  /** Monument de la ville (modèle 3D de la région, ou village générique s'il manque). */
+  monument: string;
   status: CityStatus;
   /** Ville ouverte : ses prérequis sont levés, ou elle a déjà été jouée. */
   open: boolean;
   /** Noms des villes à terminer d'abord, quand elle est fermée. */
   missing: readonly string[];
   recall: string | undefined;
-  /** Étendue de la ville sur la bande (x, mètres) et place de son monument (x). */
-  from: number;
-  to: number;
-  monumentX: number;
+  /** Centre de la ville, où se dresse son monument, et rayon de sa clairière (mètres). */
+  center: Vec;
+  radius: number;
   levelsDone: number;
   levelsTotal: number;
   stars: number;
@@ -57,13 +64,21 @@ export type RegionMap = {
   regionId: string;
   nodes: readonly MapNode[];
   cities: readonly MapCity[];
-  /** Longueur de la bande, en mètres. */
-  width: number;
+  /** Chemin lissé qui passe par tous les points ; `u` repère sa place entre les niveaux. */
+  path: readonly PathSample[];
+  /** Rectangle des points de niveau et des clairières, en mètres. */
+  bounds: { minX: number; maxX: number; minZ: number; maxZ: number };
   /** Rang du niveau du pion (le niveau à jouer), ou du dernier niveau si tout est fait. */
   pawnIndex: number;
 };
 
-const meters = (units: number) => units * METERS_PER_UNIT;
+/** Forme du fichier regionSites.json, écrit par tools/explorer-3d/region_map.py (points [x, z] en mètres). */
+type SitesFile = Record<string, { cities: Record<string, { center: number[]; via: number[][] }> }>;
+
+const siteOf = (site: { center: number[]; via: number[][] }): CitySite => ({
+  center: { x: site.center[0]!, z: site.center[1]! },
+  via: site.via.map(([x, z]) => ({ x: x!, z: z! })),
+});
 
 export function buildRegionMap(
   island: Island,
@@ -72,29 +87,38 @@ export function buildRegionMap(
 ): RegionMap | null {
   const region = island.regions.find((r) => r.id === regionId);
   if (!region) return null;
-  const path = islandPath(island, records);
-  const places: PlacedLevel[] = path.filter((p) => p.region.id === regionId);
-  const stops: PathStop[] = places.map((p) => ({
-    type: p.level.type,
-    cityId: p.city.id,
-    regionId,
-  }));
-  const layout = layoutPath(stops);
-  const nodes: MapNode[] = places.map((place, i) => ({
-    levelId: place.level.id,
-    cityId: place.city.id,
-    type: place.level.type,
-    title: place.level.title,
-    state: place.state,
-    stars: place.stars,
-    x: meters(layout.points[i]!.x),
-    z: meters(layout.points[i]!.y - PATH_LAYOUT.centerY),
-    radius: meters(layout.points[i]!.radius),
-  }));
-  const cityById = new Map<string, City>(region.cities.map((c) => [c.id, c]));
-  const cities: MapCity[] = layout.cities.flatMap((zone) => {
-    const city = cityById.get(zone.id);
-    if (!city) return [];
+  const places: PlacedLevel[] = islandPath(island, records).filter((p) => p.region.id === regionId);
+  // Les villes de la région dans l'ordre du chemin, chacune avec ses niveaux.
+  const order = region.cities.filter((c) => places.some((p) => p.city.id === c.id));
+  // Emplacements choisis pour la région (regionSites.json) ; sans eux, les villes se rangent en serpentin.
+  const chosen = (sites as SitesFile)[regionId]?.cities;
+  const placed =
+    chosen && order.every((c) => chosen[c.id])
+      ? order.map((c) => siteOf(chosen[c.id]!))
+      : undefined;
+  const layouts = layoutCities(
+    order.map((c) => places.filter((p) => p.city.id === c.id).map((p) => p.level.type)),
+    placed,
+  );
+  const cityLayout = new Map(order.map((c, i) => [c.id, layouts[i]!]));
+  const taken = new Map<string, number>();
+  const nodes: MapNode[] = places.map((place) => {
+    const k = taken.get(place.city.id) ?? 0;
+    taken.set(place.city.id, k + 1);
+    const at = cityLayout.get(place.city.id)!.nodes[k]!;
+    return {
+      levelId: place.level.id,
+      cityId: place.city.id,
+      type: place.level.type,
+      title: place.level.title,
+      state: place.state,
+      stars: place.stars,
+      x: at.x,
+      z: at.z,
+      radius: nodeRadius(place.level.type),
+    };
+  });
+  const cities: MapCity[] = order.flatMap((city) => {
     const own = places.filter((p) => p.city.id === city.id);
     const evaluation = own.find((p) => p.level.type === 'evaluation');
     const record = evaluation ? records.get(evaluation.level.id) : undefined;
@@ -105,14 +129,13 @@ export function buildRegionMap(
       {
         id: city.id,
         name: city.name,
+        monument: city.monument,
         status,
         open: isCityOpen(island, city, records),
         missing: missingRequirements(island, city, records).map((c) => c.name),
         recall: city.recall,
-        from: meters(zone.from),
-        to: meters(zone.to),
-        // Le monument se pose après le dernier point de la ville, avant la suivante.
-        monumentX: meters(zone.to + PATH_LAYOUT.gapBetweenCities / 2 + PATH_LAYOUT.step / 2),
+        center: cityLayout.get(city.id)!.center,
+        radius: cityLayout.get(city.id)!.radius,
         levelsDone: own.filter((p) => p.state === 'completed').length,
         levelsTotal: own.length,
         stars: own.reduce((sum, p) => sum + p.stars, 0),
@@ -123,20 +146,39 @@ export function buildRegionMap(
   const pawnIndex = pawn
     ? places.findIndex((p) => p.level.id === pawn.level.id)
     : Math.max(0, places.length - 1);
+  const xs = [
+    ...nodes.map((n) => n.x),
+    ...cities.flatMap((c) => [c.center.x - c.radius, c.center.x + c.radius]),
+  ];
+  const zs = [
+    ...nodes.map((n) => n.z),
+    ...cities.flatMap((c) => [c.center.z - c.radius, c.center.z + c.radius]),
+  ];
   return {
     regionId,
     nodes,
     cities,
-    width: meters(layout.width),
+    path: smoothPath(pathAnchors(layouts)),
+    bounds: {
+      minX: Math.min(...xs),
+      maxX: Math.max(...xs),
+      minZ: Math.min(...zs),
+      maxZ: Math.max(...zs),
+    },
     pawnIndex,
   };
 }
 
-/** Ville visible au centre de l'écran quand la caméra est en `x` (l'en-tête suit le défilement). */
-export function cityAt(map: RegionMap, x: number): MapCity | undefined {
+/** Ville la plus proche d'un point de la carte : celle de l'en-tête, qui suit le défilement. */
+export function cityAt(map: RegionMap, point: Vec): MapCity | undefined {
   let best: MapCity | undefined;
+  let bestDistance = Infinity;
   for (const city of map.cities) {
-    if (city.from - 0.5 <= x) best = city;
+    const d = Math.hypot(city.center.x - point.x, city.center.z - point.z);
+    if (d < bestDistance) {
+      best = city;
+      bestDistance = d;
+    }
   }
-  return best ?? map.cities[0];
+  return best;
 }

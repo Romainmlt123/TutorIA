@@ -39,7 +39,9 @@ import {
 import { beginDrag, createOrbit, drag, release } from './logic/orbit';
 import type { MapCity } from './logic/regionMap';
 import { focusOf } from './logic/regions';
-import { diveShot, shotFor } from './logic/shots';
+import { MAP_LAYOUT } from './logic/mapLayout';
+import { preloadRegion } from './stylized3d/RegionWorld';
+import { diveShot, MAP_ELEVATION, MAP_VISIBLE_WIDTH, shotFor } from './logic/shots';
 import { DEFAULT_FRAME, frameFor } from './logic/stageFrame';
 import type { RegionLook } from './stylized3d/regionTint';
 
@@ -52,13 +54,11 @@ const noSubscription = () => () => undefined;
 const STAGE_ORBIT = createOrbit();
 /** Défilement de la carte d'une région (X2b) : même principe que la rotation de l'île. */
 const MAP_SCROLL = createScroll();
-/** Largeur de bande vue à l'écran (mètres, REGION_SHOT) : donne l'échelle du glissement du doigt. */
-const VISIBLE_WIDTH = 4.3;
-/** Hauteur où se pose le bandeau d'une ville, au-dessus de son monument (mètres). */
-const MONUMENT_HEIGHT = 1.15;
+/** Marge de la caméra au-delà des points de niveau extrêmes (mètres) : l'île déborde un peu de l'écran. */
+const CAMERA_MARGIN = 0.6;
 
 /** Positions à l'écran des points de la carte, prises quand la caméra s'est posée sur une région. */
-type MapSnapshot = { points: ScreenPoint[]; cameraX: number; regionId: string };
+type MapSnapshot = { points: ScreenPoint[]; camera: { x: number; z: number }; regionId: string };
 
 /** Délai avant que le fondu au noir commence, en plein plongeon : le fondu accompagne le zoom (ms). */
 const DIVE_MS = 100;
@@ -108,17 +108,31 @@ export function ExplorerScreen() {
   const map = useRegionMap(subjectId, view.kind === 'region' ? view.regionId : null);
   const [snapshot, setSnapshot] = useState<MapSnapshot | null>(null);
   const [showList, setShowList] = useState(false);
+  // Zone de la carte (entre l'en-tête et le panneau de ville) : les boutons posés dessus y sont rognés.
+  const mapZoneRef = useRef<View>(null);
+  const [mapZone, setMapZone] = useState<{ top: number; height: number } | null>(null);
+  const measureMapZone = () =>
+    mapZoneRef.current?.measureInWindow((_x, y, _width, height) => setMapZone({ top: y, height }));
   const openedRegion = useRef<string | null>(null);
   useEffect(() => {
     if (!map) {
       openedRegion.current = null;
       return;
     }
-    // Bornes de la caméra : le premier et le dernier point restent visibles avec de la marge.
-    setBounds(MAP_SCROLL, VISIBLE_WIDTH / 2 - 0.65, map.width - VISIBLE_WIDTH / 2 + 0.3);
+    // Bornes de la caméra : le rectangle des points de niveau, avec un peu de marge.
+    const xs = map.nodes.map((n) => n.x);
+    const zs = map.nodes.map((n) => n.z);
+    setBounds(MAP_SCROLL, {
+      minX: Math.min(...xs) - CAMERA_MARGIN,
+      maxX: Math.max(...xs) + CAMERA_MARGIN,
+      minZ: Math.min(...zs) - CAMERA_MARGIN,
+      maxZ: Math.max(...zs) + CAMERA_MARGIN,
+    });
     if (openedRegion.current !== map.regionId) {
       openedRegion.current = map.regionId;
-      jumpTo(MAP_SCROLL, map.nodes[map.pawnIndex]?.x ?? 0);
+      // On arrive centré sur la ville où se trouve le pion.
+      const home = map.cities.find((c) => c.id === map.nodes[map.pawnIndex]?.cityId);
+      jumpTo(MAP_SCROLL, home?.center.x ?? 0, home?.center.z ?? 0);
     }
   }, [map]);
   const mapAnchors = useMemo<readonly StageAnchor[]>(
@@ -128,7 +142,12 @@ export function ExplorerScreen() {
             ...map.nodes.map((n) => ({ id: n.levelId, position: [n.x, 0.06, n.z] as const })),
             ...map.cities.map((c) => ({
               id: cityAnchorId(c.id),
-              position: [c.monumentX, MONUMENT_HEIGHT, -0.72] as const,
+              // Le bandeau se pose derrière le cercle des niveaux, pour ne cacher aucun point.
+              position: [
+                c.center.x,
+                0.3,
+                c.center.z - (c.radius - MAP_LAYOUT.clearing) - 0.35,
+              ] as const,
             })),
           ]
         : [],
@@ -177,17 +196,34 @@ export function ExplorerScreen() {
     [view.kind, selectedId],
   );
   const focusPoint = useMemo(() => (selectedId ? focusOf(selectedId) : null), [selectedId]);
+  // Les modèles de la région choisie se chargent pendant qu'on la regarde et pendant le plongeon.
+  useEffect(() => {
+    if (webgl && view.kind === 'regions' && selectedId) preloadRegion(selectedId);
+  }, [webgl, view.kind, selectedId]);
   const diveFocus = diving ? focusOf(diving) : null;
 
   if (!slide) return null;
-  const pxPerMeter = screen.width / VISIBLE_WIDTH;
-  // Glisser le doigt sur la carte d'une région la fait défiler, avec de l'élan.
+  // Échelle à l'écran : la vue plongeante raccourcit l'axe z du sinus de l'élévation.
+  const pxPerMeterX = screen.width / MAP_VISIBLE_WIDTH;
+  const pxPerMeterZ = pxPerMeterX * Math.sin((MAP_ELEVATION * Math.PI) / 180);
+  // Glisser le doigt sur la carte d'une région la déplace dans tous les sens, avec de l'élan.
   const pan = Gesture.Pan()
     .runOnJS(true)
-    .activeOffsetX([-8, 8])
+    .minDistance(8)
     .onBegin(() => beginScroll(MAP_SCROLL))
-    .onUpdate((event) => dragScroll(MAP_SCROLL, event.translationX, pxPerMeter))
-    .onFinalize((event) => releaseScroll(MAP_SCROLL, event.velocityX, pxPerMeter, animated));
+    .onUpdate((event) =>
+      dragScroll(MAP_SCROLL, event.translationX, event.translationY, pxPerMeterX, pxPerMeterZ),
+    )
+    .onFinalize((event) =>
+      releaseScroll(
+        MAP_SCROLL,
+        event.velocityX,
+        event.velocityY,
+        pxPerMeterX,
+        pxPerMeterZ,
+        animated,
+      ),
+    );
   // Glisser le doigt fait tourner l'île (on change d'île avec les flèches), dans la plage de la vue.
   const shot = diveFocus ? diveShot(diveFocus) : shotFor(view, frame, focusPoint);
   const rotate = Gesture.Pan()
@@ -201,11 +237,11 @@ export function ExplorerScreen() {
   const readyMap =
     map && snapshot && snapshot.regionId === map.regionId && !mapListMode ? snapshot : null;
   const openLevel = () => router.push({ pathname: '/bientot', params: { sujet: 'niveau' } });
-  const goToCity = (city: MapCity) => goTo(MAP_SCROLL, (city.from + city.to) / 2);
+  const goToCity = (city: MapCity) => goTo(MAP_SCROLL, city.center.x, city.center.z);
   // Les points projetés servent aux boutons et bandeaux posés sur la carte d'une région.
-  const onProject = (projected: ScreenPoint[] | null, cameraX: number) => {
+  const onProject = (projected: ScreenPoint[] | null, camera: { x: number; z: number }) => {
     if (view.kind === 'region' && projected) {
-      setSnapshot({ points: projected, cameraX, regionId: view.regionId });
+      setSnapshot({ points: projected, camera, regionId: view.regionId });
     }
   };
 
@@ -226,7 +262,7 @@ export function ExplorerScreen() {
             regions={look}
             anchors={mapAnchors}
             onProject={onProject}
-            strip={
+            region={
               map && view.kind === 'region'
                 ? {
                     map,
@@ -284,17 +320,28 @@ export function ExplorerScreen() {
             onNode={openLevel}
             onCity={goToCity}
             onGoToCity={goToCity}
+            zoneRef={mapZoneRef}
+            onZoneLayout={measureMapZone}
           />
         ) : null}
       </View>
-      {readyMap && map ? (
-        <MapOverlay
-          map={map}
-          points={readyMap.points}
-          cameraX0={readyMap.cameraX}
-          onNode={openLevel}
-          onCity={goToCity}
-        />
+      {readyMap && map && mapZone ? (
+        // Les boutons suivent la 3D, y compris sous l'en-tête et le panneau : on les rogne à la zone.
+        <View
+          pointerEvents="box-none"
+          style={[styles.mapClip, { top: mapZone.top, height: mapZone.height }]}>
+          <View
+            pointerEvents="box-none"
+            style={[styles.mapClipInner, { top: -mapZone.top, height: screen.height }]}>
+            <MapOverlay
+              map={map}
+              points={readyMap.points}
+              camera0={readyMap.camera}
+              onNode={openLevel}
+              onCity={goToCity}
+            />
+          </View>
+        </View>
       ) : null}
       <SkyVeil style={veil.style} />
     </GestureHandlerRootView>
@@ -303,6 +350,8 @@ export function ExplorerScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.colors.bg },
+  mapClip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden' },
+  mapClipInner: { position: 'absolute', left: 0, right: 0 },
   content: {
     flex: 1,
     paddingHorizontal: theme.layout.screenPadding,
