@@ -61,6 +61,7 @@ function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
       <Stack.Protected guard={__DEV__}>
         <Stack.Screen name="dev/catalogue" />
         <Stack.Screen name="dev/explorer-atelier" />
+        <Stack.Screen name="dev/avatars" />
       </Stack.Protected>
     </Stack>
   );

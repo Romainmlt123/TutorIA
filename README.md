@@ -79,26 +79,27 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
 
 ## Commandes
 
-| Commande                                          | Effet                                                                                               |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `npm start`                                       | Serveur de développement + routes API, QR code pour **Expo Go**                                     |
-| `npm run start:tunnel`                            | Idem via un tunnel : si le téléphone n'atteint pas le PC (Wi-Fi qui isole les appareils)            |
-| `npm run start:dev`                               | Idem pour le **build de développement** (vocal en direct), via un tunnel                            |
-| `npm run web`                                     | Version web                                                                                         |
-| `npm run web:local`                               | Version web branchée sur Supabase local                                                             |
-| `npm run android` / `npm run ios`                 | Émulateur ou simulateur                                                                             |
-| `npm run tokens`                                  | Régénère `src/theme/tokens.generated.ts` depuis `design/tokens/`                                    |
-| `npm run explorer:models`                         | Régénère les îles, la bande de terre des régions et les monuments avec Blender 5.2 (environ 30 min) |
-| `npm run check`                                   | Lint, vérification des types et tests                                                               |
-| `npm run lint` / `npm run typecheck` / `npm test` | Chaque vérification séparément                                                                      |
-| `npm run format`                                  | Formate le code avec Prettier                                                                       |
-| `npm run db:start` / `npm run db:stop`            | Démarre ou arrête Supabase local                                                                    |
-| `npm run db:reset`                                | Recrée la base locale à partir des migrations                                                       |
-| `npm run db:test`                                 | Tests pgTAP de la RLS et des déclencheurs (`supabase/tests/database/`)                              |
-| `npm run db:lint`                                 | Lint du schéma local                                                                                |
-| `npm run db:new <nom>`                            | Nouvelle migration dans `supabase/migrations/`                                                      |
-| `npm run db:types`                                | Régénère `src/services/db/database.types.ts` (commité) depuis la base locale                        |
-| `npm run db:seed`                                 | Comptes de démonstration (local ; `-- --remote` avec `SEED_ALLOW_PROJECT` pour le projet en ligne)  |
+| Commande                                          | Effet                                                                                                           |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `npm start`                                       | Serveur de développement + routes API, QR code pour **Expo Go**                                                 |
+| `npm run start:tunnel`                            | Idem via un tunnel : si le téléphone n'atteint pas le PC (Wi-Fi qui isole les appareils)                        |
+| `npm run start:dev`                               | Idem pour le **build de développement** (vocal en direct), via un tunnel                                        |
+| `npm run web`                                     | Version web                                                                                                     |
+| `npm run web:local`                               | Version web branchée sur Supabase local                                                                         |
+| `npm run android` / `npm run ios`                 | Émulateur ou simulateur                                                                                         |
+| `npm run tokens`                                  | Régénère `src/theme/tokens.generated.ts` depuis `design/tokens/`                                                |
+| `npm run explorer:models`                         | Régénère les îles, la bande de terre des régions et les monuments avec Blender 5.2 (environ 30 min)             |
+| `npm run avatar:model`                            | Régénère la figurine des avatars (corps, coiffures, tenue de base, animations) avec Blender 5.2 (environ 3 min) |
+| `npm run check`                                   | Lint, vérification des types et tests                                                                           |
+| `npm run lint` / `npm run typecheck` / `npm test` | Chaque vérification séparément                                                                                  |
+| `npm run format`                                  | Formate le code avec Prettier                                                                                   |
+| `npm run db:start` / `npm run db:stop`            | Démarre ou arrête Supabase local                                                                                |
+| `npm run db:reset`                                | Recrée la base locale à partir des migrations                                                                   |
+| `npm run db:test`                                 | Tests pgTAP de la RLS et des déclencheurs (`supabase/tests/database/`)                                          |
+| `npm run db:lint`                                 | Lint du schéma local                                                                                            |
+| `npm run db:new <nom>`                            | Nouvelle migration dans `supabase/migrations/`                                                                  |
+| `npm run db:types`                                | Régénère `src/services/db/database.types.ts` (commité) depuis la base locale                                    |
+| `npm run db:seed`                                 | Comptes de démonstration (local ; `-- --remote` avec `SEED_ALLOW_PROJECT` pour le projet en ligne)              |
 
 - Tuteur simulé (hors ligne, sans coût) : `EXPO_PUBLIC_TUTOR_MODE=mock npm start`.
 - Tout simulé (sans Supabase ni OpenAI) : `EXPO_PUBLIC_BACKEND=mock npm start`.
@@ -172,6 +173,7 @@ server/           code serveur uniquement : clés OpenAI et Supabase, prompt, ga
 supabase/         migrations, tests pgTAP, modèles d'e-mails, configuration locale
 scripts/          outillage (tokens, seed, Supabase local)
 tools/explorer-3d/ scripts Blender des îles 3D d'Explorer (modèles, matières, cuisson), sortie dans assets/explorer/models/
+tools/avatar-3d/   script Blender de la figurine des avatars (squelette, coiffures, vêtements, animations), sortie dans assets/avatar/
 design/           maquettes et design system (référence visuelle)
 assets/           logos, police Satoshi, palette
 ```

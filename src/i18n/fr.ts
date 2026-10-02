@@ -918,6 +918,7 @@ export const fr = {
   },
   dev: {
     catalogueTitle: 'Catalogue',
+    avatarLab: 'Laboratoire des avatars',
     typography: 'Typographie',
     weights: 'Graisses',
     colors: 'Couleurs par rôle',

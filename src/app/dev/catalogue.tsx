@@ -1,4 +1,4 @@
-import { Redirect } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +28,7 @@ const shadows = Object.keys(theme.shadow) as (keyof typeof theme.shadow)[];
 export default function Catalogue() {
   const insets = useSafeAreaInsets();
   const [segment, setSegment] = useState<'a' | 'b'>('a');
+  const router = useRouter();
   if (!__DEV__) return <Redirect href="/" />;
 
   return (
@@ -45,6 +46,7 @@ export default function Catalogue() {
       </Text>
 
       <PersonaSwitcher />
+      <Button label={t.avatarLab} variant="soft" onPress={() => router.push('/dev/avatars')} />
 
       <Section title={t.components}>
         <Button label="Reprendre" icon="fleche-droite" highlight />
