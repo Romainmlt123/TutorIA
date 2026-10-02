@@ -8,7 +8,7 @@ import { theme } from '@/theme';
 import type { useExplorer } from '../hooks/useExplorer';
 import type { IslandSlide } from '../logic/islands';
 import { ExplorerHeader } from './ExplorerHeader';
-import { GameButton } from './hud/GameButton';
+import { GameButton } from '@/components/game/GameButton';
 import { GemDots } from './hud/GemDots';
 import { IslandBanner } from './hud/IslandBanner';
 import { QuestPanel } from './QuestPanel';

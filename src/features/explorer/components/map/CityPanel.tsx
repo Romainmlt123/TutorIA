@@ -4,9 +4,9 @@ import { fr } from '@/i18n/fr';
 import { theme } from '@/theme';
 
 import type { MapCity, MapNode } from '../../logic/regionMap';
-import { GameButton } from '../hud/GameButton';
-import { GameText } from '../hud/GameText';
-import { Parchment, StarChip, WoodFrame } from '../hud/WoodFrame';
+import { GameButton } from '@/components/game/GameButton';
+import { GameText } from '@/components/game/GameText';
+import { Parchment, StarChip, WoodFrame } from '@/components/game/WoodFrame';
 
 /** Ce que dit le parchemin : le niveau à jouer, la raison d'une ville fermée, ou le rappel de 5e. */
 function note(city: MapCity, next: MapNode | undefined): string {

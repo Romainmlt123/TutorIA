@@ -21,7 +21,7 @@ function probe(): boolean {
     context.getExtension('WEBGL_lose_context')?.loseContext();
     return true;
   } catch (error) {
-    logError('explorer.webgl', error);
+    logError('three.webgl', error);
     return false;
   }
 }

@@ -8,8 +8,8 @@ import { theme } from '@/theme';
 
 import { MAP_SCROLL_X, MAP_SCROLL_Z } from '../../hooks/mapScrollValue';
 import { cityAt, type MapCity, type MapNode, type RegionMap } from '../../logic/regionMap';
-import { GameButton } from '../hud/GameButton';
-import { GameText } from '../hud/GameText';
+import { GameButton } from '@/components/game/GameButton';
+import { GameText } from '@/components/game/GameText';
 import { CityPanel } from './CityPanel';
 import { MapListView } from './MapListView';
 

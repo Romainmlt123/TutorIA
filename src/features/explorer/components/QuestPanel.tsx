@@ -15,9 +15,9 @@ import { subjectTheme, theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
 import type { IslandSlide } from '../logic/islands';
-import { GameButton } from './hud/GameButton';
-import { GameText } from './hud/GameText';
-import { Parchment, StarChip, WoodFrame, WoodGauge } from './hud/WoodFrame';
+import { GameButton } from '@/components/game/GameButton';
+import { GameText } from '@/components/game/GameText';
+import { Parchment, StarChip, WoodFrame, WoodGauge } from '@/components/game/WoodFrame';
 
 const HUD = explorerArt.hud;
 

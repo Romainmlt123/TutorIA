@@ -10,7 +10,7 @@ import { explorerArt } from '@/theme/explorerArt';
 import { GameText } from './GameText';
 
 // Texture de planches rendue par Blender (tools/explorer-3d/wood_panel.py).
-const WOOD = require('../../../../../assets/explorer/images/wood-panel.webp');
+const WOOD = require('../../../assets/explorer/images/wood-panel.webp');
 
 const HUD = explorerArt.hud;
 const WOOD_COLORS = HUD.wood;

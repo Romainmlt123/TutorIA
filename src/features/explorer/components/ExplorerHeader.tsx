@@ -7,7 +7,7 @@ import { fr } from '@/i18n/fr';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
-import { GameText } from './hud/GameText';
+import { GameText } from '@/components/game/GameText';
 
 const HUD = explorerArt.hud;
 const MEDAL = 44;

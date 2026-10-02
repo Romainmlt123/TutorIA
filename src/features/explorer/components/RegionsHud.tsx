@@ -6,8 +6,8 @@ import { fr } from '@/i18n/fr';
 import { theme } from '@/theme';
 
 import type { IslandRegion } from '../hooks/useIslandRegions';
-import { GameButton } from './hud/GameButton';
-import { GameText } from './hud/GameText';
+import { GameButton } from '@/components/game/GameButton';
+import { GameText } from '@/components/game/GameText';
 import { IslandBanner } from './hud/IslandBanner';
 import { RegionCarousel } from './RegionCarousel';
 

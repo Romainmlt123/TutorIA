@@ -5,10 +5,10 @@ import { StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Text } from '@/components/Text';
+import { SceneBoundary } from '@/lib/three/SceneBoundary';
+import { canUseWebGL } from '@/lib/three/webgl';
 import { theme } from '@/theme';
 
-import { canUseWebGL } from '../../explorer/hd2d/webgl';
-import { SceneBoundary } from '../../explorer/hd2d/SceneBoundary';
 import { Avatar3D, AvatarLights, type AvatarAnimation } from '../avatar3d/Avatar3D';
 import {
   BROW_STYLES,
@@ -97,7 +97,7 @@ export function AvatarLabScreen() {
   return (
     <View style={styles.screen} collapsable={false}>
       {webgl ? (
-        <SceneBoundary fallback={null}>
+        <SceneBoundary scope="avatar.lab" fallback={null}>
           <Canvas dpr={[1, 2]} gl={{ antialias: true, alpha: true }} camera={{ fov: 30 }}>
             <AvatarLights />
             {faces ? <Faces seed={seed} /> : <Row seed={seed} />}

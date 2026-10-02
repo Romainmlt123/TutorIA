@@ -16,8 +16,8 @@ import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
 import type { IslandRegion } from '../hooks/useIslandRegions';
-import { GameButton } from './hud/GameButton';
-import { GameText } from './hud/GameText';
+import { GameButton } from '@/components/game/GameButton';
+import { GameText } from '@/components/game/GameText';
 
 // Texture de planches rendue par Blender (tools/explorer-3d/wood_panel.py).
 const WOOD = require('../../../../assets/explorer/images/wood-panel.webp');

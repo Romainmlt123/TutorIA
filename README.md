@@ -160,7 +160,7 @@ src/
   app/            routes Expo Router (écrans fins), un groupe par espace :
                   (auth)/ entrée · (compte)/ compte à finaliser · (onboarding)/ · (eleve)/ · (parents)/
                   api/ = serveur intermédiaire · dev/ = outils de développement
-  components/     composants UI partagés (Text, Icon, Button, BottomNav, form/…)
+  components/     composants UI partagés (Text, Icon, Button, BottomNav, form/…) ; game/ = HUD de jeu (Explorer, avatar)
   features/       auth, onboarding, access, home, tutor, flashcards, stats, explorer, comingSoon, profile, parents :
                   écrans, composants, logique, hooks
   services/       services derrière des interfaces, versions Supabase et simulée :
@@ -168,7 +168,8 @@ src/
   data/           types et programme (classes, chapitres) ; mock/ = données fictives de démonstration
   theme/          thème typé généré depuis design/tokens/ + police Satoshi + espaces élève et parent
   i18n/fr.ts      tous les textes de l'app
-  lib/            utilitaires transverses (config, session, cache, heure de Paris, journalisation)
+  lib/            utilitaires transverses (config, session, cache, heure de Paris, journalisation) ;
+                  three/ = scènes 3D (chargement des modèles, WebGL, pause hors écran)
 server/           code serveur uniquement : clés OpenAI et Supabase, prompt, garde-fous, comptes
 supabase/         migrations, tests pgTAP, modèles d'e-mails, configuration locale
 scripts/          outillage (tokens, seed, Supabase local)

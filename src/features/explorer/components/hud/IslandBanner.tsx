@@ -6,7 +6,7 @@ import { fr } from '@/i18n/fr';
 import { subjectTheme, theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
-import { GameText } from './GameText';
+import { GameText } from '@/components/game/GameText';
 
 const HEIGHT = 46;
 

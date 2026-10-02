@@ -12,7 +12,7 @@ import { MAP_SCROLL_X, MAP_SCROLL_Z } from '../../hooks/mapScrollValue';
 import type { LevelType } from '../../content';
 import type { MapCity, MapNode, RegionMap } from '../../logic/regionMap';
 import type { ScreenPoint } from '../IslandStage';
-import { GameText } from '../hud/GameText';
+import { GameText } from '@/components/game/GameText';
 
 const HUD = explorerArt.hud;
 const TARGET = 48;

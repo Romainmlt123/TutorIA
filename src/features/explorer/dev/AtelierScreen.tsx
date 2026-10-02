@@ -7,6 +7,8 @@ import { useSharedValue } from 'react-native-reanimated';
 import * as THREE from 'three';
 
 import { Text } from '@/components/Text';
+import { SceneBoundary } from '@/lib/three/SceneBoundary';
+import { canUseWebGL } from '@/lib/three/webgl';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
@@ -14,8 +16,6 @@ import { IslandArt } from '../art/IslandArt';
 import { distanceToFit, orbit } from '../hd2d/camera';
 import { Hd2dPost } from '../hd2d/Hd2dPost';
 import { MathsIslandHD } from '../hd2d/MathsIslandHD';
-import { SceneBoundary } from '../hd2d/SceneBoundary';
-import { canUseWebGL } from '../hd2d/webgl';
 import { Clouds, type CloudSpec } from '../stylized3d/Clouds';
 import { MathsIsland3D } from '../stylized3d/MathsIsland3D';
 
@@ -173,7 +173,7 @@ export function AtelierScreen() {
   return (
     <GestureHandlerRootView style={styles.screen}>
       {scene ? (
-        <SceneBoundary fallback={<VectorView />}>
+        <SceneBoundary scope="explorer.atelier" fallback={<VectorView />}>
           {view === 'hd2d' ? <Hd2dView /> : <Stylized3dView />}
         </SceneBoundary>
       ) : (

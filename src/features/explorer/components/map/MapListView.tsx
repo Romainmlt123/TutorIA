@@ -8,7 +8,7 @@ import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
 import type { MapCity, MapNode, RegionMap } from '../../logic/regionMap';
-import { GameText } from '../hud/GameText';
+import { GameText } from '@/components/game/GameText';
 import { nodeLabel } from './MapOverlay';
 
 const HUD = explorerArt.hud;

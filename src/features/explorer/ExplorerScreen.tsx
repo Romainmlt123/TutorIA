@@ -7,6 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GradientSurface } from '@/components/GradientSurface';
 import { useBottomNavLayout } from '@/components/navigation/useBottomNavLayout';
+import { SceneBoundary } from '@/lib/three/SceneBoundary';
+import { useSceneActive } from '@/lib/three/useSceneActive';
+import { canUseWebGL } from '@/lib/three/webgl';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
@@ -18,12 +21,9 @@ import { RegionsHud } from './components/RegionsHud';
 import { SkyVeil, useSkyVeil } from './components/SkyVeil';
 import { StageFallback } from './components/StageFallback';
 import { ISLANDS } from './content';
-import { SceneBoundary } from './hd2d/SceneBoundary';
-import { canUseWebGL } from './hd2d/webgl';
 import { useExplorer } from './hooks/useExplorer';
 import { useIslandRegions } from './hooks/useIslandRegions';
 import { useRegionMap } from './hooks/useRegionMap';
-import { useSceneActive } from './hooks/useSceneActive';
 import { useScreenReader } from './hooks/useScreenReader';
 import { useViewBack } from './hooks/useViewBack';
 import { paramsOf, upOf, viewFromParams, type ExplorerView } from './logic/explorerView';
@@ -253,7 +253,9 @@ export function ExplorerScreen() {
         style={StyleSheet.absoluteFill}
       />
       {webgl ? (
-        <SceneBoundary fallback={<StageFallback slide={slide} frame={frame} />}>
+        <SceneBoundary
+          scope="explorer.scene"
+          fallback={<StageFallback slide={slide} frame={frame} />}>
           <IslandStage
             slides={slides}
             index={index}
