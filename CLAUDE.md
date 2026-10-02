@@ -72,6 +72,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
 - **Documentation vivante :** mets à jour `README.md` (installation, commandes, structure) et ce `CLAUDE.md` (conventions) dès qu'une convention change.
 
 ## 8. Méthode de Travail
+0. **Suivre la feuille de route :** `ROADMAP.md` fixe l'ordre des chantiers et l'étape en cours. Une idée nouvelle va dans sa section « En attente », et le fichier est mis à jour à la fin de chaque étape.
 1. **Comprendre avant d'agir :** lis les fichiers concernés (dont `design/`) et reformule le besoin si c'est ambigu.
 2. **Planifier :** pour toute tâche non triviale, présente un plan court (fichiers touchés, approche, risques, alternatives) et **attends ma validation** avant de coder.
 3. **Avancer par petites étapes vérifiables :** une étape = un résultat testable.

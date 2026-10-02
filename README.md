@@ -180,7 +180,7 @@ design/           maquettes et design system (référence visuelle)
 assets/           logos, police Satoshi, palette
 ```
 
-Les conventions (thème, nommage, frontière app / serveur, Supabase) sont détaillées dans `CLAUDE.md`.
+Les conventions (thème, nommage, frontière app / serveur, Supabase) sont détaillées dans `CLAUDE.md`. L'ordre des chantiers et l'étape en cours sont dans `ROADMAP.md`.
 
 ## Branches
 
