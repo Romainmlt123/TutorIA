@@ -9,6 +9,7 @@ import { GradientSurface } from '@/components/GradientSurface';
 import { useBottomNavLayout } from '@/components/navigation/useBottomNavLayout';
 import { SceneBoundary } from '@/lib/three/SceneBoundary';
 import { useSceneActive } from '@/lib/three/useSceneActive';
+import { useSceneKey } from '@/lib/three/useSceneKey';
 import { canUseWebGL } from '@/lib/three/webgl';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
@@ -89,6 +90,8 @@ export function ExplorerScreen() {
       setFrame(frameFor({ top: y, height: zoneHeight }, screen)),
     );
   const active = useSceneActive();
+  // Android : la scène est recréée à chaque retour sur l'écran (son contexte 3D a été détruit).
+  const sceneKey = useSceneKey();
   const animated = !useReducedMotion();
   const screenReader = useScreenReader();
   // Faux au rendu serveur (web) : pas de WebGL côté serveur, pas de décalage à l'hydratation.
@@ -254,6 +257,7 @@ export function ExplorerScreen() {
       />
       {webgl ? (
         <SceneBoundary
+          key={sceneKey}
           scope="explorer.scene"
           fallback={<StageFallback slide={slide} frame={frame} />}>
           <IslandStage
