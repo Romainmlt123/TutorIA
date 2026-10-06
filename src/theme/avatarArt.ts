@@ -46,8 +46,10 @@ export const avatarArt = {
     '#5b3c2c',
     '#f2f2ee',
     '#2a2a2e',
+    // Ajoutées avec la garde-robe : sable (chapeau d'explorateur).
+    '#c8b07a',
   ],
-  /** Couleurs fixes : semelle, intérieur de la bouche, langue, dents, reflet des yeux, joues. */
+  /** Couleurs fixes : semelle, intérieur de la bouche, langue, dents, reflet des yeux, joues, détails. */
   sole: '#f4f1ea',
   mouth: '#5a1f22',
   tongue: '#e0707a',
@@ -56,6 +58,8 @@ export const avatarArt = {
   highlight: '#ffffff',
   line: '#2a2420',
   blush: '#f19a8e',
+  /** Détails fixes de la garde-robe : bandeau du chapeau, sangles du sac (brun sombre). */
+  detail: '#3b3128',
   /** Lumière des scènes où paraît un avatar : ciel, sol, soleil (sa direction suit la cuisson des îles). */
   light: { sky: '#f4f8ff', ground: '#d8cdb8', sun: '#fff1dc', fill: '#e8f0ff' },
   /** Ombre douce sous les pieds de la figurine (aperçu de l'éditeur). */

@@ -31,42 +31,77 @@ type Rig = {
   actions: Map<string, THREE.AnimationAction>;
   pieces: Piece[];
   face: FaceUniforms;
-  /** Matières par rôle : peau (corps et tête), cheveux, haut, bas, chaussures, semelle. */
-  colors: Record<
-    'skin' | 'hair' | 'top' | 'bottom' | 'shoes' | 'sole',
-    THREE.MeshLambertMaterial[]
-  >;
+  /** Matières par rôle : peau, cheveux, vêtements et accessoires, et détails aux couleurs fixes. */
+  colors: Record<Role, THREE.MeshLambertMaterial[]>;
   materials: THREE.Material[];
-  /** Pièces qui ont la forme « fort » (carrure) : le maillage et le rang de la forme. */
-  builds: { mesh: THREE.Mesh; index: number }[];
+  /** Formes des pièces, par nom : « fort » (carrure), « chapeau » (cheveux tassés sous un couvre-chef),
+   * « ecart » et « hauteur » (lunettes qui suivent les yeux). */
+  morphs: { mesh: THREE.Mesh; name: string; index: number }[];
   playing: string | null;
 };
 
 /** Nom d'une pièce d'après son maillage : three suffixe « _1 », « _2 » les pièces à plusieurs matières. */
 const pieceOf = (mesh: THREE.Object3D) => mesh.name.replace(/_\d+$/, '');
 
-function roleOf(piece: string, material: string): keyof Rig['colors'] | null {
+type Role =
+  | 'skin'
+  | 'hair'
+  | 'top'
+  | 'bottom'
+  | 'shoes'
+  | 'hat'
+  | 'glasses'
+  | 'neck'
+  | 'back'
+  | 'sole'
+  | 'detail';
+
+/** Préfixe du nom des pièces de chaque emplacement de la tenue (tools/avatar-3d/avatar.py). */
+const SLOT_PREFIX = {
+  top: 'haut-',
+  bottom: 'bas-',
+  shoes: 'chaussures-',
+  hat: 'tete-',
+  glasses: 'visage-',
+  neck: 'cou-',
+  back: 'dos-',
+} as const;
+
+const SLOTS = Object.keys(SLOT_PREFIX) as (keyof typeof SLOT_PREFIX)[];
+
+function roleOf(piece: string, material: string): Role | null {
   if (material === 'peau') return 'skin';
   if (material === 'cheveux') return 'hair';
   if (material === 'semelle') return 'sole';
-  if (piece.startsWith('haut-')) return 'top';
-  if (piece.startsWith('bas-')) return 'bottom';
-  if (piece.startsWith('chaussures-')) return 'shoes';
-  return null;
+  if (material === 'detail') return 'detail';
+  return SLOTS.find((slot) => piece.startsWith(SLOT_PREFIX[slot])) ?? null;
 }
 
 function buildRig(gltf: GLTF): Rig {
   const root = clone(gltf.scene) as THREE.Group;
   const face = faceMaterial();
-  const colors: Rig['colors'] = { skin: [], hair: [], top: [], bottom: [], shoes: [], sole: [] };
+  const colors: Rig['colors'] = {
+    skin: [],
+    hair: [],
+    top: [],
+    bottom: [],
+    shoes: [],
+    hat: [],
+    glasses: [],
+    neck: [],
+    back: [],
+    sole: [],
+    detail: [],
+  };
   const materials: THREE.Material[] = [face.material];
   const pieces = new Map<string, THREE.Mesh[]>();
-  const builds: Rig['builds'] = [];
+  const morphs: Rig['morphs'] = [];
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
     const piece = pieceOf(object);
-    const build = object.morphTargetDictionary?.fort;
-    if (build !== undefined) builds.push({ mesh: object, index: build });
+    for (const [name, index] of Object.entries(object.morphTargetDictionary ?? {})) {
+      morphs.push({ mesh: object, name, index });
+    }
     const source = object.material as THREE.Material;
     let material: THREE.MeshLambertMaterial;
     if (piece === 'tete') {
@@ -99,21 +134,17 @@ function buildRig(gltf: GLTF): Rig {
     face: face.uniforms,
     colors,
     materials,
-    builds,
+    morphs,
     playing: null,
   };
 }
 
-/** Pièces visibles pour une apparence : le corps, la tête, la coiffure et les vêtements portés. */
+/** Pièces visibles pour une apparence : le corps, la tête, la coiffure, la tenue et les accessoires. */
 export function visiblePieces(look: AvatarLook): Set<string> {
-  return new Set([
-    'corps',
-    'tete',
-    `cheveux-${look.hair.style}`,
-    `haut-${look.outfit.top.item}`,
-    `bas-${look.outfit.bottom.item}`,
-    `chaussures-${look.outfit.shoes.item}`,
-  ]);
+  const worn = SLOTS.filter((slot) => look.outfit[slot].item !== 'aucun').map(
+    (slot) => `${SLOT_PREFIX[slot]}${look.outfit[slot].item}`,
+  );
+  return new Set(['corps', 'tete', `cheveux-${look.hair.style}`, ...worn]);
 }
 
 function dress(rig: Rig, look: AvatarLook) {
@@ -125,10 +156,9 @@ function dress(rig: Rig, look: AvatarLook) {
   };
   paint(rig.colors.skin, avatarArt.skins[look.skin]!);
   paint(rig.colors.hair, avatarArt.hairs[look.hair.color]!);
-  paint(rig.colors.top, avatarArt.cloths[look.outfit.top.color]!);
-  paint(rig.colors.bottom, avatarArt.cloths[look.outfit.bottom.color]!);
-  paint(rig.colors.shoes, avatarArt.cloths[look.outfit.shoes.color]!);
+  for (const slot of SLOTS) paint(rig.colors[slot], avatarArt.cloths[look.outfit[slot].color]!);
   paint(rig.colors.sole, avatarArt.sole);
+  paint(rig.colors.detail, avatarArt.detail);
   setFace(
     rig.face,
     faceParams(look),
@@ -136,9 +166,14 @@ function dress(rig: Rig, look: AvatarLook) {
     avatarArt.hairs[look.hair.color]!,
   );
   rig.root.scale.setScalar(avatarScale(look));
-  const build = avatarBuild(look);
-  for (const { mesh, index } of rig.builds) {
-    if (mesh.morphTargetInfluences) mesh.morphTargetInfluences[index] = build;
+  const influence: Record<string, number> = {
+    fort: avatarBuild(look),
+    chapeau: look.outfit.hat.item === 'aucun' ? 0 : 1,
+    ecart: look.eyes.spacing,
+    hauteur: look.eyes.height,
+  };
+  for (const { mesh, name, index } of rig.morphs) {
+    if (mesh.morphTargetInfluences) mesh.morphTargetInfluences[index] = influence[name] ?? 0;
   }
 }
 

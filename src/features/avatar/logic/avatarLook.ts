@@ -21,9 +21,14 @@ export const EYE_STYLES = ['rond', 'grand', 'amande', 'rieur', 'endormi', 'petit
 export const BROW_STYLES = ['aucun', 'fin', 'epais', 'arque', 'decide'] as const;
 export const MOUTH_STYLES = ['sourire', 'rire', 'petit', 'coin', 'dents', 'neutre'] as const;
 export const NOSE_STYLES = ['aucun', 'point', 'arc', 'rond'] as const;
-export const TOPS = ['tshirt'] as const;
+export const TOPS = ['tshirt', 'sweat'] as const;
 export const BOTTOMS = ['short'] as const;
 export const SHOES = ['baskets'] as const;
+/** Accessoires de la garde-robe : « aucun » quand l'emplacement est vide. */
+export const HATS = ['aucun', 'casquette', 'chapeau-explorateur'] as const;
+export const GLASSES = ['aucun', 'lunettes-rondes'] as const;
+export const NECKWEAR = ['aucun', 'echarpe'] as const;
+export const BACKS = ['aucun', 'sac-a-dos'] as const;
 
 export type HairStyle = (typeof HAIR_STYLES)[number];
 export type EyeStyle = (typeof EYE_STYLES)[number];
@@ -57,6 +62,10 @@ export type AvatarLook = {
     top: Worn<(typeof TOPS)[number]>;
     bottom: Worn<(typeof BOTTOMS)[number]>;
     shoes: Worn<(typeof SHOES)[number]>;
+    hat: Worn<(typeof HATS)[number]>;
+    glasses: Worn<(typeof GLASSES)[number]>;
+    neck: Worn<(typeof NECKWEAR)[number]>;
+    back: Worn<(typeof BACKS)[number]>;
   };
 };
 
@@ -75,6 +84,10 @@ export const DEFAULT_LOOK: AvatarLook = {
     top: { item: 'tshirt', color: 0 },
     bottom: { item: 'short', color: 8 },
     shoes: { item: 'baskets', color: 0 },
+    hat: { item: 'aucun', color: 12 },
+    glasses: { item: 'aucun', color: 11 },
+    neck: { item: 'aucun', color: 1 },
+    back: { item: 'aucun', color: 7 },
   },
 };
 
@@ -151,6 +164,10 @@ export function normalizeLook(raw: unknown): AvatarLook {
       top: worn(TOPS, outfit.top, d.outfit.top),
       bottom: worn(BOTTOMS, outfit.bottom, d.outfit.bottom),
       shoes: worn(SHOES, outfit.shoes, d.outfit.shoes),
+      hat: worn(HATS, outfit.hat, d.outfit.hat),
+      glasses: worn(GLASSES, outfit.glasses, d.outfit.glasses),
+      neck: worn(NECKWEAR, outfit.neck, d.outfit.neck),
+      back: worn(BACKS, outfit.back, d.outfit.back),
     },
   };
 }
@@ -192,6 +209,11 @@ export function randomLook(seed: number): AvatarLook {
       top: { item: 'tshirt', color: index(8) },
       bottom: { item: 'short', color: 8 + index(2) },
       shoes: { item: 'baskets', color: index(avatarArt.cloths.length) },
+      // Les accessoires se gagnent : un tirage au hasard n'en porte aucun.
+      hat: DEFAULT_LOOK.outfit.hat,
+      glasses: DEFAULT_LOOK.outfit.glasses,
+      neck: DEFAULT_LOOK.outfit.neck,
+      back: DEFAULT_LOOK.outfit.back,
     },
   };
 }

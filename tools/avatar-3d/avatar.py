@@ -160,6 +160,8 @@ MATERIALS = {
     "tissu": material("tissu", srgb("#3f7fd8")),
     "tissu-2": material("tissu-2", srgb("#f2f2ee")),
     "semelle": material("semelle", srgb("#f4f1ea")),
+    # Détails fixes de la garde-robe (bandeau du chapeau, sangles, cordons) : brun sombre.
+    "detail": material("detail", srgb("#3b3128")),
 }
 
 
@@ -603,6 +605,286 @@ def build_hair(style):
     return assign(obj, "cheveux")
 
 
+
+# ---------------------------------------------------------------------------
+# Garde-robe : objets gagnés en progressant (« tete-… », « visage-… », « cou-… », « dos-… »,
+# « haut-sweat »). Sous un couvre-chef, l'app applique aux cheveux leur forme « chapeau », qui les
+# tasse sous la calotte : la coiffure reste visible sous le bord.
+# ---------------------------------------------------------------------------
+def standing_mesh(obj):
+    """Applique les transformations : les sommets sont à leur place, l'origine au pied du personnage."""
+    bpy.ops.object.select_all(action="DESELECT")
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.convert(target="MESH")
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    return obj
+
+
+def merged(objects, name, material):
+    obj = standing_mesh(geo.join(objects, name)) if len(objects) > 1 else standing_mesh(objects[0])
+    obj.name = name
+    if material:
+        assign(obj, material)
+    return geo.smooth(obj)
+
+
+def spline(points, divisions=6):
+    """Courbe de Catmull-Rom passant par les points (3D), pour des sangles et des cordons souples."""
+    pts = [Vector(p) for p in points]
+    out = []
+    for i in range(len(pts) - 1):
+        p0, p1, p2, p3 = pts[max(i - 1, 0)], pts[i], pts[i + 1], pts[min(i + 2, len(pts) - 1)]
+        for k in range(divisions):
+            t = k / divisions
+            out.append(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t
+                              + (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t))
+    out.append(pts[-1])
+    return [tuple(v) for v in out]
+
+
+def hat_offset(elevation):
+    """Épaisseur sous un couvre-chef : serré au bord (juste au-dessus des cheveux plaqués), plus ample
+    sur le dessus. Les coiffures sont tassées sous ce volume (forme « chapeau » des cheveux)."""
+    return 0.026 + 0.034 * smoothstep(0.3, 1.0, elevation)
+
+
+def head_at(d, offset):
+    """Point à `offset` mètres au-dessus de la tête, dans la direction d (tête ramenée à une sphère)."""
+    return Vector((HEAD_C.x + d.x * (HEAD_R.x + offset), HEAD_C.y + d.y * (HEAD_R.y + offset),
+                   HEAD_C.z + d.z * (HEAD_R.z + offset)))
+
+
+def hat_shell(bm, front, side, back, extra, thickness, stretch=1.0):
+    """Calotte d'un couvre-chef, posée sur le volume `hat_offset` (+ `extra`) et coupée à la lisière."""
+    tmp = bmesh.new()
+    geom = bmesh.ops.create_uvsphere(tmp, u_segments=36, v_segments=18, radius=1.0)
+    for v in geom["verts"]:
+        d = v.co.normalized()
+        v.co = head_at(d, hat_offset(math.asin(max(-1.0, min(1.0, d.z)))) + extra)
+        if stretch != 1.0 and v.co.z > HEAD_C.z:
+            v.co.z = HEAD_C.z + (v.co.z - HEAD_C.z) * stretch
+    drop = [f for f in tmp.faces if not hairline(head_direction(f.calc_center_median()), front, side, back)]
+    bmesh.ops.delete(tmp, geom=drop, context="FACES")
+    mesh = bpy.data.meshes.new("tmp")
+    tmp.to_mesh(mesh)
+    tmp.free()
+    obj = bpy.data.objects.new("tmp", mesh)
+    scene.collection.objects.link(obj)
+    mod = obj.modifiers.new("Epaisseur", "SOLIDIFY")
+    mod.thickness = thickness
+    mod.offset = 1
+    apply(obj)
+    bm.from_mesh(obj.data)
+    bpy.data.objects.remove(obj, do_unlink=True)
+
+
+def add_hat_key(hair):
+    """Forme « chapeau » d'une coiffure : ce qui dépasserait du volume sous un couvre-chef y est
+    ramené (l'app l'applique quand l'élève porte un chapeau). Les mèches sous le bord restent."""
+    if not hair.data.shape_keys:
+        hair.shape_key_add(name="Basis")
+    key = hair.shape_key_add(name="chapeau")
+    for vertex, target in zip(hair.data.vertices, key.data):
+        p = vertex.co
+        d = head_direction(p)
+        elevation = math.asin(max(-1.0, min(1.0, d.z)))
+        if elevation < 0.1:
+            continue
+        limit = head_at(d, hat_offset(elevation) - 0.006)
+        reach = (limit - HEAD_C).length
+        here = (p - HEAD_C).length
+        # Au-dessus de la lisière d'un chapeau, tout ce qui dépasse est plaqué sous la calotte ; plus
+        # bas, la contrainte s'efface (les mèches des côtés et de la nuque tombent librement).
+        weight = smoothstep(0.1, 0.3, elevation)
+        if here > reach:
+            target.co = p.lerp(HEAD_C + (p - HEAD_C) * (reach / here), weight)
+    return hair
+
+
+def cap():
+    """Casquette : calotte, bouton sur le dessus et visière légèrement inclinée vers l'avant."""
+    bm = bmesh.new()
+    hat_shell(bm, 0.36, 0.26, 0.1, 0.0, 0.014)
+    crown = link("calotte", bm)
+    top = head_at(Vector((0, 0, 1)), hat_offset(math.pi / 2) + 0.014)
+    button = geo.sphere((top.x, top.y, top.z + 0.004), 0.018, MATERIALS["tissu"])
+    d = Vector((0, -math.cos(0.36), math.sin(0.36)))
+    edge = head_at(d, hat_offset(0.36) + 0.007)
+    bm = bmesh.new()
+    arc = [bm.verts.new((0.17 * math.cos(a), edge.y - 0.13 * math.sin(a), 0))
+           for a in [math.pi * k / 16 for k in range(17)]]
+    back_edge = [bm.verts.new((x, edge.y + 0.03, 0)) for x in (-0.17, 0.17)]
+    bm.faces.new(arc + back_edge)
+    for v in bm.verts:
+        v.co.z = edge.z - 0.012 - (edge.y - v.co.y) * 0.22
+    visor = link("visiere", bm)
+    mod = visor.modifiers.new("Epaisseur", "SOLIDIFY")
+    mod.thickness = 0.012
+    geo.bevel(visor, 0.004, 2)
+    return merged([crown, button, visor], "tete-casquette", "tissu")
+
+
+def explorer_hat():
+    """Chapeau d'explorateur : calotte bombée, large bord qui retombe un peu, bandeau sombre."""
+    bm = bmesh.new()
+    hat_shell(bm, 0.3, 0.3, 0.3, 0.01, 0.016, stretch=1.05)
+    crown = link("calotte", bm)
+    base = 0.3
+    ring = 48
+
+    def around(a, elevation, extra):
+        d = Vector((math.sin(a) * math.cos(elevation), -math.cos(a) * math.cos(elevation), math.sin(elevation)))
+        return head_at(d, hat_offset(elevation) + extra)
+
+    bm = bmesh.new()
+    rows = []
+    for j, (extra, droop) in enumerate(((0.0, 0.0), (0.06, -0.012), (0.115, -0.03))):
+        row = []
+        for k in range(ring):
+            a = 2 * math.pi * k / ring
+            p = around(a, base, 0.02)
+            out = Vector((p.x - HEAD_C.x, p.y - HEAD_C.y, 0)).normalized()
+            row.append(bm.verts.new((p.x + out.x * extra, p.y + out.y * extra, p.z - 0.01 + droop)))
+        rows.append(row)
+    for j in range(len(rows) - 1):
+        for k in range(ring):
+            bm.faces.new((rows[j][k], rows[j][(k + 1) % ring], rows[j + 1][(k + 1) % ring], rows[j + 1][k]))
+    brim = link("bord", bm)
+    mod = brim.modifiers.new("Epaisseur", "SOLIDIFY")
+    mod.thickness = 0.012
+    band_points = []
+    for k in range(ring):
+        a = 2 * math.pi * k / ring
+        p = around(a, base + 0.07, 0.03)
+        band_points.append((p.x, p.y, p.z))
+    band = geo.tube(band_points, 0.016, MATERIALS["detail"], "bandeau", cyclic=True)
+    hat = merged([crown, brim], "chapeau", "tissu")
+    return merged([hat, standing_mesh(band)], "tete-chapeau-explorateur", None)
+
+
+# Écart et hauteur des yeux aux deux bouts des curseurs (src/features/avatar/logic/face.ts).
+EYE_SPACING = (0.27, 0.41)
+EYE_HEIGHT = (-0.08, 0.14)
+
+
+def face_point(s, h, lift=1.0):
+    """Point du visage pour une direction (s vers la gauche du personnage, h vers le haut), dans le
+    repère du shader du visage (la tête ramenée à une sphère)."""
+    front = math.sqrt(max(0.0, 1 - s * s - h * h))
+    return Vector((s * HEAD_R.x * lift, -front * HEAD_R.y * lift, HEAD_C.z + h * HEAD_R.z * lift))
+
+
+def glasses_points(spacing, height):
+    """Montures rondes, pont et branches, pour un écart et une hauteur des yeux donnés."""
+    rings, bridge, temples = [], [], []
+    for sx in (1, -1):
+        c = face_point(spacing * sx, height, 1.0)
+        n = Vector((c.x / HEAD_R.x ** 2, c.y / HEAD_R.y ** 2, (c.z - HEAD_C.z) / HEAD_R.z ** 2)).normalized()
+        c = c + n * 0.016
+        u = Vector((0, 0, 1)).cross(n).normalized()
+        v = n.cross(u).normalized()
+        r = 0.036
+        rings.append([tuple(c + (math.cos(a) * u + math.sin(a) * v) * r)
+                      for a in [2 * math.pi * k / 20 for k in range(20)]])
+        inner = c - u * r * sx
+        outer = c + u * r * sx
+        bridge.append(inner)
+        ear = Vector((0.208 * sx, 0.02, 0.785 + (height - 0.03) * 0.15))
+        mid = face_point(0.86 * sx, height * 0.6, 1.07)
+        temples.append(spline([tuple(outer), tuple(mid), tuple(ear)], 4))
+    top = (bridge[0] + bridge[1]) / 2 + Vector((0, -0.004, 0.008))
+    return rings, spline([tuple(bridge[0]), tuple(top), tuple(bridge[1])], 4), temples
+
+
+def glasses_mesh(spacing, height, name):
+    rings, bridge, temples = glasses_points(spacing, height)
+    parts = [geo.tube(ring, 0.0055, MATERIALS["tissu"], f"{name}-cercle", cyclic=True) for ring in rings]
+    parts.append(geo.tube(bridge, 0.005, MATERIALS["tissu"], f"{name}-pont"))
+    parts += [geo.tube(t, 0.0045, MATERIALS["tissu"], f"{name}-branche") for t in temples]
+    return merged([standing_mesh(p) for p in parts], name, "tissu")
+
+
+def glasses():
+    """Lunettes rondes, et deux formes qui suivent les yeux de l'élève : « ecart » et « hauteur »."""
+    base = glasses_mesh(EYE_SPACING[0], EYE_HEIGHT[0], "visage-lunettes-rondes")
+    wide = glasses_mesh(EYE_SPACING[1], EYE_HEIGHT[0], "lunettes-ecart")
+    high = glasses_mesh(EYE_SPACING[0], EYE_HEIGHT[1], "lunettes-hauteur")
+    base.shape_key_add(name="Basis")
+    for key_name, other in (("ecart", wide), ("hauteur", high)):
+        key = base.shape_key_add(name=key_name)
+        assert len(other.data.vertices) == len(base.data.vertices), "lunettes : topologies différentes"
+        for target, vertex in zip(key.data, other.data.vertices):
+            target.co = vertex.co
+        bpy.data.objects.remove(other, do_unlink=True)
+    return base
+
+
+def scarf():
+    """Écharpe : un tour autour du cou, un nœud et un pan qui tombe devant."""
+    ring = []
+    for k in range(32):
+        a = 2 * math.pi * k / 32
+        wobble = 0.004 * math.sin(5 * a)
+        ring.append((0.094 * math.cos(a), 0.086 * math.sin(a), 0.566 + wobble + 0.006 * math.cos(2 * a)))
+    loop = geo.tube(ring, 0.03, MATERIALS["tissu"], "tour", cyclic=True)
+    tail = geo.tube(spline([(0.05, -0.088, 0.556), (0.066, -0.118, 0.5), (0.074, -0.128, 0.43)], 4), 0.026,
+                    MATERIALS["tissu"], "pan", taper=None)
+    knot = geo.sphere((0.05, -0.092, 0.56), 0.034, MATERIALS["tissu"])
+    obj = merged([standing_mesh(loop), standing_mesh(tail), standing_mesh(knot)], "cou-echarpe", "tissu")
+    for v in obj.data.vertices:
+        if v.co.y < -0.09 and v.co.z < 0.54:
+            v.co.y -= 0.004 * (0.54 - v.co.z) / 0.1
+    return obj
+
+
+def backpack():
+    """Sac à dos : poche principale bombée, petite poche, poignée et bretelles sur les épaules."""
+    bag = geo.box((0, 0.18, 0.44), (0.21, 0.085, 0.21), MATERIALS["tissu"], bevel_width=0.03)
+    pocket = geo.box((0, 0.228, 0.405), (0.13, 0.026, 0.085), MATERIALS["tissu"], bevel_width=0.012)
+    handle = geo.tube(spline([(-0.035, 0.16, 0.548), (0, 0.165, 0.572), (0.035, 0.16, 0.548)], 4), 0.008,
+                      MATERIALS["detail"], "poignee")
+    straps = []
+    for sx in (1, -1):
+        # Par-dessus l'épaule, le long de la poitrine, puis sous le bras jusqu'au bas du sac.
+        path = [(0.07 * sx, 0.14, 0.515), (0.08 * sx, 0.075, 0.57), (0.086 * sx, 0.0, 0.585),
+                (0.09 * sx, -0.075, 0.553), (0.098 * sx, -0.118, 0.49), (0.128 * sx, -0.09, 0.445),
+                (0.15 * sx, 0.0, 0.43), (0.13 * sx, 0.1, 0.39), (0.08 * sx, 0.15, 0.37)]
+        straps.append(standing_mesh(geo.tube(spline(path, 5), 0.012, MATERIALS["detail"], "bretelle")))
+    body_part = merged([standing_mesh(bag), standing_mesh(pocket)], "sac", "tissu")
+    return merged([body_part, standing_mesh(handle)] + straps, "dos-sac-a-dos", None)
+
+
+def hoodie(body):
+    """Sweat à capuche : plus long que le t-shirt, manches longues, capuche posée dans le dos et
+    deux cordons clairs."""
+    cuts = [((0, 0, 0.285), (0, 0, 1))] + [arm_cut(0.9, sx) for _, sx in SIDES]
+    shirt = shell("sweat", body, lambda p, part, side, t: (part == "torse" and p.z > 0.285) or
+                  (part == "bras" and t < 0.9), 0.021, 0.007, "tissu", cuts)
+
+    def hood_parts(bm):
+        ellipsoid(bm, (0, 0.092, 0.565), 0.07, (1.75, 0.85, 0.8), segments=24)
+        ellipsoid(bm, (0, 0.118, 0.525), 0.06, (1.55, 0.75, 0.95), segments=24)
+
+    hood = assign(remeshed("capuche", hood_parts, voxel=0.005, smooth=6, triangles=1400), "tissu")
+    assign_weights(hood)
+    cords = []
+    for sx in (1, -1):
+        cords.append(geo.tube(spline([(0.026 * sx, -0.098, 0.552), (0.03 * sx, -0.118, 0.5),
+                                      (0.032 * sx, -0.124, 0.465)], 4), 0.0045, MATERIALS["semelle"], "cordon"))
+    for cord in cords:
+        standing_mesh(cord)
+        assign(cord, "semelle")
+        assign_weights(cord)
+    return geo.smooth(geo.join([shirt, hood] + cords, "haut-sweat"))
+
+
+def wardrobe(body):
+    hats = [assign_weights(cap(), "tete"), assign_weights(explorer_hat(), "tete")]
+    face = [assign_weights(glasses(), "tete")]
+    worn = [assign_weights(scarf()), assign_weights(backpack()), hoodie(body)]
+    return hats + face + worn
+
 # ---------------------------------------------------------------------------
 # Animations : poses calculées pour un temps t (secondes)
 # ---------------------------------------------------------------------------
@@ -733,11 +1015,18 @@ body = assign_weights(assign(remeshed("corps", body_parts, voxel=0.006, smooth=8
 head = assign_weights(assign(remeshed("tete", head_parts, voxel=0.006, smooth=4, triangles=2400), "peau"), "tete")
 pieces = [body, head, tshirt(body), shorts(body), sneakers(body)]
 hairs = [assign_weights(build_hair(style), "tete") for style in HAIRS]
+clothes = wardrobe(body)
+pieces += clothes
+for hair in hairs:
+    add_hat_key(hair)
 # Après toutes les constructions (une conversion de maillage effacerait les formes).
-# Les baskets ne bougent pas avec la carrure (le champ y est nul) : pas de forme pour elles.
-for obj in (body, pieces[2], pieces[3]):
+# Les baskets et les couvre-chefs ne bougent pas avec la carrure (le champ y est nul) : pas de
+# forme pour eux. Les lunettes ont déjà les leurs (écart et hauteur des yeux).
+for obj in [body, pieces[2], pieces[3]] + [c for c in clothes if c.name in ("cou-echarpe", "dos-sac-a-dos", "haut-sweat")]:
     add_build_key(obj)
 for obj in pieces + hairs:
+    # L'app retrouve les morceaux d'une pièce à plusieurs matières par le nom de son maillage.
+    obj.data.name = obj.name
     bind(obj, rig)
 for obj in pieces + hairs:
     print("TRIANGLES", obj.name, sum(len(p.vertices) - 2 for p in obj.data.polygons), flush=True)
@@ -809,7 +1098,10 @@ def clone(src_rig, objs, location, colors):
 if os.environ.get("AVATAR_PREVIEW"):
     spacing = 0.56
     for k, (style, skin_c, hair_c, top_c, bottom_c, (anim, t)) in enumerate(LOOKS):
-        chosen = [body, head, pieces[2], pieces[3], pieces[4], hairs[list(HAIRS).index(style)]]
+        wear = [w for w in os.environ.get("AVATAR_WEAR", "").split(",") if w]
+        top = next((c for c in clothes if c.name in wear and c.name.startswith("haut-")), pieces[2])
+        extra = [c for c in clothes if c.name in wear and not c.name.startswith("haut-")]
+        chosen = [body, head, top, pieces[3], pieces[4], hairs[list(HAIRS).index(style)]] + extra
         colors = {"peau": skin_c, "cheveux": hair_c}
         new_rig, objs = clone(rig, chosen, ((k - (len(LOOKS) - 1) / 2) * spacing, 0, 0), colors)
         for obj in objs:
@@ -822,8 +1114,11 @@ if os.environ.get("AVATAR_PREVIEW"):
             part.parent = new_rig
         set_pose(new_rig, ANIMATIONS[anim][0], t)
         for obj in objs:
-            if obj.data.shape_keys:
+            if obj.data.shape_keys and "fort" in obj.data.shape_keys.key_blocks:
                 obj.data.shape_keys.key_blocks["fort"].value = float(os.environ.get("AVATAR_BUILD", "0"))
+            if obj.data.shape_keys and "chapeau" in obj.data.shape_keys.key_blocks:
+                hatted = any(w.startswith("tete-") for w in wear)
+                obj.data.shape_keys.key_blocks["chapeau"].value = 1.0 if hatted else 0.0
         new_rig.rotation_euler.z = math.radians(float(os.environ.get("AVATAR_TURN", "0")))
     for obj in [rig] + pieces + hairs:
         obj.hide_render = True
