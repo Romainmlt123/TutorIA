@@ -43,10 +43,10 @@ export const REGIONS_SHOT: Shot = {
 /** Largeur de carte vue à l'écran sur la carte d'une région (mètres : une ville tient presque à l'écran). */
 export const MAP_VISIBLE_WIDTH = 4;
 /** Élévation de la caméra sur la carte d'une région. */
-export const MAP_ELEVATION = 62;
+export const MAP_ELEVATION = 52;
 
 /**
- * Carte d'une région : vue plongeante à 62°, avec un champ de vision très étroit (la caméra est
+ * Carte d'une région : vue plongeante à 52°, avec un champ de vision très étroit (la caméra est
  * loin) : presque sans perspective, la carte se lit comme un plateau de jeu et les boutons posés
  * dessus suivent le sol à la lettre. La caméra glisse au-dessus de l'île sans jamais tourner.
  */

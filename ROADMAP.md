@@ -14,7 +14,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
    - ce fichier est à jour (statut, date, décisions).
 4. **Avant de coder une étape**, son contenu est relu ici. S'il faut s'en écarter, on le dit à Romain et on corrige ce fichier d'abord.
 
-## Où on en est — 2 octobre 2026 (soir)
+## Où on en est — 6 octobre 2026
 
 | Chantier | Étape                                                  | Statut             | Branche            |
 | -------- | ------------------------------------------------------ | ------------------ | ------------------ |
@@ -23,8 +23,8 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Explorer | X2b · la carte d'une région (art de la région Nombres) | ✅ validé          | `feat/explorer-3d` |
 | Avatar   | Figurine, visage et atelier `/dev/avatars`             | ✅ validé          | `feat/avatar`      |
 | Avatar   | A1 · l'éditeur « Crée ton avatar »                     | ✅ validé          | `feat/avatar`      |
-| Avatar   | **A2 · l'avatar sur la carte**                         | 🔜 prochaine étape | `feat/avatar`      |
-| Avatar   | A3 · la garde-robe                                     | à venir            |                    |
+| Avatar   | A2 · l'avatar sur la carte                             | ✅ validé          | `feat/avatar`      |
+| Avatar   | **A3 · la garde-robe**                                 | 🔜 prochaine étape | `feat/avatar`      |
 | Avatar   | A4 · l'avatar dans Supabase                            | à venir            |                    |
 | Explorer | X3 à X5b · fiche, discussion et bilan d'un niveau      | à venir            |                    |
 
@@ -72,7 +72,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
   - la carrure, qui manque encore.
 - **Terminé quand :** Romain a validé l'éditeur sur le Pixel.
 
-### A2 · L'avatar sur la carte — prochaine étape
+### A2 · L'avatar sur la carte — validé le 06/10
 
 - Dans X2b, la figurine de l'élève remplace le pion :
   - elle marche le long du chemin jusqu'au niveau en cours ;
@@ -82,7 +82,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 - Le chemin et les points de niveau sont refondus pour aller avec la figurine et le décor : selon Romain, ils jurent avec le reste de la carte.
 - Tant qu'aucune figurine n'est enregistrée, la carte en montre une par défaut, et l'éditeur reste proposé.
 
-### A3 · La garde-robe
+### A3 · La garde-robe — prochaine étape
 
 - Une quinzaine de vêtements et d'accessoires, **gagnés en progressant**. Exemples retenus :
   - une casquette au premier bilan ;
@@ -144,6 +144,11 @@ Le plan détaillé d'Explorer reste celui validé le 30 septembre. Dans l'ordre 
   - l'éditeur d'avatar reprend le HUD de jeu d'Explorer, et tout écran du « côté jeu » fera de même ;
   - l'éditeur (A1) est validé sur le Pixel ;
   - l'avatar n'apparaît pas encore dans la vue ville : c'est l'étape A2.
+- **06/10 :**
+  - la figurine sur la carte est validée ;
+  - le chemin est en planches de bois (piste B) ; les points de niveau gardent leur disque coloré, avec un rebord doré et lumineux façon Mario à la place du contour bleu marine ;
+  - les clairières des villes reçoivent de l'herbe et des fleurs, et la caméra de la carte descend de 62° à 52° ;
+  - l'étape A2 est validée.
 
 ## En attente
 

@@ -245,8 +245,8 @@ export function placedDecor(map: RegionMap, entries: readonly DecorEntry[]): Dec
   });
 }
 
-/** Demi-largeur du chemin pavé (stylized3d/mapPath.ts) et emprise au sol d'un monument (mètres). */
-const PATH_WIDTH_HALF = 0.17;
+/** Demi-largeur du chemin de planches (stylized3d/mapPath.ts) et emprise au sol d'un monument (mètres). */
+const PATH_WIDTH_HALF = 0.2;
 const MONUMENT_FOOTPRINT = 0.95;
 
 /** Vrai si un brin d'herbe peut pousser là : ni sur le chemin, ni sous un point de niveau ou un monument. */
@@ -256,4 +256,59 @@ export function bladeAllowed(map: RegionMap): (x: number, z: number) => boolean 
     near(x, z) > PATH_WIDTH_HALF + 0.05 &&
     !map.nodes.some((n) => Math.hypot(n.x - x, n.z - z) < n.radius + 0.04) &&
     !map.cities.some((c) => Math.hypot(c.center.x - x, c.center.z - z) < MONUMENT_FOOTPRINT);
+}
+
+/** Touffes d'herbe par mètre carré dans une clairière, et décors semés autour de chaque monument. */
+const CLEARING_TUFTS_PER_M2 = 9;
+const CLEARING_DECOR: readonly { kind: DecorKind; count: number }[] = [
+  { kind: 'fleurs', count: 3 },
+  { kind: 'fleurs-b', count: 3 },
+  { kind: 'cailloux', count: 2 },
+];
+
+/**
+ * L'herbe, les fleurs et les galets des clairières, autour des monuments : la carte laisse ailleurs
+ * ces endroits vides (place des niveaux et du monument), ce qui faisait « pas fini ». On sème entre
+ * l'emprise du monument et le bord de la clairière, sans toucher au chemin ni aux points de niveau.
+ */
+export function clearingDressing(map: RegionMap, seed: number): { decor: Decor[]; tufts: Tuft[] } {
+  const near = pathDistance(map);
+  const random = seeded(seed);
+  const decor: Decor[] = [];
+  const tufts: Tuft[] = [];
+  const free = (x: number, z: number, margin: number) =>
+    near(x, z) > PATH_WIDTH_HALF + margin &&
+    !map.nodes.some((n) => Math.hypot(n.x - x, n.z - z) < n.radius + margin);
+  for (const city of map.cities) {
+    const inner = MONUMENT_FOOTPRINT + 0.1;
+    const outer = city.radius;
+    // Un point tiré uniformément dans l'anneau entre le monument et le bord de la clairière.
+    const spot = () => {
+      const angle = random() * Math.PI * 2;
+      const r = Math.sqrt(inner * inner + random() * (outer * outer - inner * inner));
+      return { x: city.center.x + Math.cos(angle) * r, z: city.center.z + Math.sin(angle) * r };
+    };
+    for (const { kind, count } of CLEARING_DECOR) {
+      const radius = RADIUS.get(kind) ?? 0.15;
+      let done = 0;
+      for (let tries = 0; done < count && tries < count * 40; tries++) {
+        const { x, z } = spot();
+        const scale = 0.8 + random() * 0.3;
+        if (!free(x, z, radius * scale + 0.12)) continue;
+        if (decor.some((d) => Math.hypot(d.x - x, d.z - z) < 0.4)) continue;
+        decor.push({ kind, x, z, yaw: random() * Math.PI * 2, scale });
+        done++;
+      }
+    }
+    const area = Math.PI * (outer * outer - inner * inner);
+    const wanted = Math.round(area * CLEARING_TUFTS_PER_M2);
+    for (let tries = 0, made = 0; made < wanted && tries < wanted * 4; tries++) {
+      const { x, z } = spot();
+      if (!free(x, z, 0.05)) continue;
+      if (decor.some((d) => Math.hypot(d.x - x, d.z - z) < 0.12)) continue;
+      tufts.push({ x, z, tall: random() < 0.25 });
+      made++;
+    }
+  }
+  return { decor, tufts };
 }

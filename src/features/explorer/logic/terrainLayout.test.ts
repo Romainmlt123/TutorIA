@@ -3,6 +3,7 @@ import { buildRegionMap } from './regionMap';
 import decorFile from '../stylized3d/regionDecor.json';
 import {
   bladeAllowed,
+  clearingDressing,
   decorPlan,
   grassTufts,
   landDiscs,
@@ -128,5 +129,29 @@ describe('terrain de la carte d’une région (X2b)', () => {
     // Loin de tout, entre deux villes, l'herbe pousse.
     const free = { x: map.bounds.maxX + 3, z: map.bounds.maxZ + 3 };
     expect(allowed(free.x, free.z)).toBe(true);
+  });
+});
+
+describe('herbe et fleurs des clairières, autour des monuments', () => {
+  const dressing = clearingDressing(map, 7);
+
+  it('sème de l’herbe et quelques fleurs dans chaque clairière', () => {
+    for (const city of map.cities) {
+      const inside = (p: { x: number; z: number }) => distance(p, city.center) <= city.radius;
+      expect(dressing.tufts.filter(inside).length).toBeGreaterThan(40);
+      expect(dressing.decor.filter(inside).length).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('laisse libres le monument, le chemin et les points de niveau', () => {
+    for (const item of [...dressing.tufts, ...dressing.decor]) {
+      expect(map.cities.every((c) => distance(item, c.center) > 0.95)).toBe(true);
+      expect(toPath(item)).toBeGreaterThan(0.2);
+      expect(map.nodes.every((n) => distance(item, n) > n.radius)).toBe(true);
+    }
+  });
+
+  it('donne toujours le même semis pour une même graine', () => {
+    expect(clearingDressing(map, 7)).toEqual(dressing);
   });
 });

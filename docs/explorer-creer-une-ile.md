@@ -302,7 +302,7 @@ Pas de Draco ni de KTX2, que expo-gl ne gère pas bien : la quantification et le
 
 ### Le principe
 
-La carte d'une région est la région elle-même de l'île, agrandie 6 fois autour du centre de l'île. On y garde le même contour et les mêmes repères : pour Nombres, le π d'eau animé, les pyramides, les cubes numérotés et l'arbre « + ». On retire les repères qui gênent (le boulier et l'octaèdre), et on recuit le tout avec la même herbe. Les villes occupent des clairières, chacune avec son monument au centre et ses niveaux en arc autour. Un seul chemin pavé les relie dans l'ordre du programme.
+La carte d'une région est la région elle-même de l'île, agrandie 6 fois autour du centre de l'île. On y garde le même contour et les mêmes repères : pour Nombres, le π d'eau animé, les pyramides, les cubes numérotés et l'arbre « + ». On retire les repères qui gênent (le boulier et l'octaèdre), et on recuit le tout avec la même herbe. Les villes occupent des clairières, chacune avec son monument au centre et ses niveaux en arc autour. Un seul chemin de planches les relie dans l'ordre du programme.
 
 ### `region_map.py` : deux passes
 
@@ -391,9 +391,11 @@ npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/region-maths-no
 
 ### Le rendu de la carte (déjà générique)
 
-- **Caméra :** 62° d'élévation et 4° de champ, donc presque sans perspective, comme un plateau de jeu. 4 m de carte occupent la largeur de l'écran.
+- **Caméra :** 52° d'élévation (62° jusqu'au 06/10) et 4° de champ, donc presque sans perspective, comme un plateau de jeu. 4 m de carte occupent la largeur de l'écran.
 - **Déplacement :** la carte se déplace au doigt avec de l'élan, bornée au rectangle des niveaux.
-- **Chemin :** un ruban pavé dessiné par le shader, sans texture (`mapPath.ts`), pierre chaude jusqu'au pion et claire ensuite.
+- **Chemin :** des planches posées en travers, dessinées par le shader, sans texture (`mapPath.ts`) : bois miel jusqu'à l'avatar, bois grisé ensuite.
+- **Points de niveau** (`levelNodes.ts`) : disque à la couleur du type, rebord doré en relief (argenté s'il est fermé), halo jaune au sol autour des niveaux ouverts, qui pulse sous l'avatar.
+- **Avatar** (`MapAvatar.tsx`) : la figurine de l'élève à la place du pion ; il salue en entrant, marche le long du chemin quand le pion avance (`logic/avatarWalk.ts`), puis saute en arrivant.
 - **Boutons :** chaque point de niveau a un bouton de 48 px, posé sur sa position projetée à l'écran. La position est recalculée dès que la caméra se pose, et suivie sur le fil d'interface pendant le déplacement (`MapOverlay`).
 - **Ouverture :** la carte attend les résultats de l'élève avant de s'ouvrir sur la ville du pion.
 

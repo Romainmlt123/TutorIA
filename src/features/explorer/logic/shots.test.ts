@@ -55,7 +55,9 @@ describe('cadrage de la caméra par vue', () => {
     expect(shot.azimuth).toBe(0);
     expect(shot.azimuthRange).toBe(0);
     expect(7.4 / shot.fill).toBeCloseTo(MAP_VISIBLE_WIDTH);
-    expect(shot.elevation).toBeGreaterThan(REGIONS_SHOT.elevation);
+    // Plongeante comme un plateau de jeu, sans être à la verticale : on voit l'avatar et les monuments.
+    expect(shot.elevation).toBeGreaterThan(45);
+    expect(shot.elevation).toBeLessThan(70);
     expect(shot.fov).toBeLessThan(REGIONS_SHOT.fov / 2);
   });
 

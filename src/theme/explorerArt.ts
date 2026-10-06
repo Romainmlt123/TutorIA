@@ -45,19 +45,14 @@ export const explorerArt = {
   map: {
     land: '#79ad49',
     cliff: '#7b5636',
-    pathDone: '#f0a13f',
-    pathTodo: '#dfe3ec',
-    /** Pavés du chemin : pierre chaude jusqu'au pion, pierre claire ensuite, joints et bordure. */
-    paving: {
-      done: '#e2a24f',
-      todo: '#cfcdc4',
-      joint: '#6b5a44',
-      edge: '#5a4a36',
-    },
+    /** Planches du chemin : bois miel jusqu'au pion, bois grisé ensuite, et le fil du bois. */
+    planks: { done: '#c98f52', todo: '#9b948a', grain: '#6e4a2a' },
     /** Ombre douce posée sous les rochers, galets, monuments et l'avatar. */
     groundShadow: '#16240e',
     node: { lecon: '#2fbf5f', exercices: '#3f86f0', evaluation: '#e0504f', locked: '#aab2c0' },
-    nodeRim: '#1c2a52',
+    /** Rebord doré et lumineux des points de niveau (gris pour un niveau fermé), et leur halo. */
+    nodeRim: { light: '#fff3a3', face: '#ffc933', dark: '#c98600', glow: '#ffd84a' },
+    nodeRimLocked: { light: '#f1f3f7', face: '#d3d8e1', dark: '#8f98a8' },
     village: { wall: '#f5ead2', roof: '#d9733c' },
   },
   /** Pointillé des frontières de région. */

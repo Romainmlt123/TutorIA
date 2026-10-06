@@ -8,9 +8,10 @@ import type { AvatarLook } from '@/features/avatar/logic/avatarLook';
 import { preloadModel, useModel } from '@/lib/three/useModel';
 import { explorerArt } from '@/theme/explorerArt';
 
-import type { MapNode, RegionMap } from '../logic/regionMap';
+import type { RegionMap } from '../logic/regionMap';
 import {
   bladeAllowed,
+  clearingDressing,
   decorPlan,
   grassTufts,
   landDiscs,
@@ -21,6 +22,7 @@ import {
 import { grassMaterial } from './grass';
 import { MapAvatar } from './MapAvatar';
 import { groundShadows, type ShadowSpot } from './groundShadows';
+import { levelNodes } from './levelNodes';
 import { pathGeometry, pathMaterial } from './mapPath';
 import { MONUMENT_MODELS } from './monuments';
 import regionDecor from './regionDecor.json';
@@ -72,41 +74,6 @@ function landGeometries(map: RegionMap): {
   cliffs.forEach((g) => g.dispose());
   if (!top || !cliff) throw new Error('île de la carte : fusion des disques impossible');
   return { top, cliff };
-}
-
-function nodeColor(node: MapNode): THREE.Color {
-  return new THREE.Color(node.state === 'locked' ? ART.node.locked : ART.node[node.type]);
-}
-
-/** Un disque par niveau (instancié), sur un disque plus large et sombre qui fait le contour. */
-function nodeMeshes(nodes: readonly MapNode[]): THREE.InstancedMesh[] {
-  const geometry = new THREE.CylinderGeometry(1, 1, 0.1, 28);
-  const face = new THREE.InstancedMesh(geometry, new THREE.MeshBasicMaterial(), nodes.length);
-  const rim = new THREE.InstancedMesh(
-    geometry,
-    new THREE.MeshBasicMaterial({ color: ART.nodeRim }),
-    nodes.length,
-  );
-  const matrix = new THREE.Matrix4();
-  nodes.forEach((node, i) => {
-    matrix.compose(
-      new THREE.Vector3(node.x, 0.07, node.z),
-      new THREE.Quaternion(),
-      new THREE.Vector3(node.radius, 1, node.radius),
-    );
-    face.setMatrixAt(i, matrix);
-    face.setColorAt(i, nodeColor(node));
-    matrix.compose(
-      new THREE.Vector3(node.x, 0.04, node.z),
-      new THREE.Quaternion(),
-      new THREE.Vector3(node.radius + 0.05, 1, node.radius + 0.05),
-    );
-    rim.setMatrixAt(i, matrix);
-  });
-  face.instanceMatrix.needsUpdate = true;
-  if (face.instanceColor) face.instanceColor.needsUpdate = true;
-  rim.instanceMatrix.needsUpdate = true;
-  return [rim, face];
 }
 
 /** Village générique, à la place du monument de la ville : trois maisons à toit pointu. */
@@ -165,7 +132,7 @@ function buildBase(
   const path = new THREE.Mesh(ribbon, paving);
   path.renderOrder = 2;
   root.add(path);
-  for (const mesh of nodeMeshes(map.nodes)) {
+  for (const mesh of levelNodes(map.nodes, map.pawnIndex)) {
     geometries.push(mesh.geometry);
     materials.push(mesh.material as THREE.Material);
     root.add(mesh);
@@ -217,7 +184,12 @@ function buildDecor(gltf: GLTF, map: RegionMap, baked: boolean): Layer {
   const geometries: THREE.BufferGeometry[] = [];
   const materials: THREE.Material[] = [];
   const seed = seedOf(map.regionId);
-  const plan = baked ? placedDecor(map, DECOR_ENTRIES[map.regionId] ?? []) : decorPlan(map, seed);
+  // Les clairières autour des monuments reçoivent aussi leur herbe, leurs fleurs et leurs galets.
+  const clearings = clearingDressing(map, seed + 3);
+  const plan = [
+    ...(baked ? placedDecor(map, DECOR_ENTRIES[map.regionId] ?? []) : decorPlan(map, seed)),
+    ...clearings.decor,
+  ];
   const decor = decorMeshes(kit, plan);
   materials.push(...decor.materials);
   root.add(...decor.meshes);
@@ -231,8 +203,9 @@ function buildDecor(gltf: GLTF, map: RegionMap, baked: boolean): Layer {
   geometries.push(shadows.geometry);
   materials.push(shadows.material as THREE.Material);
   root.add(shadows);
-  if (!baked) {
-    const tufts = tuftsGeometry(grassTufts(map, plan, seed + 1), seed + 2);
+  {
+    const sown = baked ? clearings.tufts : [...grassTufts(map, plan, seed + 1), ...clearings.tufts];
+    const tufts = tuftsGeometry(sown, seed + 2);
     const blades = grassMaterial();
     geometries.push(tufts);
     materials.push(blades);
