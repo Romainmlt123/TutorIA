@@ -30,6 +30,10 @@ describe('réglages de l’éditeur d’avatar', () => {
         for (const option of control.options) expect(labels[option]).toBeTruthy();
       }
       if (control.kind === 'slider') expect(fr.avatar.sliders[control.id].more).toBeTruthy();
+      if (control.kind === 'wear') {
+        const labels: Readonly<Record<string, string>> = fr.avatar.items;
+        for (const item of control.items) expect(labels[item]).toBeTruthy();
+      }
     }
   });
 
@@ -44,6 +48,10 @@ describe('réglages de l’éditeur d’avatar', () => {
       } else if (control.kind === 'color') {
         next = control.set(look, control.palette.length - 1);
         expect(control.value(next)).toBe(control.palette.length - 1);
+      } else if (control.kind === 'wear') {
+        const item = control.items[control.items.length - 1]!;
+        next = control.setColor(control.setItem(look, item), 4);
+        expect(control.value(next)).toEqual({ item, color: 4 });
       } else if (control.kind === 'slider') {
         next = control.set(look, 0.7);
         expect(control.value(next)).toBeCloseTo(0.7);

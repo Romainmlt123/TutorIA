@@ -28,6 +28,11 @@ export class MockExplorerService implements ExplorerService {
     this.records = [...this.records.filter((r) => r.levelId !== levelId), record];
   }
 
+  /** Développement : termine plusieurs niveaux d'un coup (toute une région, par exemple). */
+  finishLevels(levelIds: readonly string[]): void {
+    for (const levelId of levelIds) this.finishLevel(levelId);
+  }
+
   /** Développement : revient à la progression de démonstration. */
   reset(): void {
     this.records = [...demoLevelRecords];

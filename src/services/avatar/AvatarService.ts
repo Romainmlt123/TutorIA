@@ -8,6 +8,11 @@ export interface AvatarService {
   /** Apparence enregistrée, ou null si l'élève n'a pas encore créé son avatar. */
   look(accountId: string): Promise<AvatarLook | null>;
   saveLook(accountId: string, look: AvatarLook): Promise<void>;
-  /** Oublie l'avatar d'un compte (compte supprimé). */
+  /** Garde-robe : objets gagnés (gardés pour toujours) et ceux déjà annoncés à l'élève. */
+  wardrobe(accountId: string): Promise<WardrobeRecord>;
+  saveWardrobe(accountId: string, record: WardrobeRecord): Promise<void>;
+  /** Oublie l'avatar et la garde-robe d'un compte (compte supprimé). */
   forget(accountId: string): Promise<void>;
 }
+
+export type WardrobeRecord = { owned: readonly string[]; announced: readonly string[] };

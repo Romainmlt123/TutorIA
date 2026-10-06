@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GradientSurface } from '@/components/GradientSurface';
 import { useBottomNavLayout } from '@/components/navigation/useBottomNavLayout';
+import { WardrobeNews } from '@/features/avatar/components/WardrobeNews';
 import { useStudentLook } from '@/features/avatar/hooks/useAvatarLook';
 import { useAvatarOfferOnVisit } from '@/features/avatar/hooks/useAvatarOfferOnVisit';
 import { SceneBoundary } from '@/lib/three/SceneBoundary';
@@ -357,6 +358,8 @@ export function ExplorerScreen() {
         </View>
       ) : null}
       <SkyVeil style={veil.style} />
+      {/* Les objets de la garde-robe gagnés depuis la dernière visite. */}
+      <WardrobeNews visible={active && !diving} />
     </GestureHandlerRootView>
   );
 }

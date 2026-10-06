@@ -1,15 +1,23 @@
 import { avatarArt } from '@/theme/avatarArt';
 
 import {
+  BACKS,
+  BOTTOMS,
   BROW_STYLES,
   EYE_STYLES,
+  GLASSES,
   HAIR_STYLES,
+  HATS,
+  NECKWEAR,
   MOUTH_STYLES,
   normalizeLook,
   NOSE_STYLES,
   randomLook,
+  SHOES,
+  TOPS,
   type AvatarLook,
 } from './avatarLook';
+import type { Slot } from './wardrobe';
 
 /*
  * L'éditeur « Crée ton avatar » : quatre onglets, chacun une liste de réglages. Chaque réglage lit
@@ -29,11 +37,21 @@ export const TAB_FRAMING: Record<EditorTab, Framing> = {
 };
 
 export type ShapeControlId = 'eyes' | 'brows' | 'nose' | 'mouth' | 'hair';
-export type ColorControlId = 'eyeColor' | 'hairColor' | 'skin' | 'top' | 'bottom' | 'shoes';
+export type ColorControlId = 'eyeColor' | 'hairColor' | 'skin';
 export type SliderControlId = 'eyeSpacing' | 'eyeHeight' | 'size' | 'build';
 export type ToggleControlId = 'cheeks' | 'freckles';
 
 export type EditorControl =
+  | {
+      /** Un emplacement de la tenue : le vêtement ou l'accessoire porté (s'il est gagné) et sa couleur. */
+      kind: 'wear';
+      id: Slot;
+      items: readonly string[];
+      palette: readonly string[];
+      value: (look: AvatarLook) => { item: string; color: number };
+      setItem: (look: AvatarLook, item: string) => AvatarLook;
+      setColor: (look: AvatarLook, rank: number) => AvatarLook;
+    }
   | {
       kind: 'shape';
       id: ShapeControlId;
@@ -116,6 +134,26 @@ function slider(
   put: (look: AvatarLook, value: number) => AvatarLook,
 ): EditorControl {
   return { kind: 'slider', id, value, set: (look, v) => put(look, snap(v)) };
+}
+
+/** Réglage d'un emplacement de la tenue : un objet inconnu ou un rang hors palette ne change rien. */
+function wear(slot: Slot, items: readonly string[]): EditorControl {
+  const palette = avatarArt.cloths;
+  const put = (look: AvatarLook, worn: { item: string; color: number }) =>
+    normalizeLook({ ...look, outfit: { ...look.outfit, [slot]: worn } });
+  return {
+    kind: 'wear',
+    id: slot,
+    items,
+    palette,
+    value: (look) => look.outfit[slot],
+    setItem: (look, item) =>
+      items.includes(item) ? put(look, { ...look.outfit[slot], item }) : look,
+    setColor: (look, rank) =>
+      Number.isInteger(rank) && rank >= 0 && rank < palette.length
+        ? put(look, { ...look.outfit[slot], color: rank })
+        : look,
+  };
 }
 
 export const EDITOR_CONTROLS: Record<EditorTab, readonly EditorControl[]> = {
@@ -206,25 +244,15 @@ export const EDITOR_CONTROLS: Record<EditorTab, readonly EditorControl[]> = {
     ),
   ],
   // Un seul modèle par vêtement pour l'instant : la garde-robe (étape A3) ajoutera leurs formes.
+  // Les objets de la garde-robe se gagnent (logic/wardrobe.ts) : l'écran grise ceux qui ne le sont pas.
   tenue: [
-    color(
-      'top',
-      avatarArt.cloths,
-      (l) => l.outfit.top.color,
-      (l, c) => ({ ...l, outfit: { ...l.outfit, top: { ...l.outfit.top, color: c } } }),
-    ),
-    color(
-      'bottom',
-      avatarArt.cloths,
-      (l) => l.outfit.bottom.color,
-      (l, c) => ({ ...l, outfit: { ...l.outfit, bottom: { ...l.outfit.bottom, color: c } } }),
-    ),
-    color(
-      'shoes',
-      avatarArt.cloths,
-      (l) => l.outfit.shoes.color,
-      (l, c) => ({ ...l, outfit: { ...l.outfit, shoes: { ...l.outfit.shoes, color: c } } }),
-    ),
+    wear('top', TOPS),
+    wear('bottom', BOTTOMS),
+    wear('shoes', SHOES),
+    wear('hat', HATS),
+    wear('glasses', GLASSES),
+    wear('neck', NECKWEAR),
+    wear('back', BACKS),
   ],
 };
 

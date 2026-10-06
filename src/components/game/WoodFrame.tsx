@@ -114,11 +114,11 @@ export function StarChip({ stars, label }: { stars: number; label: string }) {
   );
 }
 
-/** Étiquette de parchemin : la prochaine étape, bien lisible sur le bois. */
-export function Parchment({ children }: { children: string }) {
+/** Étiquette de parchemin : la prochaine étape, bien lisible sur le bois (2 lignes au plus par défaut). */
+export function Parchment({ children, lines = 2 }: { children: string; lines?: number }) {
   return (
     <View style={styles.parchment}>
-      <Text variant="caption" weight="bold" color={WOOD_COLORS.parchmentInk} numberOfLines={2}>
+      <Text variant="caption" weight="bold" color={WOOD_COLORS.parchmentInk} numberOfLines={lines}>
         {children}
       </Text>
     </View>

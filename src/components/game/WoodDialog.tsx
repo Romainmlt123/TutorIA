@@ -46,7 +46,7 @@ export function WoodDialog({
             <GameText size={22} align="center" accessibilityRole="header">
               {title}
             </GameText>
-            <Parchment>{body}</Parchment>
+            <Parchment lines={5}>{body}</Parchment>
             <View style={styles.actions}>
               <GameButton
                 tone="yellow"

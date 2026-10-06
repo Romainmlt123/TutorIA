@@ -19,7 +19,10 @@ import { currentLevel, islandPath } from '@/features/explorer/logic/progression'
 import { fr } from '@/i18n/fr';
 import { logError } from '@/lib/logger';
 import { showNotice } from '@/lib/notice';
+import { WARDROBE } from '@/features/avatar/logic/wardrobe';
+import { useStudentAccount } from '@/lib/session/SessionProvider';
 import { authService, mockAuthService } from '@/services/auth';
+import { avatarService } from '@/services/avatar';
 import { mockExplorerService } from '@/services/explorer';
 import type { PersonaId } from '@/services/auth/mock/MockAuthService';
 import { theme, type ColorRole, type TypeVariant } from '@/theme';
@@ -54,6 +57,7 @@ export default function Catalogue() {
       <PersonaSwitcher />
       <Button label={t.avatarLab} variant="soft" onPress={() => router.push('/dev/avatars')} />
       <ExplorerDemo />
+      <WardrobeDemo />
 
       <Section title={t.components}>
         <Button label="Reprendre" icon="fleche-droite" highlight />
@@ -195,6 +199,33 @@ const styles = StyleSheet.create({
 });
 
 /**
+ * Garde-robe de l'avatar (développement, tout compte) : débloque tous les objets sur cet appareil
+ * pour les essayer, ou remet la garde-robe à zéro (les objets se regagnent d'après la progression).
+ */
+function WardrobeDemo() {
+  const queryClient = useQueryClient();
+  const accountId = useStudentAccount()?.id;
+  if (!accountId) return null;
+  const write = (owned: readonly string[]) =>
+    avatarService
+      .saveWardrobe(accountId, { owned, announced: [] })
+      .then(() => queryClient.invalidateQueries({ queryKey: ['avatar', 'wardrobe', accountId] }))
+      .catch((error: unknown) => logError('dev.wardrobe', error));
+  return (
+    <Section title={t.wardrobe.title}>
+      <Button
+        label={t.wardrobe.unlockAll}
+        variant="soft"
+        onPress={() => {
+          void write(WARDROBE.map((item) => item.id)).then(() => showNotice(t.wardrobe.unlocked));
+        }}
+      />
+      <Button label={t.wardrobe.reset} variant="soft" onPress={() => void write([])} />
+    </Section>
+  );
+}
+
+/**
  * Progression simulée d'Explorer (mode simulé seulement) : terminer le niveau du pion fait avancer
  * l'avatar sur la carte, en attendant que les niveaux se jouent (étapes X3 à X5).
  */
@@ -216,6 +247,16 @@ function ExplorerDemo() {
     showNotice(t.explorer.finished(pawn.level.title));
     await refresh();
   };
+  const finishPawnRegion = async () => {
+    const island = islandOf('maths');
+    if (!island) return;
+    const records = new Map((await service.levelRecords()).map((r) => [r.levelId, r]));
+    const pawn = currentLevel(islandPath(island, records), records);
+    if (!pawn) return;
+    service.finishLevels(pawn.region.cities.flatMap((c) => c.levels.map((l) => l.id)));
+    showNotice(t.explorer.finishedRegion(pawn.region.name));
+    await refresh();
+  };
   return (
     <Section title={t.explorer.title}>
       <Button
@@ -223,6 +264,13 @@ function ExplorerDemo() {
         variant="soft"
         onPress={() => {
           finishPawnLevel().catch((error: unknown) => logError('dev.explorer', error));
+        }}
+      />
+      <Button
+        label={t.explorer.finishRegion}
+        variant="soft"
+        onPress={() => {
+          finishPawnRegion().catch((error: unknown) => logError('dev.explorer', error));
         }}
       />
       <Button

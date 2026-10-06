@@ -24,6 +24,7 @@ import type { AvatarAnimation } from './avatar3d/Avatar3D';
 import { AvatarPreview } from './avatar3d/AvatarPreview';
 import { EditorControlView } from './components/EditorControlView';
 import { useAvatarLook, useSaveAvatarLook } from './hooks/useAvatarLook';
+import { useWardrobe } from './hooks/useWardrobe';
 import { DEFAULT_LOOK, randomLook, type AvatarLook } from './logic/avatarLook';
 import {
   EDITOR_CONTROLS,
@@ -34,6 +35,7 @@ import {
   type EditorTab,
 } from './logic/editor';
 import { beginTurn, createTurn, dragTurn, faceFront } from './logic/preview';
+import { wearable } from './logic/wardrobe';
 
 const t = fr.avatar;
 const noSubscription = () => () => undefined;
@@ -61,10 +63,11 @@ const REACTION_MS: Record<AvatarAnimation, number> = {
 export function AvatarEditorScreen() {
   const router = useRouter();
   const navigation = useNavigation();
-  const { premiere } = useLocalSearchParams<{ premiere?: string }>();
+  const { premiere, onglet } = useLocalSearchParams<{ premiere?: string; onglet?: string }>();
   const student = useStudentAccount();
   const saved = useAvatarLook();
   const save = useSaveAvatarLook();
+  const { owned } = useWardrobe();
   const screen = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const animated = !useReducedMotion();
@@ -72,7 +75,8 @@ export function AvatarEditorScreen() {
   // Faux au rendu serveur (web) : pas de WebGL côté serveur, pas de décalage à l'hydratation.
   const webgl = useSyncExternalStore(noSubscription, canUseWebGL, () => false);
 
-  const [tab, setTab] = useState<EditorTab>('visage');
+  // « Essayer » un objet gagné ouvre directement la tenue.
+  const [tab, setTab] = useState<EditorTab>(onglet === 'tenue' ? 'tenue' : 'visage');
   const [edits, setEdits] = useState<AvatarLook | null>(null);
   const [animation, setAnimation] = useState<AvatarAnimation>('attente');
   const [message, setMessage] = useState<string | null>(null);
@@ -81,7 +85,11 @@ export function AvatarEditorScreen() {
   const allowLeave = useRef(false);
 
   const isNew = saved.data === null;
-  const baseline = saved.data ?? (student ? starterLook(student.id) : DEFAULT_LOOK);
+  // Un objet qui ne serait plus gagné (progression remise à zéro) est retiré de la tenue.
+  const baseline = wearable(
+    saved.data ?? (student ? starterLook(student.id) : DEFAULT_LOOK),
+    owned,
+  );
   const look = edits ?? baseline;
   const dirty = edits !== null && !sameLook(edits, baseline);
 
@@ -267,6 +275,7 @@ export function AvatarEditorScreen() {
                     key={control.id}
                     control={control}
                     look={look}
+                    owned={owned}
                     onChange={setEdits}
                   />
                 ))}

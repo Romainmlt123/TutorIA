@@ -616,10 +616,42 @@ export const fr = {
       skin: 'Couleur de peau',
       size: 'Taille',
       build: 'Carrure',
-      top: 'T-shirt',
-      bottom: 'Short',
-      shoes: 'Baskets',
+      top: 'Haut',
+      bottom: 'Bas',
+      shoes: 'Chaussures',
+      hat: 'Sur la tête',
+      glasses: 'Lunettes',
+      neck: 'Autour du cou',
+      back: 'Dans le dos',
     },
+    /** Vêtements et accessoires de la garde-robe (logic/wardrobe.ts). */
+    items: {
+      aucun: 'Rien',
+      tshirt: 'T-shirt',
+      short: 'Short',
+      baskets: 'Baskets',
+      sweat: 'Sweat à capuche',
+      casquette: 'Casquette',
+      'chapeau-explorateur': 'Chapeau d’explorateur',
+      'lunettes-rondes': 'Lunettes rondes',
+      echarpe: 'Écharpe',
+      'sac-a-dos': 'Sac à dos',
+    },
+    /** Ce qu'il faut faire pour gagner un objet : une invitation, jamais un reproche. */
+    condition: {
+      levels: (n: number) => (n === 1 ? 'Termine ton premier niveau' : `Termine ${n} niveaux`),
+      bilans: (n: number) => (n === 1 ? 'Tente ton premier bilan' : `Tente ${n} bilans`),
+      stars: (n: number) => `Gagne ${n} étoiles`,
+      cities: (n: number) => (n === 1 ? 'Valide ta première ville' : `Valide ${n} villes`),
+      regions: (n: number) => (n === 1 ? 'Valide ta première région' : `Valide ${n} régions`),
+      streak: (n: number) => `Révise ${n} jours d’affilée`,
+    },
+    locked: (item: string, condition: string) => `${item}, à gagner : ${condition}`,
+    lockedHint: (item: string, condition: string) => `${item} : ${condition} pour l’obtenir.`,
+    newTitle: 'Nouveau !',
+    newBody: (items: readonly string[]) =>
+      `Tu as gagné : ${items.length > 1 ? `${items.slice(0, -1).join(', ')} et ${items[items.length - 1]}` : (items[0] ?? '')}. ${items.length > 1 ? 'Essaie-les' : 'Essaie-le'} sur ton avatar !`,
+    tryOn: 'Essayer',
     shapes: {
       eyes: {
         rond: 'Ronds',
@@ -1009,9 +1041,17 @@ export const fr = {
   dev: {
     catalogueTitle: 'Catalogue',
     avatarLab: 'Laboratoire des avatars',
+    wardrobe: {
+      title: 'Garde-robe (démo)',
+      unlockAll: 'Débloquer toute la garde-robe',
+      unlocked: 'Tous les objets sont débloqués sur cet appareil.',
+      reset: 'Remettre la garde-robe à zéro',
+    },
     explorer: {
       title: 'Explorer (démo)',
       finishPawn: 'Terminer le niveau du pion',
+      finishRegion: 'Terminer toute la région du pion',
+      finishedRegion: (name: string) => `Région terminée : ${name}`,
       reset: 'Revenir à la progression de départ',
       finished: (title: string) => `Niveau terminé : ${title}`,
     },
