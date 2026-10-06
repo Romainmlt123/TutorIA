@@ -151,3 +151,4 @@ Ces idées ne sont pas planifiées. Elles entrent dans le plan sur décision de 
 
 - Des vignettes dessinées pour les formes du visage dans l'éditeur, à la place des libellés.
 - L'avatar de l'élève ailleurs dans l'app : accueil, profil, tuteur.
+- La dette d'Explorer relevée le 06/10 (§ 9 de `docs/explorer-creer-une-ile.md`), à traiter quand on y touche ou avant la publication. Les points les plus visibles : les chiffres de la cascade avec « Réduire les animations », les flèches de 44 px du panneau de ville, le poids de l'île (1,98 Mo) et de la carte de Nombres (5,6 Mo).

@@ -176,6 +176,7 @@ supabase/         migrations, tests pgTAP, modèles d'e-mails, configuration loc
 scripts/          outillage (tokens, seed, Supabase local)
 tools/explorer-3d/ scripts Blender des îles 3D d'Explorer (modèles, matières, cuisson), sortie dans assets/explorer/models/
 tools/avatar-3d/   script Blender de la figurine des avatars (squelette, coiffures, vêtements, animations), sortie dans assets/avatar/
+docs/             guides (explorer-creer-une-ile.md : refaire une île d'Explorer et ses régions)
 design/           maquettes et design system (référence visuelle)
 assets/           logos, police Satoshi, palette
 ```
