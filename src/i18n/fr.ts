@@ -636,6 +636,15 @@ export const fr = {
       'lunettes-rondes': 'Lunettes rondes',
       echarpe: 'Écharpe',
       'sac-a-dos': 'Sac à dos',
+      bandana: 'Bandana',
+      bonnet: 'Bonnet',
+      couronne: 'Couronne',
+      'lunettes-soleil': 'Lunettes de soleil',
+      pantalon: 'Pantalon',
+      jupe: 'Jupe',
+      salopette: 'Salopette',
+      bottes: 'Bottes de pluie',
+      cape: 'Cape',
     },
     /** Ce qu'il faut faire pour gagner un objet : une invitation, jamais un reproche. */
     condition: {
@@ -645,6 +654,10 @@ export const fr = {
       cities: (n: number) => (n === 1 ? 'Valide ta première ville' : `Valide ${n} villes`),
       regions: (n: number) => (n === 1 ? 'Valide ta première région' : `Valide ${n} régions`),
       streak: (n: number) => `Révise ${n} jours d’affilée`,
+      perfectCities: (n: number) =>
+        n === 1
+          ? 'Gagne les 3 étoiles à chaque niveau d’une ville'
+          : `Gagne les 3 étoiles à chaque niveau de ${n} villes`,
     },
     locked: (item: string, condition: string) => `${item}, à gagner : ${condition}`,
     lockedHint: (item: string, condition: string) => `${item} : ${condition} pour l’obtenir.`,

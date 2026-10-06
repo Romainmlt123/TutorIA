@@ -60,6 +60,9 @@ export const avatarArt = {
   blush: '#f19a8e',
   /** Détails fixes de la garde-robe : bandeau du chapeau, sangles du sac (brun sombre). */
   detail: '#3b3128',
+  /** Verres des lunettes de soleil et pierres de la couronne. */
+  lens: '#1d2433',
+  jewel: '#d23a4a',
   /** Lumière des scènes où paraît un avatar : ciel, sol, soleil (sa direction suit la cuisson des îles). */
   light: { sky: '#f4f8ff', ground: '#d8cdb8', sun: '#fff1dc', fill: '#e8f0ff' },
   /** Ombre douce sous les pieds de la figurine (aperçu de l'éditeur). */

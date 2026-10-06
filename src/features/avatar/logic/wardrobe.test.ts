@@ -3,7 +3,7 @@ import { ISLANDS, islandOf } from '@/features/explorer/content';
 import type { LevelRecord } from '@/features/explorer/logic/progression';
 import { fr } from '@/i18n/fr';
 
-import { BACKS, DEFAULT_LOOK, GLASSES, HATS, NECKWEAR, TOPS } from './avatarLook';
+import { BACKS, BOTTOMS, DEFAULT_LOOK, GLASSES, HATS, NECKWEAR, SHOES, TOPS } from './avatarLook';
 import {
   canWear,
   earnedNow,
@@ -26,7 +26,15 @@ const finished = (levelId: string, stars: 0 | 1 | 2 | 3 = 3, bestScore = 1): Lev
 
 describe('garde-robe de l’avatar', () => {
   it('ne propose que des objets que la figurine sait porter, chacun avec son texte', () => {
-    const slots = { top: TOPS, hat: HATS, glasses: GLASSES, neck: NECKWEAR, back: BACKS } as const;
+    const slots = {
+      top: TOPS,
+      bottom: BOTTOMS,
+      shoes: SHOES,
+      hat: HATS,
+      glasses: GLASSES,
+      neck: NECKWEAR,
+      back: BACKS,
+    } as const;
     for (const item of WARDROBE) {
       const allowed: readonly string[] = slots[item.slot as keyof typeof slots];
       expect(allowed).toContain(item.id);
@@ -38,6 +46,7 @@ describe('garde-robe de l’avatar', () => {
   it('compte les niveaux, les étoiles, les bilans, les villes et les régions', () => {
     const progress = progressOf(ISLANDS, demoLevelRecords, 4);
     expect(progress).toEqual({ ...NO_PROGRESS, levels: 2, stars: 5, streak: 4 });
+    expect(WARDROBE).toHaveLength(15);
     const city = maths.regions[0]!.cities[0]!;
     const all = city.levels.map((level) => finished(level.id));
     const done = progressOf(ISLANDS, all, 0);
@@ -56,6 +65,15 @@ describe('garde-robe de l’avatar', () => {
     expect(progress.cities).toBe(0);
     expect(earnedNow(progress)).toContain('casquette');
     expect(earnedNow(progress)).not.toContain('sac-a-dos');
+  });
+
+  it('donne la couronne pour une ville aux trois étoiles partout, pas pour une ville juste validée', () => {
+    const city = maths.regions[0]!.cities[0]!;
+    const perfect = city.levels.map((level) => finished(level.id));
+    expect(progressOf(ISLANDS, perfect, 0).perfectCities).toBe(1);
+    const almost = city.levels.map((level, i) => finished(level.id, i === 0 ? 2 : 3));
+    expect(progressOf(ISLANDS, almost, 0).perfectCities).toBe(0);
+    expect(earnedNow(progressOf(ISLANDS, perfect, 0))).toContain('couronne');
   });
 
   it('valide une région quand toutes ses villes le sont', () => {

@@ -54,7 +54,9 @@ type Role =
   | 'neck'
   | 'back'
   | 'sole'
-  | 'detail';
+  | 'detail'
+  | 'lens'
+  | 'jewel';
 
 /** Préfixe du nom des pièces de chaque emplacement de la tenue (tools/avatar-3d/avatar.py). */
 const SLOT_PREFIX = {
@@ -74,6 +76,8 @@ function roleOf(piece: string, material: string): Role | null {
   if (material === 'cheveux') return 'hair';
   if (material === 'semelle') return 'sole';
   if (material === 'detail') return 'detail';
+  if (material === 'verre') return 'lens';
+  if (material === 'bijou') return 'jewel';
   return SLOTS.find((slot) => piece.startsWith(SLOT_PREFIX[slot])) ?? null;
 }
 
@@ -92,6 +96,8 @@ function buildRig(gltf: GLTF): Rig {
     back: [],
     sole: [],
     detail: [],
+    lens: [],
+    jewel: [],
   };
   const materials: THREE.Material[] = [face.material];
   const pieces = new Map<string, THREE.Mesh[]>();
@@ -159,6 +165,8 @@ function dress(rig: Rig, look: AvatarLook) {
   for (const slot of SLOTS) paint(rig.colors[slot], avatarArt.cloths[look.outfit[slot].color]!);
   paint(rig.colors.sole, avatarArt.sole);
   paint(rig.colors.detail, avatarArt.detail);
+  paint(rig.colors.lens, avatarArt.lens);
+  paint(rig.colors.jewel, avatarArt.jewel);
   setFace(
     rig.face,
     faceParams(look),

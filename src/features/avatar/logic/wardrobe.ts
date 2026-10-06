@@ -23,7 +23,8 @@ export type Condition =
   | { kind: 'stars'; count: number }
   | { kind: 'cities'; count: number }
   | { kind: 'regions'; count: number }
-  | { kind: 'streak'; days: number };
+  | { kind: 'streak'; days: number }
+  | { kind: 'perfectCities'; count: number };
 
 export type WardrobeItem = { id: string; slot: Slot; condition: Condition };
 
@@ -35,6 +36,15 @@ export const WARDROBE: readonly WardrobeItem[] = [
   { id: 'echarpe', slot: 'neck', condition: { kind: 'streak', days: 7 } },
   { id: 'sweat', slot: 'top', condition: { kind: 'stars', count: 25 } },
   { id: 'chapeau-explorateur', slot: 'hat', condition: { kind: 'regions', count: 1 } },
+  { id: 'bandana', slot: 'hat', condition: { kind: 'levels', count: 1 } },
+  { id: 'bonnet', slot: 'hat', condition: { kind: 'stars', count: 5 } },
+  { id: 'pantalon', slot: 'bottom', condition: { kind: 'cities', count: 2 } },
+  { id: 'bottes', slot: 'shoes', condition: { kind: 'stars', count: 15 } },
+  { id: 'jupe', slot: 'bottom', condition: { kind: 'cities', count: 3 } },
+  { id: 'salopette', slot: 'bottom', condition: { kind: 'cities', count: 5 } },
+  { id: 'cape', slot: 'back', condition: { kind: 'streak', days: 14 } },
+  { id: 'lunettes-soleil', slot: 'glasses', condition: { kind: 'stars', count: 50 } },
+  { id: 'couronne', slot: 'hat', condition: { kind: 'perfectCities', count: 1 } },
 ];
 
 /** Ce qui compte pour gagner des objets. */
@@ -47,6 +57,8 @@ export type Progress = {
   /** Villes validées (70 % au bilan) et régions dont toutes les villes le sont. */
   cities: number;
   regions: number;
+  /** Villes dont chaque niveau a ses trois étoiles. */
+  perfectCities: number;
   /** Plus longue série de jours, depuis l'inscription. */
   streak: number;
 };
@@ -57,6 +69,7 @@ export const NO_PROGRESS: Progress = {
   stars: 0,
   cities: 0,
   regions: 0,
+  perfectCities: 0,
   streak: 0,
 };
 
@@ -80,6 +93,11 @@ export function progressOf(
     for (const region of island.regions) {
       progress.cities += region.cities.filter(
         (city) => cityStatus(city, path, byLevel) === 'done',
+      ).length;
+      progress.perfectCities += region.cities.filter((city) =>
+        city.levels.every(
+          (level) => byLevel.get(level.id)?.finished && byLevel.get(level.id)?.stars === 3,
+        ),
       ).length;
       if (regionSummary(island, region.id, byLevel).status === 'done') progress.regions++;
     }

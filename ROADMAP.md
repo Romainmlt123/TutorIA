@@ -16,17 +16,17 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 
 ## Où on en est — 6 octobre 2026
 
-| Chantier | Étape                                                  | Statut                                           | Branche            |
-| -------- | ------------------------------------------------------ | ------------------------------------------------ | ------------------ |
-| Explorer | X1 · les îles                                          | ✅ validé                                        | `feat/explorer-3d` |
-| Explorer | X2a · les régions de l'île                             | ✅ validé                                        | `feat/explorer-3d` |
-| Explorer | X2b · la carte d'une région (art de la région Nombres) | ✅ validé                                        | `feat/explorer-3d` |
-| Avatar   | Figurine, visage et atelier `/dev/avatars`             | ✅ validé                                        | `feat/avatar`      |
-| Avatar   | A1 · l'éditeur « Crée ton avatar »                     | ✅ validé                                        | `feat/avatar`      |
-| Avatar   | A2 · l'avatar sur la carte                             | ✅ validé                                        | `feat/avatar`      |
-| Avatar   | **A3 · la garde-robe**                                 | 🔨 1re livraison validée, 2e en cours (9 objets) | `feat/avatar`      |
-| Avatar   | A4 · l'avatar dans Supabase                            | à venir                                          |                    |
-| Explorer | X3 à X5b · fiche, discussion et bilan d'un niveau      | à venir                                          |                    |
+| Chantier | Étape                                                  | Statut    | Branche            |
+| -------- | ------------------------------------------------------ | --------- | ------------------ |
+| Explorer | X1 · les îles                                          | ✅ validé | `feat/explorer-3d` |
+| Explorer | X2a · les régions de l'île                             | ✅ validé | `feat/explorer-3d` |
+| Explorer | X2b · la carte d'une région (art de la région Nombres) | ✅ validé | `feat/explorer-3d` |
+| Avatar   | Figurine, visage et atelier `/dev/avatars`             | ✅ validé | `feat/avatar`      |
+| Avatar   | A1 · l'éditeur « Crée ton avatar »                     | ✅ validé | `feat/avatar`      |
+| Avatar   | A2 · l'avatar sur la carte                             | ✅ validé | `feat/avatar`      |
+| Avatar   | **A3 · la garde-robe**                                 | ✅ validé | `feat/avatar`      |
+| Avatar   | A4 · l'avatar dans Supabase                            | à venir   |                    |
+| Explorer | X3 à X5b · fiche, discussion et bilan d'un niveau      | à venir   |                    |
 
 `feat/explorer-3d` et `feat/avatar` ne sont pas encore fusionnées dans `dev`.
 
@@ -82,7 +82,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 - Le chemin et les points de niveau sont refondus pour aller avec la figurine et le décor : selon Romain, ils jurent avec le reste de la carte.
 - Tant qu'aucune figurine n'est enregistrée, la carte en montre une par défaut, et l'éditeur reste proposé.
 
-### A3 · La garde-robe — en cours
+### A3 · La garde-robe — validée le 06/10
 
 - Une quinzaine de vêtements et d'accessoires, **gagnés en progressant**. Exemples retenus :
   - une casquette au premier bilan ;
@@ -96,7 +96,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 - Les nouvelles pièces sont ajoutées dans `avatar.py` : vêtements qui suivent le corps, et accessoires portés par la tête ou le dos.
 - **Plan validé le 06/10, en deux livraisons :**
   1. le mécanisme complet et les six objets ci-dessus (validée le 06/10) ;
-  2. neuf autres objets : bandana (premier niveau), bonnet (5 étoiles), pantalon (2 villes), bottes de pluie (15 étoiles), jupe (3 villes), salopette (5 villes), cape (série de 14 jours), lunettes de soleil (50 étoiles), couronne (une ville avec 3 étoiles à chaque niveau).
+  2. neuf autres objets (validée le 06/10) : bandana (premier niveau), bonnet (5 étoiles), pantalon (2 villes), bottes de pluie (15 étoiles), jupe (3 villes), salopette (5 villes), cape (série de 14 jours), lunettes de soleil (50 étoiles), couronne (une ville avec 3 étoiles à chaque niveau).
 - Sous un couvre-chef, les cheveux sont tassés sous la calotte (forme « chapeau » de chaque coiffure) : la coiffure reste visible sous le bord, au lieu d'être remplacée par la coiffure courte comme prévu d'abord.
 
 ### A4 · L'avatar dans Supabase
@@ -154,7 +154,8 @@ Le plan détaillé d'Explorer reste celui validé le 30 septembre. Dans l'ordre 
   - les clairières des villes reçoivent de l'herbe et des fleurs, et la caméra de la carte descend de 62° à 52° ;
   - l'étape A2 est validée.
   - le plan d'A3 est validé : 15 objets à gagner, tous ouverts à tous, gardés pour toujours, en deux livraisons ;
-  - la première livraison (six objets) est validée.
+  - la première livraison (six objets) est validée ;
+  - la deuxième livraison (neuf objets) est validée : A3 est terminée.
 
 ## En attente
 

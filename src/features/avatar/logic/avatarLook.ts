@@ -22,13 +22,20 @@ export const BROW_STYLES = ['aucun', 'fin', 'epais', 'arque', 'decide'] as const
 export const MOUTH_STYLES = ['sourire', 'rire', 'petit', 'coin', 'dents', 'neutre'] as const;
 export const NOSE_STYLES = ['aucun', 'point', 'arc', 'rond'] as const;
 export const TOPS = ['tshirt', 'sweat'] as const;
-export const BOTTOMS = ['short'] as const;
-export const SHOES = ['baskets'] as const;
+export const BOTTOMS = ['short', 'pantalon', 'jupe', 'salopette'] as const;
+export const SHOES = ['baskets', 'bottes'] as const;
 /** Accessoires de la garde-robe : « aucun » quand l'emplacement est vide. */
-export const HATS = ['aucun', 'casquette', 'chapeau-explorateur'] as const;
-export const GLASSES = ['aucun', 'lunettes-rondes'] as const;
+export const HATS = [
+  'aucun',
+  'casquette',
+  'chapeau-explorateur',
+  'bandana',
+  'bonnet',
+  'couronne',
+] as const;
+export const GLASSES = ['aucun', 'lunettes-rondes', 'lunettes-soleil'] as const;
 export const NECKWEAR = ['aucun', 'echarpe'] as const;
-export const BACKS = ['aucun', 'sac-a-dos'] as const;
+export const BACKS = ['aucun', 'sac-a-dos', 'cape'] as const;
 
 export type HairStyle = (typeof HAIR_STYLES)[number];
 export type EyeStyle = (typeof EYE_STYLES)[number];
