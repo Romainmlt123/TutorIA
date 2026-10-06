@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -12,9 +13,14 @@ import { SegmentedControl } from '@/components/SegmentedControl';
 import { StreakBadge } from '@/components/StreakBadge';
 import { SubjectCard } from '@/components/subject/SubjectCard';
 import { Text } from '@/components/Text';
+import { islandOf } from '@/features/explorer/content';
+import { explorerKeys } from '@/features/explorer/hooks/useExplorer';
+import { currentLevel, islandPath } from '@/features/explorer/logic/progression';
 import { fr } from '@/i18n/fr';
 import { logError } from '@/lib/logger';
+import { showNotice } from '@/lib/notice';
 import { authService, mockAuthService } from '@/services/auth';
+import { mockExplorerService } from '@/services/explorer';
 import type { PersonaId } from '@/services/auth/mock/MockAuthService';
 import { theme, type ColorRole, type TypeVariant } from '@/theme';
 import { fontWeights } from '@/theme/fonts';
@@ -47,6 +53,7 @@ export default function Catalogue() {
 
       <PersonaSwitcher />
       <Button label={t.avatarLab} variant="soft" onPress={() => router.push('/dev/avatars')} />
+      <ExplorerDemo />
 
       <Section title={t.components}>
         <Button label="Reprendre" icon="fleche-droite" highlight />
@@ -186,6 +193,49 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+/**
+ * Progression simulée d'Explorer (mode simulé seulement) : terminer le niveau du pion fait avancer
+ * l'avatar sur la carte, en attendant que les niveaux se jouent (étapes X3 à X5).
+ */
+function ExplorerDemo() {
+  const queryClient = useQueryClient();
+  if (!mockExplorerService) return null;
+  const service = mockExplorerService;
+  const refresh = () =>
+    queryClient
+      .invalidateQueries({ queryKey: explorerKeys.records })
+      .catch((error: unknown) => logError('dev.explorer', error));
+  const finishPawnLevel = async () => {
+    const island = islandOf('maths');
+    if (!island) return;
+    const records = new Map((await service.levelRecords()).map((r) => [r.levelId, r]));
+    const pawn = currentLevel(islandPath(island, records), records);
+    if (!pawn) return;
+    service.finishLevel(pawn.level.id);
+    showNotice(t.explorer.finished(pawn.level.title));
+    await refresh();
+  };
+  return (
+    <Section title={t.explorer.title}>
+      <Button
+        label={t.explorer.finishPawn}
+        variant="soft"
+        onPress={() => {
+          finishPawnLevel().catch((error: unknown) => logError('dev.explorer', error));
+        }}
+      />
+      <Button
+        label={t.explorer.reset}
+        variant="soft"
+        onPress={() => {
+          service.reset();
+          void refresh();
+        }}
+      />
+    </Section>
+  );
+}
 
 const PERSONAS: readonly { id: PersonaId; label: string }[] = [
   { id: 'lea', label: t.personas.lea },

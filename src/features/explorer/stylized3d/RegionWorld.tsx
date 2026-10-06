@@ -1,9 +1,10 @@
-import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
+import { preloadAvatar } from '@/features/avatar/avatar3d/Avatar3D';
+import type { AvatarLook } from '@/features/avatar/logic/avatarLook';
 import { preloadModel, useModel } from '@/lib/three/useModel';
 import { explorerArt } from '@/theme/explorerArt';
 
@@ -18,6 +19,7 @@ import {
   type DecorEntry,
 } from '../logic/terrainLayout';
 import { grassMaterial } from './grass';
+import { MapAvatar } from './MapAvatar';
 import { groundShadows, type ShadowSpot } from './groundShadows';
 import { pathGeometry, pathMaterial } from './mapPath';
 import { MONUMENT_MODELS } from './monuments';
@@ -132,26 +134,13 @@ function village(x: number, z: number, roof: string): THREE.Group {
   return group;
 }
 
-function pawn(): THREE.Group {
-  const group = new THREE.Group();
-  const material = new THREE.MeshBasicMaterial({ color: ART.pawn });
-  const body = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.34, 20), material);
-  body.position.y = 0.17;
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20, 14), material);
-  head.position.y = 0.42;
-  group.add(body, head);
-  return group;
-}
-
 type Built = {
   root: THREE.Group;
-  pawn: THREE.Group;
-  pawnBase: THREE.Vector3;
   geometries: THREE.BufferGeometry[];
   materials: THREE.Material[];
 };
 
-/** Chemin, points de niveau, pion, villages génériques et (sans terrain cuit) la terre en maquette simple. */
+/** Chemin, points de niveau, villages génériques et (sans terrain cuit) la terre en maquette simple. */
 function buildBase(
   map: RegionMap,
   regionColor: string,
@@ -161,7 +150,6 @@ function buildBase(
   const root = new THREE.Group();
   const geometries: THREE.BufferGeometry[] = [];
   const materials: THREE.Material[] = [];
-  const pawnNode = map.nodes[map.pawnIndex]!;
   if (!baked) {
     const terrain = landGeometries(map);
     const grass = new THREE.MeshBasicMaterial({ color: ART.land });
@@ -186,10 +174,6 @@ function buildBase(
     if (modeled.has(city.monument)) continue;
     root.add(village(city.center.x, city.center.z, regionColor));
   }
-  const marker = pawn();
-  const base = new THREE.Vector3(pawnNode.x, 0.12, pawnNode.z);
-  marker.position.copy(base);
-  root.add(marker);
   root.traverse((object) => {
     if (object instanceof THREE.Mesh && !geometries.includes(object.geometry)) {
       geometries.push(object.geometry);
@@ -198,13 +182,7 @@ function buildBase(
       }
     }
   });
-  return { root, pawn: marker, pawnBase: base, geometries, materials };
-}
-
-/** Le pion saute doucement sur son point (figé si les animations sont réduites). */
-function tickPawn(built: Built, t: number, animated: boolean) {
-  const hop = animated ? Math.abs(Math.sin(t * 2.4)) * 0.12 : 0;
-  built.pawn.position.set(built.pawnBase.x, built.pawnBase.y + hop, built.pawnBase.z);
+  return { root, geometries, materials };
 }
 
 /** Graine des décors : toujours la même pour une région, différente d'une région à l'autre. */
@@ -410,11 +388,18 @@ function LoadedTerrain({ gltf, terrain, map }: { gltf: GLTF; terrain: Terrain; m
 export function preloadRegion(regionId: string) {
   const assets = [STRIP_KIT_GLB, TERRAIN_MODELS[regionId]?.asset, MONUMENT_MODELS[regionId]];
   for (const asset of assets) if (asset) preloadModel(asset);
+  preloadAvatar();
 }
 
-type Props = { map: RegionMap; regionColor: string; animated: boolean };
+type Props = {
+  map: RegionMap;
+  regionColor: string;
+  animated: boolean;
+  /** Avatar de l'élève, qui tient lieu de pion (null tant qu'il n'est pas lu). */
+  look: AvatarLook | null;
+};
 
-export function RegionWorld({ map, regionColor, animated }: Props) {
+export function RegionWorld({ map, regionColor, animated, look }: Props) {
   const monumentModel = MONUMENT_MODELS[map.regionId];
   const modeled = useMemo(
     () => new Set(monumentModel ? map.cities.map((c) => c.monument) : []),
@@ -432,10 +417,10 @@ export function RegionWorld({ map, regionColor, animated }: Props) {
     },
     [built],
   );
-  useFrame(({ clock }) => tickPawn(built, clock.elapsedTime, animated));
   return (
     <>
       <primitive object={built.root} />
+      {look ? <MapAvatar map={map} look={look} animated={animated} /> : null}
       {terrain ? <RegionTerrain terrain={terrain} map={map} /> : null}
       <RegionDecor map={map} baked={terrain !== undefined} />
       {monumentModel ? <RegionMonuments map={map} asset={monumentModel} /> : null}

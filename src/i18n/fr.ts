@@ -1009,6 +1009,12 @@ export const fr = {
   dev: {
     catalogueTitle: 'Catalogue',
     avatarLab: 'Laboratoire des avatars',
+    explorer: {
+      title: 'Explorer (démo)',
+      finishPawn: 'Terminer le niveau du pion',
+      reset: 'Revenir à la progression de départ',
+      finished: (title: string) => `Niveau terminé : ${title}`,
+    },
     typography: 'Typographie',
     weights: 'Graisses',
     colors: 'Couleurs par rôle',

@@ -63,11 +63,14 @@ function NodeButton({
   point,
   camera0,
   onPress,
+  occupied,
 }: {
   node: MapNode;
   point: ScreenPoint;
   camera0: CameraAt;
   onPress: () => void;
+  /** L'avatar se tient sur ce point : son icône ne le recouvre pas (le bouton reste là). */
+  occupied: boolean;
 }) {
   const placement = usePlacement(point, camera0, -TARGET / 2, -TARGET / 2);
   const icon: IconName = node.state === 'locked' ? 'cadenas' : TYPE_ICON[node.type];
@@ -78,12 +81,14 @@ function NodeButton({
         accessibilityRole="button"
         accessibilityLabel={nodeLabel(node)}
         style={styles.nodeButton}>
-        <Icon
-          name={icon}
-          size={node.type === 'evaluation' ? 26 : 22}
-          strokeWidth={2.4}
-          color={HUD.white}
-        />
+        {occupied ? null : (
+          <Icon
+            name={icon}
+            size={node.type === 'evaluation' ? 26 : 22}
+            strokeWidth={2.4}
+            color={HUD.white}
+          />
+        )}
       </PressableBase>
       {node.stars > 0 ? (
         <View style={styles.stars} pointerEvents="none">
@@ -169,7 +174,7 @@ export function MapOverlay({ map, points, camera0, onNode, onCity }: Props) {
   const at = new Map(points.map((p) => [p.id, p]));
   return (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
-      {map.nodes.map((node) => {
+      {map.nodes.map((node, index) => {
         const point = at.get(node.levelId);
         if (!point || !near(node.x, node.z)) return null;
         return (
@@ -179,6 +184,7 @@ export function MapOverlay({ map, points, camera0, onNode, onCity }: Props) {
             point={point}
             camera0={camera0}
             onPress={() => onNode(node)}
+            occupied={index === map.pawnIndex}
           />
         );
       })}

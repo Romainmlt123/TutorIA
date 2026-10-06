@@ -54,11 +54,10 @@ export const explorerArt = {
       joint: '#6b5a44',
       edge: '#5a4a36',
     },
-    /** Ombre douce posée sous les rochers, galets et monuments. */
+    /** Ombre douce posée sous les rochers, galets, monuments et l'avatar. */
     groundShadow: '#16240e',
     node: { lecon: '#2fbf5f', exercices: '#3f86f0', evaluation: '#e0504f', locked: '#aab2c0' },
     nodeRim: '#1c2a52',
-    pawn: '#2e6be6',
     village: { wall: '#f5ead2', roof: '#d9733c' },
   },
   /** Pointillé des frontières de région. */

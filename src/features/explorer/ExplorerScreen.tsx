@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GradientSurface } from '@/components/GradientSurface';
 import { useBottomNavLayout } from '@/components/navigation/useBottomNavLayout';
+import { useStudentLook } from '@/features/avatar/hooks/useAvatarLook';
 import { useAvatarOfferOnVisit } from '@/features/avatar/hooks/useAvatarOfferOnVisit';
 import { SceneBoundary } from '@/lib/three/SceneBoundary';
 import { useSceneActive } from '@/lib/three/useSceneActive';
@@ -95,6 +96,8 @@ export function ExplorerScreen() {
   const sceneKey = useSceneKey();
   // Première visite sans avatar : l'éditeur « Crée ton avatar » est proposé une fois.
   useAvatarOfferOnVisit(active && view.kind === 'carousel');
+  // L'avatar de l'élève tient lieu de pion sur la carte d'une région.
+  const avatarLook = useStudentLook();
   const animated = !useReducedMotion();
   const screenReader = useScreenReader();
   // Faux au rendu serveur (web) : pas de WebGL côté serveur, pas de décalage à l'hydratation.
@@ -277,6 +280,7 @@ export function ExplorerScreen() {
                     map,
                     color: explorerArt.regions[view.regionId as keyof typeof explorerArt.regions],
                     scroll: MAP_SCROLL,
+                    look: avatarLook,
                   }
                 : null
             }

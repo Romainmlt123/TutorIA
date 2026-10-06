@@ -143,9 +143,10 @@ function dress(rig: Rig, look: AvatarLook) {
 }
 
 /** Passe en douceur à une autre animation ; sans animation, la figurine prend sa pose de départ. */
-function play(rig: Rig, name: AvatarAnimation, animated: boolean) {
+function play(rig: Rig, name: AvatarAnimation, animated: boolean, speed: number) {
   const next = rig.actions.get(name);
   if (!next) return;
+  next.timeScale = speed;
   if (rig.playing !== name) {
     const previous = rig.playing ? rig.actions.get(rig.playing) : undefined;
     next.reset().play();
@@ -169,6 +170,8 @@ type Props = {
   position?: readonly [number, number, number];
   /** Rotation autour de la verticale (radians) ; 0 : de face. */
   turn?: number;
+  /** Vitesse de lecture de l'animation (1 : normale) : une marche plus rapide sur la carte. */
+  speed?: number;
 };
 
 export function Avatar3D(props: Props) {
@@ -183,11 +186,12 @@ function LoadedAvatar({
   animated = true,
   position = [0, 0, 0],
   turn = 0,
+  speed = 1,
 }: Props & { gltf: GLTF }) {
   const rig = useMemo(() => buildRig(gltf), [gltf]);
   useEffect(() => () => dispose(rig), [rig]);
   useEffect(() => dress(rig, look), [rig, look]);
-  useEffect(() => play(rig, animation, animated), [rig, animation, animated]);
+  useEffect(() => play(rig, animation, animated, speed), [rig, animation, animated, speed]);
   useFrame((_, delta) => {
     if (animated) rig.mixer.update(Math.min(delta, 0.1));
   });
