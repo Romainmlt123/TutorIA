@@ -167,7 +167,7 @@ src/
   features/       auth, onboarding, access, home, tutor, flashcards, stats, explorer, avatar, comingSoon, profile, parents :
                   écrans, composants, logique, hooks
   services/       services derrière des interfaces, versions Supabase et simulée :
-                  auth, family, onboarding, student, parents, tutor, explorer ; avatar (sur l'appareil) ; db/ = types générés
+                  auth, family, onboarding, student, parents, tutor, explorer, avatar ; db/ = types générés
   data/           types et programme (classes, chapitres) ; mock/ = données fictives de démonstration
   theme/          thème typé généré depuis design/tokens/ + police Satoshi + espaces élève et parent
   i18n/fr.ts      tous les textes de l'app
