@@ -68,3 +68,14 @@ export const ringTrackOnColor = 'rgba(255,255,255,0.22)';
 
 /** Encadré de confidentialité sur la carte « Cette semaine » (P3) : blanc à 14 %. */
 export const privacyVeil = 'rgba(255,255,255,0.14)';
+
+/**
+ * Idées de départ d'une discussion libre (tuteur écrit) : couleurs d'accent de la palette, assez
+ * foncées pour un texte blanc.
+ */
+export const chatStarterGradients = {
+  notion: [palette.violet[500], palette.violet[700]],
+  exercise: [palette.orange[500], palette.orange[700]],
+  review: [palette.green[600], palette.green[800]],
+  graph: [palette.cyan[600], palette.cyan[800]],
+} as const;

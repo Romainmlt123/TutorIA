@@ -8,10 +8,14 @@ import { fr } from '@/i18n/fr';
 import { TUTOR_LIMITS } from '@/services/tutor';
 import { fontFamily, theme } from '@/theme';
 
-type Props = { onSend: (text: string) => void; disabled?: boolean };
+type Props = { onSend: (text: string) => void; disabled?: boolean; placeholder?: string };
 
 /** Barre de saisie : champ de 48 px et bouton d'envoi rond. */
-export function ChatInput({ onSend, disabled = false }: Props) {
+export function ChatInput({
+  onSend,
+  disabled = false,
+  placeholder = fr.tutor.inputPlaceholder,
+}: Props) {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
   const remaining = TUTOR_LIMITS.messageMaxChars - value.length;
@@ -41,7 +45,7 @@ export function ChatInput({ onSend, disabled = false }: Props) {
           onSubmitEditing={send}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder={fr.tutor.inputPlaceholder}
+          placeholder={placeholder}
           placeholderTextColor={theme.palette.gray[400]}
           accessibilityLabel={fr.tutor.inputLabel}
           maxLength={TUTOR_LIMITS.messageMaxChars}

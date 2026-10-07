@@ -10,7 +10,8 @@ import {
 
 import { levelOfTopic } from '../tutor/level';
 
-const SUBJECT_IDS = [
+/** Les matières que l'app connaît (même liste que le thème). */
+export const SUBJECT_IDS = [
   'maths',
   'francais',
   'histoire-geo',
@@ -20,8 +21,8 @@ const SUBJECT_IDS = [
 ] as const;
 
 const topicSchema = z.object({
-  subjectId: z.enum(SUBJECT_IDS),
-  chapterId: z.string().max(64),
+  subjectId: z.enum(SUBJECT_IDS).optional(),
+  chapterId: z.string().max(64).optional(),
   levelId: z.string().max(128).optional(),
 });
 
@@ -44,11 +45,12 @@ export function redactPersonalData(text: string): string {
 }
 
 /**
- * Le chapitre doit exister et appartenir à la matière annoncée. Pour un niveau d'Explorer, le niveau
- * doit exister, appartenir à ce chapitre et se jouer déjà.
+ * Chat libre : ni matière ni chapitre, ou une matière seule. Un chapitre doit exister et appartenir
+ * à la matière annoncée. Un niveau d'Explorer doit exister, appartenir à ce chapitre et se jouer déjà.
  */
 export function isKnownTopic(topic: TutorTopic): boolean {
   if (topic.levelId !== undefined) return levelOfTopic(topic) !== null;
+  if (topic.chapterId === undefined) return true;
   return chapterById(topic.chapterId)?.subjectId === topic.subjectId;
 }
 

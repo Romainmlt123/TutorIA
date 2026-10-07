@@ -29,7 +29,7 @@ import { useStudentAccount } from '@/lib/session/SessionProvider';
 import { studentKeys } from '@/lib/session/useStudentOverview';
 import { useStudyRules } from '@/lib/session/useStudyRules';
 import { useKeyboardVisible } from '@/lib/useKeyboardVisible';
-import { tutorService, type TutorTopic } from '@/services/tutor';
+import type { TutorTopic } from '@/services/tutor';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
@@ -142,7 +142,7 @@ function LevelChatView({ place }: { place: LevelPlace }) {
     [level],
   );
   const { messages, pending, offline, progress, result, visual, send, retry, report } =
-    useTutorChat(topic, false, tutorService, chat);
+    useTutorChat({ topic, level: chat });
   const keyboardVisible = useKeyboardVisible();
   const viewer = useVisualViewer(visual, keyboardVisible);
   const list = useRef<FlatList<ChatMessage>>(null);

@@ -25,14 +25,12 @@ export type StartVoiceRequest = {
  */
 export interface TutorService {
   readonly kind: 'live' | 'mock';
-  /** Envoie un message et renvoie la réponse en flux. */
+  /**
+   * Envoie un message et renvoie la réponse en flux. Sans `conversationId`, le message ouvre une
+   * nouvelle discussion, dont l'identifiant arrive dans le flux (`conversation`).
+   */
   sendMessage(request: ChatRequest, signal?: AbortSignal): AsyncIterable<TutorStreamEvent>;
   startVoiceSession(request: StartVoiceRequest): Promise<VoiceSession>;
   /** Signale une réponse inappropriée du tuteur. */
   reportMessage(excerpt: string, topic: TutorTopic): Promise<void>;
-  /**
-   * Oublie la conversation en cours sur ce sujet : le prochain message ouvre une nouvelle séance
-   * (une nouvelle partie, pour un niveau d'Explorer).
-   */
-  forgetConversation(topic: TutorTopic): void;
 }

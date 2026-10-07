@@ -44,8 +44,10 @@ function fakeAdmin({
   limited = false,
   history = [] as { role: 'student' | 'tutor'; content: string }[],
   sessionLevel = null as string | null,
+  conversationTitle = 'Résoudre 3x + 5 = 20' as string | null,
 } = {}) {
   const inserts: { table: string; row: Record<string, unknown> }[] = [];
+  const updates: { table: string; row: Record<string, unknown> }[] = [];
   const table = (name: string) => {
     const query = {
       select: () => query,
@@ -63,7 +65,10 @@ function fakeAdmin({
           }),
         });
       },
-      update: () => ({ eq: async () => ({ error: null }) }),
+      update: (row: Record<string, unknown>) => {
+        updates.push({ table: name, row });
+        return { eq: async () => ({ error: null }) };
+      },
       maybeSingle: async () =>
         name === 'profiles'
           ? { data: { role: 'student', first_name: 'Léa' }, error: null }
@@ -73,6 +78,7 @@ function fakeAdmin({
                 data: {
                   id: 'conversation-1',
                   session_id: 'session-1',
+                  title: conversationTitle,
                   study_sessions: {
                     started_at: new Date().toISOString(),
                     chapter_id: 'maths-equations',
@@ -112,7 +118,7 @@ function fakeAdmin({
       };
     }),
   };
-  return { admin, inserts };
+  return { admin, inserts, updates };
 }
 
 function deps(openai: ReturnType<typeof fakeOpenAI>, admin: unknown): ChatDeps {
@@ -153,6 +159,8 @@ describe('POST /api/tutor/chat', () => {
       { type: 'conversation', id: 'conversations-1' },
       { type: 'delta', text: 'Presque ! ' },
       { type: 'delta', text: 'Que fait le 3 à x ?' },
+      // Nouvelle discussion libre : un titre (ici le repli, le faux modèle n'en propose pas).
+      { type: 'title', title: 'Je fais 15 − 3' },
       { type: 'done' },
     ]);
     const params = openai.responses.create.mock.calls[0]?.[0] ?? {};
@@ -543,7 +551,7 @@ describe('POST /api/tutor/chat · visuels du tuteur', () => {
     const events = await readEvents(
       await handleChat(chatRequest(freeBody), levelDeps(openai, admin)),
     );
-    expect(openai.responses.create).toHaveBeenCalledTimes(2);
+    expect(openai.responses.create).toHaveBeenCalledTimes(3);
     const second = openai.responses.create.mock.calls[1]?.[0] as {
       input: { type?: string; output?: string }[];
     };
@@ -574,5 +582,77 @@ describe('POST /api/tutor/chat · visuels du tuteur', () => {
     const params = openai.responses.create.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(params.tools).toBeUndefined();
     expect(String(params.instructions)).not.toContain('show_graph');
+  });
+});
+
+describe('POST /api/tutor/chat · chat libre', () => {
+  it('accepte une question sans matière ni chapitre, et le dit au tuteur', async () => {
+    const openai = fakeLevelOpenAI([[text('Bien sûr, montre-moi l’énoncé.'), completed]]);
+    const { admin, inserts } = fakeAdmin();
+    const response = await handleChat(
+      chatRequest({ topic: {}, history: [], message: 'J’ai un exercice de physique à faire' }),
+      levelDeps(openai, admin),
+    );
+    expect(response.status).toBe(200);
+    await readEvents(response);
+    const params = openai.responses.create.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(String(params.instructions)).toContain('Chat libre');
+    expect(String(params.instructions)).toContain('Toutes les matières');
+    expect(inserts.find((i) => i.table === 'study_sessions')?.row).toMatchObject({
+      subject_id: null,
+      chapter_id: null,
+    });
+  });
+
+  it('titre une discussion rouverte qui n’en avait pas, et pas une discussion déjà titrée', async () => {
+    const resumed = { ...body, conversationId: '6f8fad5b-d9cb-469f-a165-70867728950e' };
+    const untitled = fakeAdmin({ conversationTitle: null });
+    const titled = fakeAdmin();
+    const first = await readEvents(
+      await handleChat(chatRequest(resumed), deps(fakeOpenAI(), untitled.admin)),
+    );
+    const second = await readEvents(
+      await handleChat(chatRequest(resumed), deps(fakeOpenAI(), titled.admin)),
+    );
+    expect(first.some((e) => e.type === 'title')).toBe(true);
+    expect(second.some((e) => e.type === 'title')).toBe(false);
+  });
+
+  /** Tuteur qui répond, puis modèle qui nomme la discussion (titre et matière). */
+  const namingOpenAI = (subject: string) => {
+    const openai = fakeOpenAI();
+    const stream = openai.responses.create.getMockImplementation()!;
+    openai.responses.create.mockImplementationOnce(stream).mockImplementationOnce((async () => ({
+      output_text: JSON.stringify({ title: 'Les forces', subject }),
+    })) as never);
+    return openai;
+  };
+
+  it('reconnaît la matière d’une discussion libre avec son titre, et l’écrit dans la séance', async () => {
+    const { admin, updates } = fakeAdmin();
+    const events = await readEvents(
+      await handleChat(
+        chatRequest({ topic: {}, history: [], message: 'C’est quoi une force ?' }),
+        deps(namingOpenAI('physique-chimie'), admin),
+      ),
+    );
+    expect(events).toContainEqual({
+      type: 'title',
+      title: 'Les forces',
+      subjectId: 'physique-chimie',
+    });
+    expect(updates).toContainEqual({
+      table: 'study_sessions',
+      row: { subject_id: 'physique-chimie' },
+    });
+  });
+
+  it('ne change pas la matière d’une discussion qui en a déjà une', async () => {
+    const { admin, updates } = fakeAdmin();
+    const events = await readEvents(
+      await handleChat(chatRequest(body), deps(namingOpenAI('physique-chimie'), admin)),
+    );
+    expect(events).toContainEqual({ type: 'title', title: 'Les forces' });
+    expect(updates.some((u) => u.table === 'study_sessions' && 'subject_id' in u.row)).toBe(false);
   });
 });
