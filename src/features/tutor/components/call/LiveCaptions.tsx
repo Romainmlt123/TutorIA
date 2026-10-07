@@ -18,13 +18,15 @@ type Props = {
   compact?: boolean;
   /** Message de l'appel (photo envoyée, micro refusé…), à la place des sous-titres. */
   notice?: string;
+  /** Caractères déjà prononcés par le tuteur : les suivants restent à 45 % de blanc. */
+  spoken?: number;
 };
 
 /**
  * Sous-titres de l'appel (LiveCaptions, v2.6) : la phrase en cours, au fil de la transcription,
  * les nombres et les formules en gras, chaque couleur nommée dans une pastille de sa couleur.
  */
-export function LiveCaptions({ caption, compact = false, notice }: Props) {
+export function LiveCaptions({ caption, compact = false, notice, spoken }: Props) {
   const size = compact
     ? { fontSize: C.compactSize, lineHeight: C.compactLineHeight }
     : { fontSize: C.size, lineHeight: C.lineHeight };
@@ -39,8 +41,13 @@ export function LiveCaptions({ caption, compact = false, notice }: Props) {
       </Text>
     );
   }
-  if (!caption?.text) return <View style={{ minHeight: size.lineHeight }} />;
-  const text = compact ? captionTail(caption.text, COMPACT_MAX_CHARS) : caption.text;
+  if (!caption?.text || (compact && spoken === 0)) {
+    return <View style={{ minHeight: size.lineHeight }} />;
+  }
+  const said = spoken === undefined ? caption.text : caption.text.slice(0, spoken);
+  // Avec un visuel, seule la fin de ce qui est dit reste visible ; sinon, la suite attend en gris.
+  const text = compact ? captionTail(said, COMPACT_MAX_CHARS) : said;
+  const upcoming = compact || spoken === undefined ? '' : caption.text.slice(spoken);
   return (
     <View accessibilityLabel={fr.tutor.call.captionsLabel} style={styles.block}>
       {compact ? null : (
@@ -75,6 +82,11 @@ export function LiveCaptions({ caption, compact = false, notice }: Props) {
             </Text>
           ),
         )}
+        {upcoming ? (
+          <Text variant="body" weight="medium" color={C.upcoming} style={size}>
+            {upcoming}
+          </Text>
+        ) : null}
       </Text>
     </View>
   );

@@ -1,4 +1,11 @@
-import { boardProgress, captionPieces, captionTail, namedTone } from './voiceSync';
+import {
+  boardProgress,
+  captionPieces,
+  captionTail,
+  measuredSpeechRate,
+  namedTone,
+  spokenLength,
+} from './voiceSync';
 
 describe('la voix et le visuel avancent ensemble', () => {
   it('trouve la dernière couleur nommée, accordée ou non', () => {
@@ -29,5 +36,18 @@ describe('la voix et le visuel avancent ensemble', () => {
       '… divise par 3 des deux côtés.',
     );
     expect(captionTail('Court.', 30)).toBe('Court.');
+  });
+
+  it('allume les mots du tuteur au rythme de sa voix, sur des mots entiers', () => {
+    const text = 'On retire 5 des deux côtés.';
+    expect(spokenLength(text, 0, 15)).toBe(2);
+    expect(spokenLength(text, 500, 15)).toBe(9);
+    expect(spokenLength(text, 10_000, 15)).toBe(text.length);
+  });
+
+  it('recale le débit de la voix sur une réponse entendue en entier', () => {
+    expect(measuredSpeechRate(120, 10_000)).toBe(12);
+    expect(measuredSpeechRate(500, 5_000)).toBe(25);
+    expect(measuredSpeechRate(10, 5_000)).toBeNull();
   });
 });

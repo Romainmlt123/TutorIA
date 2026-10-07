@@ -84,3 +84,23 @@ export function captionTail(text: string, maxChars: number): string {
   const from = text[start - 1] === ' ' ? start : text.indexOf(' ', start) + 1 || start;
   return `… ${text.slice(from)}`;
 }
+
+/** Débit de la voix du tuteur au départ (caractères par seconde), recalé pendant l'appel. */
+export const DEFAULT_SPEECH_CPS = 15;
+
+/**
+ * Partie de la phrase déjà prononcée : le texte arrive bien avant la voix, alors les mots
+ * s'allument au rythme estimé de la voix, coupés sur un mot entier.
+ */
+export function spokenLength(text: string, elapsedMs: number, charsPerSecond: number): number {
+  const reached = Math.floor((Math.max(0, elapsedMs) / 1000) * charsPerSecond);
+  if (reached >= text.length) return text.length;
+  const end = text.indexOf(' ', reached);
+  return end === -1 ? text.length : end;
+}
+
+/** Débit mesuré sur une réponse entendue en entier, borné pour rester plausible. */
+export function measuredSpeechRate(chars: number, durationMs: number): number | null {
+  if (chars < 20 || durationMs < 1000) return null;
+  return Math.min(25, Math.max(8, chars / (durationMs / 1000)));
+}

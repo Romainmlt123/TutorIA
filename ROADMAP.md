@@ -262,6 +262,7 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
     - l'appel simulé (Expo Go) joue aussi sous-titres, rebond et visuels ;
     - X4b (la voix dans Explorer) garde son ancien écran.
   - Le rebond selon la vraie voix ne se voit qu'avec un build de développement ou dans le navigateur du téléphone (pas de WebRTC dans Expo Go).
+  - Premier essai de Romain avec la vraie voix (navigateur) : rebond, discussion, graphiques et tableaux validés. Retours intégrés : les sous-titres du tuteur s'allument au rythme de sa voix (ils arrivaient d'un coup, avant l'audio), et les halos du logo n'apparaissent que quand il parle.
 
 ## En attente
 

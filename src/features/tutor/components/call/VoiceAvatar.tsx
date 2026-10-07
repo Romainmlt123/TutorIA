@@ -26,6 +26,8 @@ const LEVEL_SMOOTHING_MS = 160;
 const MIN_SPEAKING_LEVEL = 0.15;
 /** Appui long : signaler la réponse du tuteur. */
 const REPORT_DELAY_MS = 600;
+/** Apparition et disparition des halos quand le tuteur prend ou rend la parole. */
+const HALO_FADE_MS = 400;
 
 type Props = {
   state: CallState;
@@ -109,6 +111,16 @@ export function VoiceAvatar({ state, level, compact = false, onInterrupt, onRepo
     };
   });
 
+  // Les halos (les « ondes ») n'apparaissent que quand le tuteur parle, et respirent avec sa voix.
+  const halo = useDerivedValue(
+    () => withTiming(speaking ? 1 : 0, { duration: HALO_FADE_MS }),
+    [speaking],
+  );
+  const halos = useAnimatedStyle(() => ({
+    opacity: halo.value,
+    transform: [{ scale: reduceMotion ? 1 : 0.92 + 0.08 * halo.value + 0.06 * smooth.value }],
+  }));
+
   const ground = useAnimatedStyle(() => {
     if (reduceMotion) return {};
     const air = Math.sin(Math.PI * phase.value) * smooth.value;
@@ -117,30 +129,26 @@ export function VoiceAvatar({ state, level, compact = false, onInterrupt, onRepo
 
   return (
     <View style={[styles.stage, { width: size * 1.9, height: size + hop + 24 }]}>
-      <View
+      <Animated.View
         aria-hidden
         style={[
-          styles.halo,
-          {
-            width: size * 1.9,
-            height: size * 1.9,
-            top: center - size * 0.95,
-            backgroundColor: extras.call.halo[1],
-          },
-        ]}
-      />
-      <View
-        aria-hidden
-        style={[
-          styles.halo,
-          {
-            width: size * 1.4,
-            height: size * 1.4,
-            top: center - size * 0.7,
-            backgroundColor: extras.call.halo[0],
-          },
-        ]}
-      />
+          styles.halos,
+          { width: size * 1.9, height: size * 1.9, top: center - size * 0.95 },
+          halos,
+        ]}>
+        <View
+          style={[
+            styles.halo,
+            { width: size * 1.9, height: size * 1.9, backgroundColor: extras.call.halo[1] },
+          ]}
+        />
+        <View
+          style={[
+            styles.halo,
+            { width: size * 1.4, height: size * 1.4, backgroundColor: extras.call.halo[0] },
+          ]}
+        />
+      </Animated.View>
       <Animated.View
         aria-hidden
         style={[styles.ground, { width: size * 0.82, top: hop + size + 6 }, ground]}
@@ -165,7 +173,13 @@ export function VoiceAvatar({ state, level, compact = false, onInterrupt, onRepo
 
 const styles = StyleSheet.create({
   stage: { alignItems: 'center' },
-  halo: { position: 'absolute', alignSelf: 'center', borderRadius: theme.radius.full },
+  halos: {
+    position: 'absolute',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  halo: { position: 'absolute', borderRadius: theme.radius.full },
   ground: {
     position: 'absolute',
     height: 14,

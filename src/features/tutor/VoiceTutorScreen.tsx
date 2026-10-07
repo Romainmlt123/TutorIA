@@ -20,6 +20,7 @@ import { VoiceStatus } from './components/call/VoiceStatus';
 import { VisualModal } from './components/visual/VisualModal';
 import { CallVisualCard } from './components/visual/VisualPanel';
 import { useCallVisualSync } from './hooks/useCallVisualSync';
+import { useSpokenCaption } from './hooks/useSpokenCaption';
 import { useTopicLabels, useTopicParams } from './hooks/useTutorTopic';
 import { useVoiceCall } from './hooks/useVoiceCall';
 import { callStateOf } from './logic/callState';
@@ -54,7 +55,13 @@ export function VoiceTutorScreen() {
         });
   const call = useVoiceCall(topic, backToWritten);
   const state = callStateOf(call.status);
-  const { focus, progress } = useCallVisualSync(call.visual, call.caption, state === 'speaking');
+  const spoken = useSpokenCaption(call.caption, state === 'speaking');
+  // La courbe s'allume quand sa couleur est prononcée, pas quand elle est écrite.
+  const said =
+    call.caption && spoken !== undefined
+      ? { ...call.caption, text: call.caption.text.slice(0, spoken) }
+      : call.caption;
+  const { focus, progress } = useCallVisualSync(call.visual, said, state === 'speaking');
   const [expanded, setExpanded] = useState<TutorVisual | null>(null);
   const visual = call.visual;
 
@@ -126,7 +133,12 @@ export function VoiceTutorScreen() {
           <VoiceStatus state={state} size={visual ? 'sm' : 'md'} />
           <View style={[styles.captions, visual ? styles.captionsCompact : null]}>
             {call.captionsOn || notice ? (
-              <LiveCaptions caption={call.caption} compact={!!visual} notice={notice} />
+              <LiveCaptions
+                caption={call.caption}
+                compact={!!visual}
+                notice={notice}
+                spoken={spoken}
+              />
             ) : null}
           </View>
         </Animated.View>
