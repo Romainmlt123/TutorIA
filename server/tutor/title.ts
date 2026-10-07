@@ -83,12 +83,13 @@ export async function nameOf(
             schema: NAME_SCHEMA,
           },
         },
-        max_output_tokens: 200,
+        max_output_tokens: 800,
         store: false,
         safety_identifier: safetyId,
       },
       { signal: AbortSignal.timeout(TITLE_TIMEOUT_MS) },
     );
+    if (response.status === 'incomplete') throw new Error('Titre coupé par la limite de jetons');
     const parsed = named.safeParse(JSON.parse(response.output_text ?? ''));
     if (!parsed.success) throw new Error('Titre mal formé');
     const title = cleanTitle(parsed.data.title);

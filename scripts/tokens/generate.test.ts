@@ -85,7 +85,7 @@ describe('générateur de tokens', () => {
     expect(tokens.screenBand).toMatchObject({ angle: 170, radiusBottom: 32, overlap: 56 });
     expect(tokens.screenBand.segmentActive.textOnViolet).toBe(tokens.palette.violet?.['600']);
     expect(tokens.sectionTitle).toEqual({ fontSize: 22, lineHeight: 30 });
-    expect(tokens.goal.gradient.colors).toEqual(['#0c9e42', '#03702b']);
+    expect(tokens.goal.gradient.colors).toEqual(['#662ee6', '#2e6be6']);
     expect(tokens.voiceCall.avatar).toMatchObject({ size: 148, cycleMs: 420, tilt: -8 });
     expect(tokens.voiceCall.hangup).toBe(tokens.palette.red?.['500']);
   });

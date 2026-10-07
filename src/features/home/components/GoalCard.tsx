@@ -12,7 +12,7 @@ import { goalProgress } from '../logic/home';
 
 type Props = { minutes: number; sessionsDone: number; sessionsTarget: number };
 
-/** Objectif du jour (v2.5) : carte en dégradé vert, anneau blanc, détail et encouragement. */
+/** Objectif du jour (v2.5) : carte en dégradé violet → bleu, anneau blanc, détail et encouragement. */
 export function GoalCard({ minutes, sessionsDone, sessionsTarget }: Props) {
   return (
     <View accessible accessibilityLabel={fr.home.goalSection}>

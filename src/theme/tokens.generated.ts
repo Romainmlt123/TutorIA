@@ -617,8 +617,8 @@ export const sectionTitle = {
 export const goal = {
   "gradient": {
     "colors": [
-      "#0c9e42",
-      "#03702b"
+      "#662ee6",
+      "#2e6be6"
     ],
     "locations": [
       0,

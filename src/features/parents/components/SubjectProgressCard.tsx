@@ -28,7 +28,7 @@ export function SubjectProgressCard({ summary, open, onToggle }: Props) {
   const percent = summary.mastery === null ? '–' : `${summary.mastery} %`;
   const up = (summary.delta ?? 0) >= 0;
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: subject.soft }]}>
       <PressableBase
         onPress={onToggle}
         accessibilityRole="button"
@@ -108,12 +108,8 @@ export function SubjectProgressCard({ summary, open, onToggle }: Props) {
 }
 
 const styles = StyleSheet.create({
-  // Dans la carte de section (v2.5) : un bloc sur le fond `bg`, sans ombre.
-  card: {
-    borderRadius: theme.radius['2xl'],
-    backgroundColor: theme.colors.bg,
-    overflow: 'hidden',
-  },
+  // Dans la carte « Par matière » : un bloc teinté de sa matière, sans ombre.
+  card: { borderRadius: theme.radius['2xl'], overflow: 'hidden' },
   head: { gap: 14, paddingVertical: 18, paddingHorizontal: theme.space[5] },
   top: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   tile: { width: theme.space[12], height: theme.space[12] },

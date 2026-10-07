@@ -32,7 +32,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Tuteur visuel | V4 · les visuels à la voix                                                    | à venir     |                       |
 | Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`     |
 | Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice` |
-| Interface     | **v2.5 · bandeau de marque et cartes de section**                             | à valider   | `feat/interface-v2-6` |
+| Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6` |
 | Interface     | v2.6 · l'appel vocal plein écran                                              | à venir     | `feat/interface-v2-6` |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
@@ -245,6 +245,14 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - Plan de C4 validé par Romain : appareil photo et galerie, photo jamais gardée, et la photo aussi dans les leçons et exercices d'Explorer, interdite en évaluation (décision de Romain). Branche `feat/photo-exercice`, tirée de `dev` après la fusion des pull requests #7 et #8.
   - C4 est validée par Romain sur le Pixel (prompt `2026-10-07.3`).
   - La nouvelle version de l'interface (design v2.5) est déjà dans `design/`. Elle sera implémentée plus tard.
+
+- **08/10 :**
+  - La v2.5 est validée par Romain sur le Pixel, avec ses retours intégrés :
+    - P1 sans le badge « Espace Parents », chiffres clés centrés sans évolution, et « Comment l'encourager » propose deux questions à poser (rédigées à l'avance, sans IA) ;
+    - P2 : chaque matière de « Par matière » est un bloc teinté de sa couleur ;
+    - l'objectif du jour passe en dégradé violet → bleu (écart 18) ;
+    - la saisie du chat libre remonte au-dessus du logo de la barre.
+  - Corrigé : le résumé de la semaine était coupé au milieu d'une phrase. Le modèle consomme une partie des jetons de sortie pour réfléchir, et la limite de 300 jetons l'arrêtait. Les résumés passent à 1 500 jetons, et une réponse coupée n'est plus jamais enregistrée.
 
 ## En attente
 

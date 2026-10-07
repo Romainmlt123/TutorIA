@@ -149,9 +149,10 @@ function TutorChat({ entry, resume, onConversation, onTitle }: ChatProps) {
           style={[
             styles.input,
             {
+              // Le logo Tutor'IA de la barre dépasse d'environ 20 px : la saisie reste au-dessus.
               paddingBottom: keyboardVisible
                 ? theme.space[3]
-                : bottom + theme.navigation.height + theme.space[4],
+                : bottom + theme.navigation.height + theme.space[8],
             },
           ]}>
           <ChatInput

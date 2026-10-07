@@ -4,12 +4,11 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { FormMessage } from '@/components/form/FormMessage';
 import { IconButton } from '@/components/IconButton';
-import { Pill } from '@/components/Pill';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { Text } from '@/components/Text';
 import { chapterTitle } from '@/data/curriculum';
 import { fr } from '@/i18n/fr';
-import { formatDuration, formatDurationDelta } from '@/lib/format';
+import { formatDuration } from '@/lib/format';
 import { addDays, parisDay } from '@/lib/parisTime';
 import { useParentAccount } from '@/lib/session/SessionProvider';
 import type { LinkedChild } from '@/services/family';
@@ -75,6 +74,10 @@ function ChildWeek({ child }: { child: LinkedChild }) {
     advice.kind === 'explain'
       ? t.advice.explain(chapterTitle(advice.chapterId))
       : t.advice[advice.kind];
+  const questions =
+    advice.kind === 'explain'
+      ? t.questions.explain(chapterTitle(advice.chapterId))
+      : t.questions[advice.kind];
   const peak = peakWindowStart(data.sessionHours);
   const note = [
     peak === null ? null : t.chartPeak(child.firstName, peak, peak + 2),
@@ -91,18 +94,12 @@ function ChildWeek({ child }: { child: LinkedChild }) {
           icon="horloge"
           value={formatDuration(totals.minutes)}
           label={t.studyTime}
-          delta={totals.deltaMinutes !== 0 ? formatDurationDelta(totals.deltaMinutes) : undefined}
           gradient={theme.subjects.anglais.gradient}
         />
         <ParentKpiCard
           icon="calendrier"
           value={`${totals.activeDays} / 7`}
           label={t.activeDays}
-          delta={
-            totals.deltaActiveDays !== 0
-              ? `${totals.deltaActiveDays > 0 ? '+' : '−'}${Math.abs(totals.deltaActiveDays)}`
-              : undefined
-          }
           gradient={theme.subjects['histoire-geo'].gradient}
         />
         <ParentKpiCard
@@ -123,7 +120,7 @@ function ChildWeek({ child }: { child: LinkedChild }) {
           onDetail={() => router.push('/parents/progres')}
         />
       ) : null}
-      <AdviceCard text={adviceText} />
+      <AdviceCard text={adviceText} questions={questions} />
       <StudyTimeChart days={data.days} goalMinutes={dailyGoalMinutes(goalHours)} note={note} />
     </>
   );
@@ -161,13 +158,6 @@ export function ParentHomeScreen() {
                 <View />
               )}
               <View style={styles.topRight}>
-                <Pill
-                  label={t.spaceBadge}
-                  backgroundColor={theme.screenBand.controlVeil}
-                  color={theme.colors.textOnColor}
-                  size="md"
-                  style={styles.badge}
-                />
                 <IconButton
                   icon="cloche"
                   onBand
@@ -217,7 +207,6 @@ const styles = StyleSheet.create({
   content: { gap: theme.space[4] },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   topRight: { flexDirection: 'row', alignItems: 'center', gap: theme.space[2] },
-  badge: { alignSelf: 'center' },
   kpis: { flexDirection: 'row', gap: theme.space[3] },
   section: { gap: theme.space[3] },
   loader: { marginTop: theme.space[8] },
