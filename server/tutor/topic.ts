@@ -1,4 +1,4 @@
-import { chapters } from '@/data/mock/chapters';
+import { chapterTitle } from '@/data/curriculum';
 import { student } from '@/data/mock/student';
 import { subjects } from '@/data/mock/subjects';
 import type { TutorTopic } from '@/services/tutor/api-contract';
@@ -16,6 +16,6 @@ export function promptContextOf(topic: TutorTopic, mode: PromptContext['mode']):
     mode,
     grade: place?.island.grade ?? student.grade,
     subject: subjects.find((s) => s.id === topic.subjectId)?.name ?? topic.subjectId,
-    chapter: place?.city.name ?? chapters.find((c) => c.id === topic.chapterId)?.title ?? '',
+    chapter: place?.city.name ?? chapterTitle(topic.chapterId),
   };
 }

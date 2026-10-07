@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { chapters } from '@/data/mock/chapters';
+import { chapterById } from '@/data/curriculum';
 import {
   TUTOR_LIMITS,
   type ChatTurn,
@@ -49,7 +49,7 @@ export function redactPersonalData(text: string): string {
  */
 export function isKnownTopic(topic: TutorTopic): boolean {
   if (topic.levelId !== undefined) return levelOfTopic(topic) !== null;
-  return chapters.some((c) => c.id === topic.chapterId && c.subjectId === topic.subjectId);
+  return chapterById(topic.chapterId)?.subjectId === topic.subjectId;
 }
 
 export function parseTopic(body: unknown): Result<TutorTopic> {
