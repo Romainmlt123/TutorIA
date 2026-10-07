@@ -4,7 +4,6 @@ import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 import { preloadAvatar } from '@/features/avatar/avatar3d/Avatar3D';
-import type { AvatarLook } from '@/features/avatar/logic/avatarLook';
 import { preloadModel, useModel } from '@/lib/three/useModel';
 import { explorerArt } from '@/theme/explorerArt';
 
@@ -20,7 +19,7 @@ import {
   type DecorEntry,
 } from '../logic/terrainLayout';
 import { grassMaterial } from './grass';
-import { MapAvatar } from './MapAvatar';
+import { MapAvatar, type AvatarOnMap } from './MapAvatar';
 import { groundShadows, type ShadowSpot } from './groundShadows';
 import { levelNodes } from './levelNodes';
 import { pathGeometry, pathMaterial } from './mapPath';
@@ -368,11 +367,11 @@ type Props = {
   map: RegionMap;
   regionColor: string;
   animated: boolean;
-  /** Avatar de l'élève, qui tient lieu de pion (null tant qu'il n'est pas lu). */
-  look: AvatarLook | null;
+  /** Avatar de l'élève, qui tient lieu de pion (null tant que son apparence n'est pas lue). */
+  avatar: AvatarOnMap | null;
 };
 
-export function RegionWorld({ map, regionColor, animated, look }: Props) {
+export function RegionWorld({ map, regionColor, animated, avatar }: Props) {
   const monumentModel = MONUMENT_MODELS[map.regionId];
   const modeled = useMemo(
     () => new Set(monumentModel ? map.cities.map((c) => c.monument) : []),
@@ -393,7 +392,7 @@ export function RegionWorld({ map, regionColor, animated, look }: Props) {
   return (
     <>
       <primitive object={built.root} />
-      {look ? <MapAvatar map={map} look={look} animated={animated} /> : null}
+      {avatar ? <MapAvatar map={map} avatar={avatar} animated={animated} /> : null}
       {terrain ? <RegionTerrain terrain={terrain} map={map} /> : null}
       <RegionDecor map={map} baked={terrain !== undefined} />
       {monumentModel ? <RegionMonuments map={map} asset={monumentModel} /> : null}

@@ -16,6 +16,9 @@ import { GameText } from '@/components/game/GameText';
 
 const HUD = explorerArt.hud;
 const TARGET = 48;
+/** Étoiles en arc au-dessus d'un niveau terminé, façon carte de jeu : celle du milieu plus haute. */
+const STAR = 18;
+const STAR_LIFT = [0, 6, 0] as const;
 /** Demi-étendue de la carte, en mètres autour de la caméra, où les boutons sont montés (x puis z). */
 const WINDOW_X = 5;
 const WINDOW_Z = 9;
@@ -90,16 +93,22 @@ function NodeButton({
           />
         )}
       </PressableBase>
-      {node.stars > 0 ? (
+      {/* L'avatar se tient sur ce point : les étoiles ne se posent pas sur lui. */}
+      {node.state === 'completed' && !occupied ? (
         <View style={styles.stars} pointerEvents="none">
-          {[1, 2, 3].map((n) => (
-            <Icon
-              key={n}
-              name="etoile"
-              variant="fill"
-              size={11}
-              color={n <= node.stars ? HUD.gold.face[1] : HUD.wood.groove}
-            />
+          {STAR_LIFT.map((lift, i) => (
+            <View key={i} style={[styles.star, { marginBottom: lift }]}>
+              {/* Contour bleu nuit : la même étoile, un peu plus grande, dessous. */}
+              <Icon name="etoile" variant="fill" size={STAR + 5} color={HUD.ink} />
+              <View style={styles.starFace}>
+                <Icon
+                  name="etoile"
+                  variant="fill"
+                  size={STAR}
+                  color={i < node.stars ? HUD.gold.face[1] : explorerArt.map.nodeRimLocked.dark}
+                />
+              </View>
+            </View>
           ))}
         </View>
       ) : null}
@@ -144,6 +153,8 @@ function CityBanner({
 type Props = {
   map: RegionMap;
   points: readonly ScreenPoint[];
+  /** Niveau où se tient l'avatar : son icône et ses étoiles s'effacent derrière lui. */
+  avatarLevelId: string | null;
   /** Position de la caméra quand `points` a été projeté. */
   camera0: CameraAt;
   onNode: (node: MapNode) => void;
@@ -159,7 +170,7 @@ const rowOf = (bucket: number) => bucket - columnOf(bucket) * 10000;
  * Boutons de niveau (48 px, avec leur libellé complet) et bandeaux de ville posés sur la carte 3D.
  * Seuls ceux proches de la caméra sont montés : une carte peut faire plusieurs écrans de large.
  */
-export function MapOverlay({ map, points, camera0, onNode, onCity }: Props) {
+export function MapOverlay({ map, points, camera0, avatarLevelId, onNode, onCity }: Props) {
   const [bucket, setBucket] = useState(() => bucketOf(camera0.x, camera0.z));
   useAnimatedReaction(
     () => Math.round(MAP_SCROLL_X.value / BUCKET) * 10000 + Math.round(MAP_SCROLL_Z.value / BUCKET),
@@ -174,7 +185,7 @@ export function MapOverlay({ map, points, camera0, onNode, onCity }: Props) {
   const at = new Map(points.map((p) => [p.id, p]));
   return (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
-      {map.nodes.map((node, index) => {
+      {map.nodes.map((node) => {
         const point = at.get(node.levelId);
         if (!point || !near(node.x, node.z)) return null;
         return (
@@ -184,7 +195,7 @@ export function MapOverlay({ map, points, camera0, onNode, onCity }: Props) {
             point={point}
             camera0={camera0}
             onPress={() => onNode(node)}
-            occupied={index === map.pawnIndex}
+            occupied={node.levelId === avatarLevelId}
           />
         );
       })}
@@ -210,12 +221,22 @@ const styles = StyleSheet.create({
   nodeButton: { width: TARGET, height: TARGET, alignItems: 'center', justifyContent: 'center' },
   stars: {
     position: 'absolute',
-    top: TARGET - 6,
-    left: 0,
-    right: 0,
+    bottom: TARGET - 4,
+    left: -STAR,
+    right: -STAR,
     flexDirection: 'row',
+    alignItems: 'flex-end',
     justifyContent: 'center',
-    gap: 1,
+  },
+  star: { alignItems: 'center', justifyContent: 'center' },
+  starFace: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   banner: { position: 'absolute', left: 0, top: 0, alignItems: 'center' },
   bannerBody: {

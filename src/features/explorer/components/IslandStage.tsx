@@ -3,7 +3,7 @@ import { useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import * as THREE from 'three';
 
-import type { AvatarLook } from '@/features/avatar/logic/avatarLook';
+import type { AvatarOnMap } from '../stylized3d/MapAvatar';
 import { explorerArt } from '@/theme/explorerArt';
 
 import { distanceToFit, orbit } from '../hd2d/camera';
@@ -267,7 +267,7 @@ type Props = {
   anchors?: readonly StageAnchor[];
   onProject?: (points: ScreenPoint[] | null, camera: { x: number; z: number }) => void;
   /** Carte de la région ouverte (X2b), sa couleur et son déplacement : elle remplace l'île à l'écran. */
-  region?: { map: RegionMap; color: string; scroll: MapScroll; look: AvatarLook | null } | null;
+  region?: { map: RegionMap; color: string; scroll: MapScroll; avatar: AvatarOnMap | null } | null;
   /** Faux quand l'onglet est caché ou l'app en arrière-plan : plus aucune image n'est calculée. */
   active: boolean;
   animated: boolean;
@@ -320,7 +320,7 @@ export function IslandStage({
           map={region.map}
           regionColor={region.color}
           animated={animated}
-          look={region.look}
+          avatar={region.avatar}
         />
       ) : null}
       <Hd2dPost focus={1 - shot.aimY} band={0.62} look={explorerArt.post.natural} />

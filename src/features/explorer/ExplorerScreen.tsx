@@ -10,6 +10,7 @@ import { useBottomNavLayout } from '@/components/navigation/useBottomNavLayout';
 import { WardrobeNews } from '@/features/avatar/components/WardrobeNews';
 import { useStudentLook } from '@/features/avatar/hooks/useAvatarLook';
 import { useAvatarOfferOnVisit } from '@/features/avatar/hooks/useAvatarOfferOnVisit';
+import { useStudyRules } from '@/lib/session/useStudyRules';
 import { SceneBoundary } from '@/lib/three/SceneBoundary';
 import { useSceneActive } from '@/lib/three/useSceneActive';
 import { useSceneKey } from '@/lib/three/useSceneKey';
@@ -19,6 +20,7 @@ import { explorerArt } from '@/theme/explorerArt';
 
 import { CarouselHud } from './components/CarouselHud';
 import { IslandStage, type ScreenPoint, type StageAnchor } from './components/IslandStage';
+import { LevelSheet } from './components/level/LevelSheet';
 import { cityAnchorId, MapOverlay } from './components/map/MapOverlay';
 import { RegionMapHud } from './components/map/RegionMapHud';
 import { RegionsHud } from './components/RegionsHud';
@@ -41,7 +43,7 @@ import {
   setBounds,
 } from './logic/mapScroll';
 import { beginDrag, createOrbit, drag, release } from './logic/orbit';
-import type { MapCity } from './logic/regionMap';
+import type { MapCity, MapNode } from './logic/regionMap';
 import { focusOf } from './logic/regions';
 import { MAP_LAYOUT } from './logic/mapLayout';
 import { preloadRegion } from './stylized3d/RegionWorld';
@@ -63,6 +65,9 @@ const CAMERA_MARGIN = 0.6;
 
 /** Positions à l'écran des points de la carte, prises quand la caméra s'est posée sur une région. */
 type MapSnapshot = { points: ScreenPoint[]; camera: { x: number; z: number }; regionId: string };
+
+/** Au-delà de la marche la plus longue vers un niveau touché (2,5 s), la fiche s'ouvre sans attendre. */
+const ARRIVAL_TIMEOUT_MS = 3500;
 
 /** Délai avant que le fondu au noir commence, en plein plongeon : le fondu accompagne le zoom (ms). */
 const DIVE_MS = 100;
@@ -118,6 +123,21 @@ export function ExplorerScreen() {
   const map = useRegionMap(subjectId, view.kind === 'region' ? view.regionId : null);
   const [snapshot, setSnapshot] = useState<MapSnapshot | null>(null);
   const [showList, setShowList] = useState(false);
+  // Fiche du niveau touché sur la carte (X3).
+  const [sheet, setSheet] = useState<MapNode | null>(null);
+  // Niveau touché sur la carte : l'avatar y marche, puis la fiche s'ouvre à son arrivée.
+  const [walkTo, setWalkTo] = useState<{ regionId: string; levelId: string } | null>(null);
+  const [arriving, setArriving] = useState<MapNode | null>(null);
+  // Si l'arrivée n'est jamais annoncée (scène en panne), la fiche s'ouvre quand même.
+  useEffect(() => {
+    if (!arriving) return;
+    const timer = setTimeout(() => {
+      setArriving(null);
+      setSheet(arriving);
+    }, ARRIVAL_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [arriving]);
+  const voiceEnabled = useStudyRules().data?.voiceEnabled ?? true;
   // Zone de la carte (entre l'en-tête et le panneau de ville) : les boutons posés dessus y sont rognés.
   const mapZoneRef = useRef<View>(null);
   const [mapZone, setMapZone] = useState<{ top: number; height: number } | null>(null);
@@ -168,11 +188,15 @@ export function ExplorerScreen() {
   const up = upOf(view);
   // Entrer dans une région ou en sortir change de scène : le fondu au noir cache le changement.
   const goBack = () => {
+    if (sheet) {
+      setSheet(null);
+      return;
+    }
     if (!up) return;
     if (view.kind === 'region') veil.pass(() => open(up));
     else open(up);
   };
-  useViewBack(up !== null, goBack);
+  useViewBack(up !== null || sheet !== null, goBack);
 
   const { pass } = veil;
   useEffect(() => {
@@ -246,7 +270,40 @@ export function ExplorerScreen() {
   const mapListMode = !webgl || screenReader || showList;
   const readyMap =
     map && snapshot && snapshot.regionId === map.regionId && !mapListMode ? snapshot : null;
-  const openLevel = () => router.push({ pathname: '/bientot', params: { sujet: 'niveau' } });
+  // L'avatar se tient sur le niveau touché, sinon sur celui à jouer.
+  const avatarLevelId = map
+    ? walkTo?.regionId === map.regionId
+      ? walkTo.levelId
+      : (map.nodes[map.pawnIndex]?.levelId ?? null)
+    : null;
+  const canWalk = animated && webgl && !mapListMode && avatarLook !== null;
+  // Un niveau ouvert : l'avatar y marche d'abord, comme sur la carte d'un jeu. Un niveau fermé, ou
+  // sans animation : la fiche s'ouvre tout de suite.
+  const openNode = (node: MapNode) => {
+    if (node.state === 'locked' || !map) {
+      setSheet(node);
+      return;
+    }
+    setWalkTo({ regionId: map.regionId, levelId: node.levelId });
+    if (!canWalk || node.levelId === avatarLevelId) {
+      setArriving(null);
+      setSheet(node);
+      return;
+    }
+    setArriving(node);
+  };
+  const onAvatarArrive = (levelId: string) => {
+    if (arriving?.levelId !== levelId) return;
+    setArriving(null);
+    setSheet(arriving);
+  };
+  // La discussion d'un niveau s'ouvre par-dessus l'onglet ; la fiche se referme derrière elle. Au
+  // retour, l'avatar rejoint le niveau à jouer (le suivant, si celui-ci est franchi).
+  const playLevel = (node: MapNode, mode: 'ecrit' | 'voix') => {
+    setSheet(null);
+    setWalkTo(null);
+    router.push({ pathname: '/niveau', params: { id: node.levelId, mode } });
+  };
   const goToCity = (city: MapCity) => goTo(MAP_SCROLL, city.center.x, city.center.z);
   // Les points projetés servent aux boutons et bandeaux posés sur la carte d'une région.
   const onProject = (projected: ScreenPoint[] | null, camera: { x: number; z: number }) => {
@@ -281,7 +338,15 @@ export function ExplorerScreen() {
                     map,
                     color: explorerArt.regions[view.regionId as keyof typeof explorerArt.regions],
                     scroll: MAP_SCROLL,
-                    look: avatarLook,
+                    avatar:
+                      avatarLook && avatarLevelId
+                        ? {
+                            look: avatarLook,
+                            levelId: avatarLevelId,
+                            quick: arriving !== null,
+                            onArrive: onAvatarArrive,
+                          }
+                        : null,
                   }
                 : null
             }
@@ -331,7 +396,7 @@ export function ExplorerScreen() {
             pan={pan}
             listMode={mapListMode}
             onToggleList={() => setShowList((value) => !value)}
-            onNode={openLevel}
+            onNode={openNode}
             onCity={goToCity}
             onGoToCity={goToCity}
             zoneRef={mapZoneRef}
@@ -351,11 +416,23 @@ export function ExplorerScreen() {
               map={map}
               points={readyMap.points}
               camera0={readyMap.camera}
-              onNode={openLevel}
+              avatarLevelId={avatarLevelId}
+              onNode={openNode}
               onCity={goToCity}
             />
           </View>
         </View>
+      ) : null}
+      {sheet && map && view.kind === 'region' ? (
+        <LevelSheet
+          map={map}
+          node={map.nodes.find((n) => n.levelId === sheet.levelId) ?? sheet}
+          bottom={clearance}
+          voiceEnabled={voiceEnabled}
+          onWrite={() => playLevel(sheet, 'ecrit')}
+          onVoice={() => playLevel(sheet, 'voix')}
+          onClose={() => setSheet(null)}
+        />
       ) : null}
       <SkyVeil style={veil.style} />
       {/* Les objets de la garde-robe gagnés depuis la dernière visite. */}

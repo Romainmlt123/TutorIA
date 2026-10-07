@@ -16,6 +16,8 @@ export type Route = {
 /** Vitesse de marche (m/s), et durée maximale d'un trajet : un long trajet est parcouru plus vite. */
 export const WALK_SPEED = 0.8;
 export const MAX_WALK_SECONDS = 5;
+/** Trajet vers un niveau touché : la fiche s'ouvre à l'arrivée, l'attente reste courte. */
+export const QUICK_WALK_SECONDS = 2.5;
 
 /** Le chemin d'un niveau à un autre, dans le sens de la marche (en arrière si `to` est avant `from`). */
 export function walkRoute(path: readonly PathSample[], from: number, to: number): Route {
@@ -34,9 +36,23 @@ export function walkRoute(path: readonly PathSample[], from: number, to: number)
   return { points, at, length };
 }
 
-/** Durée de la marche : à vitesse normale, sans dépasser MAX_WALK_SECONDS. */
-export function walkSeconds(route: Route): number {
-  return Math.min(route.length / WALK_SPEED, MAX_WALK_SECONDS);
+/** Durée de la marche : à vitesse normale, sans dépasser `max` (MAX_WALK_SECONDS par défaut). */
+export function walkSeconds(route: Route, max = MAX_WALK_SECONDS): number {
+  return Math.min(route.length / WALK_SPEED, max);
+}
+
+/** Rang du point de niveau le plus proche d'une position (l'avatar arrêté en pleine marche). */
+export function nearestNode(nodes: readonly Vec[], at: Vec): number {
+  let best = -1;
+  let distance = Infinity;
+  nodes.forEach((n, i) => {
+    const d = Math.hypot(n.x - at.x, n.z - at.z);
+    if (d < distance) {
+      distance = d;
+      best = i;
+    }
+  });
+  return best;
 }
 
 /**

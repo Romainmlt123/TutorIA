@@ -1,5 +1,13 @@
 import { islandOf } from '../content';
-import { MAX_WALK_SECONDS, pointAlong, turnToward, walkRoute, walkSeconds } from './avatarWalk';
+import {
+  MAX_WALK_SECONDS,
+  nearestNode,
+  pointAlong,
+  QUICK_WALK_SECONDS,
+  turnToward,
+  walkRoute,
+  walkSeconds,
+} from './avatarWalk';
 import { buildRegionMap } from './regionMap';
 
 const map = buildRegionMap(islandOf('maths')!, 'maths-nombres', new Map())!;
@@ -54,5 +62,23 @@ describe('trajet de l’avatar sur la carte', () => {
   it('tourne toujours par le plus court côté', () => {
     expect(turnToward(3, -3)).toBeCloseTo(2 * Math.PI - 6);
     expect(turnToward(0, 1)).toBeCloseTo(1);
+  });
+});
+
+describe('marche vers un niveau touché', () => {
+  it('reste courte, même pour un niveau lointain', () => {
+    const far = { points: [], at: [], length: 40 };
+    expect(walkSeconds(far)).toBe(MAX_WALK_SECONDS);
+    expect(walkSeconds(far, QUICK_WALK_SECONDS)).toBe(QUICK_WALK_SECONDS);
+  });
+
+  it('repart du point de niveau le plus proche quand elle est interrompue', () => {
+    const nodes = [
+      { x: 0, z: 0 },
+      { x: 2, z: 0 },
+      { x: 4, z: 1 },
+    ];
+    expect(nearestNode(nodes, { x: 2.6, z: 0.4 })).toBe(1);
+    expect(nearestNode(nodes, { x: 3.4, z: 0.9 })).toBe(2);
   });
 });
