@@ -1,6 +1,7 @@
 import type OpenAI from 'openai';
 
-import type { RealtimeSessionResponse } from '@/services/tutor/api-contract';
+import { startPlay } from '@/features/explorer/logic/levelPlay';
+import type { RealtimeSessionResponse, TutorTopic } from '@/services/tutor/api-contract';
 
 import { getServerEnv, REALTIME_VOICE } from '../env';
 import { parseTopic } from '../guards/limits';
@@ -8,6 +9,7 @@ import { limiters } from '../guards/rateLimit';
 import { errorResponse, identify, jsonResponse, readJsonBody } from '../http';
 import { serverLog } from '../log';
 import { getOpenAI } from '../openai';
+import { levelInstructions, levelOfTopic } from './level';
 import { buildTutorInstructions } from './prompt';
 import { promptContextOf } from './topic';
 
@@ -22,6 +24,15 @@ const defaultDeps: RealtimeDeps = {
   openai: getOpenAI,
   vocalModel: () => getServerEnv().vocalModel,
 };
+
+/** Consignes de l'appel : le sujet, et pour une leçon d'Explorer, son déroulé (sans outil à l'oral). */
+function voiceInstructions(topic: TutorTopic): string {
+  const context = promptContextOf(topic, 'voice');
+  const place = levelOfTopic(topic);
+  if (!place) return buildTutorInstructions(context);
+  const level = levelInstructions(place, startPlay(place.level.id), 'voice');
+  return buildTutorInstructions({ ...context, level });
+}
 
 /**
  * POST /api/tutor/realtime-session : délivre un jeton temporaire pour l'API Realtime.
@@ -52,7 +63,7 @@ export async function handleRealtimeSession(
       session: {
         type: 'realtime',
         model: deps.vocalModel(),
-        instructions: buildTutorInstructions(promptContextOf(topic.value, 'voice')),
+        instructions: voiceInstructions(topic.value),
         output_modalities: ['audio'],
         max_output_tokens: 600,
         audio: {

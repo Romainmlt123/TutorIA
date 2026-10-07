@@ -14,7 +14,7 @@ Chaque composant liste : rôle, anatomie, specs, états / variantes, écrans où
 ### Icon
 - Icônes au contour, sur une grille 24, trait de 1,75 (2 à 2,5 dans les petits boutons), bouts et angles arrondis.
 - Couleur au repos `gray-400` (#798398). Une action active ou importante passe en `primary` ou en blanc sur fond coloré.
-- Jeu nécessaire : accueil, parcours (carte), révisions (cartes), stats (barres), cloche, réglages (curseurs), flèche droite, chevron gauche, croix, envoi (flèche haut), micro, micro barré, caméra, caméra barrée, clavier, ampoule, flamme (pleine), étoile, horloge, cible, tendance haut, coche, retour (rotation).
+- Jeu nécessaire : accueil, explorer (boussole), révisions (cartes), stats (barres), cloche, réglages (curseurs), flèche droite, chevron gauche, croix, envoi (flèche haut), micro, micro barré, caméra, caméra barrée, clavier, ampoule, flamme (pleine), étoile, horloge, cible, tendance haut, coche, retour (rotation).
 - Icônes des matières : Maths = calculatrice, Français = livre, Histoire-Géo = globe, Anglais = langues, SVT = feuille, Physique-Chimie = fiole.
 - Le design system n'a pas encore de composant icône : c'est à créer en priorité.
 
@@ -30,7 +30,7 @@ Chaque composant liste : rôle, anatomie, specs, états / variantes, écrans où
 - Position : `absolute`, à 20 px à gauche, à droite et en bas. Hauteur 72 px, padding horizontal 4 px, fond `surface`, `radius-3xl`, `shadow-lg`.
 - 5 onglets de largeur égale, contenu aligné en bas (padding-bottom 12 px, gap de 4 px) :
   - Accueil
-  - Parcours
+  - Explorer (boussole ; `active="explorer"`, `parcours` accepté comme alias)
   - **Tutor'IA** (logo)
   - Révisions
   - Stats
@@ -336,3 +336,44 @@ Implémentation de référence de chacun dans `design-system/` (props dans `desi
 ### PlanRow
 - Carte blanche : tuile de 48 px de la matière, surtitre, titre 16 Black et raison du choix en 13.
 
+---
+
+## Explorer (v2.4)
+
+Implémentation de référence de chacun dans `design-system/` (props dans `design-system/index.d.ts`). Types de niveau : `lecon` (vert, livre), `exercices` (bleu, crayon), `evaluation` (rouge, couronne), exposés par `TutorIA.LEVEL_TYPES`. Nouvelles icônes : crayon, couronne, boussole, coche cerclée, drapeau, liste.
+
+### IslandIllustration
+- Île flottante vectorielle de 300 px : rocher gris facetté, bande de terre orange, herbe verte en dégradé, rivière et cascade azur, motifs de la matière (règle, équerre, tuiles). Décorative sauf si elle a un `label`.
+
+### IslandCarousel
+- Pastille de 48 px avec le nom complet de la matière (22 Black, dégradé de la matière). Île centrale animée (`tia-float`, 8 px, 4 s), îles voisines à 50 % et opacité 0,35. Flèches de 48 px blanches `shadow-md`, points de 8 px (l'actif fait 24 px, encre de la matière).
+
+### IslandProgressCard
+- Carte blanche : « n villes sur N validées » 17 Black, prochaine étape en 13, pastille d'étoiles orange, barre de 10 px dans le dégradé de la matière, bouton principal « Explorer l'île ».
+
+### ExplorerHud
+- En-tête flottant, fond blanc à 94 %, rayon 20, `shadow-md`. Retour 44 px, île en surtitre (encre de la matière), ville 16 Black, région 12. Pastilles série (orange plein) et niveau (ardoise).
+
+### WorldMap (`components/ExplorerMap.dc.html`)
+- Mer en dégradé azure-100 → azure-200 avec des vagues blanches, bande de terre green-100 bordée de green-200. Chemin de 18 px en vague (orange-300 parcouru, gray-200 à venir) avec pointillés blancs. Défile horizontalement.
+
+### LevelNode
+- Rond de 52 px (évaluation : 68 px et double anneau de la couleur douce), anneau blanc de 4 px et ombre portée vers le bas façon jeton. Terminé : coche blanche en haut à droite et **Stars** dessous. En cours : halo pulsé (`tia-pulse`). Verrouillé : `gray-100`, cadenas `gray-400`. `aria-label` = type, titre et état.
+
+### MapAvatar · CityBanner · RegionSign
+- MapAvatar : initiale dans un rond `primary` de 40 px bordé de blanc, pointe vers le bas, animé (`tia-bob`). CityBanner : pastille blanche de 32 px, validée en vert (coche cerclée), en cours en rouge (drapeau), à consolider en orange (flèche de reprise), verrouillée en gris. RegionSign : « Région N » en surtitre + nom 14 Black sur blanc à 85 %.
+
+### Stars · LevelTypePill
+- Stars : trois étoiles, pleines en orange-500, vides en gray-200 (version blanche sur fond coloré). LevelTypePill : 30 px, fond doux du type, pastille de 20 px dans le dégradé du type avec l'icône.
+
+### LevelSheet
+- Feuille du bas blanche, rayon 28 en haut, poignée de 44 × 5. Type et bouton fermer, titre 26 Black, lieu, pastilles durée et étoiles, objectifs avec coches cerclées de la couleur du type. Évaluation : encadré rouge doux avec la règle. Deux boutons de 52 px « À l'écrit » / « À la voix », le dernier mode utilisé en premier et en `primary`. Verrouillé : boutons grisés et message avec cadenas.
+
+### IslandBackdrop · LevelProgressHeader
+- IslandBackdrop : dégradé du fond doux de la matière vers `bg`, motifs au trait en nuance 200 et île miniature en haut à droite. LevelProgressHeader : retour 44 px, LevelTypePill + titre 20 Black, bascule écrit / vocal en pastilles de 40 px, « Étape / Exercice / Question n sur N » et segments de 6 px de la couleur du type.
+
+### VoiceBoardCard
+- Carte blanche, rayon 24 : « Au tableau du tuteur » en surtitre, première ligne 26 Black, suivantes 20 Black, faites en vert avec une coche, à venir en gris.
+
+### LevelResultCard · TutorFeedback
+- LevelResultCard : rayon 28, dégradé vert (réussi) ou orange (à consolider), bulles décoratives, étoiles de 40 px, titre 30 Black, message, pastilles score (voile blanc) et XP (blanc). TutorFeedback : encadré vert doux « Réussi » ou orange doux « À revoir », pastille ronde de 32 px avec l'icône.

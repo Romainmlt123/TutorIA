@@ -54,7 +54,13 @@ export type Gradient = {
   readonly locations: readonly number[];
 };
 
-export { fontFamily, fontFamilyFor, fontSources, type FontWeightName } from './fonts';
+export {
+  fontFamily,
+  fontFamilyFor,
+  fontSources,
+  gameFontFamily,
+  type FontWeightName,
+} from './fonts';
 export { angleToPoints } from './gradients';
 export * as extras from './extras';
 export { subjectTheme, type SubjectTheme } from './subjects';

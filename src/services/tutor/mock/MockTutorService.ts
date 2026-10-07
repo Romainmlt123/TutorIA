@@ -1,7 +1,10 @@
+import { levelById } from '@/features/explorer/content';
+import { applyCalls, startPlay } from '@/features/explorer/logic/levelPlay';
 import type { VoiceEvent } from '@/features/tutor/logic/voice';
 
-import type { ChatRequest, TutorStreamEvent } from '../api-contract';
+import type { ChatRequest, LevelOutcome, TutorStreamEvent } from '../api-contract';
 import type { StartVoiceRequest, TutorService, VoiceSession } from '../TutorService';
+import { mockLevelTurn, type MockLevelState } from './levelScripts';
 import { scriptedReply } from './scripts';
 
 export type MockOptions = {
@@ -9,6 +12,11 @@ export type MockOptions = {
   chunkDelayMs?: number;
   /** Durées de l'appel simulé (ms), comme la maquette 02b : 7 s de parole, 5 s d'écoute. */
   voice?: { connectMs: number; aiSpeakMs: number; userSpeakMs: number };
+  /**
+   * Enregistre la fin d'un niveau (progression simulée d'Explorer) et rend l'XP accordée. Absent :
+   * rien n'est gardé et le bilan annonce toute l'XP du niveau.
+   */
+  recordLevel?: (outcome: LevelOutcome) => number;
 };
 
 const DEFAULT_VOICE = { connectMs: 900, aiSpeakMs: 7000, userSpeakMs: 5000 };
@@ -108,22 +116,61 @@ export function createMockTutorService(options: MockOptions = {}): TutorService 
   const chunkDelayMs = options.chunkDelayMs ?? 45;
   const voiceTiming = options.voice ?? DEFAULT_VOICE;
 
+  // Niveaux d'Explorer en cours, par niveau : un niveau terminé (ou oublié) recommence au message
+  // suivant.
+  const levels = new Map<string, MockLevelState>();
+
   return {
     kind: 'mock',
     async *sendMessage(
       request: ChatRequest,
       signal?: AbortSignal,
     ): AsyncIterable<TutorStreamEvent> {
+      const place = request.topic.levelId ? levelById(request.topic.levelId) : undefined;
+      let state: MockLevelState | undefined;
+      let reply = scriptedReply(request);
+      let calls: ReturnType<typeof mockLevelTurn>['calls'] = [];
+      if (place) {
+        const previous = levels.get(place.level.id);
+        state =
+          previous && !previous.play.finished
+            ? previous
+            : { play: startPlay(place.level.id), hintGiven: false, asked: false };
+        const turn = mockLevelTurn(place, state, request.message);
+        reply = turn.reply;
+        calls = turn.calls;
+        state = { ...state, hintGiven: turn.hintGiven, asked: true };
+      }
+
       await wait(chunkDelayMs * 6, signal);
-      for (const chunk of chunkText(scriptedReply(request))) {
+      for (const chunk of chunkText(reply)) {
         if (signal?.aborted) return;
         yield { type: 'delta', text: chunk };
         await wait(chunkDelayMs, signal);
       }
-      if (!signal?.aborted) yield { type: 'done' };
+      if (signal?.aborted) return;
+
+      // Mêmes règles que le serveur : jugements plafonnés, progression et bilan calculés ici.
+      if (place && state) {
+        const result = applyCalls(place.level, state.play, calls);
+        levels.set(place.level.id, { ...state, play: result.play });
+        if (result.progressed) {
+          const done =
+            place.level.type === 'lecon' ? result.play.stepsDone : result.play.answers.length;
+          yield { type: 'step', done, total: place.level.steps };
+        }
+        if (result.outcome) {
+          const xp = options.recordLevel?.(result.outcome) ?? result.outcome.xp;
+          yield { type: 'levelResult', outcome: { ...result.outcome, xp } };
+        }
+      }
+      yield { type: 'done' };
     },
     async startVoiceSession({ onEvent }: StartVoiceRequest) {
       return new MockVoiceSession(onEvent, voiceTiming);
+    },
+    forgetConversation(topic) {
+      if (topic.levelId) levels.delete(topic.levelId);
     },
     async reportMessage() {
       // Rien à transmettre hors ligne : le signalement est confirmé à l'élève.

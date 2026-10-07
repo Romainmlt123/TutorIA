@@ -37,6 +37,7 @@ const SESSION_INSTRUCTIONS = [
   'N’inclus jamais de confidence, d’émotion, de situation personnelle, de prénom, ni de citation de l’élève.',
   'Chaque champ fait moins de 100 caractères, sans point final, au présent, sans pronom genré (ni « il » ni « elle »).',
   '« understood » : ce qui est compris ; « to_review » : ce qui reste à revoir ; null si rien.',
+  'Les messages du tuteur écrivent les formules en LaTeX : toi, n’en écris jamais (ni $, ni commande avec \\), écris les notions en mots.',
 ].join(' ');
 
 const WEEK_INSTRUCTIONS = [

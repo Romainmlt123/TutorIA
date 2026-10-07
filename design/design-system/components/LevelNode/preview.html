@@ -1,0 +1,18 @@
+<!-- @dsCard group="Explorer" height=158 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+var row = { display: 'flex', alignItems: 'center', gap: 28, padding: '12px 8px 30px' };
+return h('div', { style: row },
+  h(T.LevelNode, { type: 'lecon', state: 'completed', stars: 3, title: 'Le repère' }),
+  h(T.LevelNode, { type: 'exercices', state: 'completed', stars: 2, title: 'Placer des points' }),
+  h(T.LevelNode, { type: 'lecon', state: 'active', title: 'Lire une abscisse' }),
+  h(T.LevelNode, { type: 'exercices', state: 'locked', title: 'Coordonnées' }),
+  h(T.LevelNode, { type: 'evaluation', state: 'locked', title: 'Évaluation' }),
+  h(T.LevelNode, { type: 'evaluation', state: 'active', title: 'Évaluation' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

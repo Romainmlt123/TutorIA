@@ -4,6 +4,7 @@ import { errorResponse, jsonResponse } from '../http';
 import { serverLog } from '../log';
 import { getAdminClient, type AdminClient } from '../supabase';
 import { requireTutorAccess } from './access';
+import { levelOfTopic } from './level';
 import { handleRealtimeSession, type RealtimeDeps } from './realtime';
 
 /** Plafond d'un appel vocal (TUTOR_LIMITS.voiceCallMaxMs), en secondes. */
@@ -37,9 +38,10 @@ async function closeStaleCalls(admin: AdminClient, studentId: string, now: Date)
 }
 
 /**
- * POST /api/tutor/realtime-session, enveloppe de `handleRealtimeSession` (inchangé) :
+ * POST /api/tutor/realtime-session, enveloppe de `handleRealtimeSession` :
  * élève autorisé (consentement, vocal activé par le parent, pause du soir, limite du jour),
- * puis début de la séance vocale enregistré quand le jeton est délivré.
+ * puis début de la séance vocale enregistré quand le jeton est délivré. Une leçon d'Explorer à
+ * la voix compte comme une séance, sans étoiles ni validation du niveau.
  */
 export async function handleVoiceSessionStart(
   request: Request,
@@ -63,6 +65,10 @@ export async function handleVoiceSessionStart(
   }
   const topic = parseTopic(topicBody);
   if (!topic.ok) return errorResponse(topic.code);
+  // Explorer : à la voix, seulement les leçons. Les appels d'outils de l'API Realtime arrivent sur
+  // le téléphone, qui pourrait les falsifier : exercices notés et évaluations restent à l'écrit.
+  const place = levelOfTopic(topic.value);
+  if (place && place.level.type !== 'lecon') return errorResponse('not_allowed');
 
   const response = await handleRealtimeSession(request, deps.realtime);
   if (!response.ok) return response;
@@ -75,6 +81,7 @@ export async function handleVoiceSessionStart(
       mode: 'voice',
       subject_id: topic.value.subjectId,
       chapter_id: topic.value.chapterId,
+      level_id: place?.level.id ?? null,
       started_at: now.toISOString(),
     });
     if (error) throw error;

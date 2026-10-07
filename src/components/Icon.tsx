@@ -11,7 +11,7 @@ type Shape =
 /** Jeu d'icônes au contour (grille 24), tracés repris des maquettes (design/screens). */
 const ICONS = {
   accueil: [{ d: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z' }],
-  parcours: [{ d: 'M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5z' }, { d: 'M9 4v13M15 6.5v13' }],
+  boussole: [{ d: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM15.5 8.5l-2 5-5 2 2-5z' }],
   revisions: [{ rect: [8, 3, 12, 15, 2] }, { d: 'M5 7v11a3 3 0 0 0 3 3h8' }],
   stats: [
     { d: 'M3 21h18' },
@@ -131,6 +131,10 @@ const ICONS = {
   sortie: [{ d: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3' }],
   telechargement: [{ d: 'M12 3v12M7 10l5 5 5-5M5 19h14' }],
   poubelle: [{ d: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3' }],
+  de: [
+    { rect: [4, 4, 16, 16, 3] },
+    { d: 'M8.5 8.5h.01M15.5 8.5h.01M12 12h.01M8.5 15.5h.01M15.5 15.5h.01' },
+  ],
 } as const satisfies Record<string, readonly Shape[]>;
 
 export type IconName = keyof typeof ICONS;

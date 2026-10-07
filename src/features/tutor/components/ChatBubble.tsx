@@ -6,7 +6,8 @@ import { Text } from '@/components/Text';
 import { fr } from '@/i18n/fr';
 import { theme } from '@/theme';
 
-import { parseEmphasis } from '../logic/emphasis';
+import { parseMathMessage } from '../logic/mathText';
+import { MathFormula } from './MathFormula';
 
 type Props = {
   role: 'tutor' | 'student';
@@ -18,15 +19,29 @@ type Props = {
   reported?: boolean;
 };
 
+/** Texte d'un message : paragraphes, notions en italique et formules dessinées (MathJax). */
 function RichText({ text, color }: { text: string; color: 'text' | 'textOnColor' }) {
+  const ink = theme.colors[color];
   return (
-    <Text variant="body" color={color}>
-      {parseEmphasis(text).map((segment, index) => (
-        <Text key={index} variant="body" italic={segment.italic} color={color}>
-          {segment.text}
-        </Text>
-      ))}
-    </Text>
+    <View style={styles.parts}>
+      {parseMathMessage(text).map((part, index) =>
+        part.kind === 'display' ? (
+          <MathFormula key={index} tex={part.tex} display color={ink} />
+        ) : (
+          <Text key={index} variant="body" color={color}>
+            {part.pieces.map((piece, i) =>
+              piece.kind === 'math' ? (
+                <MathFormula key={i} tex={piece.tex} color={ink} />
+              ) : (
+                <Text key={i} variant="body" italic={piece.italic} color={color}>
+                  {piece.text}
+                </Text>
+              ),
+            )}
+          </Text>
+        ),
+      )}
+    </View>
   );
 }
 
@@ -89,6 +104,7 @@ const styles = StyleSheet.create({
   },
   tutor: { maxWidth: 256, backgroundColor: theme.colors.surface, boxShadow: theme.shadow.sm },
   student: { alignSelf: 'flex-end', maxWidth: 280, backgroundColor: theme.colors.primary },
+  parts: { gap: theme.space[2] },
   label: { marginBottom: theme.space[1] },
   reported: { marginTop: theme.space[2] },
 });

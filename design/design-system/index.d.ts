@@ -2,6 +2,7 @@
 import * as React from "react";
 
 export type SubjectId = 'maths' | 'francais' | 'histoire-geo' | 'anglais' | 'svt' | 'physique-chimie';
+export type LevelType = 'lecon' | 'exercices' | 'evaluation';
 
 /** Icône au trait fin (grille 24), en currentColor, pour l'interface et les six matières. */
 export interface IconProps {
@@ -155,11 +156,11 @@ export interface GoalStepperProps {
 }
 export declare function GoalStepper(props: GoalStepperProps): React.ReactElement;
 
-/** Barre de navigation flottante en bas de l'écran, 4 onglets, l'actif monte dans une bulle bleue. */
+/** Barre de navigation flottante en bas de l'écran, l'actif monte dans une bulle bleue. Élève : 5 onglets dont Explorer (boussole) ; Parents : 4 onglets. */
 export interface BottomNavProps {
   /** Jeu d'onglets. */
   space?: 'eleve' | 'parents';
-  /** Onglet actif : accueil, tuteur, flashcards, stats ou accueil, progres, sessions, reglages. */
+  /** Onglet actif : accueil, explorer (alias parcours), tuteur, revisions, stats ou accueil, progres, sessions, reglages. */
   active?: string;
   /** Clic sur un onglet. */
   onNavigate?: (id: string) => void;
@@ -880,7 +881,7 @@ export interface SelfAssessmentRowProps {
   /** Niveau initial. */
   defaultValue?: number;
   /** Choix. */
-  onChange?: (level: number) => void;
+  onChange?: (level: { id: string; type: LevelType; title: string }) => void;
   /** Libellés des 4 niveaux. */
   levels?: string[];
 }
@@ -967,5 +968,263 @@ export interface PlanRowProps {
 }
 export declare function PlanRow(props: PlanRowProps): React.ReactElement;
 
+/** Trois étoiles de réussite (0 à 3), pleines en orange, vides en gris. */
+export interface StarsProps {
+  /** Étoiles obtenues. */
+  value?: 0 | 1 | 2 | 3;
+  /** Taille en px (16 par défaut). */
+  size?: number;
+  /** Version blanche pour fond coloré. */
+  onColor?: boolean;
+  /** Contour blanc (sur la carte). */
+  outline?: boolean;
+  /** Écart entre étoiles. */
+  gap?: number;
+}
+export declare function Stars(props: StarsProps): React.ReactElement;
+
+/** Île flottante en illustration vectorielle simple : rocher facetté, herbe, cascade et motifs de la matière (règle et équerre pour les maths). */
+export interface IslandIllustrationProps {
+  /** Matière de l'île. */
+  subject?: SubjectId;
+  /** Largeur en px (300 par défaut). */
+  size?: number;
+  /** Afficher les motifs de la matière (vrai par défaut). */
+  motifs?: boolean;
+  /** Nom accessible (sinon décoratif). */
+  label?: string;
+  /** Suffixe des id SVG quand plusieurs îles cohabitent. */
+  idSuffix?: string;
+}
+export declare function IslandIllustration(props: IslandIllustrationProps): React.ReactElement;
+
+/** Carrousel des îles-matières : nom de la matière en pastille dégradée, île centrale qui flotte, îles voisines estompées, flèches et points. */
+export interface IslandCarouselProps {
+  /** Ordre des îles (les 6 matières par défaut). */
+  subjects?: SubjectId[];
+  /** Île affichée (contrôlé). */
+  index?: number;
+  /** Île de départ (non contrôlé). */
+  defaultIndex?: number;
+  /** Changement d'île. */
+  onChange?: (index: number, subject: SubjectId) => void;
+}
+export declare function IslandCarousel(props: IslandCarouselProps): React.ReactElement;
+
+/** Carte d'avancement d'une île : villes validées, étoiles, barre aux couleurs de la matière et bouton « Explorer l'île ». */
+export interface IslandProgressCardProps {
+  /** Matière (couleur de la barre). */
+  subject?: SubjectId;
+  /** Villes validées. */
+  done?: number;
+  /** Villes au total. */
+  total?: number;
+  /** Étoiles cumulées. */
+  stars?: number;
+  /** Prochaine étape. */
+  next?: string;
+  /** Libellé du bouton. */
+  actionLabel?: string;
+  /** Clic sur le bouton. */
+  onExplore?: () => void;
+  /** Lien du bouton. */
+  href?: string;
+}
+export declare function IslandProgressCard(props: IslandProgressCardProps): React.ReactElement;
+
+/** En-tête flottant de la carte : retour aux îles, île, ville et région courantes, série et niveau. */
+export interface ExplorerHudProps {
+  /** Couleur du nom de l'île. */
+  subject?: SubjectId;
+  /** Nom de l'île. */
+  island?: string;
+  /** Ville courante (chapitre). */
+  city?: string;
+  /** Région (thème). */
+  region?: string;
+  /** Jours de série. */
+  streak?: number;
+  /** Niveau de l'élève. */
+  level?: number;
+  /** Retour aux îles. */
+  onBack?: () => void;
+  /** Libellé accessible du retour. */
+  backLabel?: string;
+}
+export declare function ExplorerHud(props: ExplorerHudProps): React.ReactElement;
+
+/** Point de niveau sur la carte. Couleur et icône selon le type : leçon verte (livre), exercices bleus (crayon), évaluation rouge (couronne, plus grande, double anneau). États terminé (coche et étoiles), en cours (halo pulsé) et verrouillé (gris, cadenas). */
+export interface LevelNodeProps {
+  /** Type de niveau. */
+  type?: LevelType;
+  /** État. */
+  state?: 'completed' | 'active' | 'locked';
+  /** Étoiles si terminé. */
+  stars?: number;
+  /** Titre (libellé accessible). */
+  title?: string;
+  /** Ouvre la fiche du niveau. */
+  onClick?: () => void;
+}
+export declare function LevelNode(props: LevelNodeProps): React.ReactElement;
+
+/** Avatar de l'élève qui flotte au-dessus du niveau en cours (initiale dans une pastille bleue). */
+export interface MapAvatarProps {
+  /** Initiale de l'élève. */
+  initial?: string;
+}
+export declare function MapAvatar(props: MapAvatarProps): React.ReactElement;
+
+/** Panneau d'une ville (chapitre) : validée en vert, en cours en rouge avec drapeau, à consolider en orange, verrouillée en gris. */
+export interface CityBannerProps {
+  /** Nom de la ville. */
+  name?: string;
+  /** État de la ville. */
+  status?: 'done' | 'current' | 'consolidate' | 'locked';
+}
+export declare function CityBanner(props: CityBannerProps): React.ReactElement;
+
+/** Panonceau de région (thème de la matière) : surtitre « Région N » et nom. */
+export interface RegionSignProps {
+  /** Numéro de région. */
+  index?: number;
+  /** Nom de la région. */
+  name?: string;
+  /** Couleur du surtitre. */
+  color?: string;
+}
+export declare function RegionSign(props: RegionSignProps): React.ReactElement;
+
+/** Carte d'une île façon jeu d'aventure : mer, bande de terre, chemin en vague (orange parcouru, gris à venir), villes, niveaux et avatar. Défile horizontalement. */
+export interface WorldMapProps {
+  /** Niveaux dans l’ordre. */
+  levels?: Array<{ id: string; type: LevelType; state: 'completed' | 'active' | 'locked'; stars?: number; title: string; gapBefore?: number }>;
+  /** Villes et leur premier niveau. */
+  cities?: Array<{ name: string; status: 'done' | 'current' | 'consolidate' | 'locked'; startIndex: number }>;
+  /** Initiale de l'avatar. */
+  initial?: string;
+  /** Hauteur (844 par défaut). */
+  height?: number;
+  /** Axe du chemin. */
+  centerY?: number;
+  /** Amplitude de la vague. */
+  amplitude?: number;
+  /** Écart horizontal entre niveaux. */
+  step?: number;
+  /** Clic sur un niveau. */
+  onSelect?: (level: { id: string; type: LevelType; title: string }) => void;
+  /** Nom accessible de la carte. */
+  label?: string;
+}
+export declare function WorldMap(props: WorldMapProps): React.ReactElement;
+
+/** Étiquette du type de niveau : pastille dégradée avec l'icône et libellé sur fond doux de la même couleur. */
+export interface LevelTypePillProps {
+  /** Type de niveau. */
+  type?: LevelType;
+}
+export declare function LevelTypePill(props: LevelTypePillProps): React.ReactElement;
+
+/** Fiche d'un niveau en feuille du bas : type, titre, lieu, durée, étoiles, objectifs, règle de l'évaluation et lancement du chat à l'écrit ou à la voix (le dernier mode utilisé en premier). */
+export interface LevelSheetProps {
+  /** Type de niveau. */
+  type?: LevelType;
+  /** Titre. */
+  title?: string;
+  /** Île, ville, région. */
+  where?: string;
+  /** Durée estimée. */
+  minutes?: number;
+  /** Meilleur score. */
+  stars?: number;
+  /** Objectifs. */
+  objectives?: string[];
+  /** Règle spéciale (évaluation : pas d'indice). */
+  rule?: string;
+  /** Niveau verrouillé : explication. */
+  lockedMessage?: string;
+  /** Dernier mode utilisé. */
+  lastMode?: 'ecrit' | 'vocal';
+  /** Lance le chat écrit. */
+  onWritten?: () => void;
+  /** Lance le chat vocal. */
+  onVoice?: () => void;
+  /** Ferme la fiche. */
+  onClose?: () => void;
+}
+export declare function LevelSheet(props: LevelSheetProps): React.ReactElement;
+
+/** Fond d'écran du chat d'un niveau aux couleurs de l'île : dégradé doux de la matière, motifs et île miniature en haut à droite. */
+export interface IslandBackdropProps {
+  /** Matière de l'île. */
+  subject?: SubjectId;
+  /** Hauteur (100 % par défaut). */
+  height?: number | string;
+  /** Contenu posé sur le fond. */
+  children?: React.ReactNode;
+}
+export declare function IslandBackdrop(props: IslandBackdropProps): React.ReactElement;
+
+/** En-tête du chat d'un niveau : retour à la carte, type et titre, bascule écrit / vocal et progression en segments de la couleur du type. */
+export interface LevelProgressHeaderProps {
+  /** Type de niveau. */
+  type?: LevelType;
+  /** Titre. */
+  title?: string;
+  /** Étape en cours. */
+  step?: number;
+  /** Nombre d'étapes. */
+  total?: number;
+  /** Ville (ajoutée au libellé). */
+  city?: string;
+  /** Mode actif. */
+  mode?: 'ecrit' | 'vocal';
+  /** Bascule de mode. */
+  onModeChange?: (mode: 'ecrit' | 'vocal') => void;
+  /** Retour à la carte. */
+  onBack?: () => void;
+}
+export declare function LevelProgressHeader(props: LevelProgressHeaderProps): React.ReactElement;
+
+/** Tableau du tuteur en mode vocal : les étapes du calcul s'écrivent au fil de la voix (faites en vert, à venir en gris). */
+export interface VoiceBoardCardProps {
+  /** Surtitre (« Au tableau du tuteur »). */
+  title?: string;
+  /** Lignes du tableau. */
+  lines?: Array<{ expr: string; state?: 'done' | 'todo' }>;
+}
+export declare function VoiceBoardCard(props: VoiceBoardCardProps): React.ReactElement;
+
+/** Carte de bilan d'un niveau : validé sur dégradé vert, à consolider sur dégradé orange, étoiles, message, score et XP. */
+export interface LevelResultCardProps {
+  /** Type de niveau. */
+  type?: LevelType;
+  /** Réussi (vrai par défaut). */
+  validated?: boolean;
+  /** Étoiles obtenues. */
+  stars?: number;
+  /** Titre. */
+  headline?: string;
+  /** Message. */
+  message?: string;
+  /** Score (« 4/5 »). */
+  score?: string;
+  /** XP gagnés. */
+  xp?: number;
+}
+export declare function LevelResultCard(props: LevelResultCardProps): React.ReactElement;
+
+/** Retour du tuteur en fin de niveau : ce qui est réussi (vert) ou ce qui est à revoir (orange). */
+export interface TutorFeedbackProps {
+  /** Réussi ou à revoir. */
+  kind?: 'success' | 'review';
+  /** Surtitre. */
+  title?: string;
+  /** Texte. */
+  children?: React.ReactNode;
+}
+export declare function TutorFeedback(props: TutorFeedbackProps): React.ReactElement;
+
 export declare const SUBJECTS: Record<SubjectId, { name: string; gradient: string; soft: string; ink: string; deep: string; bar: string }>;
+export declare const LEVEL_TYPES: Record<LevelType, { label: string; icon: string; grad: string; solid: string; soft: string; ink: string; ring: string }>;
 export declare const ICONS: Record<string, string>;

@@ -1,0 +1,13 @@
+<!-- @dsCard group="Explorer" height=614 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 350, display: 'flex', flexDirection: 'column', gap: 16 } },
+  h(T.LevelResultCard, { type: 'evaluation', stars: 3, score: '5/5', xp: 60, message: 'Repère-sur-Mer est validée. La route continue !' }),
+  h(T.LevelResultCard, { type: 'exercices', validated: false, stars: 1, score: '2/4', xp: 10, message: 'On revoit les ordonnées négatives et tu retentes.' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

@@ -40,7 +40,7 @@
 - **Textes :** tout en français, avec le ton de la marque. Les textes sont centralisés (pas de chaînes éparpillées dans les composants), pour permettre une traduction plus tard.
 
 ## 5. Architecture Scalable
-- **Découpage par fonctionnalité** (accueil, tuteur, flashcards, stats, parcours, et plus tard parents), chacune avec ses écrans, composants, logique et tests. Les composants UI partagés et le thème vivent dans un espace commun.
+- **Découpage par fonctionnalité** (accueil, tuteur, flashcards, stats, explorer, parents), chacune avec ses écrans, composants, logique et tests. Les composants UI partagés et le thème vivent dans un espace commun.
 - **Services derrière des interfaces :** l'IA (texte et voix), l'API, le stockage et l'analytics passent par des modules dédiés, pour pouvoir remplacer une implémentation simulée par la vraie sans toucher aux écrans.
 - **Données :** tant qu'il n'y a pas de backend, des données fictives réalistes vivent dans un dossier dédié et clairement identifié, jamais en dur dans les écrans.
 - **Configuration par environnement** (dev, preview, production) via des variables d'environnement. Aucune URL, clé ou secret dans le code.
@@ -72,6 +72,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
 - **Documentation vivante :** mets à jour `README.md` (installation, commandes, structure) et ce `CLAUDE.md` (conventions) dès qu'une convention change.
 
 ## 8. Méthode de Travail
+0. **Suivre la feuille de route :** `ROADMAP.md` fixe l'ordre des chantiers et l'étape en cours. Une idée nouvelle va dans sa section « En attente », et le fichier est mis à jour à la fin de chaque étape.
 1. **Comprendre avant d'agir :** lis les fichiers concernés (dont `design/`) et reformule le besoin si c'est ambigu.
 2. **Planifier :** pour toute tâche non triviale, présente un plan court (fichiers touchés, approche, risques, alternatives) et **attends ma validation** avant de coder.
 3. **Avancer par petites étapes vérifiables :** une étape = un résultat testable.
@@ -86,6 +87,8 @@ Chaque choix doit rester compatible avec une publication sur les stores :
 - `expo-dev-client` étant installé, `expo start` viserait par défaut le build de développement : les scripts passent donc `--go` (Expo Go) ou `--dev-client` explicitement.
 - Si Expo Go affiche « Failed to download remote update » : le téléphone n'atteint pas le PC (Wi-Fi qui isole les appareils, comme wifirst). Lancer `npm run start:tunnel` et scanner le nouveau QR code.
 - Régénérer le thème après une modification de `design/tokens/` : `npm run tokens`
+- Régénérer les îles 3D d'Explorer (Blender 5.2 en ligne de commande, environ 15 min de cuisson sur le processeur) : `npm run explorer:models`. Aperçu rapide d'une minute, sans cuisson : `EXPLORER_PREVIEW=/chemin/apercu.png blender -b -P tools/explorer-3d/island_maths.py` (même principe avec `strip_kit.py` pour les décors des cartes de région (rochers, galets, fleurs) et `strip_monuments.py` pour les monuments des villes). Lancer une cuisson longue en tâche de fond suivie, jamais détachée avec `&`. Terrain d'une région (`region_map.py`) : `EXPLORER_PLAN=1 EXPLORER_REGION=<id> EXPLORER_REGION_SCALE=6 EXPLORER_DROP=<repères> EXPLORER_CITIES=<ids>` écrit d'abord les emplacements des villes dans `src/features/explorer/stylized3d/regionSites.json` (à relancer si les chapitres de la région changent : un test le vérifie), puis la cuisson produit `assets/explorer/models/region-<id>.glb` (environ 20 min) et les emplacements des décors (`regionDecor.json`, posés par l'app avec le kit), avec la même échelle et les mêmes repères retirés qu'au plan. Pour une nouvelle île ou une nouvelle région, suivre `docs/explorer-creer-une-ile.md`.
+- Régénérer la figurine des avatars : `npm run avatar:model` (`tools/avatar-3d/avatar.py`, sortie `assets/avatar/avatar.glb`, environ 3 min). Aperçu sans export : `AVATAR_PREVIEW=/chemin/apercu.png blender -b -P tools/avatar-3d/avatar.py` (`AVATAR_TURN=150` de dos, `AVATAR_CLOSE=0` en gros plan, `AVATAR_BUILD=-1` ou `1` pour la carrure fine ou large).
 - Lint / types / tests : `npm run lint` · `npm run typecheck` · `npm test` · tout d'un coup : `npm run check`
 - Formater : `npm run format`
 - Tuteur simulé (hors ligne, sans coût OpenAI) : `EXPO_PUBLIC_TUTOR_MODE=mock npm start`. Par défaut, le vrai tuteur passe par le serveur intermédiaire.
@@ -115,15 +118,18 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - `src/app/` : routes Expo Router uniquement, fichiers fins qui réexportent l'écran de leur fonctionnalité.
     - Un groupe par espace : `(auth)/` (sans session), `(compte)/` (compte à finaliser : nouveau mot de passe, parent invité), `(onboarding)/`, `(eleve)/` (seul à porter l'URL `/`) et `(parents)/` (URL `/parents/…`).
     - `dev/` = outils de développement (jamais en production). `api/` = serveur intermédiaire.
-  - `src/features/<fonctionnalité>/` : écrans, `components/`, `logic/` (fonctions pures testées), `hooks/`. Fonctionnalités : auth, onboarding, access (consentement, pause), home, tutor, flashcards, stats, parcours, profile, parents.
-  - `src/components/` : composants UI partagés (dont `form/` : champs, cases, interrupteurs). `src/theme/` : thème. `src/i18n/fr.ts` : tous les textes. `src/services/` : services derrière des interfaces. `src/data/mock/` : données fictives. `src/lib/` : utilitaires transverses (config, session, heure de Paris…).
-  - `server/` : code serveur uniquement (clés OpenAI et Supabase, prompt, garde-fous, comptes). `scripts/` : outillage (tokens, seed, Supabase local).
+  - `src/features/<fonctionnalité>/` : écrans, `components/`, `logic/` (fonctions pures testées), `hooks/`. Fonctionnalités : auth, onboarding, access (consentement, pause), home, tutor, flashcards, stats, explorer (îles 3D, villes, niveaux), avatar (figurine façon Mii : apparence, visage dessiné par le shader, éditeur « Crée ton avatar »), comingSoon (« Bientôt »), profile, parents.
+  - `src/components/` : composants UI partagés (dont `form/` : champs, cases, interrupteurs). `src/theme/` : thème. `src/i18n/fr.ts` : tous les textes. `src/services/` : services derrière des interfaces. `src/data/mock/` : données fictives. `src/lib/` : utilitaires transverses (config, session, heure de Paris…) ; `src/lib/three/` : outils des scènes 3D (`useModel`, `SceneBoundary`, `canUseWebGL`, `useSceneActive`).
+  - `server/` : code serveur uniquement (clés OpenAI et Supabase, prompt, garde-fous, comptes). `scripts/` : outillage (tokens, seed, Supabase local). `tools/explorer-3d/` : scripts Blender des îles 3D (sortie dans `assets/explorer/models/`, tracé de l'eau partagé avec l'app dans `src/features/explorer/stylized3d/water.json`). `tools/avatar-3d/` : figurine des avatars (sortie dans `assets/avatar/`).
   - `supabase/` : `migrations/` (schéma), `tests/database/` (pgTAP), `templates/` (e-mails en français), `config.toml` (Supabase local).
 - **Nommage :** composants et écrans en `PascalCase.tsx` (`SubjectCard.tsx`, `HomeScreen.tsx`) ; logique, hooks et utilitaires en `camelCase.ts` (`useHomeData.ts`) ; tests à côté du code en `*.test.ts(x)` ; alias d'import `@/…` (= `src/`). Code et identifiants en anglais, textes affichés en français.
 - **Thème :**
   - Importer `theme` depuis `@/theme` : `theme.colors` (rôles, à privilégier), `theme.palette`, `theme.space`, `theme.radius`, `theme.shadow` (chaînes CSS pour la prop `boxShadow`), `theme.subjects`, `theme.layout`…
   - `src/theme/tokens.generated.ts` est généré par `npm run tokens` depuis `design/tokens/` : ne jamais le modifier à la main (un test vérifie qu'il est à jour).
   - Texte : toujours le composant `Text` de `@/components/Text` (`variant`, `weight`, `italic`, `color`). Ne jamais passer `fontWeight` : la graisse est portée par la famille Satoshi (`Satoshi-Bold`…).
+  - Seule exception : les écrans de jeu (l'onglet Explorer et l'éditeur d'avatar) gardent le même HUD façon jeu vidéo, dont les pièces sont dans `src/components/game/` : `GameText` (police Lilita One, `gameFontFamily`, contour et ombre portée, construit sur `Text`), boutons en relief (`GameButton`), panneau de bois (`WoodFrame`, `Parchment`, `WoodGauge`), `GameSwitch` et `WoodDialog`. Ses couleurs sont dans `explorerArt.hud`. Tout nouvel écran du « côté jeu » reprend ces pièces.
+  - Couleurs des avatars : `src/theme/avatarArt.ts`. Une apparence (`AvatarLook`) enregistre des rangs dans ces palettes et des noms de formes : n'en retirer ni n'en renommer aucun, en ajouter à la fin. Toute apparence lue passe par `normalizeLook`.
+  - Garde-robe : les objets à gagner et leurs conditions sont dans `src/features/avatar/logic/wardrobe.ts` ; un objet gagné est retenu pour toujours (`avatarService.wardrobe`). Dans `tools/avatar-3d/avatar.py`, une pièce de la tenue s'appelle `<emplacement>-<objet>` (`haut-`, `bas-`, `chaussures-`, `tete-`, `visage-`, `cou-`, `dos-`), et l'identifiant de l'objet ne change jamais. Les formes du modèle : `fort` (carrure), `chapeau` (cheveux tassés sous un couvre-chef), `ecart` et `hauteur` (lunettes qui suivent les yeux).
   - ESLint refuse toute couleur en dur (`#…`, `rgb(a)`, `hsl(a)`) hors de `src/theme/`.
 - **Frontière app / serveur (ESLint) :** hors de `src/app/api/`, interdiction d'importer `server/` ou `openai`, et de lire `process.env.OPENAI_*`, `SUPABASE_SECRET_KEY`, `LINK_CODE_PEPPER` ou `SEED_*`. L'app ne connaît que `EXPO_PUBLIC_*`, qui sont publiques.
 - **Erreurs :** journaliser avec `logError(scope, error)` de `@/lib/logger`, jamais de `console.log` oublié.
@@ -131,6 +137,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - Les écrans lisent les données par les hooks de leur fonctionnalité (`useHomeData`, `useFlashcardCatalog`, `useStats`, `useParentData`…), jamais `src/data/mock/` ni Supabase directement.
   - Ces hooks passent par TanStack Query (`@/lib/queryClient`) et par les services `authService`, `studentDataService`, `parentService`, `familyService` et `onboardingService` de `@/services/…`.
   - Chaque service a une version Supabase et une version simulée, choisie par `config.backend` (`EXPO_PUBLIC_BACKEND`). La version simulée ne stocke aucun mot de passe.
+  - Exception provisoire : `avatarService` enregistre l'avatar sur l'appareil, par compte, quel que soit le backend, jusqu'à l'étape A4 de `ROADMAP.md`.
   - Le cache est vidé à chaque changement de compte (`queryClient.ts`).
 - **Session et aiguillage :**
   - `SessionProvider` (`@/lib/session/SessionProvider`) expose `useSession`, `useAccount`, `useStudentAccount` et `useParentAccount`.
@@ -142,7 +149,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - Une migration par changement, testée en local (`db:reset` puis `db:test`), montrée à Romain avant d'être appliquée en ligne. Rien d'irréversible (suppression de table ou de colonne, réécriture de données) sans son accord explicite.
   - Chaque table : RLS activée, politiques `to authenticated` avec `(select auth.uid())`, une politique par action, `GRANT` explicites (rien pour `anon`), FK indexées.
   - Les fonctions d'aide vivent dans le schéma `private` (non exposé), en `security definer` avec `set search_path = ''`, et `revoke execute … from public`.
-  - L'élève n'écrit que des colonnes précises (droits `UPDATE` par colonne) et ses réponses de flashcards ; XP, séries, maîtrise et agrégats sont calculés par des déclencheurs. Le reste (conversations, séances écrites et vocales, codes, consentements) est écrit par le serveur.
+  - L'élève n'écrit que des colonnes précises (droits `UPDATE` par colonne) et ses réponses de flashcards ; XP, séries, maîtrise et agrégats sont calculés par des déclencheurs. Le reste (conversations, séances écrites et vocales, parties des niveaux d'Explorer, codes, consentements) est écrit par le serveur.
   - Les parents ne lisent jamais les conversations ni les messages : seulement des agrégats et des résumés structurés.
   - Le « jour » est celui de l'heure de Paris, en SQL comme en TypeScript (`@/lib/parisTime`).
 - **Tuteur IA :**
@@ -155,12 +162,22 @@ Chaque choix doit rester compatible avec une publication sur les stores :
     - La limite en mémoire (`server/guards/rateLimit.ts`) reste une première barrière par installation.
   - L'historique de la discussion est relu en base à partir de `conversationId`, jamais repris de l'app. Les messages sont enregistrés par le serveur ; une réponse retirée par la modération ne l'est pas.
   - Le vocal enregistre le début de séance dans l'enveloppe `server/tutor/voice.ts`, et la fin via `/api/tutor/voice/end` (plafond 10 min) : `server/tutor/realtime.ts` n'est pas modifié pour cela.
+  - Niveaux d'Explorer (`topic.levelId`, `server/tutor/level.ts`) :
+    - le tuteur écrit juge par des outils (`record_answer`, `complete_step`), plafonnés par `applyCalls` (`src/features/explorer/logic/levelPlay.ts`) : c'est le serveur qui calcule le score, jamais l'app ;
+    - la partie d'une séance est dans `level_attempts`, et `finish_level` (une fois par partie) garde le meilleur résultat dans `level_progress` et ajoute l'XP à la séance : 10 XP la première fois que le niveau est terminé, puis 10 XP par étoile nouvelle (même règle que `awardedXp` en TypeScript). La maîtrise du chapitre n'en dépend pas ;
+    - chaque visite d'un niveau est une nouvelle partie (`tutorService.forgetConversation`), et une conversation ne se reprend que sur le même chapitre et le même niveau ;
+    - à la voix, seules les leçons se jouent, sans outil : l'appel compte comme une séance (avec son `level_id`), sans étoiles ni validation ;
+    - une leçon écrite prend le format `LESSON_FORMAT` (professeur d'un très grand lycée : utilité dans la vie, notion, exemple résolu, question de vérification) et jusqu'à 1 500 tokens ; les consignes reçoivent le programme du niveau (`server/content/maths4e.ts` : capacités, attendus, précisions) et, hors leçon, ses exercices corrigés, qui ne partent jamais dans l'app.
+  - Formules : à l'écrit, le tuteur écrit ses calculs en LaTeX (`$…$` dans la phrase, `$$…$$` seul sur sa ligne), selon `MATH_FORMAT` de `server/tutor/prompt.ts`. L'app les dessine sur l'appareil avec MathJax 4 (`@mathjax/src`, `src/features/tutor/math/texToSvg.ts`, chargé au premier besoin, dans un bloc protégé) et `react-native-svg`. Une formule invalide, ou qui demanderait une police non incluse, reste affichée en texte. Les « imports » de package.json de MathJax (`#default-font/…`) sont traduits dans `metro.config.js`. Ni le vocal ni les résumés pour le parent n'écrivent de LaTeX.
   - Résumés pour le parent (`server/tutor/summaries.ts`) : sortie structurée (notions comprises, points à revoir, résultat) et modérée, mise en forme dans l'app. Jamais de transcription ni de texte libre de l'élève.
   - Aucune donnée personnelle n'est envoyée à OpenAI : ni prénom, ni âge exact, ni auto-évaluation, et e-mails et téléphones sont masqués. `safety_identifier` est un hachage de l'identifiant. Le résumé de la semaine écrit `{prenom}`, remplacé dans l'app.
 - **Accessibilité :**
   - Utiliser les props `aria-*` (`aria-selected`, `aria-checked`, `aria-disabled`) plutôt que `accessibilityState` : React Native Web ignore ce dernier.
   - Pour les éléments interactifs, toujours passer par `PressableBase`, qui gère l'anneau de focus clavier sur le web.
 - **Styles :** sur le web, un raccourci (`padding`) passé avant une propriété précise (`paddingHorizontal`) peut l'écraser. Les composants posent donc des propriétés précises.
+- **Explorer en 3D :** la scène ne calcule d'images que si l'onglet est affiché et l'app au premier plan (`useSceneActive`, `frameloop="never"` sinon) ; « Réduire les animations » fige l'île ; sans WebGL ou si la scène échoue, l'image fixe rendue par Blender (`assets/explorer/images/`) la remplace.
+- **Contexte 3D sur Android :** un écran caché (onglet inactif, écran empilé par-dessus) perd sa vue 3D et son contexte. Une scène qui doit survivre à un aller-retour prend `useSceneKey()` (`@/lib/three/useSceneKey`) comme clé de son `Canvas` (ou de son `SceneBoundary`) : elle est recréée au retour, au lieu de dessiner dans un contexte détruit.
+- **Modèles 3D :** les charger avec `useModel` / `preloadModel` de `@/lib/three/useModel`, jamais avec `useLoader` ni rien qui suspende sous un `Canvas`. Sur Android, l'app et la scène 3D partagent les valeurs de contexte : une reprise de Suspense, rendue par tranches, laisse fuir le contexte de navigation de la scène, et React Navigation s'arrête (« nested a NavigationContainer »).
 - **Vérification visuelle :** comparer chaque écran à sa maquette, sur le web en 390 px de large (`npm run web`), et sur un vrai téléphone via Expo Go.
 - **Hooks git :** le pre-commit lance `lint-staged` (ESLint + Prettier sur les fichiers modifiés) et `npm run typecheck`. La CI (`.github/workflows/ci.yml`) vérifie que les tokens sont à jour et lance `npm run check`.
 

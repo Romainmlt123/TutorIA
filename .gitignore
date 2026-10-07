@@ -28,3 +28,6 @@ coverage/
 *.log
 *.pem
 .vscode/
+
+# Python (scripts Blender)
+__pycache__/

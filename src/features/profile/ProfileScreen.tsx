@@ -13,12 +13,14 @@ import { ScreenContainer } from '@/components/ScreenContainer';
 import { Text } from '@/components/Text';
 import { ConsentBanner } from '@/features/access/ConsentBanner';
 import { authErrorMessage } from '@/features/auth/logic/errors';
+import { useAvatarLook } from '@/features/avatar/hooks/useAvatarLook';
 import { fr } from '@/i18n/fr';
 import { deliverJsonFile } from '@/lib/exportFile';
 import { logError } from '@/lib/logger';
 import { showNotice } from '@/lib/notice';
 import { useStudentAccount } from '@/lib/session/SessionProvider';
 import { authService } from '@/services/auth';
+import { avatarService } from '@/services/avatar';
 import { familyService } from '@/services/family';
 import { theme } from '@/theme';
 
@@ -33,6 +35,7 @@ export function ProfileScreen() {
     queryKey: ['family', 'parents'],
     queryFn: () => familyService.parents(),
   });
+  const avatar = useAvatarLook();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -61,8 +64,13 @@ export function ProfileScreen() {
   const deleteAccount = async () => {
     setBusy(true);
     setMessage(null);
+    const accountId = student?.id;
     try {
       await authService.deleteAccount();
+      // L'avatar n'est que sur l'appareil : il part avec le compte.
+      if (accountId) {
+        avatarService.forget(accountId).catch((error: unknown) => logError('avatar.forget', error));
+      }
     } catch (error) {
       setBusy(false);
       setConfirmDelete(false);
@@ -97,6 +105,22 @@ export function ProfileScreen() {
       </View>
       <ConsentBanner />
       <FormMessage message={message} />
+      <View style={styles.card}>
+        <View style={styles.avatarRow}>
+          <Icon name="utilisateur" size={22} color={theme.colors.primary} strokeWidth={2} />
+          <View style={styles.avatarText}>
+            <Text variant="section">{t.avatarTitle}</Text>
+            <Text variant="bodySm" color="textSecondary">
+              {t.avatarBody}
+            </Text>
+          </View>
+        </View>
+        <Button
+          label={avatar.data ? t.avatarEdit : t.avatarCreate}
+          onPress={() => router.push('/avatar')}
+          variant="soft"
+        />
+      </View>
       <View style={styles.card}>
         <Text variant="section">{t.parents}</Text>
         {(parents.data ?? []).length === 0 ? (
@@ -183,6 +207,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     boxShadow: theme.shadow.md,
   },
+  avatarRow: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
+  avatarText: { flex: 1 },
   parentRow: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
   parentName: { flex: 1 },
   transparency: { flexDirection: 'row', gap: theme.space[2], alignItems: 'flex-start' },

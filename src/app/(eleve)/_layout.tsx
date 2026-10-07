@@ -11,7 +11,7 @@ export default function StudentLayout() {
       tabBar={(props) => <BottomNav {...props} />}
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: theme.colors.bg } }}>
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="parcours" />
+      <Tabs.Screen name="explorer" />
       <Tabs.Screen name="tuteur" />
       <Tabs.Screen name="revisions" />
       <Tabs.Screen name="stats" />

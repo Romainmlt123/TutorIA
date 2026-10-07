@@ -14,6 +14,7 @@ const failingService: TutorService = {
   },
   startVoiceSession: () => Promise.reject(new Error('indisponible')),
   reportMessage: async () => undefined,
+  forgetConversation: () => undefined,
 };
 
 describe('useTutorChat', () => {
@@ -55,5 +56,41 @@ describe('useTutorChat', () => {
     await act(async () => result.current.report('opening-0'));
     expect(reportMessage).toHaveBeenCalledTimes(1);
     expect(result.current.messages[0]?.reported).toBe(true);
+  });
+
+  it('suit l’avancement d’un niveau d’Explorer, avec une carte par étape, puis son bilan', async () => {
+    const recordLevel = jest.fn(() => 10);
+    const service = createMockTutorService({ chunkDelayMs: 0, recordLevel });
+    const levelTopic = { ...topic, levelId: 'maths-equations.isoler-x' };
+    const level = { opening: 'On commence !', stepCard: (done: number) => `Étape ${done} réussie` };
+    const { result } = await renderHook(() => useTutorChat(levelTopic, false, service, level));
+    expect(result.current.messages).toEqual([
+      { id: 'opening-0', kind: 'tutor', text: 'On commence !' },
+    ]);
+
+    for (const message of ['C’est parti !', 'On enlève 5 des deux côtés']) {
+      await act(async () => {
+        await result.current.send(message);
+      });
+    }
+    await waitFor(() => expect(result.current.pending).toBe(false));
+    expect(result.current.progress).toEqual({ done: 1, total: 4 });
+    expect(result.current.messages.map((m) => m.kind)).toEqual([
+      'tutor',
+      'student',
+      'tutor',
+      'student',
+      'step',
+      'tutor',
+    ]);
+
+    for (const answer of ['3x = 15', 'x = 5', 'Je vérifie : 3 × 5 + 5 = 20']) {
+      await act(async () => {
+        await result.current.send(answer);
+      });
+    }
+    await waitFor(() => expect(result.current.result).not.toBeNull());
+    expect(result.current.result).toMatchObject({ passed: true, stars: 3, xp: 10 });
+    expect(recordLevel).toHaveBeenCalledTimes(1);
   });
 });

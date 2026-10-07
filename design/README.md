@@ -1,7 +1,7 @@
 # Tutor'IA — dossier design (app élève)
 
 Maquettes validées de l'application mobile élève Tutor'IA, prêtes à être implémentées.
-Source de vérité visuelle : le canevas Design « Tutor'IA · App mobile élève » sur claude.ai. Il contient 26 écrans iPhone de 390 px de large : 10 côté élève, 4 dans l'espace Parents et 12 pour la connexion, l'inscription et l'onboarding.
+Source de vérité visuelle : le canevas Design « Tutor'IA · App mobile élève » sur claude.ai. Il contient 34 écrans iPhone de 390 px de large : 10 côté élève, 8 pour l'onglet Explorer, 4 dans l'espace Parents et 12 pour la connexion, l'inscription et l'onboarding.
 
 ## Contenu
 
@@ -10,7 +10,7 @@ design/
 ├── README.md            ← ce fichier : vue d'ensemble, écrans, règles
 ├── COMPONENTS.md        ← inventaire des composants à créer, avec leurs specs
 ├── DESIGN_SYSTEM.md     ← README du design system Tutor'IA (règles de marque, couleurs des matières, écarts validés)
-├── design-system/       ← les 64 composants publiés dans le design system (référence : bundle, props typées, fiches)
+├── design-system/       ← les 81 composants publiés dans le design system (référence : bundle, props typées, fiches)
 ├── tokens/
 │   ├── tokens.json      ← tokens officiels du design system (couleurs, type, espaces, rayons, ombres)
 │   ├── app-tokens.json  ← ajouts propres à l'app (matières, jeu, KPI, vocal)
@@ -20,7 +20,8 @@ design/
 │   ├── ModeToggle.dc.html    ← bascule Écrit / Vocal (props mode, variante)
 │   ├── TopicCard.dc.html     ← carte sujet de discussion (props matiere, titre, badge, live)
 │   ├── PanelHeader.dc.html   ← en-tête graphique / tableau blanc (props type, titre, kicker, live, open, onToggle)
-│   └── CallControls.dc.html  ← micro / raccrocher / caméra (props muted, camOn, onMute, onCam, hangupHref)
+│   ├── CallControls.dc.html  ← micro / raccrocher / caméra (props muted, camOn, onMute, onCam, hangupHref)
+│   └── ExplorerMap.dc.html   ← carte d'une île (mer, chemin, villes, niveaux, avatar), partagée par X2 et X3
 └── screens/             ← source HTML de chaque écran (format « Design Component »)
     ├── 01-Accueil.dc.html
     ├── 02a-Tuteur-Ecrit.dc.html
@@ -47,7 +48,15 @@ design/
     ├── O2-Onboarding-Matieres.dc.html
     ├── O3-Onboarding-Objectifs.dc.html
     ├── O4-Onboarding-Style.dc.html
-    └── O5-Onboarding-Pret.dc.html
+    ├── O5-Onboarding-Pret.dc.html
+    ├── X1-Explorer-Iles.dc.html        ← onglet Explorer
+    ├── X2-Explorer-Carte.dc.html
+    ├── X3-Explorer-Niveau.dc.html
+    ├── X3b-Explorer-Niveau-Evaluation.dc.html
+    ├── X4-Explorer-Discussion.dc.html
+    ├── X4b-Explorer-Discussion-Vocal.dc.html
+    ├── X5-Explorer-Bilan.dc.html
+    └── X5b-Explorer-Bilan-Consolider.dc.html
 ```
 
 ## Historique des mises à jour
@@ -74,6 +83,12 @@ design/
   - **Inscription élève et onboarding** (E1, O1 à O5) : création de compte autonome, puis classe, auto-évaluation par matière, objectifs, façon d'apprendre et plan personnalisé.
   - 18 nouveaux composants dans le design system (64 au total) et dans `COMPONENTS.md`, section « Connexion et onboarding ».
   - Les écrans des versions précédentes et `tokens/` n'ont pas changé.
+- **v2.4**
+  - **Onglet Explorer** (X1 à X5b), qui remplace « Parcours » : carrousel des îles-matières, carte d'aventure de l'île, fiche d'un niveau, discussion de niveau à l'écrit et à la voix, bilan réussi ou à consolider.
+  - La barre de navigation élève affiche **Explorer** avec une boussole (`active="explorer"` ; `parcours` reste accepté comme alias). Les autres écrans élève n'ont pas changé.
+  - Nouveau composant partagé `components/ExplorerMap.dc.html`.
+  - 17 nouveaux composants dans le design system (81 au total) et dans `COMPONENTS.md`, section « Explorer ».
+  - `tokens/` n'a pas changé : les couleurs des types de niveau et de la carte sont à ajouter dans `tokens/app-tokens.json` au moment du développement (voir la section Explorer).
 
 Les logos et les polices ne sont pas dupliqués : les écrans pointent vers `../../assets/logo/` et `../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/`.
 
@@ -262,10 +277,49 @@ Tout en bleu. Chaque étape de l'onboarding a un **StepHeader** (retour, « Éta
 ### O5 · Parcours prêt — `O5-Onboarding-Pret.dc.html`
 - Carte héros « Ton parcours est prêt », plan en **PlanRow** qui commence par la matière la moins à l'aise, objectif du jour et jour 1 de la série. Boutons « Commencer ma première séance » et « Relier mon compte à un parent ».
 
+## Explorer (X1 à X5b)
+
+L'onglet Explorer transforme le programme en carte d'aventure. **Une île = une matière**, découpée en régions (thèmes), villes (chapitres) et niveaux. L'exemple des maquettes est l'île des Maths de 4e.
+
+**Trois types de niveaux**, toujours avec leur couleur, leur icône et leur libellé :
+
+| Type | Couleur | Icône | Comportement du tuteur |
+| --- | --- | --- | --- |
+| Leçon | vert (`green-700`, dégradé green-400 → green-700) | livre | Explique, donne des exemples, vérifie la compréhension. |
+| Exercices | bleu (`blue-500`, dégradé blue-400 → blue-600) | crayon | Laisse chercher, donne des indices progressifs. |
+| Évaluation | rouge (`red-500`, dégradé red-300 → red-600) | couronne | Exigeant : ni indice ni correction pendant l'épreuve, correction dans le bilan. |
+
+L'évaluation ferme chaque ville : son point est plus grand (68 px contre 52) avec un double anneau.
+
+**Chaque point lance un chat sans quitter l'onglet Explorer.** On ne renvoie jamais vers l'onglet Tutor'IA : la discussion garde le fond de l'île et la progression du niveau.
+
+Tokens à ajouter dans `tokens/app-tokens.json` : `level-lecon` = green-700, `level-exercices` = blue-500, `level-evaluation` = red-500, `map-sea` = azure-100 (dégradé vers azure-200), `map-land` = green-100 (bord green-200), `map-path` = orange-300 (chemin à venir en gray-200).
+
+### X1 · Les îles — `X1-Explorer-Iles.dc.html`
+- **IslandCarousel** : nom de la matière en pastille dégradée, île flottante animée, îles voisines estompées, flèches et points.
+- **IslandProgressCard** : villes validées, étoiles, barre aux couleurs de la matière et bouton « Explorer l'île ».
+
+### X2 · Carte de l'île — `X2-Explorer-Carte.dc.html`
+- **ExplorerHud** flottant (retour, île, ville, région, série, niveau) et carte **ExplorerMap** qui défile horizontalement.
+- Chemin en vague : orange jusqu'au niveau en cours, gris ensuite. Villes en **CityBanner**, régions en **RegionSign**, avatar **MapAvatar** au-dessus du niveau en cours.
+- États des points : terminé (coche et étoiles), en cours (halo pulsé), verrouillé (gris et cadenas).
+
+### X3 / X3b · Fiche d'un niveau — `X3-…`, `X3b-…`
+- **LevelSheet** en feuille du bas sur la carte assombrie : type, titre, lieu, durée, étoiles, objectifs, puis « À l'écrit » et « À la voix » (le dernier mode utilisé en premier).
+- X3b montre une évaluation encore verrouillée : règle en rouge (le tuteur n'aide pas, quitter avant la fin oblige à recommencer) et message de déblocage (terminer d'abord les étapes de la ville).
+
+### X4 / X4b · Discussion de niveau — `X4-…`, `X4b-…`
+- Fond **IslandBackdrop** aux couleurs de l'île et **LevelProgressHeader** (retour à la carte, type, titre, bascule écrit / vocal, progression en segments).
+- X4 : chat écrit avec les bulles et la saisie de l'onglet Tutor'IA. X4b : visualiseur vocal, **VoiceBoardCard** (le tuteur écrit les étapes) et contrôles d'appel ; raccrocher ramène à la carte.
+
+### X5 / X5b · Bilan — `X5-…`, `X5b-…`
+- **LevelResultCard** : « Bien joué ! » sur vert (X5) ou « Presque ! » sur orange (X5b), étoiles, score et XP, puis des **TutorFeedback** réussi / à revoir.
+- Il faut 70 % à l'évaluation pour valider la ville. En dessous, la ville passe « à consolider » (orange) : on revoit la notion et on retente quand on veut.
+
 ## Barre de navigation (tous les écrans)
 
 Flottante : `left/right/bottom: 20px`, hauteur 72 px, `radius-3xl`, `shadow-lg`, fond blanc.
-5 onglets : **Accueil · Parcours · Tutor'IA · Révisions · Stats**, avec des icônes au contour (`gray-400`) et un libellé de 12 px en `text-secondary`.
+5 onglets : **Accueil · Explorer · Tutor'IA · Révisions · Stats** (Explorer avec une icône boussole), avec des icônes au contour (`gray-400`) et un libellé de 12 px en `text-secondary`.
 L'onglet actif a une pastille ronde `primary` de 52 px qui dépasse de la barre (bord blanc de 4 px), avec une icône blanche et un libellé en `primary` Bold.
 L'onglet **Tutor'IA** utilise le **logo** au lieu d'une icône : le logo sur fond blanc (30 px) au repos, et le logo sur fond bleu (42 px) dans une pastille de 60 px quand il est actif.
 
@@ -303,3 +357,10 @@ Ces choix ont été validés sur les maquettes. Ils sont à reporter dans le des
 5. **Texte blanc sur l'orange** (série, À retravailler) : le contraste est d'environ 2,3:1, sous le seuil WCAG. Il reste lisible sur les grands textes gras. À surveiller pour les petits textes (possibilité de foncer l'orange si besoin).
 6. **Barre de navigation visible pendant l'appel vocal.**
 7. **Espace Parents coloré** : le design system le voulait « plus sobre ». Il garde les couleurs et les cartes en dégradé de l'app élève, mais sans aucune gamification.
+8. **Explorer en 3D, sur fond de ciel (X1)** : validé par Romain. L'île est en 3D réaliste façon maquette, avec des couleurs naturelles hors de la palette de la marque, et tout l'écran X1 garde le ciel et ses nuages au lieu du fond `bg`. Sur ce ciel, le sous-titre « Choisis ton île » passe en `text` (le `text-secondary` serait illisible), et les points inactifs du carrousel sont blancs. Tant qu'une seule île est construite en 3D (les Maths), le carrousel ne montre qu'elle, sans flèches ni points. L'île tourne au doigt, avec un peu d'élan au lâcher ; on changera d'île avec les flèches.
+10. **X2a · les régions de l'île** : « Explorer l'île » zoome dans la même scène 3D (caméra plus haute, île entière). Les régions (domaines du référentiel de 4e) se choisissent avec un **carrousel de cartes en bois en bas de l'écran** (défilement au doigt ou flèches) : la région choisie est éclairée, teintée, avec ses frontières en pointillés, les autres sont grisées, et la caméra dérive vers elle. Rien n'est posé sur l'île. Le bouton « Entrer dans la région » déclenche un vrai zoom-in sur la région, un fondu au noir accompagne le zoom, puis la carte de la région apparaît (X2b). L'Algorithmique, région d'un seul chapitre, est un îlot flottant derrière l'île (en haut à gauche), hors de portée du carrousel. Sans WebGL ou avec un lecteur d'écran, le carrousel est remplacé par une liste de régions.
+11. **X2b · la carte d'une région** : « Entrer dans la région » ouvre une vraie carte de l'île de la région, vue de haut (caméra à 52°, abaissée de 62° à la demande de Romain le 06/10, champ de vision très étroit : presque sans perspective, comme un plateau de jeu). La carte se déplace au doigt dans tous les sens, avec de l'élan, bornée à l'île ; les flèches ville précédente/suivante du panneau de ville la recentrent sur une ville. Les villes sont posées en serpentin (deux par rangée) et chacune occupe une clairière avec son monument au centre ; ses niveaux forment un arc autour du monument, du côté de la ville précédente à celui de la suivante, et un seul chemin relie toutes les villes dans l'ordre du programme. Il est en bois miel jusqu'à l'avatar et en bois grisé ensuite ; les points de niveau sont verts (leçon), bleus (exercices) ou rouges et plus grands (évaluation), gris avec un cadenas quand ils sont fermés, avec leurs étoiles ; un bandeau de bois nomme chaque ville, derrière son cercle de niveaux. L'en-tête nomme la région et la ville la plus proche du centre de l'écran. Les boutons de 48 px et les bandeaux sont posés sur la 3D et rognés à la zone de la carte ; une vue en liste (région, ville, niveau) remplace la carte sans WebGL, avec un lecteur d'écran ou sur demande. Art : pour la région Nombres, la carte est la région elle-même de l'île, agrandie 6 fois (même contour, mêmes repères : π d'eau animé, pyramides, cubes numérotés, arbre « + » ; le boulier et l'octaèdre sont retirés pour faire de la place), cuite dans Blender avec la même herbe naturelle que l'île et ses brins qui ondulent. Comme sur l'île, il n'y a ni arbre ni buisson : quelques rochers, des galets et des touffes de fleurs (pièces texturées du kit de décor) sont posés par l'app aux emplacements choisis par Blender (regionDecor.json), avec une ombre douce au sol, sans surcharger la carte. Validé par Romain le 06/10 : le chemin est fait de planches posées en travers, comme sur un plateau de jeu, avec l'herbe visible entre elles (dessinées par le shader). Les points de niveau gardent leur disque coloré et leur icône blanche, mais leur relief est un rebord doré et lumineux, façon Mario (argenté pour un niveau fermé) ; un halo jaune entoure les niveaux ouverts et celui de l'avatar pulse doucement. L'avatar de l'élève remplace le pion : il salue à l'entrée dans la région, marche le long du chemin quand il avance, puis saute en arrivant. Les clairières des villes ne restent plus vides : de l'herbe, des fleurs et quelques galets y poussent autour du monument. Les monuments des villes sont posés à même l'herbe, sans socle, et soignés comme des figurines de maquette (moulin de pierre et toit de tuiles, ailes en treillis qui montrent 1/4 à 4/4, tarte festonnée à la chantilly, atelier à colombages, balance de laiton au cadran « = », bascule sur une droite graduée de −4 à +4, tour de cubes couronnée). Les autres régions gardent pour l'instant la maquette simple (terre unie, décors du kit, village générique).
+9. **HUD de jeu vidéo sur X1** : à la demande de Romain, l'écran doit se distinguer du reste de l'app, « plus Mario ». Le titre, les compteurs, la banderole de l'île et les boutons utilisent la police Lilita One (licence OFL, `assets/typographie/LilitaOne/`), en blanc cerné de bleu nuit avec une ombre portée. S'y ajoutent des boutons brillants en relief (flèches jaunes, bouton vert « Explorer l'île »), des gemmes à la place des points et un panneau « Ta quête » en bois (planches rendues par Blender, `tools/explorer-3d/wood_panel.py`), avec des clous, un ruban et une étiquette en parchemin pour la prochaine étape. La barre de navigation reste celle de l'app.
+12. **Éditeur d'avatar dans le HUD de jeu** (sans maquette, validé par Romain le 02/10) : « Crée ton avatar » reprend la direction artistique d'Explorer pour que le côté jeu de l'app reste cohérent. On y retrouve le ciel d'Explorer en fond, la figurine en 3D posée dessus et les boutons ronds en relief (retour jaune, dé vert). Les titres sont en Lilita One et les onglets sont des boutons de jeu, le choisi en jaune. Les réglages sont dans un panneau de bois (planches répétées à leur taille), avec des pastilles de parchemin (la choisie dorée), des pastilles de couleur cernées de bleu nuit, des curseurs à jauge creusée et bouton doré et des interrupteurs en bois. Le gros bouton vert « Enregistrer » et la confirmation de sortie, sur un panneau de bois, complètent l'écran.
+13. **X3 à X5b · un niveau dans le HUD de jeu** (validé par Romain le 06/10) : la fiche d'un niveau et son bilan reprennent le panneau de bois d'Explorer au lieu de la feuille blanche des maquettes ; la discussion garde les bulles et la saisie de l'onglet Tutor'IA, dans un cadre clair cerné de bleu nuit, sur le ciel d'Explorer. Toucher un niveau ouvert y fait d'abord marcher l'avatar (2,5 s au plus), comme sur la carte d'un jeu, puis la fiche s'ouvre à son arrivée ; un niveau fermé ouvre sa fiche tout de suite. Les étoiles d'un niveau terminé s'affichent en arc au-dessus de son point, grandes et cernées de bleu nuit, celle du milieu plus haute. La fiche se pose en bas de la carte assombrie : ruban du type, titre en Lilita One, pastilles de durée, d'étapes et d'étoiles, objectifs sur parchemin, règle de l'évaluation sur fond rouge clair, raison du verrouillage, puis « À l'écrit » (vert) et, pour une leçon seulement, « À la voix » (bleu) : à l'oral, le tuteur ne peut pas juger les réponses, la leçon compte alors comme une séance, sans étoiles. L'en-tête de la discussion montre la progression en segments verts, et chaque étape réussie d'une leçon ajoute une carte verte « Étape n réussie ». Le bilan est calculé par le serveur ; « Le bilan de ton tuteur » devient « Ce que tu as travaillé » (les objectifs du niveau) ou la leçon à revoir, et l'XP affichée est celle réellement gagnée (rejouer ne rapporte que les étoiles nouvelles ; rien n'est affiché sans gain).
+14. **Formules mathématiques en New Computer Modern** (validé par Romain le 06/10) : dans les bulles du tuteur, les formules sont dessinées par MathJax avec sa police mathématique (fractions empilées, puissances, racines, x en italique), et non en Satoshi, comme dans un manuel. Une formule isolée est centrée sur sa ligne, un peu plus grande que le texte ; une formule trop longue défile sur le côté. Elles prennent la couleur du texte de la bulle.

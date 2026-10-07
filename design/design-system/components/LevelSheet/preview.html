@@ -1,0 +1,12 @@
+<!-- @dsCard group="Explorer" height=481 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { width: 390, background: 'var(--azure-100)', paddingTop: 16 } }, h(T.LevelSheet, { type: 'lecon', title: 'Lire une abscisse', where: 'Île des Maths · Repère-sur-Mer', minutes: 8, stars: 0,
+  objectives: ['Repérer un point sur une droite graduée', 'Lire une abscisse positive ou négative'] }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

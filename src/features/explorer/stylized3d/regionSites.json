@@ -1,0 +1,31 @@
+{
+  "maths-nombres": {
+    "scale": 6.0,
+    "cities": {
+      "maths-relatifs": {
+        "center": [-11.5, 1.5],
+        "via": []
+      },
+      "maths-fractions": {
+        "center": [-15.0, 7.0],
+        "via": []
+      },
+      "maths-fractions-produits": {
+        "center": [-8.5, 8.0],
+        "via": []
+      },
+      "maths-puissances": {
+        "center": [-4.5, 5.5],
+        "via": []
+      },
+      "maths-calcul-litteral": {
+        "center": [-4.5, 1.5],
+        "via": []
+      },
+      "maths-equations": {
+        "center": [-4.5, -3.5],
+        "via": []
+      }
+    }
+  }
+}
