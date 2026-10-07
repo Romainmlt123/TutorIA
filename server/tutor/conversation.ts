@@ -2,8 +2,12 @@ import { z } from 'zod';
 
 import { TUTOR_LIMITS, type ChatTurn, type TutorTopic } from '@/services/tutor/api-contract';
 
+import type { Json } from '@/services/db/database.types';
+import type { TutorVisual } from '@/services/tutor/visuals';
+
 import { serverLog } from '../log';
 import type { AdminClient } from '../supabase';
+import { sessionToolOf, visualSummary } from './visuals';
 
 /** Durée maximale comptée pour une séance écrite (même plafond qu'en base). */
 const MAX_WRITTEN_SECONDS = 3600;
@@ -22,7 +26,7 @@ const uuid = z.uuid();
 async function historyOf(admin: AdminClient, conversationId: string, studentId: string) {
   const { data, error } = await admin
     .from('messages')
-    .select('role, content')
+    .select('role, content, visual')
     .eq('conversation_id', conversationId)
     .eq('student_id', studentId)
     .order('created_at', { ascending: false })
@@ -31,9 +35,12 @@ async function historyOf(admin: AdminClient, conversationId: string, studentId: 
   const history: ChatTurn[] = [];
   let total = 0;
   for (const message of data) {
-    if (total + message.content.length > TUTOR_LIMITS.historyMaxChars) break;
-    total += message.content.length;
-    history.unshift({ role: message.role, text: message.content });
+    // Le tuteur se souvient du visuel qu'il a montré : un rappel suit son message.
+    const visual = message.visual as TutorVisual | null;
+    const text = visual ? `${message.content}\n${visualSummary(visual)}` : message.content;
+    if (total + text.length > TUTOR_LIMITS.historyMaxChars) break;
+    total += text.length;
+    history.unshift({ role: message.role, text });
   }
   return history;
 }
@@ -109,6 +116,8 @@ export async function recordMessage(
   studentId: string,
   role: ChatTurn['role'],
   content: string,
+  /** Visuel validé du tuteur, gardé avec son message. */
+  visual: TutorVisual | null = null,
 ): Promise<void> {
   const now = new Date();
   const seconds = Math.min(
@@ -121,6 +130,7 @@ export async function recordMessage(
       student_id: studentId,
       role,
       content: content.slice(0, 4000),
+      visual: visual as unknown as Json,
     }),
     admin
       .from('conversations')
@@ -134,4 +144,28 @@ export async function recordMessage(
   for (const result of results) {
     if (result.error) serverLog.error('tutor.record', result.error);
   }
+  if (visual) await addSessionTool(admin, conversation.sessionId, sessionToolOf(visual));
+}
+
+/** Note l'outil sur la séance (graphique ou tableau blanc), affiché aux parents dans P3. */
+async function addSessionTool(
+  admin: AdminClient,
+  sessionId: string,
+  tool: 'graph' | 'whiteboard',
+): Promise<void> {
+  const { data, error } = await admin
+    .from('study_sessions')
+    .select('tools')
+    .eq('id', sessionId)
+    .maybeSingle();
+  if (error || !data) {
+    if (error) serverLog.error('tutor.session_tool', error);
+    return;
+  }
+  if (data.tools.includes(tool)) return;
+  const update = await admin
+    .from('study_sessions')
+    .update({ tools: [...data.tools, tool] })
+    .eq('id', sessionId);
+  if (update.error) serverLog.error('tutor.session_tool', update.error);
 }

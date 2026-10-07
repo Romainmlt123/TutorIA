@@ -21,10 +21,13 @@ import { getOpenAI } from '../openai';
 import { getAdminClient, type AdminClient } from '../supabase';
 import { requireTutorAccess } from './access';
 import { openConversation, recordMessage, type Conversation } from './conversation';
+import type { TutorVisual } from '@/services/tutor/visuals';
+
 import { LEVEL_TOOLS, levelInstructions, levelOfTopic, type LevelStore } from './level';
 import { supabaseLevelStore } from './levelStore';
 import { buildTutorInstructions, TUTOR_PROMPT_VERSION } from './prompt';
 import { promptContextOf } from './topic';
+import { parseVisualCall, VISUAL_TOOL_NAMES, VISUAL_TOOLS, visualText } from './visuals';
 
 /** Délai maximal d'un passage du modèle (une réponse peut en demander deux). */
 const UPSTREAM_TIMEOUT_MS = 20_000;
@@ -92,6 +95,8 @@ async function* streamReply(
   signal: AbortSignal,
   recording: Recording,
   level: LevelContext | null,
+  /** Le parent laisse le tuteur dessiner (graphiques et tableau blanc, P4). */
+  visuals: boolean,
 ): AsyncGenerator<TutorStreamEvent> {
   if (recording.conversation.created) {
     yield { type: 'conversation', id: recording.conversation.id };
@@ -104,10 +109,14 @@ async function* streamReply(
           ...context,
           level: levelInstructions(level.place, level.play, 'text'),
           lesson,
+          visuals,
         }
-      : context,
+      : { ...context, visuals },
   );
-  const tools = level && !level.play.finished ? LEVEL_TOOLS : [];
+  const tools = [
+    ...(level && !level.play.finished ? LEVEL_TOOLS : []),
+    ...(visuals ? VISUAL_TOOLS : []),
+  ];
   const maxOutputTokens = lesson ? MAX_LESSON_OUTPUT_TOKENS : MAX_OUTPUT_TOKENS;
   let input: ModelInput = [
     ...chat.history.map((turn) => ({
@@ -157,19 +166,15 @@ async function* streamReply(
         }
       }
       calls.push(...roundCalls);
-      // Le modèle n'a fait qu'appeler un outil : on lui renvoie l'avancement pour qu'il réponde.
-      if (text || !roundCalls.length || !level) break;
-      const progress = progressOf(
-        level.place.level,
-        applyCalls(level.place.level, level.play, parsed(calls)).play,
-      );
+      // Le modèle n'a fait qu'appeler un outil : on lui renvoie le résultat pour qu'il réponde.
+      if (text || !roundCalls.length) break;
       input = [
         ...input,
         ...roundCalls,
         ...roundCalls.map((call) => ({
           type: 'function_call_output' as const,
           call_id: call.call_id,
-          output: JSON.stringify({ enregistre: true, avancement: progress }),
+          output: JSON.stringify(toolOutput(call, calls, level)),
         })),
       ];
     }
@@ -179,10 +184,14 @@ async function* streamReply(
     return;
   }
 
-  // Modération de la réponse complète : si elle est signalée, l'app la retire (et rien n'est gardé).
+  // Le premier visuel valide du message (un seul par message) ; les autres sont ignorés.
+  const visual = visuals ? firstVisual(calls) : null;
+  // Modération de la réponse complète, visuel compris : si elle est signalée, l'app la retire (et
+  // rien n'est gardé).
   let kept = Boolean(text);
   try {
-    if (text && (await moderateText(client, text)) !== 'ok') {
+    const moderated = visual ? `${text}\n${visualText(visual)}` : text;
+    if (text && (await moderateText(client, moderated)) !== 'ok') {
       serverLog.warn('chat.retract', { promptVersion: TUTOR_PROMPT_VERSION });
       kept = false;
       yield { type: 'retract' };
@@ -199,7 +208,9 @@ async function* streamReply(
       recording.studentId,
       'tutor',
       text,
+      visual,
     );
+    if (visual) yield { type: 'visual', visual };
     // Les jugements ne comptent qu'avec une réponse gardée (jamais avec une réponse retirée).
     if (level && calls.length) {
       try {
@@ -214,10 +225,38 @@ async function* streamReply(
   yield { type: 'done' };
 }
 
-/** Appels d'outils lisibles ; les autres sont journalisés et ignorés. */
+/** Premier visuel valide parmi les appels du message ; un visuel mal formé est journalisé. */
+function firstVisual(calls: readonly FunctionCall[]): TutorVisual | null {
+  for (const call of calls) {
+    if (!VISUAL_TOOL_NAMES.has(call.name)) continue;
+    const visual = parseVisualCall(call.name, call.arguments);
+    if (visual) return visual;
+    serverLog.warn('chat.visual_invalid', { name: call.name });
+  }
+  return null;
+}
+
+/** Réponse renvoyée au modèle pour un appel d'outil, quand il n'a rien écrit d'autre. */
+function toolOutput(
+  call: FunctionCall,
+  calls: readonly FunctionCall[],
+  level: LevelContext | null,
+) {
+  if (VISUAL_TOOL_NAMES.has(call.name)) {
+    return parseVisualCall(call.name, call.arguments)
+      ? { affiche: true }
+      : { affiche: false, raison: 'visuel mal formé : explique sans lui' };
+  }
+  if (!level) return { ignore: true };
+  const play = applyCalls(level.place.level, level.play, parsed(calls)).play;
+  return { enregistre: true, avancement: progressOf(level.place.level, play) };
+}
+
+/** Appels d'outils de niveau lisibles ; les autres (hors visuels) sont journalisés et ignorés. */
 function parsed(calls: readonly FunctionCall[]): LevelCall[] {
   const result: LevelCall[] = [];
   for (const call of calls) {
+    if (VISUAL_TOOL_NAMES.has(call.name)) continue;
     const levelCall = parseLevelCall(call.name, call.arguments);
     if (levelCall) result.push(levelCall);
     else serverLog.warn('chat.tool_ignored', { name: call.name });
@@ -313,6 +352,7 @@ export async function handleChat(
       signal,
       { admin, conversation, studentId },
       level,
+      access.visualsEnabled,
     ),
   );
 }

@@ -75,3 +75,37 @@ export function spokenTex(tex: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+export type TexPiece = { kind: 'tex'; tex: string } | { kind: 'text'; text: string };
+
+/**
+ * Sépare les mots écrits dans une formule (`\text{des deux côtés}`, au premier niveau) du reste :
+ * l'app les écrit en Satoshi, à côté des morceaux dessinés par MathJax. Les accents (ô, ê, î)
+ * n'ont alors pas besoin d'une police mathématique de plus.
+ */
+export function splitTexText(tex: string): TexPiece[] {
+  const pieces: TexPiece[] = [];
+  const command = /\\(?:text|textrm|mbox)\s*\{/g;
+  let last = 0;
+  let match: RegExpExecArray | null;
+  while ((match = command.exec(tex))) {
+    // Accolade fermante correspondante, en tenant compte des accolades imbriquées.
+    let depth = 1;
+    let end = match.index + match[0].length;
+    while (end < tex.length && depth > 0) {
+      if (tex[end] === '{') depth++;
+      else if (tex[end] === '}') depth--;
+      end++;
+    }
+    if (depth > 0) break;
+    const before = tex.slice(last, match.index).trim();
+    if (before) pieces.push({ kind: 'tex', tex: before });
+    const words = tex.slice(match.index + match[0].length, end - 1);
+    if (words.trim()) pieces.push({ kind: 'text', text: words });
+    last = end;
+    command.lastIndex = end;
+  }
+  const rest = tex.slice(last).trim();
+  if (rest) pieces.push({ kind: 'tex', tex: rest });
+  return pieces;
+}

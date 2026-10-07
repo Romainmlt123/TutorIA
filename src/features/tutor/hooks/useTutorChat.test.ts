@@ -93,4 +93,16 @@ describe('useTutorChat', () => {
     expect(result.current.result).toMatchObject({ passed: true, stars: 3, xp: 10 });
     expect(recordLevel).toHaveBeenCalledTimes(1);
   });
+
+  it('attache le visuel du tuteur à sa réponse et le montre dans le panneau', async () => {
+    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const { result } = await renderHook(() => useTutorChat(topic, false, service));
+    expect(result.current.visual).toBeNull();
+    await act(async () => {
+      await result.current.send('Tu peux me montrer un graphique ?');
+    });
+    await waitFor(() => expect(result.current.pending).toBe(false));
+    expect(result.current.visual).toMatchObject({ kind: 'graph', title: '3x + 5 = 20' });
+    expect(result.current.messages.at(-1)?.visual?.kind).toBe('graph');
+  });
 });

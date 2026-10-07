@@ -447,6 +447,7 @@ export type Database = {
           id: string;
           role: Database['public']['Enums']['message_role'];
           student_id: string;
+          visual: Json | null;
         };
         Insert: {
           content: string;
@@ -455,6 +456,7 @@ export type Database = {
           id?: string;
           role: Database['public']['Enums']['message_role'];
           student_id: string;
+          visual?: Json | null;
         };
         Update: {
           content?: string;
@@ -463,6 +465,7 @@ export type Database = {
           id?: string;
           role?: Database['public']['Enums']['message_role'];
           student_id?: string;
+          visual?: Json | null;
         };
         Relationships: [
           {

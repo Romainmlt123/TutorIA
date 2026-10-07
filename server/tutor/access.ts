@@ -27,7 +27,14 @@ const LIMITS: Record<TutorFeature, readonly { max: number; windowSeconds: number
   report: [{ max: 10, windowSeconds: 10 * MINUTE }],
 };
 
-export type TutorAccess = { ok: true; user: AuthenticatedUser } | { ok: false; response: Response };
+export type TutorAccess =
+  | {
+      ok: true;
+      user: AuthenticatedUser;
+      /** Graphiques et tableau blanc autorisés par le parent (P4). */
+      visualsEnabled: boolean;
+    }
+  | { ok: false; response: Response };
 
 /**
  * Avant tout appel à OpenAI : élève connecté, consentement parental (sous 15 ans),
@@ -44,6 +51,7 @@ export async function requireTutorAccess(
   if (!auth.ok) return auth;
   if (auth.user.role !== 'student') return { ok: false, response: errorResponse('forbidden') };
 
+  let visualsEnabled = false;
   if (feature !== 'report') {
     const { data, error } = await admin.rpc('tutor_context', { p_student_id: auth.user.id });
     const context = data?.[0];
@@ -72,6 +80,7 @@ export async function requireTutorAccess(
       now,
     );
     if (block) return { ok: false, response: errorResponse('paused') };
+    visualsEnabled = context.visuals_enabled;
   }
 
   const limits: SharedLimit[] = LIMITS[feature].map((limit) => ({
@@ -85,5 +94,5 @@ export async function requireTutorAccess(
       response: errorResponse(verdict === 'limited' ? 'rate_limited' : 'upstream'),
     };
   }
-  return { ok: true, user: auth.user };
+  return { ok: true, user: auth.user, visualsEnabled };
 }

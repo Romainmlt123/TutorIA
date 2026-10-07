@@ -3,9 +3,9 @@ import { ScrollView, StyleSheet, View, type ColorValue } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 
 import { Text } from '@/components/Text';
-import { textStyle } from '@/theme';
+import { textStyle, theme } from '@/theme';
 
-import { spokenTex } from '../logic/mathText';
+import { spokenTex, splitTexText } from '../logic/mathText';
 import { renderTex } from '../math/texToSvg';
 
 /** Taille d'un « ex » MathJax par rapport à la police du texte : la hauteur d'un x de Satoshi. */
@@ -18,13 +18,45 @@ type Props = {
   /** Formule seule sur sa ligne ($$…$$), sinon dans la phrase. */
   display?: boolean;
   color: ColorValue;
+  /** Agrandissement par rapport au texte courant (tableau blanc). */
+  scale?: number;
+  /** Faux : formule et mots restent sur une seule ligne (tableau blanc, qui défile sur le côté). */
+  wrap?: boolean;
 };
 
 /**
  * Formule mathématique dessinée par MathJax (SVG). Dans la phrase, elle s'aligne sur la ligne de
  * base du texte. Si elle ne peut pas être dessinée, son LaTeX reste affiché en texte.
  */
-export function MathFormula({ tex, display = false, color }: Props) {
+export function MathFormula(props: Props) {
+  const { tex, display = false, color, scale = 1, wrap = true } = props;
+  const pieces = useMemo(() => splitTexText(tex), [tex]);
+  if (pieces.length === 1 && pieces[0]!.kind === 'tex') return <SingleFormula {...props} />;
+  // Des mots dans la formule (\text{…}) : écrits en Satoshi, à la taille de la formule.
+  const words = (text: string, key: number) => (
+    <Text
+      key={key}
+      variant="body"
+      color={color}
+      style={scale !== 1 ? { fontSize: (textStyle('body').fontSize ?? 16) * scale } : undefined}>
+      {text}
+    </Text>
+  );
+  const parts = pieces.map((piece, i) =>
+    piece.kind === 'text' ? (
+      words(piece.text, i)
+    ) : (
+      <SingleFormula key={i} {...props} tex={piece.tex} />
+    ),
+  );
+  // Dans une phrase, les morceaux s'enchaînent dans le texte ; seuls, ils forment une ligne.
+  if (!display && scale === 1) return <>{parts}</>;
+  return (
+    <View style={[styles.row, !wrap && styles.nowrap, display && styles.centered]}>{parts}</View>
+  );
+}
+
+function SingleFormula({ tex, display = false, color, scale = 1 }: Props) {
   const rendered = useMemo(() => renderTex(tex, display), [tex, display]);
   const label = spokenTex(tex);
   if (!rendered) {
@@ -35,7 +67,7 @@ export function MathFormula({ tex, display = false, color }: Props) {
     );
   }
   const fontSize = textStyle('body').fontSize ?? 16;
-  const ex = fontSize * EX_PER_EM * (display ? DISPLAY_SCALE : 1);
+  const ex = fontSize * EX_PER_EM * (display ? DISPLAY_SCALE : 1) * scale;
   const width = rendered.width * ex;
   const height = rendered.height * ex;
   const formula = (
@@ -72,5 +104,8 @@ export function MathFormula({ tex, display = false, color }: Props) {
 }
 
 const styles = StyleSheet.create({
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: theme.space[1] },
+  centered: { justifyContent: 'center' },
+  nowrap: { flexWrap: 'nowrap' },
   display: { flexGrow: 1, justifyContent: 'center' },
 });

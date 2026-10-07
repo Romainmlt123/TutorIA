@@ -122,6 +122,9 @@ const ICONS = {
     },
   ],
   'bulle-chat': [{ d: 'M4 5h16v11H9l-5 4z' }],
+  crayon: [{ d: 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z' }],
+  triangle: [{ d: 'M12 4 3 20h18z' }],
+  agrandir: [{ d: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7' }],
   graphique: [{ d: 'M4 4v16h16M7 15l4-5 3 3 5-6' }],
   cartes: [
     {
