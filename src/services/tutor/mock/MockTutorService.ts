@@ -12,7 +12,7 @@ import type { StartVoiceRequest, TutorService, VoiceSession } from '../TutorServ
 import { mockLevelTurn, type MockLevelState } from './levelScripts';
 import type { MockConversationService } from '../../conversations/mock/MockConversationService';
 import { mockVisualTurn } from './visualScripts';
-import { MOCK_STUDENT_LINES, MOCK_TUTOR_LINES } from './voiceScripts';
+import { MOCK_TUTOR_LINES } from './voiceScripts';
 import { scriptedReply } from './scripts';
 
 export type MockOptions = {
@@ -103,8 +103,8 @@ class MockVoiceSession implements VoiceSession {
     this.ticker = null;
   }
 
-  /** Fait apparaître une phrase mot à mot sur la durée donnée, avec le niveau de la voix. */
-  private speak(speaker: 'tutor' | 'student', text: string, durationMs: number) {
+  /** Fait apparaître la phrase du tuteur mot à mot sur la durée donnée, avec le niveau de sa voix. */
+  private speak(text: string, durationMs: number) {
     const words = text.split(' ');
     const ticks = Math.max(1, Math.floor(durationMs / LEVEL_TICK_MS));
     let tick = 0;
@@ -113,12 +113,10 @@ class MockVoiceSession implements VoiceSession {
       tick += 1;
       const shown = Math.min(words.length, Math.ceil((tick / ticks) * words.length));
       const current = words.slice(0, shown).join(' ');
-      this.request.onCaption?.({ speaker, text: current, final: shown === words.length });
-      if (speaker === 'tutor') {
-        // Le logo se pose sur la ponctuation, comme la voix.
-        const pause = /[,.?!:]$/.test(words[shown - 1] ?? '');
-        this.request.onLevel?.(pause ? 0.15 : 0.45 + 0.4 * Math.abs(Math.sin(tick * 1.7)));
-      }
+      this.request.onCaption?.({ text: current, final: shown === words.length });
+      // Le logo se pose sur la ponctuation, comme la voix.
+      const pause = /[,.?!:]$/.test(words[shown - 1] ?? '');
+      this.request.onLevel?.(pause ? 0.15 : 0.45 + 0.4 * Math.abs(Math.sin(tick * 1.7)));
       if (tick >= ticks) this.stopTicker();
     }, LEVEL_TICK_MS);
   }
@@ -128,7 +126,7 @@ class MockVoiceSession implements VoiceSession {
     const line = MOCK_TUTOR_LINES[this.turn % MOCK_TUTOR_LINES.length]!;
     if (this.visuals && line.visual) this.request.onVisual?.(line.visual);
     this.request.onEvent({ type: 'aiStarted' });
-    this.speak('tutor', line.text, this.timing.aiSpeakMs);
+    this.speak(line.text, this.timing.aiSpeakMs);
     this.schedule(this.timing.aiSpeakMs, () => {
       this.request.onLevel?.(0);
       this.request.onEvent({ type: 'aiStopped' });
@@ -137,11 +135,7 @@ class MockVoiceSession implements VoiceSession {
   }
 
   private studentTurn() {
-    if (!this.muted) {
-      this.request.onEvent({ type: 'userStarted' });
-      const line = MOCK_STUDENT_LINES[this.turn % MOCK_STUDENT_LINES.length]!;
-      this.speak('student', line, this.timing.userSpeakMs * 0.8);
-    }
+    if (!this.muted) this.request.onEvent({ type: 'userStarted' });
     this.turn += 1;
     this.schedule(this.timing.userSpeakMs, () => {
       this.request.onEvent({ type: 'userStopped' });

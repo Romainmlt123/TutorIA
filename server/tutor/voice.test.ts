@@ -91,7 +91,7 @@ describe('POST /api/tutor/realtime-session · niveaux d’Explorer', () => {
     expect(inserts[0]).toMatchObject({ mode: 'voice', level_id: 'maths-equations.isoler-x' });
   });
 
-  it('active les sous-titres et, hors d’Explorer, les visuels autorisés par le parent', async () => {
+  it('donne au tuteur vocal, hors d’Explorer, les visuels autorisés par le parent', async () => {
     const create = jest.fn(async () => ({ value: 'secret', expires_at: 1 }));
     const recording = {
       ...admin,
@@ -133,11 +133,9 @@ describe('POST /api/tutor/realtime-session · niveaux d’Explorer', () => {
         .session as {
         tools?: { name: string }[];
         instructions: string;
-        audio: { input: { transcription?: { language: string } } };
       };
     };
     const free = await start({ subjectId: 'maths' });
-    expect(free.audio.input.transcription).toMatchObject({ language: 'fr' });
     expect(free.tools?.map((t) => t.name)).toEqual([
       'show_graph',
       'write_board',
@@ -151,6 +149,5 @@ describe('POST /api/tutor/realtime-session · niveaux d’Explorer', () => {
       levelId: 'maths-equations.isoler-x',
     });
     expect(lesson.tools).toBeUndefined();
-    expect(lesson.audio.input.transcription).toBeDefined();
   });
 });

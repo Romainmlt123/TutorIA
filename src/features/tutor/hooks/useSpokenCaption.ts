@@ -14,11 +14,11 @@ type Track = { key: string; elapsed: number; done: boolean };
  * Sous-titres du tuteur calés sur sa voix (v2.6) : le texte de sa réponse arrive bien avant
  * l'audio, alors seuls les mots déjà prononcés s'allument, au débit de sa voix. Ce débit est
  * mesuré sur les réponses entendues en entier. Rend le nombre de caractères prononcés, ou
- * undefined pour les sous-titres de l'élève (affichés en entier).
+ * undefined sans sous-titre.
  */
 export function useSpokenCaption(caption: VoiceCaption | null, speaking: boolean) {
   const rate = useRef(DEFAULT_SPEECH_CPS);
-  const tutorText = caption?.speaker === 'tutor' ? caption.text : '';
+  const tutorText = caption?.text ?? '';
   const key = tutorText.slice(0, KEY_LENGTH);
   const [track, setTrack] = useState<Track>({ key, elapsed: 0, done: false });
 
@@ -39,7 +39,7 @@ export function useSpokenCaption(caption: VoiceCaption | null, speaking: boolean
   }, [speaking]);
 
   // Réponse entendue en entier : son débit sert pour les suivantes.
-  const final = caption?.speaker === 'tutor' && caption.final;
+  const final = caption?.final ?? false;
   useEffect(() => {
     if (!track.done || !final) return;
     rate.current = measuredSpeechRate(tutorText.length, track.elapsed) ?? rate.current;

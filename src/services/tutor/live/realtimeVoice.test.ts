@@ -113,25 +113,19 @@ describe('session vocale temps réel', () => {
     expect(events).toEqual(['connected', 'muteChanged']);
   });
 
-  it('transmet les sous-titres du tuteur et de l’élève au fil de la transcription', async () => {
+  it('transmet les sous-titres du tuteur au fil de sa transcription', async () => {
     const captions: string[] = [];
     await startRealtimeVoiceSession({
       topic: { subjectId: 'maths' },
       onEvent: () => undefined,
-      onCaption: (c) => captions.push(`${c.speaker}:${c.final ? 'fin' : '…'}:${c.text}`),
+      onCaption: (c) => captions.push(`${c.final ? 'fin' : '…'}:${c.text}`),
     });
     mockListeners.open?.forEach((l) => l({ data: null }));
     server('response.created');
     server('response.output_audio_transcript.delta', { delta: 'On retire ' });
     server('response.output_audio_transcript.delta', { delta: '5.' });
     server('response.output_audio_transcript.done', { transcript: 'On retire 5.' });
-    server('conversation.item.input_audio_transcription.completed', { transcript: 'Ça fait 15.' });
-    expect(captions).toEqual([
-      'tutor:…:On retire ',
-      'tutor:…:On retire 5.',
-      'tutor:fin:On retire 5.',
-      'student:fin:Ça fait 15.',
-    ]);
+    expect(captions).toEqual(['…:On retire ', '…:On retire 5.', 'fin:On retire 5.']);
   });
 
   it('fait valider le visuel demandé par le tuteur, le montre, puis le laisse l’expliquer', async () => {

@@ -30,8 +30,7 @@ export function useCallVisualSync(
     return () => clearInterval(timer);
   }, [writing]);
 
-  const focus =
-    visual?.kind === 'graph' && caption?.speaker === 'tutor' ? namedTone(caption.text) : null;
+  const focus = visual?.kind === 'graph' && caption ? namedTone(caption.text) : null;
   const progress =
     visual?.kind === 'board'
       ? boardProgress(visual.steps.length, track.ticks * TICK_MS, track.heard && !speaking)

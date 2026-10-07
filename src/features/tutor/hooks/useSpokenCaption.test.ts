@@ -4,7 +4,7 @@ import type { VoiceCaption } from '@/services/tutor';
 
 import { useSpokenCaption } from './useSpokenCaption';
 
-const tutor = (text: string, final = false): VoiceCaption => ({ speaker: 'tutor', text, final });
+const tutor = (text: string, final = false): VoiceCaption => ({ text, final });
 
 describe('sous-titres du tuteur calés sur sa voix', () => {
   beforeEach(() => jest.useFakeTimers());
@@ -27,12 +27,5 @@ describe('sous-titres du tuteur calés sur sa voix', () => {
     // La voix s'arrête : tout est dit.
     await rerender({ caption: tutor(text, true), speaking: false });
     expect(result.current).toBe(text.length);
-  });
-
-  it('affiche en entier les sous-titres de l’élève, transcrits après sa phrase', async () => {
-    const { result } = await renderHook(() =>
-      useSpokenCaption({ speaker: 'student', text: 'Ça fait 15.', final: true }, false),
-    );
-    expect(result.current).toBeUndefined();
   });
 });

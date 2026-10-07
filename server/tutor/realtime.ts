@@ -3,7 +3,7 @@ import type OpenAI from 'openai';
 import { startPlay } from '@/features/explorer/logic/levelPlay';
 import type { RealtimeSessionResponse, TutorTopic } from '@/services/tutor/api-contract';
 
-import { getServerEnv, REALTIME_TRANSCRIPTION_MODEL, REALTIME_VOICE } from '../env';
+import { getServerEnv, REALTIME_VOICE } from '../env';
 import { parseTopic } from '../guards/limits';
 import { limiters } from '../guards/rateLimit';
 import { errorResponse, identify, jsonResponse, readJsonBody } from '../http';
@@ -86,11 +86,7 @@ export async function handleRealtimeSession(
         max_output_tokens: 600,
         ...(visuals ? { tools: REALTIME_VISUAL_TOOLS, tool_choice: 'auto' as const } : {}),
         audio: {
-          input: {
-            turn_detection: { type: 'semantic_vad' },
-            // Sous-titres de l'appel (v2.6) : la voix de l'élève est transcrite, en français.
-            transcription: { model: REALTIME_TRANSCRIPTION_MODEL, language: 'fr' },
-          },
+          input: { turn_detection: { type: 'semantic_vad' } },
           output: { voice: REALTIME_VOICE },
         },
       },

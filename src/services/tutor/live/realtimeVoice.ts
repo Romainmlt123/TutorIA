@@ -90,9 +90,8 @@ export async function startRealtimeVoiceSession({
   // Une seule réponse à la fois côté OpenAI : une demande faite pendant une réponse est mise en attente.
   let responseActive = false;
   let responseQueued = false;
-  // Sous-titres : la phrase en cours du tuteur et de l'élève.
+  // Sous-titres : la phrase en cours du tuteur.
   let tutorText = '';
-  let studentText = '';
   let levelTimer: ReturnType<typeof setInterval> | null = null;
 
   const send = (event: object) => {
@@ -169,18 +168,10 @@ export async function startRealtimeVoiceSession({
         break;
       case 'response.output_audio_transcript.delta':
         tutorText += event.delta ?? '';
-        onCaption?.({ speaker: 'tutor', text: tutorText, final: false });
+        onCaption?.({ text: tutorText, final: false });
         break;
       case 'response.output_audio_transcript.done':
-        onCaption?.({ speaker: 'tutor', text: event.transcript ?? tutorText, final: true });
-        break;
-      case 'conversation.item.input_audio_transcription.delta':
-        studentText += event.delta ?? '';
-        onCaption?.({ speaker: 'student', text: studentText, final: false });
-        break;
-      case 'conversation.item.input_audio_transcription.completed':
-        onCaption?.({ speaker: 'student', text: event.transcript ?? studentText, final: true });
-        studentText = '';
+        onCaption?.({ text: event.transcript ?? tutorText, final: true });
         break;
       case 'response.function_call_arguments.done':
         if (event.name && VISUAL_TOOL_NAMES.has(event.name)) void showVisual(event);
@@ -193,7 +184,6 @@ export async function startRealtimeVoiceSession({
         }
         break;
       case 'input_audio_buffer.speech_started':
-        studentText = '';
         onEvent({ type: 'userStarted' });
         break;
       case 'input_audio_buffer.speech_stopped':

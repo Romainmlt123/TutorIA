@@ -15,10 +15,3 @@ export const MOCK_TUTOR_LINES: readonly { text: string; visual?: TutorVisual }[]
     visual: mockVisualTurn('tableau')?.visual,
   },
 ];
-
-/** Ce que « dit » l'élève pendant l'appel simulé. */
-export const MOCK_STUDENT_LINES: readonly string[] = [
-  'Je crois qu’il faut enlever 5.',
-  'Elles se croisent à 5 ?',
-  'D’accord, ça fait 5 !',
-];

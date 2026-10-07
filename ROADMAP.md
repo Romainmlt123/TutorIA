@@ -257,7 +257,7 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
 - **08/10 (v2.6) :**
   - La v2.6 et V4 sont livrées sur `feat/appel-vocal` (empilée sur la v2.5, pull request #10), à valider sur le Pixel :
     - écran d'appel plein écran, sans barre d'onglets : « Écrit » et chrono, sujet centré, logo qui rebondit selon le niveau de la voix (mesures WebRTC), pastille verte ou rouge, sous-titres, commandes en verre ;
-    - la session Realtime transcrit la voix de l'élève (`gpt-4o-mini-transcribe`, en français) pour les sous-titres ;
+    - les sous-titres reprennent ce que dit le tuteur ; la voix de l'élève n'est pas transcrite (retour de Romain : ses propres sous-titres arrivaient après coup et ne servaient à rien) ;
     - les visuels à la voix : les appels d'outils arrivent sur le téléphone, qui les fait valider et modérer par `/api/tutor/visual-check` avant de les dessiner ; la courbe nommée passe au premier plan, le tableau s'écrit ligne à ligne ;
     - l'appel simulé (Expo Go) joue aussi sous-titres, rebond et visuels ;
     - X4b (la voix dans Explorer) garde son ancien écran.

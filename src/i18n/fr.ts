@@ -189,7 +189,6 @@ export const fr = {
         error: 'Connexion perdue',
       },
       speakerTutor: 'Tutor’IA',
-      speakerStudent: 'Toi',
       captionsLabel: 'Sous-titres de l’appel',
       mutedHint: 'Réactive ton micro pour répondre.',
       avatarInterrupt: 'Interrompre Tutor’IA',

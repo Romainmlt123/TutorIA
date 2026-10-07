@@ -18,9 +18,6 @@ export const MODERATION_MODEL = 'omni-moderation-latest';
 /** Voix du tuteur vocal. */
 export const REALTIME_VOICE = 'marin';
 
-/** Transcription de la voix de l'élève, pour les sous-titres de l'appel (v2.6). */
-export const REALTIME_TRANSCRIPTION_MODEL = 'gpt-4o-mini-transcribe';
-
 export class ServerConfigError extends Error {}
 
 let cached: ServerEnv | null = null;

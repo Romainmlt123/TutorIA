@@ -52,7 +52,7 @@ export function LiveCaptions({ caption, compact = false, notice, spoken }: Props
     <View accessibilityLabel={fr.tutor.call.captionsLabel} style={styles.block}>
       {compact ? null : (
         <Text variant="caption" weight="bold" color={extras.call.speaker} style={styles.speaker}>
-          {caption.speaker === 'tutor' ? fr.tutor.call.speakerTutor : fr.tutor.call.speakerStudent}
+          {fr.tutor.call.speakerTutor}
         </Text>
       )}
       <Text

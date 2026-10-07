@@ -15,13 +15,16 @@ export interface VoiceSession {
   stop(): void;
 }
 
-/** Sous-titre de l'appel : la phrase en cours, complétée au fil de la transcription (v2.6). */
-export type VoiceCaption = { speaker: 'tutor' | 'student'; text: string; final: boolean };
+/**
+ * Sous-titre de l'appel (v2.6) : la phrase en cours du tuteur, complétée au fil de sa
+ * transcription. La voix de l'élève n'est jamais transcrite.
+ */
+export type VoiceCaption = { text: string; final: boolean };
 
 export type StartVoiceRequest = {
   topic: TutorTopic;
   onEvent: (event: VoiceEvent) => void;
-  /** Transcription du tuteur et de l'élève, pour les sous-titres. */
+  /** Transcription de ce que dit le tuteur, pour les sous-titres. */
   onCaption?: (caption: VoiceCaption) => void;
   /** Niveau de la voix du tuteur, de 0 à 1, une dizaine de fois par seconde (logo qui rebondit). */
   onLevel?: (level: number) => void;
