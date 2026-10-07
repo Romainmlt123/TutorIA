@@ -4,6 +4,8 @@
  */
 import type { SubjectId } from '@/data/types';
 
+import type { TutorVisual } from './visuals';
+
 /**
  * Sujet d'une discussion. `levelId` : niveau d'Explorer (île, ville, niveau) ; le serveur en déduit
  * seul le type, la notion et les consignes du tuteur. L'app n'envoie jamais de consigne.
@@ -61,6 +63,8 @@ export type TutorStreamEvent =
   | { type: 'step'; done: number; total: number }
   /** Niveau d'Explorer terminé : vers le bilan (X5, X5b). */
   | { type: 'levelResult'; outcome: LevelOutcome }
+  /** Visuel validé et modéré, attaché à la réponse en cours (2C, 2E). */
+  | { type: 'visual'; visual: TutorVisual }
   | { type: 'error'; code: TutorErrorCode };
 
 export type ErrorResponse = { error: TutorErrorCode };

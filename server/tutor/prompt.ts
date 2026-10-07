@@ -3,7 +3,7 @@
  * (clé de cache et traçabilité des signalements).
  * Aucune donnée personnelle : seulement la classe, la matière et le chapitre.
  */
-export const TUTOR_PROMPT_VERSION = '2026-10-06.1';
+export const TUTOR_PROMPT_VERSION = '2026-10-07.1';
 
 export type PromptContext = {
   mode: 'text' | 'voice';
@@ -14,6 +14,8 @@ export type PromptContext = {
   level?: string;
   /** Leçon d'Explorer à l'écrit : le tuteur enseigne, avec des messages plus riches. */
   lesson?: boolean;
+  /** Le parent autorise les visuels (P4) : le tuteur peut dessiner, à l'écrit. */
+  visuals?: boolean;
 };
 
 const COMMON = `Tu es Tutor'IA, un tuteur de révision pour un élève de collège en France.
@@ -52,6 +54,13 @@ const TEXT_FORMAT = `Mise en forme
 
 ${MATH_FORMAT}`;
 
+const VISUAL_FORMAT = `Visuels
+- Tu peux montrer un visuel quand il aide vraiment à comprendre : show_graph (fonctions, droites, lecture ou résolution graphique), show_chart (statistiques : effectifs, fréquences, moyenne), draw_figure (géométrie : triangles, Pythagore, angles, cercles, symétries), write_board (calcul ou résolution pas à pas).
+- Un seul visuel par message, et seulement s'il apporte quelque chose : pas pour une question simple.
+- Le visuel complète ton message, il ne le remplace pas : écris toujours ton explication, et désigne ce qu'il montre par ses couleurs (« la droite rouge », « le segment bleu »).
+- Pour une figure, choisis des coordonnées justes : un triangle rectangle a vraiment un angle droit, des longueurs égales sont vraiment égales.
+- Pendant une évaluation, ne montre jamais un visuel qui donne la réponse.`;
+
 const LESSON_FORMAT = `Mise en forme d'une leçon
 - Pour une leçon, ces règles remplacent « Phrases courtes » : tu enseignes comme un professeur d'un très grand lycée (comme Henri-IV), exigeant sur l'exactitude, limpide et passionnant, en gardant le tutoiement et la bienveillance.
 - Chaque étape de la leçon tient en un message, en paragraphes courts séparés par une ligne vide, une douzaine de lignes au plus :
@@ -76,10 +85,13 @@ export function buildTutorInstructions({
   chapter,
   level,
   lesson = false,
+  visuals = false,
 }: PromptContext): string {
   const context = `Contexte : l'élève est en ${grade}. Matière : ${subject}. Chapitre : ${chapter}.`;
   const format = mode === 'voice' ? VOICE_FORMAT : lesson ? LESSON_FORMAT : TEXT_FORMAT;
   const parts = [COMMON, format, context];
+  // Les visuels ne s'affichent qu'à l'écrit (le vocal viendra avec l'étape V4).
+  if (visuals && mode === 'text') parts.push(VISUAL_FORMAT);
   if (level) parts.push(level);
   return parts.join('\n\n');
 }

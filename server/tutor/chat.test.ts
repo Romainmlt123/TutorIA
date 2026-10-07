@@ -67,18 +67,20 @@ function fakeAdmin({
       maybeSingle: async () =>
         name === 'profiles'
           ? { data: { role: 'student', first_name: 'Léa' }, error: null }
-          : {
-              data: {
-                id: 'conversation-1',
-                session_id: 'session-1',
-                study_sessions: {
-                  started_at: new Date().toISOString(),
-                  chapter_id: 'maths-equations',
-                  level_id: sessionLevel,
+          : name === 'study_sessions'
+            ? { data: { tools: [] }, error: null }
+            : {
+                data: {
+                  id: 'conversation-1',
+                  session_id: 'session-1',
+                  study_sessions: {
+                    started_at: new Date().toISOString(),
+                    chapter_id: 'maths-equations',
+                    level_id: sessionLevel,
+                  },
                 },
+                error: null,
               },
-              error: null,
-            },
     };
     return query;
   };
@@ -95,7 +97,6 @@ function fakeAdmin({
       return {
         data: [
           {
-            ...context,
             voice_enabled: true,
             camera_enabled: true,
             visuals_enabled: true,
@@ -104,6 +105,7 @@ function fakeAdmin({
             allowed_from: '17:00:00',
             allowed_until: '21:00:00',
             today_seconds: 0,
+            ...context,
           },
         ],
         error: null,
@@ -312,6 +314,10 @@ describe('POST /api/tutor/chat · niveaux d’Explorer', () => {
     expect((params.tools as { name: string }[]).map((t) => t.name)).toEqual([
       'record_answer',
       'complete_step',
+      'show_graph',
+      'write_board',
+      'show_chart',
+      'draw_figure',
     ]);
   });
 
@@ -473,5 +479,100 @@ describe('POST /api/tutor/chat · niveaux d’Explorer', () => {
       );
       expect(response.status).toBe(400);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Visuels du tuteur
+// ---------------------------------------------------------------------------
+
+const graphArgs = {
+  title: '3x + 5 = 20',
+  description: 'La droite rouge coupe la droite bleue en x = 5.',
+  x_min: -1,
+  x_max: 7,
+  y_min: 0,
+  y_max: 30,
+  curves: [{ expression: '3x + 5', color: 'rouge', dashed: false, label: 'y = 3x + 5' }],
+  points: [{ x: 5, y: 20, label: '(5 ; 20)', color: 'rouge', highlight: true }],
+};
+const freeBody = {
+  topic: { subjectId: 'maths', chapterId: 'maths-equations' },
+  history: [],
+  message: 'Montre-moi',
+};
+
+describe('POST /api/tutor/chat · visuels du tuteur', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    jest.spyOn(console, 'error').mockImplementation(() => undefined);
+  });
+
+  it('valide le visuel, le modère avec la réponse, l’enregistre et l’envoie à l’app', async () => {
+    const openai = fakeLevelOpenAI([
+      [text('Regarde la droite rouge.'), toolCall('show_graph', graphArgs), completed],
+    ]);
+    const { admin, inserts } = fakeAdmin();
+    const events = await readEvents(
+      await handleChat(chatRequest(freeBody), levelDeps(openai, admin)),
+    );
+    const visual = events.find((e) => e.type === 'visual');
+    expect(visual).toMatchObject({ visual: { kind: 'graph', xRange: [-1, 7] } });
+    expect(events.indexOf(visual!)).toBeGreaterThan(events.findIndex((e) => e.type === 'delta'));
+    expect(events.at(-1)).toEqual({ type: 'done' });
+    const tutor = inserts.find((i) => i.table === 'messages' && i.row.role === 'tutor');
+    expect(tutor?.row.visual).toMatchObject({ kind: 'graph', title: '3x + 5 = 20' });
+    const moderated = openai.moderations.create.mock.calls.at(-1) as unknown as [{ input: string }];
+    expect(moderated[0].input).toContain('(5 ; 20)');
+  });
+
+  it('relance le modèle s’il n’a fait que dessiner, pour qu’il explique', async () => {
+    const openai = fakeLevelOpenAI([
+      [
+        toolCall('write_board', {
+          title: 'x',
+          description: 'Résolution.',
+          steps: [{ tex: 'x = 5', operation: '', note: '' }],
+          result: 'x = 5',
+        }),
+        completed,
+      ],
+      [text('Voilà la résolution au tableau.'), completed],
+    ]);
+    const { admin } = fakeAdmin();
+    const events = await readEvents(
+      await handleChat(chatRequest(freeBody), levelDeps(openai, admin)),
+    );
+    expect(openai.responses.create).toHaveBeenCalledTimes(2);
+    const second = openai.responses.create.mock.calls[1]?.[0] as {
+      input: { type?: string; output?: string }[];
+    };
+    expect(second.input.find((i) => i.type === 'function_call_output')?.output).toBe(
+      '{"affiche":true}',
+    );
+    expect(events.some((e) => e.type === 'visual')).toBe(true);
+  });
+
+  it('ignore un visuel mal formé : la réponse arrive sans lui', async () => {
+    const openai = fakeLevelOpenAI([
+      [text('Regarde.'), toolCall('show_graph', { ...graphArgs, x_min: 9 }), completed],
+    ]);
+    const { admin } = fakeAdmin();
+    const events = await readEvents(
+      await handleChat(chatRequest(freeBody), levelDeps(openai, admin)),
+    );
+    expect(events.some((e) => e.type === 'visual')).toBe(false);
+    expect(events.at(-1)).toEqual({ type: 'done' });
+  });
+
+  it('ne propose aucun outil de dessin quand le parent a désactivé les visuels', async () => {
+    const openai = fakeLevelOpenAI([[text('Explication.'), completed]]);
+    const { admin } = fakeAdmin({
+      context: { consent_status: 'granted', evening_pause: false, visuals_enabled: false } as never,
+    });
+    await readEvents(await handleChat(chatRequest(freeBody), levelDeps(openai, admin)));
+    const params = openai.responses.create.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(params.tools).toBeUndefined();
+    expect(String(params.instructions)).not.toContain('show_graph');
   });
 });
