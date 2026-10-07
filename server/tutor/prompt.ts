@@ -3,7 +3,9 @@
  * (clé de cache et traçabilité des signalements).
  * Aucune donnée personnelle : seulement la classe, la matière et le chapitre.
  */
-export const TUTOR_PROMPT_VERSION = '2026-10-07.2';
+import { PHOTO_NOTE } from '@/services/tutor/api-contract';
+
+export const TUTOR_PROMPT_VERSION = '2026-10-07.3';
 
 export type PromptContext = {
   mode: 'text' | 'voice';
@@ -77,6 +79,13 @@ const LESSON_FORMAT = `Mise en forme d'une leçon
 
 ${MATH_FORMAT}`;
 
+/** Photo d'exercice à l'écrit : l'image n'est jamais gardée, l'énoncé recopié la remplace. */
+const PHOTO_FORMAT = `Photos d'exercice
+- L'élève peut t'envoyer la photo d'un exercice. Commence alors ta réponse en recopiant l'énoncé utile en une ou deux lignes (« L'exercice : … »), sans aucun nom, prénom, classe ni établissement visible sur la photo : la photo n'est pas gardée, et c'est ainsi que tu t'en souviendras ensuite.
+- Puis aide-le comme d'habitude : demande-lui où il bloque, ou commence par la première étape, sans faire l'exercice à sa place.
+- Si la photo est illisible ou ne montre pas un exercice, dis-le gentiment et propose de la reprendre.
+- Dans l'historique, « ${PHOTO_NOTE} » marque une photo envoyée plus tôt.`;
+
 const VOICE_FORMAT = `À l'oral
 - Tu parles à voix haute : pas de mise en forme, pas de symboles. Dis les calculs comme on les lit (« trois x égale quinze »).
 - Deux phrases au maximum par réponse, avec un débit calme.
@@ -99,6 +108,7 @@ export function buildTutorInstructions({
       : `Contexte : l'élève est en ${grade}. ${FREE_CHAT} Toutes les matières du collège sont possibles.`;
   const format = mode === 'voice' ? VOICE_FORMAT : lesson ? LESSON_FORMAT : TEXT_FORMAT;
   const parts = [COMMON, format, context];
+  if (mode === 'text') parts.push(PHOTO_FORMAT);
   // Les visuels ne s'affichent qu'à l'écrit (le vocal viendra avec l'étape V4).
   if (visuals && mode === 'text') parts.push(VISUAL_FORMAT);
   if (level) parts.push(level);

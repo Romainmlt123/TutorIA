@@ -188,6 +188,19 @@ export const fr = {
     cameraSending: 'Envoi de la photo…',
     cameraSent: 'Photo envoyée au tuteur',
     cameraTooLarge: 'Ta photo est un peu lourde. Réessaie en cadrant seulement ton exercice.',
+    /** Photo d'un exercice dans la discussion écrite (C4). */
+    photo: {
+      add: 'Envoyer la photo d’un exercice',
+      sourceTitle: 'La photo de ton exercice',
+      camera: 'Prendre une photo',
+      library: 'Choisir dans la galerie',
+      cancel: 'Annuler',
+      remove: 'Retirer la photo',
+      attached: 'Photo de ton exercice',
+      hint: 'Cadre seulement l’exercice, sans ton nom.',
+      denied:
+        'Pour envoyer ton exercice en photo, autorise l’appareil photo dans les réglages. Tu peux aussi l’écrire.',
+    },
     cameraDenied:
       'Sans l’appareil photo, tu peux décrire ton exercice à voix haute. Tu peux l’autoriser dans les réglages.',
     micDenied: 'Sans le micro, le vocal ne marche pas. On continue à l’écrit ?',

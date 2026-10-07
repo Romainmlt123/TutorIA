@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { Logo } from '@/components/Logo';
 import { PressableBase } from '@/components/PressableBase';
@@ -17,6 +17,8 @@ type Props = {
   /** Appui long sur une bulle du tuteur : signaler la réponse. */
   onLongPress?: () => void;
   reported?: boolean;
+  /** Photo d'exercice jointe par l'élève (data URL). */
+  image?: string;
 };
 
 /** Texte d'un message : paragraphes, notions en italique et formules dessinées (MathJax). */
@@ -46,11 +48,23 @@ function RichText({ text, color }: { text: string; color: 'text' | 'textOnColor'
 }
 
 /** Bulle de chat façon SMS : tuteur à gauche avec son avatar, élève à droite en bleu. */
-export function ChatBubble({ role, text, label, onLongPress, reported = false }: Props) {
+export function ChatBubble({ role, text, label, onLongPress, reported = false, image }: Props) {
   if (role === 'student') {
     return (
-      <View style={[styles.bubble, styles.student]}>
-        <RichText text={text} color="textOnColor" />
+      <View style={[styles.bubble, styles.student, image ? styles.withPhoto : null]}>
+        {image ? (
+          <Image
+            source={{ uri: image }}
+            accessibilityLabel={fr.tutor.photo.attached}
+            resizeMode="cover"
+            style={styles.photo}
+          />
+        ) : null}
+        {text ? (
+          <View style={image ? styles.photoText : null}>
+            <RichText text={text} color="textOnColor" />
+          </View>
+        ) : null}
       </View>
     );
   }
@@ -104,6 +118,15 @@ const styles = StyleSheet.create({
   },
   tutor: { maxWidth: 256, backgroundColor: theme.colors.surface, boxShadow: theme.shadow.sm },
   student: { alignSelf: 'flex-end', maxWidth: 280, backgroundColor: theme.colors.primary },
+  // La photo occupe la largeur de la bulle, le texte éventuel passe dessous.
+  withPhoto: {
+    width: 232,
+    gap: theme.space[2],
+    paddingTop: theme.space[2],
+    paddingHorizontal: theme.space[2],
+  },
+  photo: { width: '100%', aspectRatio: 4 / 3, borderRadius: theme.radius['2xl'] },
+  photoText: { paddingHorizontal: theme.space[2], paddingBottom: theme.space[1] },
   parts: { gap: theme.space[2] },
   label: { marginBottom: theme.space[1] },
   reported: { marginTop: theme.space[2] },

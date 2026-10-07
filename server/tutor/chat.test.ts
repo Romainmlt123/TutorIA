@@ -656,3 +656,93 @@ describe('POST /api/tutor/chat · chat libre', () => {
     expect(updates.some((u) => u.table === 'study_sessions' && 'subject_id' in u.row)).toBe(false);
   });
 });
+
+describe('POST /api/tutor/chat · photo d’un exercice', () => {
+  const photo = 'data:image/jpeg;base64,/9j/4AAQSkZJRg==';
+  const withPhoto = (extra: object = {}) => ({ ...body, image: photo, ...extra });
+
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    // Limite en mémoire des photos par installation : remise à zéro entre deux tests.
+    (globalThis as { __tutoriaRateLimits?: Map<string, Map<string, number[]>> }).__tutoriaRateLimits
+      ?.get('imageClient')
+      ?.clear();
+  });
+
+  it('modère la photo, l’envoie au modèle avec le message, et n’en garde qu’une mention', async () => {
+    const openai = fakeOpenAI();
+    const { admin, inserts } = fakeAdmin();
+    const response = await handleChat(chatRequest(withPhoto()), deps(openai, admin));
+    expect(response.status).toBe(200);
+    await readEvents(response);
+    const moderated = openai.moderations.create.mock.calls.map(
+      (call) => (call as unknown as [{ input: unknown }])[0].input,
+    );
+    expect(moderated).toContainEqual([{ type: 'image_url', image_url: { url: photo } }]);
+    const input = (openai.responses.create.mock.calls[0]?.[0] as { input: unknown[] }).input;
+    expect(input.at(-1)).toEqual({
+      role: 'user',
+      content: [
+        { type: 'input_text', text: 'Je fais 15 − 3' },
+        { type: 'input_image', image_url: photo, detail: 'auto' },
+      ],
+    });
+    const student = inserts.find((i) => i.table === 'messages' && i.row.role === 'student');
+    expect(student?.row.content).toBe('📷 Photo de l’exercice\nJe fais 15 − 3');
+    expect(JSON.stringify(inserts)).not.toContain('base64');
+  });
+
+  it('accepte une photo seule, présentée au modèle par une phrase', async () => {
+    const openai = fakeOpenAI();
+    const { admin, inserts } = fakeAdmin();
+    await readEvents(
+      await handleChat(chatRequest(withPhoto({ message: '' })), deps(openai, admin)),
+    );
+    const input = (openai.responses.create.mock.calls[0]?.[0] as { input: unknown[] }).input;
+    expect(input.at(-1)).toMatchObject({
+      content: [{ type: 'input_text', text: 'Voici la photo de mon exercice.' }, {}],
+    });
+    const student = inserts.find((i) => i.table === 'messages' && i.row.role === 'student');
+    expect(student?.row.content).toBe('📷 Photo de l’exercice');
+  });
+
+  it('refuse la photo si le parent a désactivé la caméra', async () => {
+    const openai = fakeOpenAI();
+    const { admin } = fakeAdmin({
+      context: { consent_status: 'granted', evening_pause: false, camera_enabled: false } as never,
+    });
+    const response = await handleChat(chatRequest(withPhoto()), deps(openai, admin));
+    expect(await response.json()).toEqual({ error: 'not_allowed' });
+    expect(openai.responses.create).not.toHaveBeenCalled();
+  });
+
+  it('refuse la photo pendant une évaluation d’Explorer, pas pendant une leçon', async () => {
+    const evaluation = await handleChat(
+      chatRequest(levelBody('maths-equations.bilan', { image: photo })),
+      levelDeps(fakeLevelOpenAI([]), fakeAdmin().admin),
+    );
+    expect(await evaluation.json()).toEqual({ error: 'not_allowed' });
+    const lesson = await handleChat(
+      chatRequest(levelBody('maths-equations.isoler-x', { image: photo })),
+      levelDeps(
+        fakeLevelOpenAI([[text('L’exercice : 3x + 5 = 20.'), completed]]),
+        fakeAdmin().admin,
+      ),
+    );
+    expect(lesson.status).toBe(200);
+  });
+
+  it('bloque une photo signalée par la modération, et refuse un fichier qui n’est pas une image', async () => {
+    const flagged = await handleChat(
+      chatRequest(withPhoto()),
+      deps(fakeOpenAI({ flaggedOutput: true }), fakeAdmin().admin),
+    );
+    expect(await flagged.json()).toEqual({ error: 'flagged' });
+    const notImage = await handleChat(
+      chatRequest(withPhoto({ image: 'data:text/html;base64,PGgxPg==' })),
+      deps(fakeOpenAI(), fakeAdmin().admin),
+    );
+    expect(notImage.status).toBe(400);
+  });
+});

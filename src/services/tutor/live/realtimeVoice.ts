@@ -2,7 +2,7 @@ import { fetch } from 'expo/fetch';
 
 import { logError } from '@/lib/logger';
 
-import type { RealtimeSessionResponse } from '../api-contract';
+import { PHOTO_CAPTION, type RealtimeSessionResponse } from '../api-contract';
 import type { StartVoiceRequest, VoiceSession } from '../TutorService';
 import { postTutor, TutorHttpError } from './http';
 import { getRtcAdapter } from './webrtc';
@@ -20,9 +20,6 @@ export class VoiceSessionError extends Error {
 }
 
 type ServerEvent = { type?: string };
-
-/** Accompagne la photo pour que le tuteur sache ce qu'il regarde. */
-const PHOTO_CAPTION = 'Voici la photo de mon exercice.';
 
 /** Refus du micro par l'élève ou par le système (navigateur ou réglages du téléphone). */
 function isPermissionDenial(error: unknown): boolean {

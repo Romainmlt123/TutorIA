@@ -29,6 +29,11 @@ const ICONS = {
   'chevron-gauche': [{ d: 'M15 5l-7 7 7 7' }],
   croix: [{ d: 'M6 6l12 12M18 6 6 18' }],
   menu: [{ d: 'M4 7h16M4 12h16M4 17h10' }],
+  'appareil-photo': [
+    { d: 'M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z' },
+    { circle: [12, 13.5, 3.5] },
+  ],
+  image: [{ rect: [3, 4, 18, 16, 2] }, { circle: [9, 10, 2] }, { d: 'M21 16l-5-5-8 9' }],
   envoi: [{ d: 'M12 19V5M6 11l6-6 6 6' }],
   micro: [{ rect: [9, 3, 6, 11, 3] }, { d: 'M5 11a7 7 0 0 0 14 0M12 18v3' }],
   'micro-barre': [{ rect: [9, 3, 6, 11, 3] }, { d: 'M5 11a7 7 0 0 0 14 0M12 18v3M4 4l16 16' }],

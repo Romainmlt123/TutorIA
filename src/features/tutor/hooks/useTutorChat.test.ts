@@ -162,4 +162,26 @@ describe('useTutorChat', () => {
     expect(result.current.offline).toBe(false);
     expect(result.current.messages.at(-1)?.text).toContain('Petit souci de connexion');
   });
+
+  it('envoie la photo d’un exercice avec le message, et la montre dans la bulle de l’élève', async () => {
+    const conversations = new MockConversationService();
+    const service = createMockTutorService({ chunkDelayMs: 0, conversations });
+    const sendMessage = jest.spyOn(service, 'sendMessage');
+    const photo = 'data:image/jpeg;base64,/9j/4AAQ';
+    const onConversation = jest.fn();
+    const { result } = await renderHook(() => useTutorChat({ topic: {}, service, onConversation }));
+    await act(async () => {
+      await result.current.send('', photo);
+    });
+    await waitFor(() => expect(result.current.pending).toBe(false));
+    expect(sendMessage.mock.calls[0]?.[0]).toMatchObject({ message: '', image: photo });
+    expect(result.current.messages.find((m) => m.kind === 'student')).toMatchObject({
+      text: '',
+      image: photo,
+    });
+    expect(result.current.messages.at(-1)?.text).toContain('L’exercice');
+    // La photo n'est pas gardée : seule une mention la remplace dans la discussion enregistrée.
+    const id = onConversation.mock.calls[0]?.[0] as string;
+    expect((await conversations.messages(id))[0]?.content).toBe('📷 Photo de l’exercice');
+  });
 });

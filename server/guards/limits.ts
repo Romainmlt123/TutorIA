@@ -20,6 +20,9 @@ export const SUBJECT_IDS = [
   'physique-chimie',
 ] as const;
 
+/** Photo d'exercice : JPEG ou PNG en base64, déjà réduite par l'app. */
+export const IMAGE_DATA_URL = /^data:image\/(jpeg|png);base64,[A-Za-z0-9+/=]+$/;
+
 const topicSchema = z.object({
   subjectId: z.enum(SUBJECT_IDS).optional(),
   chapterId: z.string().max(64).optional(),
@@ -30,9 +33,11 @@ const chatSchema = z.object({
   topic: topicSchema,
   history: z.array(z.object({ role: z.enum(['student', 'tutor']), text: z.string() })).max(200),
   message: z.string(),
+  image: z.string().max(TUTOR_LIMITS.imageMaxBytes).regex(IMAGE_DATA_URL).optional(),
 });
 
-export type ValidChat = { topic: TutorTopic; history: ChatTurn[]; message: string };
+/** `message` peut être vide quand une photo d'exercice est jointe (`image`). */
+export type ValidChat = { topic: TutorTopic; history: ChatTurn[]; message: string; image?: string };
 
 type Result<T> = { ok: true; value: T } | { ok: false; code: TutorErrorCode };
 
@@ -70,7 +75,8 @@ export function validateChat(body: unknown): Result<ValidChat> {
   if (!parsed.success || !isKnownTopic(parsed.data.topic))
     return { ok: false, code: 'bad_request' };
   const message = parsed.data.message.trim();
-  if (!message) return { ok: false, code: 'bad_request' };
+  const { image } = parsed.data;
+  if (!message && !image) return { ok: false, code: 'bad_request' };
   if (message.length > TUTOR_LIMITS.messageMaxChars) return { ok: false, code: 'too_long' };
 
   const history: ChatTurn[] = [];
@@ -83,6 +89,11 @@ export function validateChat(body: unknown): Result<ValidChat> {
   }
   return {
     ok: true,
-    value: { topic: parsed.data.topic, history, message: redactPersonalData(message) },
+    value: {
+      topic: parsed.data.topic,
+      history,
+      message: redactPersonalData(message),
+      ...(image ? { image } : {}),
+    },
   };
 }

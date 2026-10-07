@@ -10,7 +10,7 @@ import {
   type TutorService,
   type TutorTopic,
 } from '@/services/tutor';
-import type { LevelOutcome } from '@/services/tutor/api-contract';
+import { PHOTO_NOTE, type LevelOutcome } from '@/services/tutor/api-contract';
 import type { TutorVisual } from '@/services/tutor/visuals';
 import { checkPracticeAnswer, practiceQuestion } from '@/services/tutor/mock/practice';
 
@@ -27,6 +27,8 @@ export type ChatMessage = {
   reported?: boolean;
   /** Visuel dessiné avec cette réponse du tuteur (graphique, diagramme, figure, tableau). */
   visual?: TutorVisual;
+  /** Photo d'exercice envoyée par l'élève (data URL), montrée le temps de la discussion. */
+  image?: string;
 };
 
 /** Avancement d'un niveau d'Explorer, annoncé par le serveur. */
@@ -199,11 +201,15 @@ export function useTutorChat({
   );
 
   const send = useCallback(
-    async (text: string) => {
+    async (text: string, image?: string) => {
       const current = stateRef.current;
-      if (current.pending) return;
-      dispatch({ type: 'add', message: { id: nextId(), kind: 'student', text } });
+      if (current.pending || (!text && !image)) return;
+      dispatch({
+        type: 'add',
+        message: { id: nextId(), kind: 'student', text, ...(image ? { image } : {}) },
+      });
 
+      // Hors ligne, l'entraînement ne lit que le texte (le bouton photo y est masqué).
       if (current.offline) {
         const card = practiceCards[current.practiceIndex % Math.max(practiceCards.length, 1)];
         if (!card) return;
@@ -221,8 +227,9 @@ export function useTutorChat({
         .filter((m) => (m.kind === 'tutor' || m.kind === 'student') && !m.practice && !m.streaming)
         .map((m) => ({
           role: m.kind === 'student' ? ('student' as const) : ('tutor' as const),
-          text: m.text,
-        }));
+          text: m.image ? [PHOTO_NOTE, m.text].filter(Boolean).join('\n') : m.text,
+        }))
+        .filter((turn) => turn.text);
       const id = nextId();
       const controller = new AbortController();
       abort.current = controller;
@@ -233,7 +240,13 @@ export function useTutorChat({
       let finished = false;
       try {
         for await (const event of service.sendMessage(
-          { topic, history, message: text, conversationId: conversationId.current },
+          {
+            topic,
+            history,
+            message: text,
+            conversationId: conversationId.current,
+            ...(image ? { image } : {}),
+          },
           controller.signal,
         )) {
           if (event.type === 'conversation') {
