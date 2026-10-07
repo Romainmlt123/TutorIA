@@ -12,18 +12,23 @@ import { CallControls } from '@/features/tutor/components/CallControls';
 import { ChatInput } from '@/features/tutor/components/ChatInput';
 import { OfflineBanner } from '@/features/tutor/components/OfflineBanner';
 import { TipCard } from '@/features/tutor/components/TipCard';
+import { VisualChip } from '@/features/tutor/components/visual/VisualChip';
+import { VisualModal } from '@/features/tutor/components/visual/VisualModal';
+import { VisualPanel } from '@/features/tutor/components/visual/VisualPanel';
 import { VoiceVisualizer } from '@/features/tutor/components/VoiceVisualizer';
 import {
   useTutorChat,
   type ChatMessage,
   type LevelChat,
 } from '@/features/tutor/hooks/useTutorChat';
+import { useVisualViewer } from '@/features/tutor/hooks/useVisualViewer';
 import { useVoiceCall } from '@/features/tutor/hooks/useVoiceCall';
 import { formatCallTime } from '@/features/tutor/logic/voice';
 import { fr } from '@/i18n/fr';
 import { useStudentAccount } from '@/lib/session/SessionProvider';
 import { studentKeys } from '@/lib/session/useStudentOverview';
 import { useStudyRules } from '@/lib/session/useStudyRules';
+import { useKeyboardVisible } from '@/lib/useKeyboardVisible';
 import { tutorService, type TutorTopic } from '@/services/tutor';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
@@ -136,12 +141,10 @@ function LevelChatView({ place }: { place: LevelPlace }) {
     }),
     [level],
   );
-  const { messages, pending, offline, progress, result, send, retry, report } = useTutorChat(
-    topic,
-    false,
-    tutorService,
-    chat,
-  );
+  const { messages, pending, offline, progress, result, visual, send, retry, report } =
+    useTutorChat(topic, false, tutorService, chat);
+  const keyboardVisible = useKeyboardVisible();
+  const viewer = useVisualViewer(visual, keyboardVisible);
   const list = useRef<FlatList<ChatMessage>>(null);
   const started = messages.some((m) => m.kind === 'student');
 
@@ -178,7 +181,7 @@ function LevelChatView({ place }: { place: LevelPlace }) {
     if (item.kind === 'step') return <LevelStepCard text={item.text} />;
     if (item.kind === 'tip') return <TipCard text={item.text} />;
     if (item.kind === 'student') return <ChatBubble role="student" text={item.text} />;
-    return (
+    const bubble = (
       <ChatBubble
         role="tutor"
         text={item.streaming && !item.text ? fr.tutor.typing : item.text}
@@ -187,6 +190,14 @@ function LevelChatView({ place }: { place: LevelPlace }) {
         onLongPress={item.practice || item.streaming ? undefined : () => report(item.id)}
       />
     );
+    const shown = item.visual;
+    if (!shown) return bubble;
+    return (
+      <View style={styles.withVisual}>
+        {bubble}
+        <VisualChip kind={shown.kind} onPress={() => viewer.expand(shown)} />
+      </View>
+    );
   };
 
   return (
@@ -194,6 +205,17 @@ function LevelChatView({ place }: { place: LevelPlace }) {
       <LevelBackdrop>
         <LevelHeader place={place} done={progress?.done ?? 0} onBack={backToMap} />
         <View style={styles.chat}>
+          {visual ? (
+            <View style={styles.visual}>
+              <VisualPanel
+                visual={visual}
+                subjectId={place.island.subjectId}
+                open={viewer.open}
+                onToggle={viewer.toggle}
+                onExpand={() => viewer.expand(visual)}
+              />
+            </View>
+          ) : null}
           {offline ? (
             <View style={styles.banner}>
               <OfflineBanner onRetry={retry} />
@@ -236,6 +258,11 @@ function LevelChatView({ place }: { place: LevelPlace }) {
           onReview={openReview}
         />
       ) : null}
+      <VisualModal
+        visual={viewer.expanded}
+        subjectId={place.island.subjectId}
+        onClose={viewer.close}
+      />
       <WoodDialog
         visible={leave !== null}
         title={T.leave.title}
@@ -292,6 +319,8 @@ const styles = StyleSheet.create({
   },
   controls: { paddingBottom: theme.space[4] },
   banner: { paddingHorizontal: theme.space[4], paddingTop: theme.space[3] },
+  visual: { paddingHorizontal: theme.space[3], paddingTop: theme.space[3] },
+  withVisual: { gap: theme.space[2] },
   messages: {
     flexGrow: 1,
     justifyContent: 'flex-end',

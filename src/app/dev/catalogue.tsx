@@ -14,6 +14,7 @@ import { StreakBadge } from '@/components/StreakBadge';
 import { SubjectCard } from '@/components/subject/SubjectCard';
 import { Text } from '@/components/Text';
 import { islandOf } from '@/features/explorer/content';
+import { VisualPanel } from '@/features/tutor/components/visual/VisualPanel';
 import { explorerKeys } from '@/features/explorer/hooks/useExplorer';
 import { currentLevel, islandPath } from '@/features/explorer/logic/progression';
 import { fr } from '@/i18n/fr';
@@ -24,6 +25,7 @@ import { useStudentAccount } from '@/lib/session/SessionProvider';
 import { authService, mockAuthService } from '@/services/auth';
 import { avatarService } from '@/services/avatar';
 import { mockExplorerService } from '@/services/explorer';
+import { MOCK_VISUALS } from '@/services/tutor/mock/visualScripts';
 import type { PersonaId } from '@/services/auth/mock/MockAuthService';
 import { theme, type ColorRole, type TypeVariant } from '@/theme';
 import { fontWeights } from '@/theme/fonts';
@@ -58,6 +60,7 @@ export default function Catalogue() {
       <Button label={t.avatarLab} variant="soft" onPress={() => router.push('/dev/avatars')} />
       <ExplorerDemo />
       <WardrobeDemo />
+      <VisualsDemo />
 
       <Section title={t.components}>
         <Button label="Reprendre" icon="fleche-droite" highlight />
@@ -202,6 +205,24 @@ const styles = StyleSheet.create({
  * Garde-robe de l'avatar (développement, tout compte) : débloque tous les objets sur cet appareil
  * pour les essayer, ou remet la garde-robe à zéro (les objets se regagnent d'après la progression).
  */
+/** Les quatre visuels du tuteur, tels que le tuteur simulé les dessine. */
+function VisualsDemo() {
+  return (
+    <Section title={t.visuals}>
+      {Object.values(MOCK_VISUALS).map((visual) => (
+        <VisualPanel
+          key={visual.kind}
+          visual={visual}
+          subjectId="maths"
+          open
+          onToggle={() => undefined}
+          onExpand={() => undefined}
+        />
+      ))}
+    </Section>
+  );
+}
+
 function WardrobeDemo() {
   const queryClient = useQueryClient();
   const accountId = useStudentAccount()?.id;

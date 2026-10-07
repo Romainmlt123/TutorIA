@@ -11,6 +11,7 @@ import {
   type TutorTopic,
 } from '@/services/tutor';
 import type { LevelOutcome } from '@/services/tutor/api-contract';
+import type { TutorVisual } from '@/services/tutor/visuals';
 import { checkPracticeAnswer, practiceQuestion } from '@/services/tutor/mock/practice';
 
 export type ChatMessage = {
@@ -22,6 +23,8 @@ export type ChatMessage = {
   /** Question ou retour d'entraînement du mode hors ligne. */
   practice?: boolean;
   reported?: boolean;
+  /** Visuel dessiné avec cette réponse du tuteur (graphique, diagramme, figure, tableau). */
+  visual?: TutorVisual;
 };
 
 /** Avancement d'un niveau d'Explorer, annoncé par le serveur. */
@@ -42,6 +45,8 @@ type State = {
   practiceIndex: number;
   progress: LevelProgress | null;
   result: LevelOutcome | null;
+  /** Dernier visuel du tuteur, affiché dans le panneau au-dessus de la discussion. */
+  visual: TutorVisual | null;
 };
 
 type Action =
@@ -57,7 +62,8 @@ type Action =
   | { type: 'nextPractice' }
   | { type: 'reported'; id: string }
   | { type: 'progress'; progress: LevelProgress }
-  | { type: 'result'; result: LevelOutcome };
+  | { type: 'result'; result: LevelOutcome }
+  | { type: 'visual'; id: string; visual: TutorVisual };
 
 /** Un conseil de méthode peut suivre la réponse, sur une ligne « Conseil : … ». */
 const TIP_LINE = /\n+\s*Conseil\s*:\s*/i;
@@ -109,6 +115,11 @@ function reducer(state: State, action: Action): State {
       return { ...state, progress: action.progress };
     case 'result':
       return { ...state, result: action.result };
+    case 'visual':
+      return {
+        ...update(action.id, (m) => ({ ...m, visual: action.visual })),
+        visual: action.visual,
+      };
   }
 }
 
@@ -120,6 +131,7 @@ function initialState(messages: ChatMessage[]): State {
     practiceIndex: 0,
     progress: null,
     result: null,
+    visual: null,
   };
 }
 
@@ -230,6 +242,8 @@ export function useTutorChat(
               });
             }
             dispatch({ type: 'progress', progress: { done: event.done, total: event.total } });
+          } else if (event.type === 'visual') {
+            dispatch({ type: 'visual', id, visual: event.visual });
           } else if (event.type === 'levelResult') {
             dispatch({ type: 'result', result: event.outcome });
           } else if (event.type === 'delta') {
@@ -290,6 +304,7 @@ export function useTutorChat(
     offline: state.offline,
     progress: state.progress,
     result: state.result,
+    visual: state.visual,
     send,
     retry,
     report,

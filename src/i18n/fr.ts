@@ -77,6 +77,29 @@ export const fr = {
     offlineBody: 'Je n’arrive pas à me connecter. En attendant, entraîne-toi avec ces questions.',
     retry: 'Réessayer',
     practice: 'Entraînement',
+    /** Visuels du tuteur (2C, 2E) : graphique, tableau blanc, diagramme, figure. */
+    visual: {
+      kinds: { graph: 'Graphique', board: 'Tableau', chart: 'Statistiques', figure: 'Figure' },
+      kicker: (kind: string, subject: string) => `${kind} · ${subject}`,
+      nouns: {
+        graph: 'le graphique',
+        board: 'le tableau',
+        chart: 'le diagramme',
+        figure: 'la figure',
+      },
+      expand: (noun: string) => `Agrandir ${noun}`,
+      collapse: (noun: string) => `Réduire ${noun}`,
+      show: (noun: string) => `Afficher ${noun}`,
+      see: {
+        graph: 'Voir le graphique',
+        board: 'Voir le tableau',
+        chart: 'Voir le diagramme',
+        figure: 'Voir la figure',
+      },
+      close: 'Fermer',
+      chartValue: (label: string, value: string, unit: string) =>
+        `${label} : ${value}${unit ? ` ${unit}` : ''}`,
+    },
     errors: {
       rate_limited: 'On fait une petite pause ? Tu pourras m’écrire à nouveau dans un instant.',
       unauthorized: 'Ta session a expiré. Reconnecte-toi pour parler au tuteur.',
@@ -1134,6 +1157,7 @@ export const fr = {
   dev: {
     catalogueTitle: 'Catalogue',
     avatarLab: 'Laboratoire des avatars',
+    visuals: 'Visuels du tuteur (2C, 2E)',
     wardrobe: {
       title: 'Garde-robe (démo)',
       unlockAll: 'Débloquer toute la garde-robe',

@@ -1,4 +1,4 @@
-import { parseMathMessage, spokenTex } from './mathText';
+import { parseMathMessage, splitTexText, spokenTex } from './mathText';
 
 describe('formules du tuteur', () => {
   it('sépare le texte, les formules dans la phrase et l’italique', () => {
@@ -50,5 +50,18 @@ describe('formules du tuteur', () => {
     expect(spokenTex('\\frac{3}{4} \\times x^2 \\leq 2{,}5')).toBe(
       '3 sur 4 fois x au carré inférieur ou égal à 2,5',
     );
+  });
+
+  it('sépare les mots d’une formule, que l’app écrit elle-même', () => {
+    expect(splitTexText('-5 \\text{ des deux côtés}')).toEqual([
+      { kind: 'tex', tex: '-5' },
+      { kind: 'text', text: ' des deux côtés' },
+    ]);
+    expect(splitTexText('\\text{prix} = 2 \\times \\text{quantité}')).toEqual([
+      { kind: 'text', text: 'prix' },
+      { kind: 'tex', tex: '= 2 \\times' },
+      { kind: 'text', text: 'quantité' },
+    ]);
+    expect(splitTexText('\\frac{3}{4}')).toEqual([{ kind: 'tex', tex: '\\frac{3}{4}' }]);
   });
 });

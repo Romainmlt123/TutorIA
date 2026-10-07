@@ -5,6 +5,7 @@ import type { VoiceEvent } from '@/features/tutor/logic/voice';
 import type { ChatRequest, LevelOutcome, TutorStreamEvent } from '../api-contract';
 import type { StartVoiceRequest, TutorService, VoiceSession } from '../TutorService';
 import { mockLevelTurn, type MockLevelState } from './levelScripts';
+import { mockVisualTurn } from './visualScripts';
 import { scriptedReply } from './scripts';
 
 export type MockOptions = {
@@ -130,6 +131,9 @@ export function createMockTutorService(options: MockOptions = {}): TutorService 
       let state: MockLevelState | undefined;
       let reply = scriptedReply(request);
       let calls: ReturnType<typeof mockLevelTurn>['calls'] = [];
+      // Hors niveau, l'élève peut demander un graphique, un tableau, un diagramme ou une figure.
+      const visualTurn = place ? null : mockVisualTurn(request.message);
+      if (visualTurn) reply = visualTurn.reply;
       if (place) {
         const previous = levels.get(place.level.id);
         state =
@@ -149,6 +153,8 @@ export function createMockTutorService(options: MockOptions = {}): TutorService 
         await wait(chunkDelayMs, signal);
       }
       if (signal?.aborted) return;
+      // Comme le serveur : le visuel arrive après le texte de la réponse.
+      if (visualTurn) yield { type: 'visual', visual: visualTurn.visual };
 
       // Mêmes règles que le serveur : jugements plafonnés, progression et bilan calculés ici.
       if (place && state) {
