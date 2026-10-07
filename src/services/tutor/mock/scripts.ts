@@ -41,8 +41,13 @@ const GENERIC_REPLIES: readonly string[] = [
   'Tu es sur la bonne voie. Tu peux me donner un exemple ?',
 ];
 
+/** Réponse simulée à une photo d'exercice : l'énoncé recopié d'abord, comme le demande le prompt. */
+const PHOTO_REPLY =
+  'L’exercice : résoudre $3x + 5 = 20$ (photo simulée). Bien reçu ! Dis-moi où tu bloques, ou on commence par isoler $3x$ ?';
+
 /** Choisit la réponse scriptée selon le chapitre, le message et le nombre d'échanges déjà faits. */
 export function scriptedReply(request: ChatRequest): string {
+  if (request.image) return PHOTO_REPLY;
   const turn = request.history.filter((t) => t.role === 'student').length;
   if (request.topic.chapterId === 'maths-equations') {
     const step = EQUATION_STEPS.find((s) => s.match.test(request.message));

@@ -39,9 +39,20 @@ export type ChatTurn = { role: 'student' | 'tutor'; text: string };
 export type ChatRequest = {
   topic: TutorTopic;
   history: readonly ChatTurn[];
+  /** Peut être vide quand une photo est jointe. */
   message: string;
   conversationId?: string;
+  /**
+   * Photo d'un exercice (C4), en data URL JPEG ou PNG réduite sur l'appareil. Modérée par le
+   * serveur, envoyée au modèle, jamais enregistrée ; refusée dans une évaluation d'Explorer.
+   */
+  image?: string;
 };
+
+/** Ce qui est enregistré (et relu) à la place d'une photo, qui n'est jamais gardée. */
+export const PHOTO_NOTE = '📷 Photo de l’exercice';
+/** Accompagne une photo envoyée sans texte, pour que le tuteur sache ce qu'il regarde. */
+export const PHOTO_CAPTION = 'Voici la photo de mon exercice.';
 
 export type TutorErrorCode =
   | 'bad_request'

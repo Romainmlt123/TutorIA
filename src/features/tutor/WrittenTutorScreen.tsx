@@ -18,6 +18,7 @@ import { ChatInput } from './components/ChatInput';
 import { ChatStarters } from './components/ChatStarters';
 import { ConversationDrawer } from './components/ConversationDrawer';
 import { OfflineBanner } from './components/OfflineBanner';
+import { PhotoSourceDialog } from './components/PhotoSourceDialog';
 import { TipCard } from './components/TipCard';
 import { TopicCard } from './components/TopicCard';
 import { TutorHeader } from './components/TutorHeader';
@@ -30,6 +31,7 @@ import {
   useConversationList,
   useConversationMessages,
 } from './hooks/useConversations';
+import { usePhotoDraft } from './hooks/usePhotoDraft';
 import { useTutorChat, type ChatMessage } from './hooks/useTutorChat';
 import { useTopicLabels, useTopicParams } from './hooks/useTutorTopic';
 import { useVisualViewer } from './hooks/useVisualViewer';
@@ -54,6 +56,10 @@ function TutorChat({ entry, resume, onConversation, onTitle }: ChatProps) {
     onTitle,
   });
   const labels = useTopicLabels(topic, entry.title);
+  // Photo d'un exercice (C4), si le parent autorise la caméra.
+  const cameraEnabled = useStudyRules().data?.cameraEnabled ?? true;
+  const photo = usePhotoDraft(cameraEnabled && !offline);
+  const sendWithPhoto = (text: string) => void send(text, photo.take());
   const keyboardVisible = useKeyboardVisible();
   const viewer = useVisualViewer(visual, keyboardVisible);
   const { bottom } = useBottomNavLayout();
@@ -63,7 +69,9 @@ function TutorChat({ entry, resume, onConversation, onTitle }: ChatProps) {
 
   const renderItem = ({ item }: { item: ChatMessage }) => {
     if (item.kind === 'tip') return <TipCard text={item.text} />;
-    if (item.kind === 'student') return <ChatBubble role="student" text={item.text} />;
+    if (item.kind === 'student') {
+      return <ChatBubble role="student" text={item.text} image={item.image} />;
+    }
     const bubble = (
       <ChatBubble
         role="tutor"
@@ -147,13 +155,15 @@ function TutorChat({ entry, resume, onConversation, onTitle }: ChatProps) {
             },
           ]}>
           <ChatInput
-            onSend={send}
+            attachment={photo.attachment}
+            onSend={sendWithPhoto}
             disabled={pending}
             placeholder={topic.chapterId ? undefined : fr.tutor.freeInputPlaceholder}
           />
         </View>
       </KeyboardAvoidingView>
       <VisualModal visual={viewer.expanded} subjectId={topic.subjectId} onClose={viewer.close} />
+      <PhotoSourceDialog {...photo.dialog} />
     </>
   );
 }

@@ -31,7 +31,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`  |
 | Tuteur visuel | V4 · les visuels à la voix                                                    | à venir     |                       |
 | Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`     |
-| Chat libre    | C4 · la photo d'un exercice                                                   | à venir     |                       |
+| Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice` |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -170,7 +170,7 @@ Romain met Explorer en pause : chaque essai d'art attend de longues cuissons Ble
 1. **C1 · la base :** titre des discussions, suppression par l'élève (avec ses messages), et purge des discussions vides au bout de 6 mois. C'est la migration `free_chat`, testée en local, avec SQL montré à Romain avant de l'appliquer en ligne.
 2. **C2 · le serveur :** le sujet facultatif (`subjectId`, `chapterId`), la consigne du chat libre, le titre (`server/tutor/title.ts`). Une discussion reprise garde le sujet de sa séance. Après 30 minutes de silence, elle ouvre une nouvelle séance.
 3. **C3 · l'app :** le service des discussions, le volet, « Reprendre », et l'identifiant de discussion tenu par l'écran (plus par le service du tuteur) → validation de Romain sur le Pixel.
-4. **C4 · la photo d'un exercice :** l'élève photographie son exercice dans la discussion écrite.
+4. **C4 · la photo d'un exercice :** l'élève photographie son exercice (ou le choisit dans sa galerie) dans la discussion écrite de l'onglet Tutor'IA, et dans les leçons et exercices d'Explorer, jamais en évaluation. La photo est modérée, envoyée au modèle, et jamais gardée : une mention la remplace, et le tuteur recopie l'énoncé dans sa réponse pour s'en souvenir.
 
 ## Journal des décisions
 
@@ -232,6 +232,9 @@ Romain met Explorer en pause : chaque essai d'art attend de longues cuissons Ble
   - Une discussion sans titre (y compris d'avant les titres) reçoit le sien au prochain échange.
   - La matière n'est plus choisie par l'élève : elle est reconnue par le modèle avec le titre, puis écrite dans la séance (la liste des séances des parents, P3, montre donc la matière de ces séances, sans aucun contenu).
   - C1 à C3 sont validés par Romain sur le Pixel, puis commités sur `feat/chat-libre`. Prochaine étape : C4, la photo d'un exercice.
+- **07/10 (C4) :**
+  - Plan de C4 validé par Romain : appareil photo et galerie, photo jamais gardée, et la photo aussi dans les leçons et exercices d'Explorer, interdite en évaluation (décision de Romain). Branche `feat/photo-exercice`, tirée de `dev` après la fusion des pull requests #7 et #8.
+  - C4 est validée par Romain sur le Pixel (prompt `2026-10-07.3`).
   - La nouvelle version de l'interface (design v2.5) est déjà dans `design/`. Elle sera implémentée plus tard.
 
 ## En attente

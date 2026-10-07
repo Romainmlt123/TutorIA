@@ -10,6 +10,7 @@ import { GradientSurface } from '@/components/GradientSurface';
 import { ChatBubble } from '@/features/tutor/components/ChatBubble';
 import { CallControls } from '@/features/tutor/components/CallControls';
 import { ChatInput } from '@/features/tutor/components/ChatInput';
+import { PhotoSourceDialog } from '@/features/tutor/components/PhotoSourceDialog';
 import { OfflineBanner } from '@/features/tutor/components/OfflineBanner';
 import { TipCard } from '@/features/tutor/components/TipCard';
 import { VisualChip } from '@/features/tutor/components/visual/VisualChip';
@@ -21,6 +22,7 @@ import {
   type ChatMessage,
   type LevelChat,
 } from '@/features/tutor/hooks/useTutorChat';
+import { usePhotoDraft } from '@/features/tutor/hooks/usePhotoDraft';
 import { useVisualViewer } from '@/features/tutor/hooks/useVisualViewer';
 import { useVoiceCall } from '@/features/tutor/hooks/useVoiceCall';
 import { formatCallTime } from '@/features/tutor/logic/voice';
@@ -143,6 +145,10 @@ function LevelChatView({ place }: { place: LevelPlace }) {
   );
   const { messages, pending, offline, progress, result, visual, send, retry, report } =
     useTutorChat({ topic, level: chat });
+  // Photo d'un exercice (C4) : en leçon et en exercices, jamais en évaluation.
+  const cameraEnabled = useStudyRules().data?.cameraEnabled ?? true;
+  const photo = usePhotoDraft(cameraEnabled && !offline && level.type !== 'evaluation');
+  const sendWithPhoto = (text: string) => void send(text, photo.take());
   const keyboardVisible = useKeyboardVisible();
   const viewer = useVisualViewer(visual, keyboardVisible);
   const list = useRef<FlatList<ChatMessage>>(null);
@@ -180,7 +186,9 @@ function LevelChatView({ place }: { place: LevelPlace }) {
   const renderItem = ({ item }: { item: ChatMessage }) => {
     if (item.kind === 'step') return <LevelStepCard text={item.text} />;
     if (item.kind === 'tip') return <TipCard text={item.text} />;
-    if (item.kind === 'student') return <ChatBubble role="student" text={item.text} />;
+    if (item.kind === 'student') {
+      return <ChatBubble role="student" text={item.text} image={item.image} />;
+    }
     const bubble = (
       <ChatBubble
         role="tutor"
@@ -244,7 +252,11 @@ function LevelChatView({ place }: { place: LevelPlace }) {
                 onPress={() => void send(T.go)}
               />
             ) : null}
-            <ChatInput onSend={send} disabled={pending || result !== null} />
+            <ChatInput
+              onSend={sendWithPhoto}
+              disabled={pending || result !== null}
+              attachment={photo.attachment}
+            />
           </View>
         </View>
       </LevelBackdrop>
@@ -263,6 +275,7 @@ function LevelChatView({ place }: { place: LevelPlace }) {
         subjectId={place.island.subjectId}
         onClose={viewer.close}
       />
+      <PhotoSourceDialog {...photo.dialog} />
       <WoodDialog
         visible={leave !== null}
         title={T.leave.title}

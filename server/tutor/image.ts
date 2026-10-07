@@ -1,12 +1,11 @@
 import { TUTOR_LIMITS } from '@/services/tutor/api-contract';
 
+import { IMAGE_DATA_URL } from '../guards/limits';
 import { moderateImage } from '../guards/moderation';
 import { limiters } from '../guards/rateLimit';
 import { errorResponse, identify, jsonResponse, readJsonBody } from '../http';
 import { serverLog } from '../log';
 import { getOpenAI } from '../openai';
-
-const DATA_URL = /^data:image\/(jpeg|png);base64,[A-Za-z0-9+/=]+$/;
 
 /** POST /api/tutor/image-check : taille et modération de la photo d'exercice avant envoi. */
 export async function handleImageCheck(request: Request): Promise<Response> {
@@ -21,7 +20,8 @@ export async function handleImageCheck(request: Request): Promise<Response> {
     return errorResponse('too_long');
   }
   const dataUrl = (body as { dataUrl?: unknown } | null)?.dataUrl;
-  if (typeof dataUrl !== 'string' || !DATA_URL.test(dataUrl)) return errorResponse('bad_request');
+  if (typeof dataUrl !== 'string' || !IMAGE_DATA_URL.test(dataUrl))
+    return errorResponse('bad_request');
 
   try {
     const verdict = await moderateImage(getOpenAI(), dataUrl);

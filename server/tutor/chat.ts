@@ -9,17 +9,22 @@ import {
   type LevelCall,
   type LevelPlay,
 } from '@/features/explorer/logic/levelPlay';
-import type { TutorStreamEvent } from '@/services/tutor/api-contract';
+import {
+  PHOTO_CAPTION,
+  PHOTO_NOTE,
+  TUTOR_LIMITS,
+  type TutorStreamEvent,
+} from '@/services/tutor/api-contract';
 
 import { getServerEnv, ServerConfigError } from '../env';
-import { moderateText } from '../guards/moderation';
+import { moderateImage, moderateText } from '../guards/moderation';
 import { limiters } from '../guards/rateLimit';
 import { validateChat, type ValidChat } from '../guards/limits';
 import { errorResponse, identify, ndjsonResponse, readJsonBody, sha256 } from '../http';
 import { serverLog } from '../log';
 import { getOpenAI } from '../openai';
 import { getAdminClient, type AdminClient } from '../supabase';
-import { requireTutorAccess } from './access';
+import { consumeImageLimit, requireTutorAccess } from './access';
 import {
   openConversation,
   recordMessage,
@@ -129,7 +134,16 @@ async function* streamReply(
       role: turn.role === 'student' ? ('user' as const) : ('assistant' as const),
       content: turn.text,
     })),
-    { role: 'user' as const, content: chat.message },
+    {
+      role: 'user' as const,
+      // Photo d'exercice : envoyée au modèle avec le message, jamais enregistrée.
+      content: chat.image
+        ? [
+            { type: 'input_text' as const, text: chat.message || PHOTO_CAPTION },
+            { type: 'input_image' as const, image_url: chat.image, detail: 'auto' as const },
+          ]
+        : chat.message,
+    },
   ];
   let text = '';
   const calls: FunctionCall[] = [];
@@ -219,7 +233,8 @@ async function* streamReply(
     if (visual) yield { type: 'visual', visual };
     // Une discussion libre sans titre (nouvelle, ou d'avant les titres) en reçoit un, pour le volet.
     if (recording.conversation.untitled && !level) {
-      const { title, subjectId } = await nameOf(client, model, chat.message, text, safetyId);
+      const question = chat.message || PHOTO_CAPTION;
+      const { title, subjectId } = await nameOf(client, model, question, text, safetyId);
       // La matière reconnue ne remplace jamais celle d'une discussion qui en a déjà une.
       const { topic } = recording.conversation;
       const detected = topic.subjectId || topic.chapterId ? undefined : subjectId;
@@ -280,6 +295,25 @@ function parsed(calls: readonly FunctionCall[]): LevelCall[] {
 }
 
 /**
+ * Photo d'exercice jointe (C4) : autorisée par le parent (caméra), jamais dans une évaluation
+ * d'Explorer, et dans la limite des photos. Rend la réponse d'erreur, ou null si elle passe.
+ */
+async function refuseImage(
+  request: Request,
+  admin: AdminClient,
+  studentId: string,
+  place: LevelPlace | null,
+  cameraEnabled: boolean,
+): Promise<Response | null> {
+  if (!cameraEnabled || place?.level.type === 'evaluation') return errorResponse('not_allowed');
+  const { clientId } = identify(request);
+  if (clientId && !limiters.imageClient.consume(clientId)) return errorResponse('rate_limited');
+  const verdict = await consumeImageLimit(admin, studentId);
+  if (verdict === 'allowed') return null;
+  return errorResponse(verdict === 'limited' ? 'rate_limited' : 'upstream');
+}
+
+/**
  * POST /api/tutor/chat : élève connecté et autorisé, garde-fous, modération, puis réponse en flux.
  * L'historique est relu en base (conversation de l'élève) ; les messages y sont enregistrés.
  */
@@ -308,19 +342,30 @@ export async function handleChat(
 
   let body: unknown;
   try {
-    body = await readJsonBody(request, 32_000);
+    // Une photo d'exercice (200 Ko au plus) peut accompagner le message.
+    body = await readJsonBody(request, 32_000 + TUTOR_LIMITS.imageMaxBytes);
   } catch {
     return errorResponse('bad_request');
   }
   const chat = validateChat(body);
   if (!chat.ok) return errorResponse(chat.code);
   const place = levelOfTopic(chat.value.topic);
+  const { image } = chat.value;
+  if (image) {
+    const refused = await refuseImage(request, admin, studentId, place, access.cameraEnabled);
+    if (refused) return refused;
+  }
 
   try {
-    const verdict = await moderateText(client, chat.value.message);
+    const verdict = chat.value.message ? await moderateText(client, chat.value.message) : 'ok';
     if (verdict !== 'ok') {
       serverLog.warn('chat.input', { verdict });
       return errorResponse(verdict);
+    }
+    const imageVerdict = image ? await moderateImage(client, image) : 'ok';
+    if (imageVerdict !== 'ok') {
+      serverLog.warn('chat.image', { verdict: imageVerdict });
+      return errorResponse(imageVerdict);
     }
   } catch (error) {
     // Modération indisponible : on n'envoie rien au modèle (public mineur).
@@ -354,7 +399,11 @@ export async function handleChat(
     }
   }
 
-  await recordMessage(admin, conversation, studentId, 'student', chat.value.message);
+  // La photo n'est jamais gardée : seule une mention la remplace dans l'historique.
+  const recorded = image
+    ? [PHOTO_NOTE, chat.value.message].filter(Boolean).join('\n')
+    : chat.value.message;
+  await recordMessage(admin, conversation, studentId, 'student', recorded);
   const signal = request.signal;
   const safetyId = await sha256(studentId);
   // Une discussion rouverte garde le sujet enregistré avec elle.

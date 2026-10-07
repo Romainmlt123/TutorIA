@@ -3,7 +3,12 @@ import { levelById } from '@/features/explorer/content';
 import { applyCalls, startPlay } from '@/features/explorer/logic/levelPlay';
 import type { VoiceEvent } from '@/features/tutor/logic/voice';
 
-import type { ChatRequest, LevelOutcome, TutorStreamEvent } from '../api-contract';
+import {
+  PHOTO_NOTE,
+  type ChatRequest,
+  type LevelOutcome,
+  type TutorStreamEvent,
+} from '../api-contract';
 import type { StartVoiceRequest, TutorService, VoiceSession } from '../TutorService';
 import { mockLevelTurn, type MockLevelState } from './levelScripts';
 import type { MockConversationService } from '../../conversations/mock/MockConversationService';
@@ -157,7 +162,11 @@ export function createMockTutorService(options: MockOptions = {}): TutorService 
         store?.create(request.topic.subjectId ?? null, request.topic.chapterId ?? null) ??
         `mock-conversation-${++counter}`;
       if (created) yield { type: 'conversation', id: conversationId };
-      store?.record(conversationId, 'student', request.message, null);
+      // Comme le serveur : la photo n'est pas gardée, une mention la remplace.
+      const recorded = request.image
+        ? [PHOTO_NOTE, request.message].filter(Boolean).join('\n')
+        : request.message;
+      store?.record(conversationId, 'student', recorded, null);
       let state: MockLevelState | undefined;
       let reply = scriptedReply(request);
       let calls: ReturnType<typeof mockLevelTurn>['calls'] = [];
@@ -187,7 +196,7 @@ export function createMockTutorService(options: MockOptions = {}): TutorService 
       // Comme le serveur : le visuel arrive après le texte de la réponse.
       if (visualTurn) yield { type: 'visual', visual: visualTurn.visual };
       if (created && !place) {
-        const title = mockTitle(request.message);
+        const title = mockTitle(request.message || PHOTO_NOTE);
         const subjectId = request.topic.subjectId ? undefined : mockSubjectOf(request.message);
         store?.setTitle(conversationId, title, subjectId);
         yield subjectId ? { type: 'title', title, subjectId } : { type: 'title', title };

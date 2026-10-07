@@ -1,7 +1,12 @@
 import { studyBlock } from '@/services/student/studyRules';
 
 import { requireUser, type AuthenticatedUser } from '../auth';
-import { consumeSharedLimits, DAY, type SharedLimit } from '../guards/sharedRateLimit';
+import {
+  consumeSharedLimits,
+  DAY,
+  type SharedLimit,
+  type SharedLimitVerdict,
+} from '../guards/sharedRateLimit';
 import { errorResponse } from '../http';
 import { serverLog } from '../log';
 import type { AdminClient } from '../supabase';
@@ -33,6 +38,8 @@ export type TutorAccess =
       user: AuthenticatedUser;
       /** Graphiques et tableau blanc autorisés par le parent (P4). */
       visualsEnabled: boolean;
+      /** Photos d'exercice autorisées par le parent (réglage caméra, P4). */
+      cameraEnabled: boolean;
     }
   | { ok: false; response: Response };
 
@@ -52,6 +59,7 @@ export async function requireTutorAccess(
   if (auth.user.role !== 'student') return { ok: false, response: errorResponse('forbidden') };
 
   let visualsEnabled = false;
+  let cameraEnabled = false;
   if (feature !== 'report') {
     const { data, error } = await admin.rpc('tutor_context', { p_student_id: auth.user.id });
     const context = data?.[0];
@@ -81,6 +89,7 @@ export async function requireTutorAccess(
     );
     if (block) return { ok: false, response: errorResponse('paused') };
     visualsEnabled = context.visuals_enabled;
+    cameraEnabled = context.camera_enabled;
   }
 
   const limits: SharedLimit[] = LIMITS[feature].map((limit) => ({
@@ -94,5 +103,19 @@ export async function requireTutorAccess(
       response: errorResponse(verdict === 'limited' ? 'rate_limited' : 'upstream'),
     };
   }
-  return { ok: true, user: auth.user, visualsEnabled };
+  return { ok: true, user: auth.user, visualsEnabled, cameraEnabled };
+}
+
+/** Limite partagée des photos d'exercice, pour une photo jointe à un message écrit (C4). */
+export async function consumeImageLimit(
+  admin: AdminClient,
+  studentId: string,
+): Promise<SharedLimitVerdict> {
+  return consumeSharedLimits(
+    admin,
+    LIMITS.image.map((limit) => ({
+      key: `tutor-image-${limit.windowSeconds}:${studentId}`,
+      ...limit,
+    })),
+  );
 }

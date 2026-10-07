@@ -37,19 +37,27 @@ async function encode(
   return saved.base64 ? `${PREFIX}${saved.base64}` : null;
 }
 
-/**
- * Ouvre l'appareil photo (caméra arrière), au moment de l'usage uniquement.
- * Si l'élève refuse la permission, l'appel vocal continue normalement.
- */
-export async function takeExercisePhoto(): Promise<PhotoResult> {
-  const permission = await ImagePicker.requestCameraPermissionsAsync();
-  if (!permission.granted) return { status: 'denied' };
+/** D'où vient la photo : l'appareil photo (caméra arrière) ou la galerie. */
+export type PhotoSource = 'camera' | 'library';
 
-  const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ['images'],
-    cameraType: ImagePicker.CameraType.back,
-    quality: 0.8,
-  });
+/**
+ * Photo de l'exercice, au moment de l'usage uniquement : l'appareil photo demande sa permission,
+ * la galerie passe par le sélecteur du système (sans permission). Si l'élève refuse, l'app
+ * continue normalement.
+ */
+export async function takeExercisePhoto(source: PhotoSource = 'camera'): Promise<PhotoResult> {
+  let result: ImagePicker.ImagePickerResult;
+  if (source === 'camera') {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) return { status: 'denied' };
+    result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      cameraType: ImagePicker.CameraType.back,
+      quality: 0.8,
+    });
+  } else {
+    result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
+  }
   const asset = result.canceled ? undefined : result.assets[0];
   if (!asset) return { status: 'cancelled' };
 
