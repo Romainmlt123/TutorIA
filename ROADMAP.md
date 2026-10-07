@@ -16,19 +16,22 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 
 ## Où on en est — 7 octobre 2026
 
-| Chantier | Étape                                                  | Statut    | Branche               |
-| -------- | ------------------------------------------------------ | --------- | --------------------- |
-| Explorer | X1 · les îles                                          | ✅ validé | `feat/explorer-3d`    |
-| Explorer | X2a · les régions de l'île                             | ✅ validé | `feat/explorer-3d`    |
-| Explorer | X2b · la carte d'une région (art de la région Nombres) | ✅ validé | `feat/explorer-3d`    |
-| Avatar   | Figurine, visage et atelier `/dev/avatars`             | ✅ validé | `feat/avatar`         |
-| Avatar   | A1 · l'éditeur « Crée ton avatar »                     | ✅ validé | `feat/avatar`         |
-| Avatar   | A2 · l'avatar sur la carte                             | ✅ validé | `feat/avatar`         |
-| Avatar   | **A3 · la garde-robe**                                 | ✅ validé | `feat/avatar`         |
-| Avatar   | A4 · l'avatar dans Supabase                            | ✅ validé | `feat/avatar-en-base` |
-| Explorer | **X3 à X5b · fiche, discussion et bilan d'un niveau**  | ✅ validé | `feat/avatar`         |
+| Chantier      | Étape                                                                         | Statut      | Branche               |
+| ------------- | ----------------------------------------------------------------------------- | ----------- | --------------------- |
+| Explorer      | X1 · les îles                                                                 | ✅ validé   | `feat/explorer-3d`    |
+| Explorer      | X2a · les régions de l'île                                                    | ✅ validé   | `feat/explorer-3d`    |
+| Explorer      | X2b · la carte d'une région (art de la région Nombres)                        | ✅ validé   | `feat/explorer-3d`    |
+| Avatar        | Figurine, visage et atelier `/dev/avatars`                                    | ✅ validé   | `feat/avatar`         |
+| Avatar        | A1 · l'éditeur « Crée ton avatar »                                            | ✅ validé   | `feat/avatar`         |
+| Avatar        | A2 · l'avatar sur la carte                                                    | ✅ validé   | `feat/avatar`         |
+| Avatar        | **A3 · la garde-robe**                                                        | ✅ validé   | `feat/avatar`         |
+| Avatar        | A4 · l'avatar dans Supabase                                                   | ✅ validé   | `feat/avatar-en-base` |
+| Explorer      | **X3 à X5b · fiche, discussion et bilan d'un niveau**                         | ✅ validé   | `feat/avatar`         |
+| Explorer      | La suite (art des régions, contenu, allègement…)                              | ⏸️ en pause |                       |
+| Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`  |
+| Tuteur visuel | V4 · les visuels à la voix                                                    | à venir     |                       |
 
-`feat/explorer-3d` et `feat/avatar` sont fusionnées dans `dev` (pull request #5, le 07/10).
+`feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
 ## Chantier 1 · L'avatar de l'élève (phase 1, sans achat)
 
@@ -116,9 +119,9 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 - Il n'y a ni coffre à surprise (loot box) ni monnaie virtuelle.
 - Rien de ce qui s'achète ne donne d'avantage pour apprendre.
 
-## Chantier 2 · Explorer (suite)
+## Chantier 2 · Explorer (suite) — en pause depuis le 07/10
 
-Le plan détaillé d'Explorer reste celui validé le 30 septembre. Dans l'ordre :
+Romain met Explorer en pause : chaque essai d'art attend de longues cuissons Blender. On y reviendra dans cet ordre, à partir du point 5. Le plan détaillé reste celui validé le 30 septembre :
 
 1. **X3 / X3b · la fiche d'un niveau :** objectifs, puis « À l'écrit » et « À la voix ».
 2. **X4 / X4b · la discussion de niveau,** écrite et vocale, sur le fond de l'île.
@@ -131,6 +134,23 @@ Le plan détaillé d'Explorer reste celui validé le 30 septembre. Dans l'ordre 
    - les cartes de région doivent être téléchargées à la demande. Cela demande `expo-file-system`, donc un nouveau build EAS.
 8. **Les autres îles,** une par matière.
 9. **Les builds EAS,** une fois tout l'onglet Explorer terminé, comme Romain l'a demandé.
+
+## Chantier 3 · Le tuteur visuel (maquettes 2C à 2F)
+
+**Principes validés le 07/10 :**
+
+- Le tuteur ne dessine pas : il **décrit** un visuel par un appel d'outil (graphique, statistiques, figure de géométrie, tableau blanc). Le serveur valide et modère cette description ; l'app la dessine avec ses propres composants, dans la charte (couleurs du thème, Satoshi, formules MathJax). Jamais d'image générée.
+- Le dernier visuel s'affiche dans un panneau repliable au-dessus de la discussion (maquettes 2C et 2E), dans l'onglet Tutor'IA comme dans les niveaux d'Explorer.
+- Le visuel est gardé avec le message (même conservation, jamais lu par les parents), pour que le tuteur s'en souvienne.
+- Si un parent a désactivé les visuels (P4), le tuteur n'a pas ces outils.
+- Aucune nouvelle dépendance : `react-native-svg`, Reanimated et MathJax suffisent.
+
+**Les étapes :**
+
+1. **V1 · le serveur :** les quatre outils, leur validation et leur modération, la consigne pédagogique, l'événement `visual` du flux, et la migration `messages.visual` (SQL montré d'abord).
+2. **V2 · les composants :** le panneau, le graphique (droites et courbes), les statistiques (barres, secteurs), la figure de géométrie et le tableau blanc, visibles dans `/dev/catalogue` ; le tuteur simulé dessine aussi.
+3. **V3 · dans la discussion :** le panneau réduit, agrandi en plein écran, et les pastilles « Voir » sur les messages → validation de Romain sur le Pixel.
+4. **V4 · à la voix (2D, 2F) :** les visuels dessinés en direct. À la voix, les appels d'outils arrivent sur le téléphone sans passer par le serveur : à reprendre avec la surveillance du vocal (§ 11 du CLAUDE.md).
 
 ## Journal des décisions
 
@@ -179,6 +199,12 @@ Le plan détaillé d'Explorer reste celui validé le 30 septembre. Dans l'ordre 
   - Plan d'A4 validé : objets calculés par l'app (pas de déclencheurs SQL avant la phase 2), avatar invisible pour les parents, branche `feat/avatar-en-base` tirée de `dev`.
   - La migration `avatars` est appliquée en ligne (version `20261007073406`), avec l'accord de Romain.
   - A4 est validée par Romain : sa figurine a été reprise du téléphone, et un changement fait sur le web se retrouve sur le téléphone.
+
+- **07/10 (suite) :**
+  - Explorer est mis en pause ; le chantier 3, le tuteur visuel, commence, à l'écrit d'abord, avec les statistiques et la géométrie dès le départ.
+  - V1 à V3 sont validés par Romain sur le Pixel, sur `feat/tuteur-visuel` : quatre outils de dessin, migration `messages.visual` (appliquée en ligne le 07/10, version `20261007091113`, avec l'accord de Romain), composants dans la charte et panneau dans les deux discussions. Les mots d'une formule (`\text{…}`) sont écrits en Satoshi par l'app : ils gardent la police de la marque, et les accents n'exigent pas une police mathématique de plus (370 Ko).
+  - Retours de Romain intégrés : une couleur d'accent par sorte de visuel, un tableau blanc net (sans points, sans cadre, sans légende) qui défile dans les deux sens, des pastilles « Voir… » unies, et le bandeau touchable même clavier ouvert.
+  - Corrigé en chemin : le tuteur libre refusait les chapitres d'Explorer (`maths-relatifs`) repris par « Reprendre » ; le catalogue des chapitres les reconnaît désormais.
 
 ## En attente
 

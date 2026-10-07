@@ -16,7 +16,8 @@
   - l'**entrée dans l'app** (L1 à L6 : connexion, inscription parent, code de liaison) et le consentement parental sous 15 ans ;
   - l'**espace Parents** (P1 à P4 : accueil, progrès, sessions, réglages, données personnelles), avec sa propre navigation ;
   - la base **Supabase** (authentification, données, RLS, agrégats, conservation).
-  - Hors périmètre : les écrans 2C à 2F (tableau blanc, graphiques…) et la vraie connexion Apple et Google (les boutons mènent à « Bientôt »).
+  - le **tuteur visuel** (graphiques, statistiques, géométrie et tableau blanc, maquettes 2C à 2F), à l'écrit d'abord ;
+  - Hors périmètre : la vraie connexion Apple et Google (les boutons mènent à « Bientôt »).
 - **Cible :** **mobile d'abord** (iOS et Android), destiné aux **App Store et Google Play**, puis une **version web** qui réutilise le même code.
 - **Référence visuelle :** le dossier `design/`. Lis `design/README.md` avant toute interface ; `design/COMPONENTS.md` et `design/tokens/` font foi. Si une maquette et le design system divergent, la maquette et la section « Écarts assumés » du README l'emportent.
 
@@ -174,6 +175,12 @@ Chaque choix doit rester compatible avec une publication sur les stores :
     - à la voix, seules les leçons se jouent, sans outil : l'appel compte comme une séance (avec son `level_id`), sans étoiles ni validation ;
     - une leçon écrite prend le format `LESSON_FORMAT` (professeur d'un très grand lycée : utilité dans la vie, notion, exemple résolu, question de vérification) et jusqu'à 1 500 tokens ; les consignes reçoivent le programme du niveau (`server/content/maths4e.ts` : capacités, attendus, précisions) et, hors leçon, ses exercices corrigés, qui ne partent jamais dans l'app.
   - Formules : à l'écrit, le tuteur écrit ses calculs en LaTeX (`$…$` dans la phrase, `$$…$$` seul sur sa ligne), selon `MATH_FORMAT` de `server/tutor/prompt.ts`. L'app les dessine sur l'appareil avec MathJax 4 (`@mathjax/src`, `src/features/tutor/math/texToSvg.ts`, chargé au premier besoin, dans un bloc protégé) et `react-native-svg`. Une formule invalide, ou qui demanderait une police non incluse, reste affichée en texte. Les « imports » de package.json de MathJax (`#default-font/…`) sont traduits dans `metro.config.js`. Ni le vocal ni les résumés pour le parent n'écrivent de LaTeX.
+  - Visuels du tuteur (chantier 3, à l'écrit) :
+    - le tuteur ne dessine jamais : il décrit un visuel par un outil (`show_graph`, `write_board`, `show_chart`, `draw_figure`, `server/tutor/visuals.ts`), proposé seulement si le parent l'autorise (`visuals_enabled`) ;
+    - le serveur valide la description (zod, limites `VISUAL_LIMITS`, couleurs `VISUAL_TONES`, expressions lues par `parseExpression`, jamais d'`eval`), la modère avec la réponse, la garde dans `messages.visual` et l'envoie dans le flux (`visual`, après le texte) ; un visuel mal formé est ignoré, la réponse reste ;
+    - l'historique relu par le modèle rappelle les visuels montrés (`visualSummary`), et la séance note `graph` ou `whiteboard` (P3) ;
+    - l'app les dessine avec ses composants (`src/features/tutor/components/visual/` : `MathGraph`, `StatChart`, `GeoFigure`, `Whiteboard`, `VisualPanel`, `VisualModal`, `VisualChip`) et les couleurs de `src/theme/visualArt.ts` ; les mots d'une formule (`\text{…}`) sont écrits en Satoshi ;
+    - le contrat partagé est dans `src/services/tutor/visuals.ts`.
   - Résumés pour le parent (`server/tutor/summaries.ts`) : sortie structurée (notions comprises, points à revoir, résultat) et modérée, mise en forme dans l'app. Jamais de transcription ni de texte libre de l'élève.
   - Aucune donnée personnelle n'est envoyée à OpenAI : ni prénom, ni âge exact, ni auto-évaluation, et e-mails et téléphones sont masqués. `safety_identifier` est un hachage de l'identifiant. Le résumé de la semaine écrit `{prenom}`, remplacé dans l'app.
 - **Accessibilité :**
