@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"PlanRow"},{"name":"Stars"},{"name":"IslandIllustration"},{"name":"IslandCarousel"},{"name":"IslandProgressCard"},{"name":"ExplorerHud"},{"name":"LevelNode"},{"name":"MapAvatar"},{"name":"CityBanner"},{"name":"RegionSign"},{"name":"WorldMap"},{"name":"LevelTypePill"},{"name":"LevelSheet"},{"name":"IslandBackdrop"},{"name":"LevelProgressHeader"},{"name":"VoiceBoardCard"},{"name":"LevelResultCard"},{"name":"TutorFeedback"}]} */
+/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"CallTopBar"},{"name":"VoiceAvatar"},{"name":"VoiceStatus"},{"name":"LiveCaptions"},{"name":"CallDock"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"PlanRow"},{"name":"Stars"},{"name":"IslandIllustration"},{"name":"IslandCarousel"},{"name":"IslandProgressCard"},{"name":"ExplorerHud"},{"name":"LevelNode"},{"name":"MapAvatar"},{"name":"CityBanner"},{"name":"RegionSign"},{"name":"WorldMap"},{"name":"LevelTypePill"},{"name":"LevelSheet"},{"name":"IslandBackdrop"},{"name":"LevelProgressHeader"},{"name":"VoiceBoardCard"},{"name":"LevelResultCard"},{"name":"TutorFeedback"}]} */
 (function () {
   'use strict';
   var React = window.React;
@@ -52,6 +52,10 @@
     micOff: 'M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3M4 4l16 16',
     video: 'M5 6h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM15 10l6-3v10l-6-3z',
     videoOff: 'M5 6h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM15 10l6-3v10l-6-3zM3 3l18 18',
+    volume: 'M11 5 6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14',
+    captions: 'M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM7 15h4M15 15h2M7 11h2M13 11h4',
+    hangup: 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z',
+    more: 'M5 12h.01M12 12h.01M19 12h.01',
     keyboard: 'M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10',
     bulb: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z',
     star: 'M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z',
@@ -436,32 +440,54 @@
       h(CallButton, { icon: cam ? 'video' : 'videoOff', label: cam ? 'Couper la caméra' : 'Activer la caméra', caption: cam ? 'Caméra activée' : 'Caméra', pressed: cam, onClick: p.onToggleCamera, background: cam ? 'var(--primary)' : 'var(--surface)', color: cam ? '#fff' : 'var(--text-secondary)' }));
   }
 
+  /* Visuels du tuteur (v2.6, comme dans l'app) : chaque sorte de visuel a sa couleur, le dessin reste sur une feuille blanche. */
+  var VISUAL_KINDS = {
+    graph: { name: 'Graphique', gradient: 'linear-gradient(160deg, var(--violet-400) 0%, var(--violet-600) 100%)', soft: 'var(--violet-100)', border: 'var(--violet-200)', ink: 'var(--violet-700)', icon: 'graph', noun: 'le graphique', label: 'Graphique du tuteur' },
+    whiteboard: { name: 'Tableau', gradient: 'linear-gradient(160deg, var(--azure-400) 0%, var(--azure-600) 100%)', soft: 'var(--azure-100)', border: 'var(--azure-200)', ink: 'var(--azure-700)', icon: 'pen', noun: 'le tableau', label: 'Tableau blanc du tuteur' }
+  };
+  function vkind(k) { return VISUAL_KINDS[k === 'whiteboard' || k === 'board' ? 'whiteboard' : 'graph']; }
+  var MATH_FONT = "'Latin Modern Math', 'STIX Two Math', 'Cambria Math', 'Times New Roman', serif";
+  /* Les variables d'une formule (une lettre seule) en italique, comme dans un manuel. */
+  function mathText(str) {
+    return String(str).split(/((?:^|(?<=[^A-Za-zÀ-ÿ]))[a-z](?![A-Za-zÀ-ÿ]))/).map(function (part, i) {
+      return /^[a-z]$/.test(part) ? h('i', { key: i }, part) : part;
+    });
+  }
+
   function PanelHeader(p) {
-    var s = subj(p.subject);
-    var board = p.kind === 'whiteboard';
+    var k = vkind(p.kind);
+    var s = p.subject ? subj(p.subject) : null;
     var open = p.open !== false;
-    var noun = board ? 'le tableau' : 'le graphique';
-    var smallBtn = function (label, icon, onClick, extra) {
-      return h('button', { type: 'button', 'aria-label': label, onClick: onClick, 'aria-expanded': extra, style: { width: 44, height: 44, flexShrink: 0, border: 'none', borderRadius: 14, background: 'var(--bg)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } },
+    var collapsible = p.collapsible !== false;
+    var btn = function (label, icon, onClick, extra) {
+      return h('button', assign({ type: 'button', 'aria-label': label, onClick: onClick, style: { width: 44, height: 44, flexShrink: 0, border: 'none', borderRadius: 14, background: 'var(--surface)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, extra),
         h(Icon, { name: icon, size: 20, strokeWidth: 2, style: icon === 'chevronUp' ? { transform: 'rotate(' + (open ? 0 : 180) + 'deg)', transition: 'transform 0.25s ease' } : null }));
     };
-    return h('div', { style: { display: 'flex', alignItems: 'center', gap: 12, fontFamily: FONT } },
-      h('span', { style: { width: 40, height: 40, borderRadius: 12, background: s.gradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } }, h(Icon, { name: board ? 'pen' : 'graph', size: 22 })),
-      h('span', { style: { flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' } },
-        h(Overline, { color: s.ink, style: { display: 'flex', alignItems: 'center', gap: 6 } }, p.live ? h('span', { className: 'tia-blink', 'aria-hidden': 'true', style: { width: 8, height: 8, borderRadius: 999, background: 'var(--red-500)' } }) : null, p.kicker || ((board ? 'Tableau · ' : 'Graphique · ') + s.name)),
-        h('span', { style: { fontSize: 16, lineHeight: '24px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, p.title)),
-      smallBtn('Agrandir ' + noun, 'expand', p.onExpand),
-      smallBtn((open ? 'Réduire ' : 'Afficher ') + noun, 'chevronUp', p.onToggle, open));
+    var titles = [
+      h('span', { key: 'tile', 'aria-hidden': 'true', style: { width: 40, height: 40, borderRadius: 12, background: k.gradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } }, h(Icon, { name: k.icon, size: 22 })),
+      h('span', { key: 'txt', style: { flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column', textAlign: 'left' } },
+        h(Overline, { color: k.ink, style: { display: 'flex', alignItems: 'center', gap: 6 } }, p.live ? h('span', { className: 'tia-blink', 'aria-hidden': 'true', style: { width: 8, height: 8, borderRadius: 999, background: 'var(--red-500)' } }) : null, p.kicker || (k.name + (s ? ' · ' + s.name : ''))),
+        h('span', { style: { fontSize: 16, lineHeight: '22px', fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, p.title))
+    ];
+    // Tout le bandeau ouvre ou replie le panneau (le chevron n'est qu'un repère visuel).
+    var band = p.onToggle
+      ? h('button', { type: 'button', onClick: p.onToggle, 'aria-expanded': open, 'aria-label': (open ? 'Réduire ' : 'Afficher ') + k.noun + (p.title ? ' : ' + p.title : ''), style: { flexGrow: 1, minWidth: 0, minHeight: 48, display: 'flex', alignItems: 'center', gap: 12, padding: 0, border: 'none', background: 'transparent', color: 'inherit', cursor: 'pointer', fontFamily: FONT } }, titles)
+      : h('div', { style: { flexGrow: 1, minWidth: 0, minHeight: 48, display: 'flex', alignItems: 'center', gap: 12 } }, titles);
+    return h('div', { style: { display: 'flex', alignItems: 'center', gap: 8, fontFamily: FONT } },
+      band,
+      p.expandable === false ? null : btn('Agrandir ' + k.noun, 'expand', p.onExpand),
+      collapsible ? btn((open ? 'Réduire ' : 'Afficher ') + k.noun, 'chevronUp', p.onToggle, { 'aria-hidden': 'true', tabIndex: -1 }) : null);
   }
 
   function VisualPanel(p) {
+    var k = vkind(p.kind);
     var st = useState(p.defaultOpen !== false);
-    var open = p.open != null ? p.open : st[0];
+    var collapsible = p.collapsible !== false;
+    var open = collapsible ? (p.open != null ? p.open : st[0]) : true;
     function toggle() { if (p.onToggle) p.onToggle(!open); if (p.open == null) st[1](!open); }
-    return h('section', { 'aria-label': p.kind === 'whiteboard' ? 'Tableau blanc du tuteur' : 'Graphique du tuteur', style: { background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', padding: 16, display: 'flex', flexDirection: 'column', gap: 8, fontFamily: FONT } },
-      h(PanelHeader, { kind: p.kind, subject: p.subject, kicker: p.kicker, title: p.title, live: p.live, open: open, onToggle: toggle, onExpand: p.onExpand }),
-      open ? p.children : null,
-      open && p.footer ? p.footer : null);
+    return h('section', { 'aria-label': k.label, style: { boxSizing: 'border-box', background: k.soft, border: '2px solid ' + k.border, borderRadius: 'var(--radius-3xl)', boxShadow: p.elevated ? '0 16px 36px rgba(3,39,110,0.35)' : 'var(--shadow-md)', padding: 12, display: 'flex', flexDirection: 'column', gap: 10, fontFamily: FONT } },
+      h(PanelHeader, { kind: p.kind, subject: p.subject, kicker: p.kicker, title: p.title, live: p.live, open: open, collapsible: collapsible, onToggle: collapsible ? toggle : undefined, onExpand: p.onExpand, expandable: p.expandable }),
+      open ? h('div', { style: { background: 'var(--surface)', borderRadius: 'var(--radius-2xl)', padding: 12, display: 'flex', flexDirection: 'column', gap: 8 } }, p.children, p.footer || null) : null);
   }
 
   function MathGraph(p) {
@@ -470,59 +496,178 @@
     var X = function (x) { return L + (x - xr[0]) / (xr[1] - xr[0]) * (R - L); };
     var Y = function (y) { return B - (y - yr[0]) / (yr[1] - yr[0]) * (B - T); };
     var s = subj(p.subject);
+    var focus = p.focus;
     var els = [];
     var xs = [], ys = [];
     for (var gx = Math.ceil(xr[0]); gx <= xr[1]; gx++) xs.push(gx);
     var ystep = p.yStep || 5;
     for (var gy = Math.ceil(yr[0] / ystep) * ystep; gy <= yr[1]; gy += ystep) ys.push(gy);
-    xs.forEach(function (x) { els.push(h('line', { key: 'gx' + x, x1: X(x), y1: T, x2: X(x), y2: B, stroke: 'var(--blue-100)' })); });
-    ys.forEach(function (y) { els.push(h('line', { key: 'gy' + y, x1: L, y1: Y(y), x2: R, y2: Y(y), stroke: 'var(--blue-100)' })); });
-    els.push(h('line', { key: 'ax', x1: L, y1: Y(Math.max(yr[0], 0)), x2: R + 4, y2: Y(Math.max(yr[0], 0)), stroke: 'var(--gray-300)', strokeWidth: 1.5 }));
-    els.push(h('line', { key: 'ay', x1: X(Math.max(xr[0], 0)), y1: B + 4, x2: X(Math.max(xr[0], 0)), y2: T - 2, stroke: 'var(--gray-300)', strokeWidth: 1.5 }));
-    xs.forEach(function (x) { if (x > 0) els.push(h('text', { key: 'tx' + x, x: X(x), y: 205, textAnchor: 'middle', fontSize: 11, fill: 'var(--gray-500)' }, x)); });
-    ys.forEach(function (y) { els.push(h('text', { key: 'ty' + y, x: X(Math.max(xr[0], 0)) - 7, y: Y(y) + 4, textAnchor: 'end', fontSize: 11, fill: 'var(--gray-500)' }, y)); });
+    var x0 = X(Math.max(xr[0], 0)), y0 = Y(Math.max(yr[0], 0));
+    xs.forEach(function (x) { els.push(h('line', { key: 'gx' + x, x1: X(x), y1: T, x2: X(x), y2: B, stroke: 'var(--gray-200)', opacity: 0.7 })); });
+    ys.forEach(function (y) { els.push(h('line', { key: 'gy' + y, x1: L, y1: Y(y), x2: R, y2: Y(y), stroke: 'var(--gray-200)', opacity: 0.7 })); });
+    els.push(h('line', { key: 'ax', x1: L, y1: y0, x2: R + 4, y2: y0, stroke: 'var(--gray-400)', strokeWidth: 1.5 }));
+    els.push(h('line', { key: 'ay', x1: x0, y1: B + 4, x2: x0, y2: T - 2, stroke: 'var(--gray-400)', strokeWidth: 1.5 }));
+    var keyX = (p.points || []).filter(function (pt) { return pt.key; }).map(function (pt) { return pt.x; });
+    xs.forEach(function (x) { if (x > 0) els.push(h('text', { key: 'tx' + x, x: X(x), y: 205, textAnchor: 'middle', fontSize: 11, fontWeight: keyX.indexOf(x) >= 0 ? 700 : 400, fill: keyX.indexOf(x) >= 0 ? s.ink : 'var(--text-secondary)' }, x)); });
+    ys.forEach(function (y) { els.push(h('text', { key: 'ty' + y, x: x0 - 7, y: Y(y) + 4, textAnchor: 'end', fontSize: 11, fill: 'var(--text-secondary)' }, y)); });
+    var colorOf = function (ln, i) { return ln.color || (i === 0 ? s.bar : 'var(--primary)'); };
     (p.lines || []).forEach(function (ln, i) {
-      var color = ln.color || (i === 0 ? s.bar : 'var(--primary)');
-      els.push(h('line', { key: 'l' + i, x1: X(xr[0]), y1: Y(ln.m * xr[0] + ln.b), x2: X(xr[1]), y2: Y(ln.m * xr[1] + ln.b), stroke: color, strokeWidth: ln.dashed ? 2.5 : 3, strokeDasharray: ln.dashed ? '7 5' : undefined, strokeLinecap: 'round' }));
+      var color = colorOf(ln, i), on = focus === i;
+      var a = ln.from != null ? ln.from : xr[0], z = ln.to != null ? ln.to : xr[1];
+      var seg = { x1: X(a), y1: Y(ln.m * a + ln.b), x2: X(z), y2: Y(ln.m * z + ln.b) };
+      // Courbe nommée par le tuteur : un halo de sa couleur et un trait plus épais.
+      els.push(h('line', assign({ key: 'lg' + i, stroke: color, strokeWidth: 13, strokeLinecap: 'round', strokeOpacity: 0.16, opacity: on ? 1 : 0, style: { transition: 'opacity 0.3s ease' } }, seg)));
+      els.push(h('line', assign({ key: 'l' + i, stroke: color, strokeWidth: (ln.dashed ? 2.5 : 3) + (on ? 2 : 0), strokeDasharray: ln.dashed ? '7 5' : undefined, strokeLinecap: 'round', style: { transition: 'stroke-width 0.3s ease' } }, seg)));
     });
     (p.points || []).forEach(function (pt, i) {
-      if (pt.guide) els.push(h('line', { key: 'g' + i, x1: X(pt.x), y1: Y(pt.y), x2: X(pt.x), y2: B, stroke: s.ink, strokeWidth: 1.5, strokeDasharray: '4 4', opacity: 0.6 }));
-      if (pt.pulse) els.push(h('circle', { key: 'h' + i, className: 'tia-halo', cx: X(pt.x), cy: Y(pt.y), r: 8, fill: s.bar }));
+      var right = pt.labelSide !== 'left';
+      if (pt.guide) els.push(h('line', { key: 'g' + i, x1: X(pt.x), y1: Y(pt.y), x2: X(pt.x), y2: y0, stroke: s.ink, strokeWidth: 1.5, strokeDasharray: '4 4', opacity: 0.6 }));
+      if (pt.pulse || (pt.key && focus === 'point')) els.push(h('circle', { key: 'h' + i, className: 'tia-halo', cx: X(pt.x), cy: Y(pt.y), r: 8, fill: s.bar }));
       els.push(h('circle', { key: 'p' + i, cx: X(pt.x), cy: Y(pt.y), r: pt.key ? 6.5 : 4, fill: pt.key ? '#fff' : s.bar, stroke: pt.key ? s.ink : 'none', strokeWidth: 3 }));
       if (pt.label) {
-        els.push(h('rect', { key: 'r' + i, x: X(pt.x) - 50, y: Y(pt.y) + 10, width: 44, height: 22, rx: 11, fill: s.ink }));
-        els.push(h('text', { key: 't' + i, x: X(pt.x) - 28, y: Y(pt.y) + 25, textAnchor: 'middle', fontSize: 12, fontWeight: 700, fill: '#fff' }, pt.label));
+        var lw = Math.max(44, 12 + String(pt.label).length * 7);
+        els.push(h('rect', { key: 'r' + i, x: right ? X(pt.x) + 10 : X(pt.x) - 10 - lw, y: Y(pt.y) + 8, width: lw, height: 22, rx: 11, fill: s.ink }));
+        els.push(h('text', { key: 't' + i, x: right ? X(pt.x) + 10 + lw / 2 : X(pt.x) - 10 - lw / 2, y: Y(pt.y) + 23, textAnchor: 'middle', fontSize: 12, fontWeight: 700, fill: '#fff' }, pt.label));
       }
     });
-    var legend = (p.lines || []).map(function (ln, i) {
-      var color = ln.color || (i === 0 ? s.bar : 'var(--primary)');
-      return h('span', { key: i, style: { display: 'flex', alignItems: 'center', gap: 6 } }, h('span', { 'aria-hidden': 'true', style: { width: 16, height: 0, borderTop: '3px ' + (ln.dashed ? 'dashed ' : 'solid ') + color } }), ln.label);
+    var chip = function (key, on, color, swatch, label) {
+      return h('span', { key: key, style: { display: 'flex', alignItems: 'center', gap: 6, height: 26, padding: '0 10px', borderRadius: 999, background: on ? 'color-mix(in srgb, ' + color + ' 14%, transparent)' : 'transparent', color: color, fontWeight: 700, transition: 'background 0.3s ease' } }, swatch, label);
+    };
+    var legend = (p.lines || []).filter(function (ln) { return ln.label; }).map(function (ln) {
+      var i = p.lines.indexOf(ln), color = colorOf(ln, i);
+      return chip(i, focus === i, color, h('span', { 'aria-hidden': 'true', style: { width: 16, height: 0, borderTop: '3px ' + (ln.dashed ? 'dashed ' : 'solid ') + color } }), ln.label);
     });
+    if (p.pointLegend) legend.push(chip('pt', focus === 'point', s.ink, h('span', { 'aria-hidden': 'true', style: { width: 10, height: 10, boxSizing: 'border-box', borderRadius: 999, border: '2.5px solid ' + s.ink, background: '#fff' } }), p.pointLegend));
     return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8, fontFamily: FONT } },
       h('svg', { width: '100%', viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': p.description || 'Graphique', style: { display: 'block', fontFamily: FONT } }, els),
-      legend.length ? h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: 12, lineHeight: '16px', fontWeight: 500, color: 'var(--text-secondary)' } }, legend) : null);
+      legend.length ? h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 6, fontSize: 12, lineHeight: '16px' } }, legend) : null);
   }
 
   function Whiteboard(p) {
-    var s = subj(p.subject);
     var steps = p.steps || [];
-    var shown = p.progress != null ? p.progress : steps.length + 1;
+    var total = steps.length + (p.result ? 1 : 0);
+    var shown = p.progress != null ? p.progress : total;
+    var last = Math.min(shown, total) - 1;
+    var pen = function (i) { return p.writing && i === last ? h('span', { className: 'tia-pen', 'aria-hidden': 'true' }) : null; };
+    var mathStyle = { fontFamily: MATH_FONT, fontSize: 24, lineHeight: 1.25, color: 'var(--text)', whiteSpace: 'nowrap' };
+    var n = 0;
+    var note = function (txt, color) { var mark = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'][n++] || '•'; return h('span', { style: { flexShrink: 0, width: 118, fontSize: 12, lineHeight: '16px', fontWeight: 700, color: color || 'var(--text)' } }, mark + ' ' + txt); };
+    var fade = function (vis) { return { opacity: vis ? 1 : 0, transition: 'opacity 0.45s ease' }; };
     var rows = [];
     steps.forEach(function (st, i) {
       var vis = i < shown;
-      rows.push(h('div', { key: 'r' + i, style: { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 104px', gap: 12, alignItems: 'start', opacity: vis ? 1 : 0, transition: 'opacity 0.45s ease' } },
-        h('div', { style: { display: 'flex', flexDirection: 'column', gap: 2 } },
-          h('span', { style: { fontSize: 24, lineHeight: '30px', fontWeight: 700 } }, st.expr),
-          st.op ? h('span', { style: { fontSize: 15, lineHeight: '20px', fontWeight: 700, color: 'var(--primary)' } }, st.op) : null),
-        h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 700, color: 'var(--blue-600)', paddingTop: 6 } }, (['①', '②', '③', '④', '⑤'][i] || '') + ' ' + (st.note || ''))));
+      if (st.op && i > 0) rows.push(h('div', { key: 'o' + i, style: assign({ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 12, minHeight: 24, color: 'var(--primary)' }, fade(vis)) },
+        h('span', { style: { fontSize: 12, fontWeight: 700 } }, '↓'), h('span', { style: { fontFamily: MATH_FONT, fontSize: 17, whiteSpace: 'nowrap' } }, mathText(st.op))));
+      rows.push(h('div', { key: 'r' + i, style: assign({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 36 }, fade(vis)) },
+        h('span', { style: { display: 'flex', alignItems: 'center', gap: 8 } }, h('span', { style: mathStyle }, mathText(st.expr)), pen(i)),
+        st.note ? note(st.note) : null));
     });
     if (p.result) {
-      var vis = shown > steps.length;
-      rows.push(h('div', { key: 'res', style: { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 104px', gap: 12, alignItems: 'center', opacity: vis ? 1 : 0, transition: 'opacity 0.45s ease' } },
-        h('span', { style: { justifySelf: 'start', padding: '4px 18px', border: '2.5px solid ' + s.bar, borderRadius: '48% 52% 50% 46% / 58% 50% 52% 44%', fontSize: 30, lineHeight: '38px', fontWeight: 900, color: s.ink } }, p.result),
-        h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 700, color: s.ink } }, (['①', '②', '③', '④', '⑤', '⑥'][steps.length] || '') + ' ' + (p.resultNote || 'Solution !'))));
+      var rvis = shown > steps.length;
+      var ring = rvis && p.circled !== false;
+      rows.push(h('div', { key: 'res', style: assign({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 40, marginTop: 4 }, fade(rvis)) },
+        h('span', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+          h('span', { style: assign({}, mathStyle, { padding: '0 14px', borderRadius: 999, border: '2.5px solid ' + (ring ? 'var(--red-500)' : 'transparent'), color: 'var(--red-500)', transition: 'border-color 0.6s ease' }) }, mathText(p.result)), pen(steps.length)),
+        note(p.resultNote || 'Solution', 'var(--red-600)')));
     }
-    return h('div', { role: 'img', 'aria-label': p.description || 'Tableau blanc', style: { position: 'relative', padding: 16, borderRadius: 'var(--radius-2xl)', backgroundColor: '#fbfcff', backgroundImage: 'radial-gradient(var(--gray-200) 1px, transparent 1.2px)', backgroundSize: '16px 16px', display: 'flex', flexDirection: 'column', gap: 10, fontFamily: FONT, color: 'var(--text)' } }, rows);
+    return h('div', { role: 'img', 'aria-label': p.description || 'Tableau blanc', style: { position: 'relative', display: 'flex', flexDirection: 'column', gap: 2, fontFamily: FONT, color: 'var(--text)' } }, rows);
+  }
+
+  /* ---------- Appel vocal (v2.6) ---------- */
+  var GLASS = 'rgba(255,255,255,0.16)';
+  var TONE_WORDS = [[/^rouges?/i, 'var(--red-500)'], [/^bleue?s?/i, 'var(--blue-500)'], [/^verte?s?/i, 'var(--green-600)'], [/^orange/i, 'var(--orange-500)'], [/^violette?s?/i, 'var(--violet-500)'], [/^grise?s?/i, 'var(--gray-500)']];
+
+  function CallTopBar(p) {
+    return h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 44, fontFamily: FONT, color: '#fff' } },
+      h('button', { type: 'button', onClick: p.onWritten, 'aria-label': "Passer à l'écrit", style: { display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 16px 0 12px', border: 'none', borderRadius: 999, background: GLASS, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: FONT } }, h(Icon, { name: 'keyboard', size: 20 }), 'Écrit'),
+      h('span', { 'aria-label': "Durée de l'appel " + (p.elapsed || '00:00'), style: { display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px', borderRadius: 999, background: GLASS, fontSize: 14, fontWeight: 700, fontVariantNumeric: 'tabular-nums' } },
+        h('span', { className: p.live === false ? undefined : 'tia-blink', 'aria-hidden': 'true', style: { width: 8, height: 8, borderRadius: 999, background: '#fff' } }), p.elapsed || '00:00'));
+  }
+
+  /* Le logo du tuteur : il rebondit quand il parle (au niveau de sa voix), penche la tête quand il écoute. */
+  function VoiceAvatar(p) {
+    var size = p.size || 148;
+    var hopPx = size >= 120 ? 18 : 14;
+    var state = p.state || 'speaking';
+    var speaking = state === 'speaking';
+    var simulate = speaking && p.level == null;
+    var tk = useState(0);
+    useEffect(function () {
+      if (!simulate) return undefined;
+      var id = setInterval(function () { tk[1](function (x) { return x + 1; }); }, 100);
+      return function () { clearInterval(id); };
+    }, [simulate]);
+    var t = tk[0] * 0.1;
+    var level = speaking ? (p.level != null ? p.level : 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 2.4)) * (0.6 + 0.4 * Math.sin(t * 0.9))) : 0;
+    var timer = React.useRef(null), longFired = React.useRef(false);
+    function down() { if (!p.onLongPress) return; longFired.current = false; timer.current = setTimeout(function () { longFired.current = true; p.onLongPress(); }, 600); }
+    function up() { if (timer.current) { clearTimeout(timer.current); timer.current = null; } }
+    function click() { if (longFired.current) { longFired.current = false; return; } if (speaking && p.onInterrupt) p.onInterrupt(); }
+    var img = Math.round(size * 0.82);
+    return h('div', { className: 'tia-voice', style: { position: 'relative', width: size + 48, height: hopPx + size + 18, '--tia-h': String(Math.round(Math.max(0, Math.min(1, level)) * 100) / 100), '--tia-tilt': state === 'listening' ? '1' : '0', '--tia-hop': hopPx + 'px' } },
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', left: '50%', top: hopPx + size / 2, width: Math.round(size * 1.9), height: Math.round(size * 1.9), transform: 'translate(-50%, -50%)', borderRadius: 999, background: 'radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0) 70%)', pointerEvents: 'none' } }),
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', left: '50%', top: hopPx + size + 2, width: Math.round(size * 0.82), height: 14, marginLeft: -Math.round(size * 0.41) } },
+        h('span', { className: 'tia-voice-shadow', style: { display: 'block', width: '100%', height: 14, borderRadius: '50%', background: 'radial-gradient(ellipse at center, rgba(2,22,66,0.55) 0%, rgba(2,22,66,0.25) 45%, rgba(2,22,66,0) 72%)' } })),
+      h('div', { style: { position: 'absolute', left: '50%', top: hopPx, width: size, height: size, marginLeft: -size / 2 } },
+        h('div', { className: 'tia-voice-hop', style: { width: size, height: size } },
+          h('div', { className: 'tia-voice-tilt', style: { width: size, height: size } },
+            h('button', { type: 'button', className: 'tia-voice-breathe', onClick: click, onPointerDown: down, onPointerUp: up, onPointerLeave: up, 'aria-label': p.label || (speaking ? 'Interrompre Tutor’IA' : 'Tutor’IA t’écoute'), style: { width: size, height: size, padding: 0, border: 'none', borderRadius: 999, overflow: 'hidden', background: '#fff', boxShadow: '0 12px 28px rgba(3,39,110,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } },
+              h('img', { src: LOGO_WHITE, alt: '', width: img, height: img, style: { display: 'block', width: img, height: img } }))))));
+  }
+
+  var VOICE_PILLS = {
+    speaking: { label: 'Je t’explique…', icon: 'volume', bg: 'linear-gradient(160deg, var(--green-600) 0%, var(--green-700) 45%, var(--green-800) 100%)', glow: 'rgba(3,112,43,0.45)' },
+    listening: { label: 'Je t’écoute…', icon: 'mic', bg: 'linear-gradient(160deg, var(--red-400) 0%, var(--red-600) 60%, var(--red-700) 100%)', glow: 'rgba(152,11,11,0.45)' },
+    listeningOrange: { label: 'Je t’écoute…', icon: 'mic', bg: 'linear-gradient(160deg, var(--orange-400) 0%, var(--orange-600) 50%, var(--orange-700) 100%)', glow: 'rgba(163,100,13,0.45)' },
+    muted: { label: 'Ton micro est coupé', icon: 'micOff', bg: GLASS },
+    connecting: { label: 'Connexion…', icon: 'more', bg: GLASS },
+    ended: { label: 'Appel terminé', icon: 'hangup', bg: GLASS },
+    error: { label: 'Connexion perdue', icon: 'warning', bg: GLASS }
+  };
+  function VoiceStatus(p) {
+    var state = p.state || 'speaking';
+    var c = VOICE_PILLS[state === 'listening' && p.listenColor === 'orange' ? 'listeningOrange' : state] || VOICE_PILLS.speaking;
+    var sm = p.size === 'sm';
+    return h('span', { 'aria-live': 'polite', style: { display: 'inline-flex', alignItems: 'center', gap: 8, height: sm ? 32 : 40, padding: sm ? '0 14px 0 10px' : '0 18px 0 14px', boxSizing: 'border-box', borderRadius: 999, background: c.bg, boxShadow: c.glow ? '0 6px 18px ' + c.glow + ', inset 0 0 0 1.5px rgba(255,255,255,0.28)' : 'none', color: '#fff', fontFamily: FONT, fontSize: sm ? 13 : 15, fontWeight: 700, whiteSpace: 'nowrap', transition: 'box-shadow 0.3s ease' } },
+      h(Icon, { name: c.icon, size: sm ? 16 : 18, strokeWidth: 2, style: c.icon === 'hangup' ? { transform: 'rotate(135deg)' } : null }), p.label || c.label);
+  }
+
+  /* Sous-titres en direct : mot à mot, les couleurs nommées par le tuteur dans une pastille de leur couleur. */
+  function LiveCaptions(p) {
+    var words = String(p.text || '').split(/ +/).filter(Boolean);
+    var spoken = p.spoken != null ? p.spoken : words.length;
+    var light = p.surface === 'light';
+    var on = light ? 'var(--text)' : '#fff', off = light ? 'var(--gray-300)' : 'rgba(255,255,255,0.45)';
+    var big = p.size !== 'md';
+    var kids = [];
+    words.forEach(function (w, i) {
+      var said = i < spoken;
+      var tone = null;
+      if (p.colorWords !== false) TONE_WORDS.forEach(function (tw) { if (!tone && tw[0].test(w)) tone = tw[1]; });
+      var core = tone ? w.replace(/[,.;:!?…]+$/, '') : w;
+      kids.push(h('span', { key: i, style: { color: tone && said ? '#fff' : (said ? on : off), fontWeight: /[0-9=÷×+−]/.test(w) || tone ? 700 : 500, background: tone && said ? tone : 'transparent', padding: tone ? '0 6px' : 0, borderRadius: 6, transition: 'color 0.2s ease, background 0.2s ease' } }, core));
+      kids.push(h('span', { key: 's' + i, style: { color: said ? on : off } }, w.slice(core.length) + ' '));
+    });
+    var left = p.align === 'left';
+    var lh = big ? 30 : 22;
+    return h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: left ? 'flex-start' : 'center', gap: big ? 8 : 4, textAlign: left ? 'left' : 'center', fontFamily: FONT } },
+      p.showSpeaker ? h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: light ? (p.speaker === 'student' ? 'var(--text-secondary)' : 'var(--primary)') : 'rgba(255,255,255,0.8)' } }, p.speaker === 'student' ? 'Toi' : 'Tutor’IA') : null,
+      h('p', { style: { margin: 0, fontSize: big ? 20 : 16, lineHeight: lh + 'px', textWrap: 'pretty', maxHeight: p.maxLines ? lh * p.maxLines : undefined, overflow: 'hidden' } }, kids.length ? kids : (p.placeholder || null)));
+  }
+
+  function DockButton(p) {
+    return h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 } },
+      h('button', { type: 'button', onClick: p.onClick, 'aria-pressed': p.pressed, 'aria-label': p.label, style: { width: p.big ? 64 : 56, height: p.big ? 64 : 56, margin: p.big ? 0 : '4px 0', border: 'none', borderRadius: 999, background: p.background, color: p.color, boxShadow: p.big ? '0 8px 20px rgba(194,26,26,0.35)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } },
+        h(Icon, { name: p.icon, size: p.big ? 28 : 24, style: p.rotate ? { transform: 'rotate(' + p.rotate + 'deg)' } : null })),
+      h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 500, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', fontFamily: FONT } }, p.caption));
+  }
+  function CallDock(p) {
+    var muted = !!p.muted, cc = p.captionsOn !== false, cam = !!p.cameraOn, camVisible = p.cameraVisible !== false;
+    return h('div', { role: 'group', 'aria-label': "Commandes de l'appel", style: { boxSizing: 'border-box', display: 'grid', gridTemplateColumns: 'repeat(' + (camVisible ? 4 : 3) + ', minmax(0, 1fr))', gap: 4, padding: '14px 8px 12px', borderRadius: 32, background: 'rgba(255,255,255,0.10)', fontFamily: FONT } },
+      h(DockButton, { icon: muted ? 'micOff' : 'mic', label: muted ? 'Réactiver le micro' : 'Couper le micro', caption: muted ? 'Micro coupé' : 'Micro', pressed: muted, onClick: p.onToggleMute, background: muted ? '#fff' : GLASS, color: muted ? 'var(--blue-700)' : '#fff' }),
+      h(DockButton, { icon: 'captions', label: cc ? 'Masquer les sous-titres' : 'Afficher les sous-titres', caption: 'Sous-titres', pressed: cc, onClick: p.onToggleCaptions, background: cc ? '#fff' : GLASS, color: cc ? 'var(--blue-600)' : '#fff' }),
+      camVisible ? h(DockButton, { icon: cam ? 'video' : 'videoOff', label: cam ? 'Photo de l’exercice en cours' : 'Montrer mon exercice', caption: 'Caméra', pressed: cam, onClick: p.onCamera, background: cam ? '#fff' : GLASS, color: cam ? 'var(--blue-600)' : '#fff' }) : null,
+      h(DockButton, { big: true, icon: 'hangup', rotate: 135, label: 'Raccrocher et revenir au chat écrit', caption: 'Raccrocher', onClick: p.onHangUp, background: 'var(--red-500)', color: '#fff' }));
   }
 
   /* ---------- Flashcards ---------- */
@@ -1292,12 +1437,13 @@
     SubjectCard: SubjectCard, StreakCard: StreakCard, LevelCard: LevelCard, ResumeCard: ResumeCard, GoalCard: GoalCard, TopicCard: TopicCard,
     ChatBubble: ChatBubble, TipCard: TipCard, ChatInput: ChatInput, VoiceVisualizer: VoiceVisualizer, CallControls: CallControls,
     PanelHeader: PanelHeader, VisualPanel: VisualPanel, MathGraph: MathGraph, Whiteboard: Whiteboard,
+    CallTopBar: CallTopBar, VoiceAvatar: VoiceAvatar, VoiceStatus: VoiceStatus, LiveCaptions: LiveCaptions, CallDock: CallDock,
     DailyReviewCard: DailyReviewCard, ChapterRow: ChapterRow, SessionProgress: SessionProgress, AnswerOption: AnswerOption, QuizCard: QuizCard, TallyChips: TallyChips,
     KpiCard: KpiCard, BarChart: BarChart, LineChart: LineChart, Heatmap: Heatmap, SubjectProgressRow: SubjectProgressRow, InsightList: InsightList,
     ChildSwitcher: ChildSwitcher, HeroCard: HeroCard, AlertCard: AlertCard, AdviceCard: AdviceCard, SubjectProgressCard: SubjectProgressCard,
     SessionSummaryCard: SessionSummaryCard, SettingRow: SettingRow,
     TextField: TextField, PasswordRules: PasswordRules, Checkbox: Checkbox, OrDivider: OrDivider, AuthProviderButtons: AuthProviderButtons, AuthHero: AuthHero, ProfileChoiceCard: ProfileChoiceCard, SubjectCluster: SubjectCluster, StepHeader: StepHeader, GradePicker: GradePicker, SelfAssessmentRow: SelfAssessmentRow, GoalTile: GoalTile, DurationPicker: DurationPicker, ChoiceRow: ChoiceRow, ToggleChip: ToggleChip, ParentCodeCard: ParentCodeCard, StepList: StepList, PlanRow: PlanRow,
     Stars: Stars, IslandIllustration: IslandIllustration, IslandCarousel: IslandCarousel, IslandProgressCard: IslandProgressCard, ExplorerHud: ExplorerHud, LevelNode: LevelNode, MapAvatar: MapAvatar, CityBanner: CityBanner, RegionSign: RegionSign, WorldMap: WorldMap, LevelTypePill: LevelTypePill, LevelSheet: LevelSheet, IslandBackdrop: IslandBackdrop, LevelProgressHeader: LevelProgressHeader, VoiceBoardCard: VoiceBoardCard, LevelResultCard: LevelResultCard, TutorFeedback: TutorFeedback,
-    LEVEL_TYPES: LEVEL_TYPES, SUBJECTS: SUBJECTS, ICONS: ICONS
+    LEVEL_TYPES: LEVEL_TYPES, SUBJECTS: SUBJECTS, ICONS: ICONS, VISUAL_KINDS: VISUAL_KINDS
   };
 })();

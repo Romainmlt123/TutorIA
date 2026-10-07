@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Composant · Commandes de l’appel</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,0.7)}
+
+</style>
+</helmet>
+<div style="display: inline-block; vertical-align: top; padding: {{ pad }}px; background: {{ fond }}; border-radius: 24px">
+<div role="group" aria-label="Commandes de l'appel" style="width: 350px; box-sizing: border-box; display: grid; grid-template-columns: repeat({{ cols }}, minmax(0, 1fr)); gap: 4px; padding: 14px 8px 12px; border-radius: 32px; background: rgba(255,255,255,0.10); font-family: Satoshi, system-ui, -apple-system, sans-serif">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+<button type="button" onClick="{{ mute }}" aria-pressed="{{ muted }}" aria-label="{{ muteLabel }}" style="width: 56px; height: 56px; margin: 4px 0; border: none; border-radius: 999px; background: {{ micBg }}; color: {{ micColor }}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ micIcon }}"></path></svg>
+</button>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500; color: rgba(255,255,255,0.9); white-space: nowrap">{{ muteCaption }}</span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+<button type="button" onClick="{{ captions }}" aria-pressed="{{ captionsOn }}" aria-label="{{ ccLabel }}" style="width: 56px; height: 56px; margin: 4px 0; border: none; border-radius: 999px; background: {{ ccBg }}; color: {{ ccColor }}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM7 15h4M15 15h2M7 11h2M13 11h4"></path></svg>
+</button>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500; color: rgba(255,255,255,0.9); white-space: nowrap">Sous-titres</span>
+</div>
+<sc-if value="{{ camVisible }}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+<button type="button" onClick="{{ cam }}" aria-pressed="{{ camOn }}" aria-label="{{ camLabel }}" style="width: 56px; height: 56px; margin: 4px 0; border: none; border-radius: 999px; background: {{ camBg }}; color: {{ camColor }}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ camIcon }}"></path></svg>
+</button>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500; color: rgba(255,255,255,0.9); white-space: nowrap">Caméra</span>
+</div>
+</sc-if>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+<a href="{{ hangupHref }}" aria-label="Raccrocher et revenir au chat écrit" style="width: 64px; height: 64px; border-radius: 999px; background: #E62E2E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(194,26,26,0.35)">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(135deg)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+</a>
+<span style="font-size: 12px; line-height: 16px; font-weight: 500; color: rgba(255,255,255,0.9); white-space: nowrap">Raccrocher</span>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"fond":{"editor":"color","options":["#1750C4","transparent"],"default":"#1750C4"},"muted":{"editor":"boolean","default":false},"captions":{"editor":"boolean","default":true},"camOn":{"editor":"boolean","default":false},"cameraVisible":{"editor":"boolean","default":true},"hangupHref":{"editor":"text","default":"02a-Tuteur-Ecrit.dc.html"},"onMute":{"editor":null},"onCaptions":{"editor":null},"onCam":{"editor":null},"$preview":{"width":382,"height":144}}'>
+class Component extends DCLogic {
+renderVals() {
+const MIC = 'M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3';
+const CAM = 'M5 6h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM15 10l6-3v10l-6-3z';
+const muted = !!this.props.muted;
+const cc = this.props.captions !== false;
+const cam = !!this.props.camOn;
+const camVisible = this.props.cameraVisible !== false;
+const GLASS = 'rgba(255,255,255,0.16)';
+const fond = this.props.fond ?? '#1750C4';
+return {
+fond, pad: fond === 'transparent' ? 0 : 16,
+cols: camVisible ? 4 : 3,
+camVisible,
+muted, captionsOn: cc, camOn: cam,
+muteLabel: muted ? 'Réactiver le micro' : 'Couper le micro',
+muteCaption: muted ? 'Micro coupé' : 'Micro',
+micIcon: muted ? MIC + 'M4 4l16 16' : MIC,
+micBg: muted ? '#FFFFFF' : GLASS,
+micColor: muted ? '#0A3B9D' : '#FFFFFF',
+ccLabel: cc ? 'Masquer les sous-titres' : 'Afficher les sous-titres',
+ccBg: cc ? '#FFFFFF' : GLASS,
+ccColor: cc ? '#1750C4' : '#FFFFFF',
+camLabel: cam ? 'Fermer l’appareil photo' : 'Montrer mon exercice',
+camIcon: cam ? CAM : CAM + 'M3 3l18 18',
+camBg: cam ? '#FFFFFF' : GLASS,
+camColor: cam ? '#1750C4' : '#FFFFFF',
+hangupHref: this.props.hangupHref ?? '02a-Tuteur-Ecrit.dc.html',
+mute: () => { if (this.props.onMute) this.props.onMute(); },
+captions: () => { if (this.props.onCaptions) this.props.onCaptions(); },
+cam: () => { if (this.props.onCam) this.props.onCam(); }
+};
+}
+}
+</script>
+</body>
+</html>

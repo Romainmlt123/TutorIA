@@ -1,6 +1,6 @@
 # Tutor'IA — composants du design system (référence)
 
-Copie des composants publiés dans le design system Tutor'IA sur claude.ai (81 composants + la couverture). C'est l'**implémentation de référence** des maquettes : chaque composant de `design/COMPONENTS.md` y existe, avec ses props, ses états et ses couleurs exactes.
+Copie des composants publiés dans le design system Tutor'IA sur claude.ai (86 composants + la couverture). C'est l'**implémentation de référence** des maquettes : chaque composant de `design/COMPONENTS.md` y existe, avec ses props, ses états et ses couleurs exactes.
 
 Ce n'est **pas** du code à importer tel quel dans l'app : c'est un bundle web (React 18, styles en ligne, variables CSS des tokens). Dans l'app, on reproduit chaque composant avec la stack du projet et le thème généré depuis `design/tokens/`, en gardant les mêmes noms et les mêmes props.
 
@@ -9,8 +9,8 @@ Ce n'est **pas** du code à importer tel quel dans l'app : c'est un bundle web (
 ```
 design-system/
 ├── README.md        ← ce fichier
-├── bundle.js        ← les 81 composants (window.TutorIA), React 18 via window.React
-├── bundle.css       ← animations partagées (clignotement « en direct », halo, onde, île qui flotte, point en cours, avatar)
+├── bundle.js        ← les 86 composants (window.TutorIA), React 18 via window.React
+├── bundle.css       ← animations partagées (clignotement « en direct », halo, onde, île qui flotte, point en cours, avatar, logo du tuteur qui rebondit, stylo du tableau)
 ├── index.d.ts       ← props typées de chaque composant (documentation)
 └── components/
     ├── <Composant>/README.md     ← quand l'utiliser, tableau des props
@@ -26,7 +26,8 @@ Les `preview.html` sont des fragments : ils tournent dans la page du design syst
 - **Actions** : Button, IconButton, SegmentedControl, Switch, GoalStepper
 - **Navigation** : BottomNav, ModeToggle, ChildSwitcher
 - **Élève** : SubjectCard, StreakCard, LevelCard, ResumeCard, GoalCard
-- **Tuteur** : TopicCard, ChatBubble, TipCard, ChatInput, VoiceVisualizer, CallControls, PanelHeader, VisualPanel, MathGraph, Whiteboard
+- **Tuteur** : TopicCard, ChatBubble, TipCard, ChatInput, PanelHeader, VisualPanel, MathGraph, Whiteboard, et pour la discussion vocale d'Explorer VoiceVisualizer, CallControls
+- **Appel vocal** : CallTopBar, VoiceAvatar, VoiceStatus, LiveCaptions, CallDock
 - **Flashcards** : DailyReviewCard, ChapterRow, SessionProgress, AnswerOption, QuizCard, TallyChips
 - **Stats** : KpiCard, BarChart, LineChart, Heatmap, SubjectProgressRow, InsightList
 - **Parents** : HeroCard, AlertCard, AdviceCard, SubjectProgressCard, SessionSummaryCard, SettingRow
@@ -42,4 +43,4 @@ Identifiants de matière communs à tous les composants : `maths`, `francais`, `
 2. Ces composants (`design/design-system/`).
 3. Les règles générales de `design/DESIGN_SYSTEM.md`.
 
-Source : design system Tutor'IA sur claude.ai, version du 29 septembre 2026. Pour le mettre à jour, demander à Claude de republier le design system puis de recopier ce dossier.
+Source : design system Tutor'IA sur claude.ai, version du 7 octobre 2026 (appel vocal, v2.6). Pour le mettre à jour, demander à Claude de republier le design system puis de recopier ce dossier.

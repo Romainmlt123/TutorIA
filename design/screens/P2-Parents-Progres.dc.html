@@ -21,19 +21,23 @@ button{font-family:inherit}
 a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
 </style>
 </helmet>
-<div style="position: relative; width: 390px; height: 1840px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
-<main style="display: flex; flex-direction: column; gap: 24px; padding: 56px 20px 0; box-sizing: border-box">
-
-<header style="display: flex; flex-direction: column; gap: 4px">
-<h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 900">Progrès de Léa</h1>
-<p style="margin: 0; font-size: 14px; line-height: 20px; color: var(--text-secondary)">Maîtrise par matière, comparée à la période précédente.</p>
+<div style="position: relative; width: 390px; height: 2000px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<section aria-label="Progrès de Léa" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 56px 20px 80px; border-radius: 0 0 32px 32px; background: linear-gradient(170deg, #662EE6 0%, #521DC8 55%, #3B0DA2 100%); color: #FFFFFF">
+<span aria-hidden="true" style="position: absolute; top: 20px; right: -48px; width: 136px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.08)"></span>
+<span aria-hidden="true" style="position: absolute; top: 72px; right: 56px; width: 88px; height: 32px; border-radius: 16px; background: rgba(255,255,255,0.06)"></span>
+<header style="position: relative; display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-size: 30px; line-height: 38px; font-weight: 900; color: #FFFFFF">Progrès de Léa</h1>
+<p style="margin: 0; font-size: 15px; line-height: 22px; color: #FFFFFF">Maîtrise par matière, comparée à la période précédente.</p>
 </header>
 
-<div role="group" aria-label="Période" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-sm)">
+<div role="group" aria-label="Période" style="position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; background: rgba(255,255,255,0.16); border-radius: var(--radius-3xl)">
 <sc-for list="{{ periods }}" as="o" hint-placeholder-count="2">
-<button type="button" onClick="{{ o.pick }}" aria-pressed="{{ o.selected }}" style="height: 40px; border: none; border-radius: 20px; background: {{ o.bg }}; color: {{ o.color }}; font-size: 14px; font-weight: 500; cursor: pointer">{{ o.name }}</button>
+<button type="button" onClick="{{ o.pick }}" aria-pressed="{{ o.selected }}" style="height: 40px; border: none; border-radius: 20px; background: {{ o.bg }}; color: {{ o.color }}; font-size: 14px; font-weight: 700; cursor: pointer">{{ o.name }}</button>
 </sc-for>
 </div>
+</section>
+
+<main style="position: relative; display: flex; flex-direction: column; gap: 24px; margin-top: -56px; padding: 0 20px; box-sizing: border-box">
 
 <section aria-label="Vue d'ensemble" style="position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px; padding: 24px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 50%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
 <div style="position: relative; width: 96px; height: 96px; flex-shrink: 0">
@@ -41,14 +45,14 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 <span style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900">65 %</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px">
-<span style="font-size: 18px; line-height: 24px; font-weight: 900">Maîtrise globale</span>
+<span style="font-size: 22px; line-height: 30px; font-weight: 900">Maîtrise globale</span>
 <span style="align-self: flex-start; padding: 4px 10px; border-radius: 999px; background: #2EE671; color: #003D16; font-size: 12px; font-weight: 700">+9 points en un mois</span>
 <span style="font-size: 13px; line-height: 18px; font-weight: 500; opacity: 0.9">7 notions acquises · 4 à consolider</span>
 </div>
 </section>
 
-<section aria-label="Matières" style="display: flex; flex-direction: column; gap: 16px">
-<div style="display: flex; align-items: baseline; justify-content: space-between">
+<section aria-label="Matières" style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 12px; row-gap: 2px">
 <h2 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 900">Par matière</h2>
 <span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Touchez pour le détail</span>
 </div>
@@ -59,17 +63,17 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 <span style="height: 26px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: #CED4E2; color: #1C263B; font-size: 12px; font-weight: 700">Pas commencé</span>
 </div>
 <sc-for list="{{ subjects }}" as="s" hint-placeholder-count="6">
-<div style="display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); overflow: hidden">
-<button type="button" onClick="{{ s.toggle }}" aria-expanded="{{ s.open }}" style="display: flex; flex-direction: column; gap: 14px; padding: 18px 20px; border: none; background: transparent; text-align: left; color: var(--text); cursor: pointer">
+<div style="display: flex; flex-direction: column; background: var(--bg); border-radius: var(--radius-2xl); overflow: hidden">
+<button type="button" onClick="{{ s.toggle }}" aria-expanded="{{ s.open }}" style="display: flex; flex-direction: column; gap: 14px; padding: 16px; border: none; background: transparent; text-align: left; color: var(--text); cursor: pointer">
 <span style="width: 100%; display: flex; align-items: center; gap: 14px">
 <span style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 16px; background: {{ s.grad }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ s.icon }}"></path></svg></span>
 <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">
 <span style="font-size: 17px; line-height: 22px; font-weight: 900">{{ s.name }}</span>
 <span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ s.meta }}</span>
 </span>
-<span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
-<span style="font-size: 18px; line-height: 22px; font-weight: 900">{{ s.pct }} %</span>
-<span style="padding: 2px 8px; border-radius: 999px; background: {{ s.deltaBg }}; color: {{ s.deltaColor }}; font-size: 11px; font-weight: 700">{{ s.delta }}</span>
+<span style="flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+<span style="font-size: 18px; line-height: 22px; font-weight: 900; white-space: nowrap">{{ s.pct }} %</span>
+<span style="padding: 2px 8px; border-radius: 999px; background: {{ s.deltaBg }}; color: {{ s.deltaColor }}; font-size: 11px; font-weight: 700; white-space: nowrap">{{ s.delta }}</span>
 </span>
 </span>
 <span aria-hidden="true" style="width: 100%; display: flex; gap: 4px; height: 10px">
@@ -80,9 +84,9 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 <span style="align-self: center; display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: {{ s.ink }}">{{ s.cta }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{ s.chevron }}deg); transition: transform 0.25s ease"><path d="M6 9l6 6 6-6"></path></svg></span>
 </button>
 <sc-if value="{{ s.open }}" hint-placeholder-val="{{ false }}">
-<ul style="margin: 0; padding: 0 20px 20px; list-style: none; display: flex; flex-direction: column; gap: 10px">
+<ul style="margin: 0; padding: 0 16px 16px; list-style: none; display: flex; flex-direction: column; gap: 8px">
 <sc-for list="{{ s.chapters }}" as="c" hint-placeholder-count="4">
-<li style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 12px 10px 14px; border-radius: 16px; background: {{ s.soft }}">
+<li style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 12px 10px 14px; border-radius: 14px; background: #FFFFFF">
 <span style="flex-grow: 1; display: flex; flex-direction: column">
 <span style="font-size: 14px; line-height: 20px; font-weight: 700">{{ c.t }}</span>
 <span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ c.meta }}</span>
@@ -103,7 +107,7 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1840}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2000}}'>
 class Component extends DCLogic {
 constructor(props) {
 super(props);
@@ -154,8 +158,8 @@ toggle: () => this.setState({ open: this.state.open === i ? -1 : i })
 });
 const periods = [['mois', 'Ce mois-ci'], ['trimestre', 'Ce trimestre']].map(([k, name]) => ({
 name, selected: this.state.period === k,
-bg: this.state.period === k ? '#2E6BE6' : 'transparent',
-color: this.state.period === k ? '#FFFFFF' : '#5D677D',
+bg: this.state.period === k ? '#FFFFFF' : 'transparent',
+color: this.state.period === k ? '#521DC8' : '#FFFFFF',
 pick: () => this.setState({ period: k })
 }));
 return { subjects, periods };

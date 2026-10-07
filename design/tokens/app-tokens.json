@@ -25,6 +25,36 @@
   "voice": { "bars": ["{blue-500}", "{violet-500}"], "barWidth": "40px", "barGap": "20px", "idleSize": "40px" },
   "onColor": { "veil": "rgba(255,255,255,0.24)", "track": "rgba(255,255,255,0.30)" },
   "hero": { "gradient": ["#2e6be6", "#1750c4 50%", "#3b0da2"], "text": "#ffffff", "note": "Cartes résumé / vue d'ensemble (espace Parents, maîtrise)." },
+  "screenBand": {
+    "eleve": ["#2e6be6", "#1750c4 55%", "#0a3b9d"],
+    "violet": ["#662ee6", "#521dc8 55%", "#3b0da2"],
+    "angle": "170deg",
+    "radiusBottom": "32px",
+    "overlap": "56px",
+    "titleSize": "30px",
+    "text": "#ffffff",
+    "controlVeil": "rgba(255,255,255,0.16)",
+    "segmentActive": { "background": "#ffffff", "textOnViolet": "{violet-600}", "textOnEleve": "{blue-600}" },
+    "note": "Bandeau de marque (v2.5) en tête de l'Accueil et des Flashcards (eleve), des Stats et de l'espace Parents (violet). Le contenu remonte de overlap (64px sur l'Accueil) pour que la première carte déborde dessus."
+  },
+  "sectionTitle": { "fontSize": "22px", "lineHeight": "30px", "fontWeight": 900, "note": "Titre de section, toujours dans sa carte (surface, radius-3xl, shadow-md, padding 16px)." },
+  "voiceCall": {
+    "background": ["#2e6be6", "#1750c4 42%", "#0a3b9d 78%", "#03276e"],
+    "angle": "170deg",
+    "glass": "rgba(255,255,255,0.16)",
+    "dock": "rgba(255,255,255,0.10)",
+    "status": {
+      "speaking": ["#1bc85b", "#0c9e42 45%", "#03702b"],
+      "listening": ["#e95555", "#c21a1a 60%", "#980b0b"],
+      "listeningOrange": ["#e9a951", "#d08825 50%", "#a3640d"],
+      "neutral": "rgba(255,255,255,0.16)"
+    },
+    "avatar": { "size": "148px", "compactSize": "96px", "hop": "18px", "compactHop": "14px", "cycle": "420ms", "squash": 0.06, "pauseFactor": 0.25, "tilt": "-8deg", "breath": "3200ms" },
+    "captions": { "spoken": "#ffffff", "upcoming": "rgba(255,255,255,0.45)", "size": "20px", "lineHeight": "30px", "compactSize": "16px", "compactLineHeight": "22px" },
+    "hangup": "{red-500}",
+    "note": "Appel vocal plein écran (2B, 2D, 2F, v2.6) : fond, pastilles d'état, logo qui rebondit, sous-titres."
+  },
+  "goal": { "gradient": ["#0c9e42", "#03702b"], "text": "#ffffff", "note": "Carte Objectif du jour (Accueil). L'objectif hebdomadaire des Parents garde le dégradé de l'Histoire-Géo." },
   "statuses": {
     "acquired": { "label": "Acquis", "background": "{green-700}", "text": "#ffffff" },
     "inProgress": { "label": "En cours", "background": "{blue-500}", "text": "#ffffff" },

@@ -120,6 +120,29 @@
   --whiteboard-operation: var(--blue-500);
   --whiteboard-annotation: var(--blue-600);
 
+  /* Bandeau de marque en tête d'écran (v2.5) : bleu côté élève, violet pour Stats et Parents */
+  --band-eleve-gradient: linear-gradient(170deg, #2e6be6 0%, #1750c4 55%, #0a3b9d 100%);
+  --band-violet-gradient: linear-gradient(170deg, #662ee6 0%, #521dc8 55%, #3b0da2 100%);
+  --band-radius: 32px;        /* coins bas */
+  --band-overlap: 56px;       /* la première carte déborde sur le bandeau (64px sur l'Accueil) */
+  --band-title-size: 30px;    /* titre 30/38 Black, blanc */
+  --on-band-veil: rgba(255,255,255,0.16); /* boutons, badges et sélecteur posés sur le bandeau */
+
+  /* Titres de section, dans leur carte (v2.5) */
+  --section-title-size: 22px; /* 22/30 Black */
+
+  /* Objectif du jour (Accueil) */
+  --goal-gradient: linear-gradient(160deg, #0c9e42 0%, #03702b 100%);
+
+  /* Appel vocal (v2.6) */
+  --call-gradient: linear-gradient(170deg, #2e6be6 0%, #1750c4 42%, #0a3b9d 78%, #03276e 100%);
+  --call-glass: rgba(255,255,255,0.16);   /* boutons et pastilles neutres */
+  --call-dock: rgba(255,255,255,0.10);    /* barre des commandes */
+  --voice-speaking-gradient: linear-gradient(160deg, #1bc85b 0%, #0c9e42 45%, #03702b 100%);  /* « Je t'explique… » */
+  --voice-listening-gradient: linear-gradient(160deg, #e95555 0%, #c21a1a 60%, #980b0b 100%); /* « Je t'écoute… » */
+  --voice-listening-orange-gradient: linear-gradient(160deg, #e9a951 0%, #d08825 50%, #a3640d 100%);
+  --caption-upcoming: rgba(255,255,255,0.45); /* mots pas encore prononcés */
+
   /* Voiles blancs sur fonds colorés */
   --on-color-veil: rgba(255,255,255,0.24);
   --on-color-track: rgba(255,255,255,0.30);

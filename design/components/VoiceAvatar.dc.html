@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Composant · Logo du tuteur en appel</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,0.7)}
+@property --h{syntax:'<number>';inherits:true;initial-value:0}
+@property --tilt{syntax:'<number>';inherits:true;initial-value:0}
+.tia-stage{transition:--h .16s linear,--tilt .5s cubic-bezier(.3,.7,.3,1)}
+.tia-hop{transform-origin:50% 100%;animation:tiaHop .42s infinite}
+@keyframes tiaHop{0%{transform:translateY(0) scale(calc(1 + .06*var(--h)),calc(1 - .06*var(--h)));animation-timing-function:cubic-bezier(.2,.7,.4,1)}45%{transform:translateY(calc(-1*var(--hop-px)*var(--h))) scale(calc(1 - .02*var(--h)),calc(1 + .03*var(--h)));animation-timing-function:cubic-bezier(.6,0,.8,.4)}88%{transform:translateY(0) scale(1,1)}100%{transform:translateY(0) scale(calc(1 + .06*var(--h)),calc(1 - .06*var(--h)))}}
+.tia-tilt{transform:rotate(calc(var(--tilt)*-8deg)) translateX(calc(var(--tilt)*-3px))}
+.tia-breathe{animation:tiaBreathe 3.2s ease-in-out infinite}
+@keyframes tiaBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+.tia-shadow{animation:tiaShadow .42s infinite}
+@keyframes tiaShadow{0%{transform:scaleX(1);opacity:.85;animation-timing-function:cubic-bezier(.2,.7,.4,1)}45%{transform:scaleX(calc(1 - .32*var(--h)));opacity:calc(.85 - .4*var(--h));animation-timing-function:cubic-bezier(.6,0,.8,.4)}88%,100%{transform:scaleX(1);opacity:.85}}
+@media (prefers-reduced-motion:reduce){.tia-hop,.tia-breathe,.tia-shadow{animation:none}}
+</style>
+</helmet>
+<div style="display: inline-block; vertical-align: top; padding: {{ pad }}px; background: {{ fond }}; border-radius: 24px">
+<div class="tia-stage" style="position: relative; width: {{ w }}px; height: {{ hgt }}px; --h: {{ hop }}; --tilt: {{ tilt }}; --hop-px: {{ hopPx }}px">
+<span aria-hidden="true" style="position: absolute; left: 50%; top: {{ center }}px; width: {{ glow }}px; height: {{ glow }}px; transform: translate(-50%, -50%); border-radius: 999px; background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0) 70%)"></span>
+<span aria-hidden="true" style="position: absolute; left: 50%; top: {{ shadowTop }}px; width: {{ shadowW }}px; height: 14px; margin-left: {{ shadowMl }}px">
+<span class="tia-shadow" style="display: block; width: 100%; height: 14px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(2,22,66,0.55) 0%, rgba(2,22,66,0.25) 45%, rgba(2,22,66,0) 72%)"></span>
+</span>
+<div style="position: absolute; left: 50%; top: {{ hopPx }}px; width: {{ size }}px; height: {{ size }}px; margin-left: {{ ml }}px">
+<div class="tia-hop" style="width: {{ size }}px; height: {{ size }}px">
+<div class="tia-tilt" style="width: {{ size }}px; height: {{ size }}px">
+<button type="button" class="tia-breathe" onClick="{{ press }}" aria-label="{{ label }}" style="width: {{ size }}px; height: {{ size }}px; padding: 0; border: none; border-radius: 999px; overflow: hidden; background: #FFFFFF; box-shadow: 0 12px 28px rgba(3,39,110,0.35); display: flex; align-items: center; justify-content: center; cursor: pointer">
+<img src="../../assets/logo/Logo_tutoria_fond_blanc.png" alt="" width="{{ img }}" height="{{ img }}" style="display: block; width: {{ img }}px; height: {{ img }}px">
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"fond":{"editor":"color","options":["#1750C4","transparent"],"default":"#1750C4"},"size":{"editor":"enum","options":["148","96"],"default":"148"},"hop":{"editor":"range","min":0,"max":1,"step":0.05,"default":0.7},"tilt":{"editor":"range","min":0,"max":1,"step":1,"default":0},"label":{"editor":"text","default":"Interrompre Tutor’IA"},"onInterrupt":{"editor":null},"$preview":{"width":228,"height":216}}'>
+class Component extends DCLogic {
+renderVals() {
+const size = Number(this.props.size ?? 148);
+const hopPx = size >= 120 ? 18 : 14;
+const fond = this.props.fond ?? '#1750C4';
+return {
+fond, pad: fond === 'transparent' ? 0 : 16,
+size, hopPx,
+w: size + 48,
+hgt: hopPx + size + 18,
+center: hopPx + Math.round(size / 2),
+glow: Math.round(size * 1.9),
+shadowTop: hopPx + size + 2,
+shadowW: Math.round(size * 0.82),
+shadowMl: -Math.round(size * 0.41),
+ml: -Math.round(size / 2),
+img: Math.round(size * 0.82),
+hop: this.props.hop ?? 0,
+tilt: this.props.tilt ?? 0,
+label: this.props.label ?? 'Interrompre Tutor’IA',
+press: () => { if (this.props.onInterrupt) this.props.onInterrupt(); }
+};
+}
+}
+</script>
+</body>
+</html>

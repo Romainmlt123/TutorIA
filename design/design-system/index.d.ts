@@ -308,7 +308,7 @@ export interface ChatInputProps {
 }
 export declare function ChatInput(props: ChatInputProps): React.ReactElement;
 
-/** Quatre barres animées bleu → violet qui suivent la voix du tuteur, avec l'état en dessous. */
+/** Quatre barres animées bleu → violet qui suivent la voix du tuteur (remplacées par VoiceAvatar dans l'appel du tuteur depuis la v2.6). */
 export interface VoiceVisualizerProps {
   /** État de la conversation. */
   state?: 'speaking' | 'listening' | 'idle' | 'muted' | 'writing' | 'explaining';
@@ -323,7 +323,7 @@ export interface VoiceVisualizerProps {
 }
 export declare function VoiceVisualizer(props: VoiceVisualizerProps): React.ReactElement;
 
-/** Commandes d'appel du tuteur vocal : micro, raccrocher (rouge, au centre), caméra. */
+/** Commandes d'appel : micro, raccrocher (rouge, au centre), caméra (discussion vocale d'Explorer ; l'appel du tuteur utilise CallDock depuis la v2.6). */
 export interface CallControlsProps {
   /** Micro coupé. */
   muted?: boolean;
@@ -338,13 +338,16 @@ export interface CallControlsProps {
 }
 export declare function CallControls(props: CallControlsProps): React.ReactElement;
 
-/** En-tête d'un panneau visuel (graphique ou tableau blanc) : surtitre matière, titre, agrandir, replier. */
+/** Sorte de visuel du tuteur : couleurs (violet pour le graphique, azur pour le tableau) et icône. */
+export type VisualKind = 'graph' | 'whiteboard';
+
+/** En-tête d'un visuel : tuile et surtitre dans la couleur du visuel, titre, agrandir, replier. */
 export interface PanelHeaderProps {
-  /** Type de panneau. */
-  kind?: 'graph' | 'whiteboard';
-  /** Matière (couleurs). */
+  /** Sorte de visuel. */
+  kind?: VisualKind;
+  /** Matière (surtitre « Graphique · Maths »). */
   subject?: SubjectId;
-  /** Surtitre (par défaut « Graphique · Maths »). */
+  /** Surtitre. */
   kicker?: string;
   /** Titre. */
   title?: string;
@@ -352,17 +355,21 @@ export interface PanelHeaderProps {
   live?: boolean;
   /** Chevron ouvert / fermé. */
   open?: boolean;
-  /** Replier / déplier. */
+  /** Chevron présent (true par défaut). */
+  collapsible?: boolean;
+  /** Bouton agrandir présent (true par défaut). */
+  expandable?: boolean;
+  /** Replier / déplier : tout le bandeau devient un bouton. */
   onToggle?: () => void;
   /** Plein écran. */
   onExpand?: () => void;
 }
 export declare function PanelHeader(props: PanelHeaderProps): React.ReactElement;
 
-/** Panneau repliable qui accueille un graphique ou un tableau blanc au-dessus du chat. */
+/** Carte d'un visuel, teintée de sa couleur, avec le dessin sur une feuille blanche. */
 export interface VisualPanelProps {
-  /** Type. */
-  kind?: 'graph' | 'whiteboard';
+  /** Sorte de visuel. */
+  kind?: VisualKind;
   /** Matière. */
   subject?: SubjectId;
   /** Surtitre. */
@@ -375,8 +382,14 @@ export interface VisualPanelProps {
   open?: boolean;
   /** Ouvert au départ. */
   defaultOpen?: boolean;
+  /** Repliable (true par défaut ; false dans l'appel vocal). */
+  collapsible?: boolean;
+  /** Bouton agrandir (true par défaut). */
+  expandable?: boolean;
+  /** Ombre forte, pour l'appel vocal sur le dégradé de marque. */
+  elevated?: boolean;
   /** Replier. */
-  onToggle?: () => void;
+  onToggle?: (open: boolean) => void;
   /** Agrandir. */
   onExpand?: () => void;
   /** Contenu (MathGraph, Whiteboard). */
@@ -386,7 +399,7 @@ export interface VisualPanelProps {
 }
 export declare function VisualPanel(props: VisualPanelProps): React.ReactElement;
 
-/** Repère cartésien en SVG : quadrillage, droites y = mx + b, points (avec halo et pointillés de lecture). */
+/** Repère cartésien en SVG : quadrillage, droites, points, légende en pastilles ; `focus` met en avant ce que le tuteur nomme. */
 export interface MathGraphProps {
   /** Matière (couleur des tracés). */
   subject?: SubjectId;
@@ -396,31 +409,126 @@ export interface MathGraphProps {
   yRange?: [number, number];
   /** Pas des graduations y. */
   yStep?: number;
-  /** Droites. */
-  lines?: { m: number; b: number; color?: string; dashed?: boolean; label?: string }[];
-  /** Points. */
-  points?: { x: number; y: number; pulse?: boolean; guide?: boolean; label?: string }[];
+  /** Droites (from / to bornent le tracé). */
+  lines?: { m: number; b: number; color?: string; dashed?: boolean; label?: string; from?: number; to?: number }[];
+  /** Points (étiquette à droite par défaut). */
+  points?: { x: number; y: number; pulse?: boolean; guide?: boolean; key?: boolean; label?: string; labelSide?: 'left' | 'right' }[];
+  /** Droite (index) ou point clé mis en avant. */
+  focus?: number | 'point';
+  /** Pastille de légende du point clé (« Solution »). */
+  pointLegend?: string;
   /** Texte accessible. */
   description?: string;
 }
 export declare function MathGraph(props: MathGraphProps): React.ReactElement;
 
-/** Tableau blanc : étapes de calcul écrites ligne à ligne, opérations en marge, résultat encadré. */
+/** Tableau blanc : calcul ligne à ligne, opérations en bleu, notes numérotées, résultat entouré ; s'écrit en direct en vocal. */
 export interface WhiteboardProps {
   /** Matière. */
   subject?: SubjectId;
-  /** Lignes du calcul. */
+  /** Lignes du calcul ; op = opération qui mène à cette ligne. */
   steps?: { expr: string; op?: string; note?: string }[];
-  /** Résultat encadré. */
+  /** Résultat entouré. */
   result?: string;
-  /** Note sous le résultat. */
+  /** Note du résultat. */
   resultNote?: string;
-  /** Nombre d'étapes déjà écrites (les suivantes apparaissent en fondu) ; tout est visible par défaut. */
+  /** Lignes déjà écrites (le résultat compte pour une) ; tout est visible par défaut. */
   progress?: number;
+  /** Stylo au bout de la dernière ligne écrite. */
+  writing?: boolean;
+  /** Résultat entouré (true par défaut). */
+  circled?: boolean;
   /** Texte accessible. */
   description?: string;
 }
 export declare function Whiteboard(props: WhiteboardProps): React.ReactElement;
+
+/** Barre du haut de l'appel vocal : « Écrit » et chrono. */
+export interface CallTopBarProps {
+  /** Durée affichée, « 02:17 ». */
+  elapsed?: string;
+  /** Point qui clignote (true par défaut). */
+  live?: boolean;
+  /** Passer à l'écrit. */
+  onWritten?: () => void;
+}
+export declare function CallTopBar(props: CallTopBarProps): React.ReactElement;
+
+/** Le logo du tuteur en appel : il rebondit au niveau de sa voix, penche la tête quand il écoute. */
+export interface VoiceAvatarProps {
+  /** Qui a la parole. */
+  state?: 'speaking' | 'listening' | 'idle' | 'muted' | 'connecting';
+  /** Niveau de la voix du tuteur, 0 à 1, lissé (simulé s'il est absent). */
+  level?: number;
+  /** 148 (par défaut) ou 96. */
+  size?: number;
+  /** Libellé accessible. */
+  label?: string;
+  /** Toucher pendant que le tuteur parle : l'interrompre. */
+  onInterrupt?: () => void;
+  /** Appui long (600 ms) : signaler. */
+  onLongPress?: () => void;
+}
+export declare function VoiceAvatar(props: VoiceAvatarProps): React.ReactElement;
+
+/** Pastille d'état de l'appel : verte « Je t'explique… », rouge « Je t'écoute… », neutre sinon. */
+export interface VoiceStatusProps {
+  /** État de l'appel. */
+  state?: 'speaking' | 'listening' | 'muted' | 'connecting' | 'ended' | 'error';
+  /** Couleur de « Je t'écoute… » (rouge par défaut). */
+  listenColor?: 'red' | 'orange';
+  /** Hauteur 40 ou 32 px. */
+  size?: 'md' | 'sm';
+  /** Remplace le libellé. */
+  label?: string;
+}
+export declare function VoiceStatus(props: VoiceStatusProps): React.ReactElement;
+
+/** Sous-titres en direct : mots dits en blanc, suivants à 45 %, couleurs nommées en pastille. */
+export interface LiveCaptionsProps {
+  /** Phrase en cours. */
+  text?: string;
+  /** Mots déjà prononcés (tous par défaut). */
+  spoken?: number;
+  /** Qui parle. */
+  speaker?: 'tutor' | 'student';
+  /** Affiche « Tutor'IA » ou « Toi ». */
+  showSpeaker?: boolean;
+  /** Sur le dégradé (blanc) ou sur fond clair. */
+  surface?: 'brand' | 'light';
+  /** 20/30 (lg) ou 16/22 (md). */
+  size?: 'lg' | 'md';
+  /** Lignes au plus. */
+  maxLines?: number;
+  /** Pastilles de couleur (true par défaut). */
+  colorWords?: boolean;
+  /** Alignement. */
+  align?: 'center' | 'left';
+  /** Texte quand la phrase est vide. */
+  placeholder?: React.ReactNode;
+}
+export declare function LiveCaptions(props: LiveCaptionsProps): React.ReactElement;
+
+/** Commandes de l'appel en verre : micro, sous-titres, caméra, raccrocher. */
+export interface CallDockProps {
+  /** Micro coupé. */
+  muted?: boolean;
+  /** Sous-titres affichés (true par défaut). */
+  captionsOn?: boolean;
+  /** Photo en cours. */
+  cameraOn?: boolean;
+  /** Bouton caméra présent (true par défaut ; false si les parents l'ont désactivée). */
+  cameraVisible?: boolean;
+  /** Micro. */
+  onToggleMute?: () => void;
+  /** Sous-titres. */
+  onToggleCaptions?: () => void;
+  /** Montrer un exercice. */
+  onCamera?: () => void;
+  /** Raccrocher et revenir au chat écrit. */
+  onHangUp?: () => void;
+}
+export declare function CallDock(props: CallDockProps): React.ReactElement;
 
 /** Carte « Révision du jour » : nombre de cartes, durée, série, matières concernées et bouton vert vif. */
 export interface DailyReviewCardProps {
@@ -1228,3 +1336,4 @@ export declare function TutorFeedback(props: TutorFeedbackProps): React.ReactEle
 export declare const SUBJECTS: Record<SubjectId, { name: string; gradient: string; soft: string; ink: string; deep: string; bar: string }>;
 export declare const LEVEL_TYPES: Record<LevelType, { label: string; icon: string; grad: string; solid: string; soft: string; ink: string; ring: string }>;
 export declare const ICONS: Record<string, string>;
+export declare const VISUAL_KINDS: Record<VisualKind, { name: string; gradient: string; soft: string; border: string; ink: string; icon: string; noun: string; label: string }>;
