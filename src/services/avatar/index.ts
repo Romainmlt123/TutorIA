@@ -1,10 +1,14 @@
+import { config } from '@/lib/config';
+
+import { getSupabase } from '../supabase/client';
 import type { AvatarService } from './AvatarService';
 import { DeviceAvatarService } from './device/DeviceAvatarService';
+import { SupabaseAvatarService } from './supabase/SupabaseAvatarService';
 
 export type { AvatarService } from './AvatarService';
 
-/**
- * L'avatar est enregistré sur l'appareil, quel que soit le backend : la version Supabase arrive
- * avec l'étape A4 de la feuille de route (ROADMAP.md), sans changer cette interface.
- */
-export const avatarService: AvatarService = new DeviceAvatarService();
+/** Avatar en base avec Supabase ; sur l'appareil en mode simulé (comptes de démonstration). */
+export const avatarService: AvatarService =
+  config.backend === 'supabase'
+    ? new SupabaseAvatarService(getSupabase())
+    : new DeviceAvatarService();

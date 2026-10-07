@@ -3,6 +3,38 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      avatars: {
+        Row: {
+          announced: string[];
+          look: Json | null;
+          owned: string[];
+          student_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          announced?: string[];
+          look?: Json | null;
+          owned?: string[];
+          student_id?: string;
+          updated_at?: string;
+        };
+        Update: {
+          announced?: string[];
+          look?: Json | null;
+          owned?: string[];
+          student_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'avatars_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: true;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       chapter_progress: {
         Row: {
           chapter_id: string;

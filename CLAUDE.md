@@ -142,7 +142,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - Les écrans lisent les données par les hooks de leur fonctionnalité (`useHomeData`, `useFlashcardCatalog`, `useStats`, `useParentData`…), jamais `src/data/mock/` ni Supabase directement.
   - Ces hooks passent par TanStack Query (`@/lib/queryClient`) et par les services `authService`, `studentDataService`, `parentService`, `familyService` et `onboardingService` de `@/services/…`.
   - Chaque service a une version Supabase et une version simulée, choisie par `config.backend` (`EXPO_PUBLIC_BACKEND`). La version simulée ne stocke aucun mot de passe.
-  - Exception provisoire : `avatarService` enregistre l'avatar sur l'appareil, par compte, quel que soit le backend, jusqu'à l'étape A4 de `ROADMAP.md`.
+  - Avatar : la table `avatars` garde l'apparence, les objets gagnés et ceux déjà annoncés (l'élève seulement, jamais les parents). Les objets gagnés sont calculés par l'app à partir de la progression écrite par le serveur, puis enregistrés (`useWardrobe`). L'avatar resté sur l'appareil avant l'étape A4 est repris à la première lecture, puis effacé de l'appareil ; en mode simulé, l'avatar reste sur l'appareil.
   - Le cache est vidé à chaque changement de compte (`queryClient.ts`).
 - **Session et aiguillage :**
   - `SessionProvider` (`@/lib/session/SessionProvider`) expose `useSession`, `useAccount`, `useStudentAccount` et `useParentAccount`.

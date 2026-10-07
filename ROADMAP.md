@@ -16,19 +16,19 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 
 ## Où on en est — 7 octobre 2026
 
-| Chantier | Étape                                                  | Statut                              | Branche            |
-| -------- | ------------------------------------------------------ | ----------------------------------- | ------------------ |
-| Explorer | X1 · les îles                                          | ✅ validé                           | `feat/explorer-3d` |
-| Explorer | X2a · les régions de l'île                             | ✅ validé                           | `feat/explorer-3d` |
-| Explorer | X2b · la carte d'une région (art de la région Nombres) | ✅ validé                           | `feat/explorer-3d` |
-| Avatar   | Figurine, visage et atelier `/dev/avatars`             | ✅ validé                           | `feat/avatar`      |
-| Avatar   | A1 · l'éditeur « Crée ton avatar »                     | ✅ validé                           | `feat/avatar`      |
-| Avatar   | A2 · l'avatar sur la carte                             | ✅ validé                           | `feat/avatar`      |
-| Avatar   | **A3 · la garde-robe**                                 | ✅ validé                           | `feat/avatar`      |
-| Avatar   | A4 · l'avatar dans Supabase                            | 🔜 prochaine étape (plan à valider) |                    |
-| Explorer | **X3 à X5b · fiche, discussion et bilan d'un niveau**  | ✅ validé                           | `feat/avatar`      |
+| Chantier | Étape                                                  | Statut    | Branche               |
+| -------- | ------------------------------------------------------ | --------- | --------------------- |
+| Explorer | X1 · les îles                                          | ✅ validé | `feat/explorer-3d`    |
+| Explorer | X2a · les régions de l'île                             | ✅ validé | `feat/explorer-3d`    |
+| Explorer | X2b · la carte d'une région (art de la région Nombres) | ✅ validé | `feat/explorer-3d`    |
+| Avatar   | Figurine, visage et atelier `/dev/avatars`             | ✅ validé | `feat/avatar`         |
+| Avatar   | A1 · l'éditeur « Crée ton avatar »                     | ✅ validé | `feat/avatar`         |
+| Avatar   | A2 · l'avatar sur la carte                             | ✅ validé | `feat/avatar`         |
+| Avatar   | **A3 · la garde-robe**                                 | ✅ validé | `feat/avatar`         |
+| Avatar   | A4 · l'avatar dans Supabase                            | ✅ validé | `feat/avatar-en-base` |
+| Explorer | **X3 à X5b · fiche, discussion et bilan d'un niveau**  | ✅ validé | `feat/avatar`         |
 
-`feat/explorer-3d` et `feat/avatar` ne sont pas encore fusionnées dans `dev`.
+`feat/explorer-3d` et `feat/avatar` sont fusionnées dans `dev` (pull request #5, le 07/10).
 
 ## Chantier 1 · L'avatar de l'élève (phase 1, sans achat)
 
@@ -103,7 +103,8 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 
 - **Prérequis :** la migration `level_progress` d'Explorer, car les objets se gagnent sur la progression enregistrée en base (appliquée en ligne le 06/10).
 - L'apparence et les objets gagnés sont enregistrés en base :
-  - les objets gagnés sont **calculés par la base** (déclencheurs), et l'élève ne choisit que parmi les siens ;
+  - les objets gagnés sont calculés par l'app, à partir de la progression protégée en base (seul le serveur écrit `level_progress`), puis enregistrés en base et gardés pour toujours ; l'élève ne choisit que parmi les siens. Le calcul par la base attendra la phase 2 (achats) ;
+  - les parents ne voient pas l'avatar ;
   - la figurine de l'appareil est reprise à la première connexion ;
   - l'export des données et la suppression du compte incluent l'avatar.
 - La migration est montrée à Romain avant d'être appliquée en ligne.
@@ -175,6 +176,9 @@ Le plan détaillé d'Explorer reste celui validé le 30 septembre. Dans l'ordre 
 - **07/10 :**
   - X3 à X5b sont validés par Romain sur le Pixel, avec le vrai tuteur : fiche, marche vers le niveau touché, étoiles façon Mario, leçons de grand professeur, formules MathJax, pause parentale avant d'entrer dans un niveau, clavier qui ne cache plus la saisie.
   - Prochaine étape : A4.
+  - Plan d'A4 validé : objets calculés par l'app (pas de déclencheurs SQL avant la phase 2), avatar invisible pour les parents, branche `feat/avatar-en-base` tirée de `dev`.
+  - La migration `avatars` est appliquée en ligne (version `20261007073406`), avec l'accord de Romain.
+  - A4 est validée par Romain : sa figurine a été reprise du téléphone, et un changement fait sur le web se retrouve sur le téléphone.
 
 ## En attente
 
