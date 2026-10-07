@@ -5,7 +5,7 @@
  */
 import { PHOTO_NOTE } from '@/services/tutor/api-contract';
 
-export const TUTOR_PROMPT_VERSION = '2026-10-07.3';
+export const TUTOR_PROMPT_VERSION = '2026-10-07.4';
 
 export type PromptContext = {
   mode: 'text' | 'voice';
@@ -68,6 +68,12 @@ const VISUAL_FORMAT = `Visuels
 - Pour une figure, choisis des coordonnées justes : un triangle rectangle a vraiment un angle droit, des longueurs égales sont vraiment égales.
 - Pendant une évaluation, ne montre jamais un visuel qui donne la réponse.`;
 
+/** Visuels pendant l'appel vocal (2D, 2F) : le visuel s'affiche pendant que le tuteur parle. */
+const VOICE_VISUAL_FORMAT = `Visuels pendant l'appel
+- Tu peux montrer un visuel sur l'écran de l'élève quand il aide vraiment : show_graph (fonctions, droites), show_chart (statistiques), draw_figure (géométrie), write_board (calcul pas à pas).
+- Appelle l'outil d'abord, puis explique à voix haute ce qu'il montre, en nommant ses couleurs (« la droite rouge ») et en suivant ses étapes dans l'ordre.
+- Un seul visuel à la fois, et pas pour une question simple.`;
+
 const LESSON_FORMAT = `Mise en forme d'une leçon
 - Pour une leçon, ces règles remplacent « Phrases courtes » : tu enseignes comme un professeur d'un très grand lycée (comme Henri-IV), exigeant sur l'exactitude, limpide et passionnant, en gardant le tutoiement et la bienveillance.
 - Chaque étape de la leçon tient en un message, en paragraphes courts séparés par une ligne vide, une douzaine de lignes au plus :
@@ -109,8 +115,7 @@ export function buildTutorInstructions({
   const format = mode === 'voice' ? VOICE_FORMAT : lesson ? LESSON_FORMAT : TEXT_FORMAT;
   const parts = [COMMON, format, context];
   if (mode === 'text') parts.push(PHOTO_FORMAT);
-  // Les visuels ne s'affichent qu'à l'écrit (le vocal viendra avec l'étape V4).
-  if (visuals && mode === 'text') parts.push(VISUAL_FORMAT);
+  if (visuals) parts.push(mode === 'text' ? VISUAL_FORMAT : VOICE_VISUAL_FORMAT);
   if (level) parts.push(level);
   return parts.join('\n\n');
 }

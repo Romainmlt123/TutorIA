@@ -2,7 +2,11 @@ import { fetch } from 'expo/fetch';
 
 import { logError } from '@/lib/logger';
 
-import { PHOTO_CAPTION, type RealtimeSessionResponse } from '../api-contract';
+import {
+  PHOTO_CAPTION,
+  type RealtimeSessionResponse,
+  type VisualCheckResponse,
+} from '../api-contract';
 import type { StartVoiceRequest, VoiceSession } from '../TutorService';
 import { postTutor, TutorHttpError } from './http';
 import { getRtcAdapter } from './webrtc';
@@ -19,7 +23,20 @@ export class VoiceSessionError extends Error {
   }
 }
 
-type ServerEvent = { type?: string };
+/** Événements du canal de données utilisés par l'appel (API Realtime). */
+type ServerEvent = {
+  type?: string;
+  delta?: string;
+  transcript?: string;
+  name?: string;
+  arguments?: string;
+  call_id?: string;
+};
+
+/** Outils de visuels proposés au tuteur vocal (serveur, VISUAL_TOOLS). */
+const VISUAL_TOOL_NAMES = new Set(['show_graph', 'write_board', 'show_chart', 'draw_figure']);
+/** Mesure du niveau de la voix du tuteur, pour le logo qui rebondit. */
+const LEVEL_INTERVAL_MS = 120;
 
 /** Refus du micro par l'élève ou par le système (navigateur ou réglages du téléphone). */
 function isPermissionDenial(error: unknown): boolean {
@@ -34,6 +51,9 @@ function isPermissionDenial(error: unknown): boolean {
 export async function startRealtimeVoiceSession({
   topic,
   onEvent,
+  onCaption,
+  onLevel,
+  onVisual,
 }: StartVoiceRequest): Promise<VoiceSession> {
   const rtc = getRtcAdapter();
   if (!rtc) throw new VoiceSessionError('unavailable');
@@ -70,9 +90,63 @@ export async function startRealtimeVoiceSession({
   // Une seule réponse à la fois côté OpenAI : une demande faite pendant une réponse est mise en attente.
   let responseActive = false;
   let responseQueued = false;
+  // Sous-titres : la phrase en cours du tuteur et de l'élève.
+  let tutorText = '';
+  let studentText = '';
+  let levelTimer: ReturnType<typeof setInterval> | null = null;
 
   const send = (event: object) => {
     if (channel.readyState === 'open') channel.send(JSON.stringify(event));
+  };
+  /** Demande une réponse au tuteur, après la sienne s'il parle encore. */
+  const requestResponse = () => {
+    if (responseActive) responseQueued = true;
+    else send({ type: 'response.create' });
+  };
+
+  /** Niveau de la voix reçue, lu dans les mesures WebRTC (navigateur comme téléphone). */
+  const measureLevel = async () => {
+    try {
+      const stats = await peer.getStats();
+      let level = 0;
+      stats.forEach((stat) => {
+        if (stat.type === 'inbound-rtp' && stat.kind === 'audio' && stat.audioLevel !== undefined) {
+          level = Math.max(level, stat.audioLevel);
+        }
+      });
+      onLevel?.(Math.min(1, level * 2.5));
+    } catch (error) {
+      // Mesure indisponible : le logo garde un rebond régulier (voir VoiceAvatar).
+      logError('voice.level', error);
+      if (levelTimer) clearInterval(levelTimer);
+      levelTimer = null;
+    }
+  };
+
+  /** Visuel demandé par le tuteur : validé et modéré par le serveur, puis montré à l'élève. */
+  const showVisual = async (event: ServerEvent) => {
+    let shown = false;
+    try {
+      const response = await postTutor('/api/tutor/visual-check', {
+        name: event.name,
+        arguments: event.arguments ?? '{}',
+      });
+      const { visual } = (await response.json()) as VisualCheckResponse;
+      onVisual?.(visual);
+      shown = true;
+    } catch (error) {
+      logError('voice.visual', error);
+    }
+    send({
+      type: 'conversation.item.create',
+      item: {
+        type: 'function_call_output',
+        call_id: event.call_id,
+        output: JSON.stringify({ shown }),
+      },
+    });
+    // Le tuteur explique le visuel (ou continue sans lui).
+    requestResponse();
   };
 
   channel.addEventListener('open', () => {
@@ -91,6 +165,25 @@ export async function startRealtimeVoiceSession({
     switch (event.type) {
       case 'response.created':
         responseActive = true;
+        tutorText = '';
+        break;
+      case 'response.output_audio_transcript.delta':
+        tutorText += event.delta ?? '';
+        onCaption?.({ speaker: 'tutor', text: tutorText, final: false });
+        break;
+      case 'response.output_audio_transcript.done':
+        onCaption?.({ speaker: 'tutor', text: event.transcript ?? tutorText, final: true });
+        break;
+      case 'conversation.item.input_audio_transcription.delta':
+        studentText += event.delta ?? '';
+        onCaption?.({ speaker: 'student', text: studentText, final: false });
+        break;
+      case 'conversation.item.input_audio_transcription.completed':
+        onCaption?.({ speaker: 'student', text: event.transcript ?? studentText, final: true });
+        studentText = '';
+        break;
+      case 'response.function_call_arguments.done':
+        if (event.name && VISUAL_TOOL_NAMES.has(event.name)) void showVisual(event);
         break;
       case 'response.done':
         responseActive = false;
@@ -100,6 +193,7 @@ export async function startRealtimeVoiceSession({
         }
         break;
       case 'input_audio_buffer.speech_started':
+        studentText = '';
         onEvent({ type: 'userStarted' });
         break;
       case 'input_audio_buffer.speech_stopped':
@@ -107,9 +201,13 @@ export async function startRealtimeVoiceSession({
         break;
       case 'output_audio_buffer.started':
         onEvent({ type: 'aiStarted' });
+        if (onLevel && !levelTimer) levelTimer = setInterval(measureLevel, LEVEL_INTERVAL_MS);
         break;
       case 'output_audio_buffer.stopped':
       case 'output_audio_buffer.cleared':
+        if (levelTimer) clearInterval(levelTimer);
+        levelTimer = null;
+        onLevel?.(0);
         onEvent({ type: 'aiStopped' });
         break;
       case 'error':
@@ -125,6 +223,8 @@ export async function startRealtimeVoiceSession({
 
   const cleanup = () => {
     ended = true;
+    if (levelTimer) clearInterval(levelTimer);
+    levelTimer = null;
     channel.close();
     peer.close();
     stopMicrophone();
@@ -175,7 +275,6 @@ export async function startRealtimeVoiceSession({
         // Le tuteur parlait : on l'interrompt, la réponse sur la photo suivra la fin de la sienne.
         send({ type: 'response.cancel' });
         send({ type: 'output_audio_buffer.clear' });
-        responseQueued = true;
       }
       send({
         type: 'conversation.item.create',
@@ -188,7 +287,7 @@ export async function startRealtimeVoiceSession({
           ],
         },
       });
-      if (!responseQueued) send({ type: 'response.create' });
+      requestResponse();
     },
     stop() {
       if (ended) return;

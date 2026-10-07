@@ -1,6 +1,7 @@
 import type { VoiceEvent } from '@/features/tutor/logic/voice';
 
 import type { ChatRequest, TutorStreamEvent, TutorTopic } from './api-contract';
+import type { TutorVisual } from './visuals';
 
 /** Session vocale en cours (simulée ou temps réel). */
 export interface VoiceSession {
@@ -14,9 +15,18 @@ export interface VoiceSession {
   stop(): void;
 }
 
+/** Sous-titre de l'appel : la phrase en cours, complétée au fil de la transcription (v2.6). */
+export type VoiceCaption = { speaker: 'tutor' | 'student'; text: string; final: boolean };
+
 export type StartVoiceRequest = {
   topic: TutorTopic;
   onEvent: (event: VoiceEvent) => void;
+  /** Transcription du tuteur et de l'élève, pour les sous-titres. */
+  onCaption?: (caption: VoiceCaption) => void;
+  /** Niveau de la voix du tuteur, de 0 à 1, une dizaine de fois par seconde (logo qui rebondit). */
+  onLevel?: (level: number) => void;
+  /** Visuel montré par le tuteur, validé et modéré par le serveur (2D, 2F). */
+  onVisual?: (visual: TutorVisual) => void;
 };
 
 /**

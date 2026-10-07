@@ -91,6 +91,11 @@ export type ErrorResponse = { error: TutorErrorCode };
 export type RealtimeSessionRequest = { topic: TutorTopic };
 export type RealtimeSessionResponse = { clientSecret: string; expiresAt: number };
 
+/** Visuel demandé par le tuteur pendant un appel vocal : l'appel d'outil tel que reçu (2D, 2F). */
+export type VisualCheckRequest = { name: string; arguments: string };
+/** Le visuel validé et modéré par le serveur, prêt à être dessiné. */
+export type VisualCheckResponse = { visual: TutorVisual };
+
 export type ImageCheckRequest = { dataUrl: string };
 export type ImageCheckResponse = { ok: true };
 

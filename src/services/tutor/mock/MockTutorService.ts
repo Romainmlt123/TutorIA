@@ -1,7 +1,6 @@
 import type { SubjectId } from '@/data/types';
 import { levelById } from '@/features/explorer/content';
 import { applyCalls, startPlay } from '@/features/explorer/logic/levelPlay';
-import type { VoiceEvent } from '@/features/tutor/logic/voice';
 
 import {
   PHOTO_NOTE,
@@ -13,6 +12,7 @@ import type { StartVoiceRequest, TutorService, VoiceSession } from '../TutorServ
 import { mockLevelTurn, type MockLevelState } from './levelScripts';
 import type { MockConversationService } from '../../conversations/mock/MockConversationService';
 import { mockVisualTurn } from './visualScripts';
+import { MOCK_STUDENT_LINES, MOCK_TUTOR_LINES } from './voiceScripts';
 import { scriptedReply } from './scripts';
 
 export type MockOptions = {
@@ -62,17 +62,24 @@ export function chunkText(text: string): string[] {
   return text.match(/\S+\s*/g) ?? [];
 }
 
+/** Rythme des mots et du niveau de voix de l'appel simulé. */
+const LEVEL_TICK_MS = 120;
+
 class MockVoiceSession implements VoiceSession {
   private timers: ReturnType<typeof setTimeout>[] = [];
+  private ticker: ReturnType<typeof setInterval> | null = null;
   private muted = false;
   private stopped = false;
+  private turn = 0;
 
   constructor(
-    private readonly emit: (event: VoiceEvent) => void,
+    private readonly request: StartVoiceRequest,
     private readonly timing: typeof DEFAULT_VOICE,
+    /** Visuels pendant l'appel : pas dans un niveau d'Explorer (X4b). */
+    private readonly visuals: boolean,
   ) {
     this.schedule(timing.connectMs, () => {
-      emit({ type: 'connected' });
+      request.onEvent({ type: 'connected' });
       this.tutorTurn();
     });
   }
@@ -88,28 +95,63 @@ class MockVoiceSession implements VoiceSession {
   private clearTimers() {
     this.timers.forEach(clearTimeout);
     this.timers = [];
+    this.stopTicker();
+  }
+
+  private stopTicker() {
+    if (this.ticker) clearInterval(this.ticker);
+    this.ticker = null;
+  }
+
+  /** Fait apparaître une phrase mot à mot sur la durée donnée, avec le niveau de la voix. */
+  private speak(speaker: 'tutor' | 'student', text: string, durationMs: number) {
+    const words = text.split(' ');
+    const ticks = Math.max(1, Math.floor(durationMs / LEVEL_TICK_MS));
+    let tick = 0;
+    this.stopTicker();
+    this.ticker = setInterval(() => {
+      tick += 1;
+      const shown = Math.min(words.length, Math.ceil((tick / ticks) * words.length));
+      const current = words.slice(0, shown).join(' ');
+      this.request.onCaption?.({ speaker, text: current, final: shown === words.length });
+      if (speaker === 'tutor') {
+        // Le logo se pose sur la ponctuation, comme la voix.
+        const pause = /[,.?!:]$/.test(words[shown - 1] ?? '');
+        this.request.onLevel?.(pause ? 0.15 : 0.45 + 0.4 * Math.abs(Math.sin(tick * 1.7)));
+      }
+      if (tick >= ticks) this.stopTicker();
+    }, LEVEL_TICK_MS);
   }
 
   /** Le tuteur parle, puis laisse la parole à l'élève, en boucle. */
   private tutorTurn() {
-    this.emit({ type: 'aiStarted' });
+    const line = MOCK_TUTOR_LINES[this.turn % MOCK_TUTOR_LINES.length]!;
+    if (this.visuals && line.visual) this.request.onVisual?.(line.visual);
+    this.request.onEvent({ type: 'aiStarted' });
+    this.speak('tutor', line.text, this.timing.aiSpeakMs);
     this.schedule(this.timing.aiSpeakMs, () => {
-      this.emit({ type: 'aiStopped' });
+      this.request.onLevel?.(0);
+      this.request.onEvent({ type: 'aiStopped' });
       this.studentTurn();
     });
   }
 
   private studentTurn() {
-    if (!this.muted) this.emit({ type: 'userStarted' });
+    if (!this.muted) {
+      this.request.onEvent({ type: 'userStarted' });
+      const line = MOCK_STUDENT_LINES[this.turn % MOCK_STUDENT_LINES.length]!;
+      this.speak('student', line, this.timing.userSpeakMs * 0.8);
+    }
+    this.turn += 1;
     this.schedule(this.timing.userSpeakMs, () => {
-      this.emit({ type: 'userStopped' });
+      this.request.onEvent({ type: 'userStopped' });
       this.tutorTurn();
     });
   }
 
   setMuted(muted: boolean) {
     this.muted = muted;
-    this.emit({ type: 'muteChanged', muted });
+    this.request.onEvent({ type: 'muteChanged', muted });
   }
 
   holdMicrophone() {
@@ -118,23 +160,25 @@ class MockVoiceSession implements VoiceSession {
 
   interrupt() {
     this.clearTimers();
-    this.emit({ type: 'interrupted' });
+    this.request.onLevel?.(0);
+    this.request.onEvent({ type: 'interrupted' });
+    this.turn += 1;
     this.schedule(this.timing.userSpeakMs, () => {
-      this.emit({ type: 'userStopped' });
+      this.request.onEvent({ type: 'userStopped' });
       this.tutorTurn();
     });
   }
 
   async sendExercisePhoto() {
     this.clearTimers();
-    this.emit({ type: 'userStopped' });
+    this.request.onEvent({ type: 'userStopped' });
     this.tutorTurn();
   }
 
   stop() {
     this.stopped = true;
     this.clearTimers();
-    this.emit({ type: 'ended' });
+    this.request.onEvent({ type: 'ended' });
   }
 }
 
@@ -218,8 +262,8 @@ export function createMockTutorService(options: MockOptions = {}): TutorService 
       }
       yield { type: 'done' };
     },
-    async startVoiceSession({ onEvent }: StartVoiceRequest) {
-      return new MockVoiceSession(onEvent, voiceTiming);
+    async startVoiceSession(request: StartVoiceRequest) {
+      return new MockVoiceSession(request, voiceTiming, !request.topic.levelId);
     },
     async reportMessage() {
       // Rien à transmettre hors ligne : le signalement est confirmé à l'élève.

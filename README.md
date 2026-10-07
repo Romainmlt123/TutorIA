@@ -129,6 +129,7 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
   - Le serveur vérifie l'élève connecté, le consentement parental et les réglages du parent, puis applique une limite de débit partagée.
   - Il valide la requête, relit l'historique en base, modère l'entrée, appelle OpenAI (`store: false`) et renvoie la réponse en flux NDJSON. La réponse complète est aussi modérée, puis enregistrée.
 - **Vocal** : `POST /api/tutor/realtime-session` délivre un jeton temporaire (60 s) après les mêmes vérifications. L'app se connecte ensuite directement à l'API Realtime d'OpenAI en WebRTC. La configuration de la session (modèle, consignes, voix) est fixée par le serveur. La fin de l'appel est déclarée par `POST /api/tutor/voice/end`.
+- **Visuels à la voix** : pendant un appel, le tuteur peut montrer un graphique, un diagramme, une figure ou un tableau. Le téléphone reçoit l'appel d'outil et le fait valider et modérer par `POST /api/tutor/visual-check` avant de le dessiner.
 - **Photo de l'exercice** :
   - au vocal, `POST /api/tutor/image-check` vérifie la taille et modère la photo avant son envoi dans l'appel ;
   - à l'écrit, la photo (appareil photo ou galerie, réduite sur l'appareil) part avec le message de `POST /api/tutor/chat` (`image`). Elle est refusée si le parent a désactivé la caméra et pendant une évaluation d'Explorer. Elle est modérée, envoyée au modèle, et jamais enregistrée : la mention « 📷 Photo de l'exercice » la remplace dans l'historique.

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { useSharedValue } from 'react-native-reanimated';
 
 import { fr } from '@/i18n/fr';
 import { logError } from '@/lib/logger';
@@ -9,10 +10,13 @@ import {
   VoiceSessionError,
   type TutorService,
   type TutorTopic,
+  type VoiceCaption,
   type VoiceSession,
 } from '@/services/tutor';
+import type { TutorVisual } from '@/services/tutor/visuals';
 
 import { initialVoiceState, voiceReducer, voiceStatus } from '../logic/voice';
+import { useCaptionsPreference } from './useCaptionsPreference';
 import { takeExercisePhoto } from './useExercisePhoto';
 
 type CameraState = 'idle' | 'active';
@@ -21,7 +25,9 @@ const NOTICE_MS = 4000;
 
 /**
  * Appel vocal : démarre la session (réelle, ou simulée si le vocal en direct est indisponible),
- * suit son état, gère le micro, l'interruption, la photo et la durée maximale.
+ * suit son état, gère le micro, l'interruption, la photo et la durée maximale. Pour l'écran
+ * d'appel (v2.6), il expose aussi le niveau de la voix du tuteur (valeur partagée, sans rendu),
+ * les sous-titres et le dernier visuel montré.
  */
 export function useVoiceCall(
   topic: TutorTopic,
@@ -35,6 +41,10 @@ export function useVoiceCall(
   const [elapsed, setElapsed] = useState(0);
   const session = useRef<VoiceSession | null>(null);
   const status = voiceStatus(state);
+  const level = useSharedValue(0);
+  const [caption, setCaption] = useState<VoiceCaption | null>(null);
+  const [visual, setVisual] = useState<TutorVisual | null>(null);
+  const { captionsOn, toggleCaptions } = useCaptionsPreference();
 
   const flash = useCallback((message: string) => {
     setNotice(message);
@@ -44,7 +54,15 @@ export function useVoiceCall(
   useEffect(() => {
     let cancelled = false;
     const start = async (current: TutorService) => {
-      const started = await current.startVoiceSession({ topic, onEvent: dispatch });
+      const started = await current.startVoiceSession({
+        topic,
+        onEvent: dispatch,
+        onCaption: setCaption,
+        onLevel: (value) => {
+          level.value = value;
+        },
+        onVisual: setVisual,
+      });
       if (cancelled) started.stop();
       else session.current = started;
     };
@@ -136,6 +154,12 @@ export function useVoiceCall(
 
   return {
     status,
+    /** Niveau de la voix du tuteur (0 à 1), pour le logo qui rebondit. */
+    level,
+    caption,
+    captionsOn,
+    toggleCaptions,
+    visual,
     muted: state.muted,
     elapsed,
     notice: notice ?? persistentNotice,

@@ -97,8 +97,12 @@ export function BottomNav({
 }: Props) {
   const { bottom } = useBottomNavLayout();
   const keyboardVisible = useKeyboardVisible();
-  const activeName = state.routes[state.index]?.name;
-  if (keyboardVisible || !tabs.some((tab) => tab.name === activeName)) return null;
+  const active = state.routes[state.index];
+  const activeName = active?.name;
+  // L'appel vocal (v2.6) est plein écran : la barre se masque pendant l'appel.
+  const nested = active?.state;
+  const inCall = nested?.routes[nested.index ?? 0]?.name === 'vocal';
+  if (keyboardVisible || inCall || !tabs.some((tab) => tab.name === activeName)) return null;
 
   return (
     <View

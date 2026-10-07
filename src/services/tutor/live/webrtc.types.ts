@@ -24,8 +24,16 @@ export interface RtcSessionDescription {
   sdp?: string;
 }
 
+/** Mesure d'un flux (`getStats`) : seul le niveau de la voix reçue sert (`inbound-rtp`, audio). */
+export interface RtcStat {
+  type?: string;
+  kind?: string;
+  audioLevel?: number;
+}
+
 export interface RtcPeer {
   readonly connectionState: string;
+  getStats(): Promise<{ forEach(callback: (stat: RtcStat) => void): void }>;
   createDataChannel(label: string): RtcDataChannel;
   addTrack(track: RtcTrack, stream: RtcStream): unknown;
   createOffer(): Promise<RtcSessionDescription>;

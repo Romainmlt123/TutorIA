@@ -82,3 +82,22 @@ export const chatStarterGradients = {
 
 /** Pilules décoratives du bandeau de marque (v2.5) : blanc à 8 % et à 6 %. */
 export const bandPills = ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.06)'] as const;
+
+/** Appel vocal plein écran (v2.6) : ombres, halos et voiles relevés sur les maquettes 2B à 2F. */
+export const call = {
+  avatarShadow: '0 12px 28px rgba(3,39,110,0.35)',
+  /** Ombre au sol du logo qui rebondit. */
+  ground: 'rgba(3,39,110,0.35)',
+  /** Halo blanc derrière le logo : deux disques, du plus proche au plus large. */
+  halo: ['rgba(255,255,255,0.14)', 'rgba(255,255,255,0.06)'],
+  hangupShadow: '0 8px 20px rgba(194,26,26,0.35)',
+  visualShadow: '0 16px 36px rgba(3,39,110,0.35)',
+  /** « TUTOR'IA » ou « TOI » au-dessus des sous-titres. */
+  speaker: 'rgba(255,255,255,0.80)',
+  /** Libellés sous les commandes. */
+  label: 'rgba(255,255,255,0.90)',
+  /** Liseré et lueur des pastilles d'état colorées. */
+  statusRing: 'rgba(255,255,255,0.28)',
+  speakingGlow: '0 6px 18px rgba(12,158,66,0.45)',
+  listeningGlow: '0 6px 18px rgba(194,26,26,0.45)',
+} as const;

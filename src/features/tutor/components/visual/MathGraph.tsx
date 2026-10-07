@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 
-import type { GraphVisual } from '@/services/tutor/visuals';
+import type { GraphVisual, VisualTone } from '@/services/tutor/visuals';
 import { textStyle } from '@/theme';
 import { visualArt } from '@/theme/visualArt';
 
@@ -16,10 +16,16 @@ const SIZE = textStyle('caption').fontSize;
 
 const format = (n: number) => String(n).replace('.', ',');
 
-type Props = { visual: GraphVisual; width: number; height: number };
+type Props = {
+  visual: GraphVisual;
+  width: number;
+  height: number;
+  /** Couleur que le tuteur vient de nommer à la voix (2D) : sa courbe passe au premier plan. */
+  focus?: VisualTone | null;
+};
 
 /** 2C · repère du tuteur : quadrillage, axes gradués, droites et courbes, points clés. */
-export function MathGraph({ visual, width, height }: Props) {
+export function MathGraph({ visual, width, height, focus = null }: Props) {
   const plotW = width - PAD.left - PAD.right;
   const plotH = height - PAD.top - PAD.bottom;
   const { xRange, yRange } = visual;
@@ -109,18 +115,35 @@ export function MathGraph({ visual, width, height }: Props) {
 
       <G>
         {curves.map((curve, i) =>
-          curve.runs.map((run, j) => (
-            <Path
-              key={`c${i}-${j}`}
-              d={polylinePath(run.map((p) => ({ x: sx(p.x), y: sy(p.y) })))}
-              stroke={visualArt.tones[curve.tone]}
-              strokeWidth={3}
-              strokeDasharray={curve.dashed ? '8 6' : undefined}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-          )),
+          curve.runs.map((run, j) => {
+            const d = polylinePath(run.map((p) => ({ x: sx(p.x), y: sy(p.y) })));
+            const focused = focus === curve.tone;
+            return (
+              <G key={`c${i}-${j}`}>
+                {/* Courbe nommée par le tuteur : halo de sa couleur et trait plus épais. */}
+                {focused ? (
+                  <Path
+                    d={d}
+                    stroke={visualArt.tones[curve.tone]}
+                    strokeOpacity={0.16}
+                    strokeWidth={13}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                ) : null}
+                <Path
+                  d={d}
+                  stroke={visualArt.tones[curve.tone]}
+                  strokeWidth={focused ? 5 : 3}
+                  strokeDasharray={curve.dashed ? '8 6' : undefined}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+              </G>
+            );
+          }),
         )}
       </G>
 

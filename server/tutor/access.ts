@@ -11,7 +11,7 @@ import { errorResponse } from '../http';
 import { serverLog } from '../log';
 import type { AdminClient } from '../supabase';
 
-export type TutorFeature = 'chat' | 'voice' | 'image' | 'report';
+export type TutorFeature = 'chat' | 'voice' | 'image' | 'visual' | 'report';
 
 const MINUTE = 60;
 
@@ -28,6 +28,11 @@ const LIMITS: Record<TutorFeature, readonly { max: number; windowSeconds: number
   image: [
     { max: 3, windowSeconds: 10 * MINUTE },
     { max: 10, windowSeconds: DAY },
+  ],
+  // Visuels montrés pendant un appel vocal (au plus un par réponse, appel de 10 min).
+  visual: [
+    { max: 30, windowSeconds: 10 * MINUTE },
+    { max: 200, windowSeconds: DAY },
   ],
   report: [{ max: 10, windowSeconds: 10 * MINUTE }],
 };

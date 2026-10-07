@@ -70,7 +70,9 @@ export async function handleVoiceSessionStart(
   const place = levelOfTopic(topic.value);
   if (place && place.level.type !== 'lecon') return errorResponse('not_allowed');
 
-  const response = await handleRealtimeSession(request, deps.realtime);
+  const response = await handleRealtimeSession(request, deps.realtime, {
+    visuals: access.visualsEnabled,
+  });
   if (!response.ok) return response;
 
   const now = new Date();

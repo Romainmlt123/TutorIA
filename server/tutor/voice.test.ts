@@ -90,4 +90,67 @@ describe('POST /api/tutor/realtime-session · niveaux d’Explorer', () => {
     expect(params.session.instructions).toContain("tu n'as pas d'outil");
     expect(inserts[0]).toMatchObject({ mode: 'voice', level_id: 'maths-equations.isoler-x' });
   });
+
+  it('active les sous-titres et, hors d’Explorer, les visuels autorisés par le parent', async () => {
+    const create = jest.fn(async () => ({ value: 'secret', expires_at: 1 }));
+    const recording = {
+      ...admin,
+      from: (table: string) =>
+        table === 'study_sessions'
+          ? {
+              select: () => ({
+                eq: () => ({
+                  eq: () => ({
+                    is: () => ({ lt: () => ({ limit: async () => ({ data: [], error: null }) }) }),
+                  }),
+                }),
+              }),
+              insert: async () => ({ error: null }),
+            }
+          : (admin.from as (t: string) => unknown)(table),
+    } as unknown as AdminClient;
+    let call = 0;
+    const start = async (topic: object) => {
+      call += 1;
+      const request = new Request('http://localhost/api/tutor/realtime-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer good',
+          // Une installation par appel : la limite en mémoire n'en permet qu'un par minute.
+          'X-Client-Id': `0123456789abcd${String(call).padStart(2, '0')}`,
+        },
+        body: JSON.stringify({ topic }),
+      });
+      await handleVoiceSessionStart(request, {
+        admin: () => recording,
+        realtime: {
+          openai: () => ({ realtime: { clientSecrets: { create } } }) as never,
+          vocalModel: () => 'vocal',
+        },
+      });
+      return (create.mock.calls.at(-1) as unknown as [{ session: Record<string, unknown> }])[0]
+        .session as {
+        tools?: { name: string }[];
+        instructions: string;
+        audio: { input: { transcription?: { language: string } } };
+      };
+    };
+    const free = await start({ subjectId: 'maths' });
+    expect(free.audio.input.transcription).toMatchObject({ language: 'fr' });
+    expect(free.tools?.map((t) => t.name)).toEqual([
+      'show_graph',
+      'write_board',
+      'show_chart',
+      'draw_figure',
+    ]);
+    expect(free.instructions).toContain("Visuels pendant l'appel");
+    const lesson = await start({
+      subjectId: 'maths',
+      chapterId: 'maths-equations',
+      levelId: 'maths-equations.isoler-x',
+    });
+    expect(lesson.tools).toBeUndefined();
+    expect(lesson.audio.input.transcription).toBeDefined();
+  });
 });
