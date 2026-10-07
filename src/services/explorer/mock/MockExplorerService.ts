@@ -1,5 +1,6 @@
 import { demoLevelRecords } from '@/data/mock/explorer';
-import type { LevelRecord } from '@/features/explorer/logic/progression';
+import { awardedXp, mergeAttempt, type LevelRecord } from '@/features/explorer/logic/progression';
+import type { LevelOutcome } from '@/services/tutor/api-contract';
 
 import type { ExplorerService } from '../ExplorerService';
 
@@ -12,6 +13,17 @@ export class MockExplorerService implements ExplorerService {
 
   async levelRecords(): Promise<readonly LevelRecord[]> {
     return this.records;
+  }
+
+  /**
+   * Fin d'un niveau joué avec le tuteur simulé : garde le meilleur résultat, comme le serveur, et
+   * rend l'XP accordée.
+   */
+  recordOutcome(outcome: LevelOutcome): number {
+    const previous = this.records.find((r) => r.levelId === outcome.levelId);
+    const record = mergeAttempt(previous, outcome.levelId, outcome, new Date().toISOString());
+    this.records = [...this.records.filter((r) => r.levelId !== outcome.levelId), record];
+    return awardedXp(previous, outcome);
   }
 
   /** Développement : termine un niveau avec trois étoiles, comme si l'élève venait de le jouer. */

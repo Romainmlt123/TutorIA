@@ -97,6 +97,17 @@ export function mergeAttempt(
   };
 }
 
+/**
+ * XP accordée à la fin d'une partie (même règle que `finish_level` en base) : 10 XP la première
+ * fois que le niveau est terminé, réussi ou non, et 10 XP par étoile ; rejouer ne rapporte que
+ * les étoiles nouvelles.
+ */
+export function awardedXp(previous: LevelRecord | undefined, result: LevelResult): number {
+  const before = previous?.finished ? XP_BASE + XP_PER_STAR * previous.stars : 0;
+  const after = XP_BASE + XP_PER_STAR * Math.max(previous?.stars ?? 0, result.stars);
+  return Math.max(0, after - before);
+}
+
 /** Un niveau est franchi quand il ouvre le suivant : leçon terminée, exercices avec une étoile, évaluation tentée. */
 export function isCleared(level: Level, record: LevelRecord | undefined): boolean {
   if (!record?.finished) return false;

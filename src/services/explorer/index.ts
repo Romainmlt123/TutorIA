@@ -1,5 +1,7 @@
 import { config } from '@/lib/config';
 
+import { getSupabase } from '../supabase/client';
+
 import type { ExplorerService } from './ExplorerService';
 import { MockExplorerService } from './mock/MockExplorerService';
 import { SupabaseExplorerService } from './supabase/SupabaseExplorerService';
@@ -11,4 +13,4 @@ export const mockExplorerService: MockExplorerService | null =
   config.backend === 'supabase' ? null : new MockExplorerService();
 
 export const explorerService: ExplorerService =
-  mockExplorerService ?? new SupabaseExplorerService();
+  mockExplorerService ?? new SupabaseExplorerService(getSupabase());

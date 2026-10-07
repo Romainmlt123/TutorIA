@@ -1,5 +1,6 @@
 import { cityById, islandOf, levelById, pathOf } from '../content';
 import {
+  awardedXp,
   cityMastery,
   cityStatus,
   currentLevel,
@@ -15,6 +16,7 @@ import {
   starsFor,
   type LevelRecord,
   type RecordedAnswer,
+  type Stars,
 } from './progression';
 
 const maths = islandOf('maths')!;
@@ -90,6 +92,28 @@ describe('résultat d’un niveau', () => {
     const first = mergeAttempt(undefined, 'x', { score: 0.8, stars: 2, passed: true, xp: 30 });
     const second = mergeAttempt(first, 'x', { score: 0.4, stars: 0, passed: false, xp: 10 });
     expect(second).toEqual({ levelId: 'x', finished: true, bestScore: 0.8, stars: 2, attempts: 2 });
+  });
+});
+
+describe('XP accordée', () => {
+  const result = (stars: Stars) => ({ score: 0, stars, passed: false, xp: 0 });
+  const record = (stars: Stars) => ({
+    levelId: 'x',
+    finished: true,
+    bestScore: 1,
+    stars,
+    attempts: 1,
+  });
+
+  it('accorde toute l’XP la première fois, réussi ou non', () => {
+    expect(awardedXp(undefined, result(3))).toBe(40);
+    expect(awardedXp(undefined, result(1))).toBe(20);
+  });
+
+  it('ne rapporte ensuite que les étoiles nouvelles', () => {
+    expect(awardedXp(record(1), result(3))).toBe(20);
+    expect(awardedXp(record(3), result(2))).toBe(0);
+    expect(awardedXp(record(2), result(2))).toBe(0);
   });
 });
 
