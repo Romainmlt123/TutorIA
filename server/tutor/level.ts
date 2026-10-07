@@ -4,6 +4,13 @@ import { levelById, type LevelPlace, type LevelType } from '@/features/explorer/
 import { progressOf, type LevelPlay } from '@/features/explorer/logic/levelPlay';
 import type { LevelOutcome, TutorTopic } from '@/services/tutor/api-contract';
 
+import {
+  attendusOfLevel,
+  capacitesOfLevel,
+  exercisesOfLevel,
+  precisionsOfLevel,
+} from '../content/maths4e';
+
 /*
  * Niveaux d'Explorer côté serveur : le niveau est retrouvé à partir de son identifiant seulement,
  * les consignes du tuteur en découlent, et ses jugements passent par des outils plafonnés.
@@ -60,9 +67,9 @@ const UNIT: Record<LevelType, [string, string]> = {
 
 const ROLE: Record<LevelType, string> = {
   lecon: [
-    'Ton rôle : tu enseignes la notion, avec une aide maximale (exemples, reformulations, analogies).',
-    "Découpe la leçon en petites étapes. À la fin de chaque étape, pose une petite question de vérification ; quand l'élève y répond juste, appelle complete_step, puis passe à l'étape suivante.",
-    'Après une erreur, réexplique autrement, avec un autre exemple, puis repose une question de vérification.',
+    "Ton rôle : tu enseignes la notion, comme un excellent professeur : tu expliques, tu montres des exemples résolus et tu dis pourquoi c'est utile dans la vie. Ici, tu donnes les explications et les exemples toi-même.",
+    "Découpe la leçon en autant d'étapes qu'annoncé, de la plus simple à la plus complète. Chaque étape suit le plan de la mise en forme et finit par une petite question de vérification ; quand l'élève y répond juste, appelle complete_step, puis passe à l'étape suivante.",
+    'Après une erreur, réexplique autrement, avec une autre situation de la vie et un autre exemple résolu, puis repose une question de vérification.',
   ].join('\n'),
   exercices: [
     "Ton rôle : tu entraînes l'élève. Propose un exercice à la fois, de difficulté croissante.",
@@ -83,6 +90,37 @@ const COMMON = [
   'Un message = une seule étape, un seul exercice ou une seule question.',
 ].join('\n');
 
+/**
+ * Ce que dit le programme du niveau (référentiel, côté serveur seulement) : capacités, attendus et
+ * précisions, puis, pour des exercices ou une évaluation, les exercices corrigés à proposer.
+ */
+function programmeOf(place: LevelPlace): string[] {
+  const id = place.level.id;
+  const list = (title: string, items: readonly string[]) =>
+    items.length ? [`${title} :\n${items.map((i) => `- ${i}`).join('\n')}`] : [];
+  const blocks = [
+    ...list('Capacités du programme travaillées', capacitesOfLevel(id)),
+    ...list('Attendus de fin de 4e du chapitre', attendusOfLevel(id)),
+    ...list('Précisions du programme', precisionsOfLevel(id)),
+  ];
+  const exercises = place.level.type === 'lecon' ? [] : exercisesOfLevel(id);
+  if (exercises.length) {
+    const bank = exercises
+      .map(
+        (e, i) =>
+          `Exercice ${i + 1} (difficulté ${e.difficulte}) : ${e.enonce}\nCorrigé : ${e.corrige.join(' ')}\nRéponse attendue : ${e.reponse_finale}`,
+      )
+      .join('\n\n');
+    blocks.push(
+      [
+        "Exercices corrigés à proposer, dans l'ordre, un par message. Tu peux reformuler l'énoncé et écrire ses formules en LaTeX, mais ne montre jamais le corrigé avant que l'élève ait répondu. Juge ses réponses avec ces corrigés. Si la liste est épuisée, invente un exercice du même type et du même niveau.",
+        bank,
+      ].join('\n\n'),
+    );
+  }
+  return blocks;
+}
+
 /** Consignes d'un niveau, ajoutées au prompt système (sans aucune donnée personnelle). */
 export function levelInstructions(
   place: LevelPlace,
@@ -96,6 +134,7 @@ export function levelInstructions(
     `Niveau d'Explorer : « ${level.title} », ${city.name} (${region.name}).`,
     `Objectifs :\n${level.objectives.map((o) => `- ${o}`).join('\n')}`,
     `Déroulé : ${total} ${total > 1 ? many : one}. Avancement : ${done} sur ${total}.`,
+    ...programmeOf(place),
     ROLE[level.type],
     COMMON,
   ];
@@ -105,27 +144,19 @@ export function levelInstructions(
   return lines.join('\n\n');
 }
 
-/**
- * Enregistrement d'un niveau joué. Implémentation Supabase : tables level_progress et level_answers
- * (migration de l'étape « branchement Supabase »). En attendant, les niveaux ne se jouent qu'en simulé.
- */
+/** Enregistrement d'un niveau joué (implémentation Supabase : levelStore.ts). */
 export type LevelStore = {
-  /** Déroulé en cours de la séance (null : première réponse du niveau). */
+  /** Partie en cours de la séance (null : première réponse du niveau). */
   load(sessionId: string, studentId: string, levelId: string): Promise<LevelPlay | null>;
   save(sessionId: string, studentId: string, play: LevelPlay): Promise<void>;
-  /** Niveau terminé : meilleur score, étoiles, XP de la séance, maîtrise du chapitre. */
+  /**
+   * Niveau terminé : meilleur résultat et XP de la séance, une seule fois par partie. Rend l'XP
+   * accordée : toute l'XP au premier succès, puis seulement celle des étoiles nouvelles.
+   */
   finish(
     sessionId: string,
     studentId: string,
     place: LevelPlace,
     outcome: LevelOutcome,
-  ): Promise<void>;
-};
-
-export class LevelStoreUnavailableError extends Error {}
-
-export const unavailableLevelStore: LevelStore = {
-  load: () => Promise.reject(new LevelStoreUnavailableError('level store not configured')),
-  save: () => Promise.reject(new LevelStoreUnavailableError('level store not configured')),
-  finish: () => Promise.reject(new LevelStoreUnavailableError('level store not configured')),
+  ): Promise<number>;
 };

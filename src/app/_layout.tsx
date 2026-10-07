@@ -54,6 +54,7 @@ function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
       <Stack.Protected guard={space === 'student'}>
         <Stack.Screen name="(eleve)" />
         <Stack.Screen name="avatar" />
+        <Stack.Screen name="niveau" />
       </Stack.Protected>
       <Stack.Protected guard={space === 'student' || space === 'onboarding'}>
         <Stack.Screen name="relier-parent" options={{ presentation: 'modal' }} />

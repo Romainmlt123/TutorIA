@@ -98,6 +98,10 @@ export const explorerArt = {
       consolidate: { face: '#ffb23f', ink: '#5a3200' },
       done: { face: '#46d06f', ink: '#0d3a1c' },
     },
+    /** Règle de l'évaluation sur la fiche d'un niveau (X3b) : le tuteur n'aide pas. */
+    rule: { face: '#ffe3dc', border: '#e0504f', ink: '#7a1d14' },
+    /** Fiche et bilan d'un niveau : voile sur la carte, médaille d'XP. */
+    sheetVeil: 'rgba(9, 17, 34, 0.45)',
     /** Géométrie des boutons en relief : rebord, contour, arrondi. */
     button: { depth: 5, border: 2.5, radius: 18 },
   },

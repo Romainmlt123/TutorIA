@@ -39,8 +39,9 @@ async function historyOf(admin: AdminClient, conversationId: string, studentId: 
 }
 
 /**
- * Conversation du tuteur écrit : reprise si l'identifiant appartient à l'élève,
- * sinon nouvelle séance écrite et nouvelle conversation. `null` : identifiant inconnu.
+ * Conversation du tuteur écrit : reprise si l'identifiant appartient à l'élève et au même sujet
+ * (chapitre et niveau d'Explorer), sinon nouvelle séance écrite et nouvelle conversation.
+ * `null` : identifiant inconnu, ou conversation d'un autre sujet.
  */
 export async function openConversation(
   admin: AdminClient,
@@ -52,16 +53,23 @@ export async function openConversation(
     if (!uuid.safeParse(conversationId).success) return null;
     const { data, error } = await admin
       .from('conversations')
-      .select('id, session_id, study_sessions!conversations_session_fkey(started_at)')
+      .select(
+        'id, session_id, study_sessions!conversations_session_fkey(started_at, chapter_id, level_id)',
+      )
       .eq('id', conversationId as string)
       .eq('student_id', studentId)
       .maybeSingle();
     if (error) throw error;
-    if (!data?.study_sessions) return null;
+    const session = data?.study_sessions;
+    if (!session) return null;
+    // Une partie d'un niveau ne se poursuit pas dans un autre niveau ni dans une discussion libre.
+    if (session.chapter_id !== topic.chapterId || session.level_id !== (topic.levelId ?? null)) {
+      return null;
+    }
     return {
       id: data.id,
       sessionId: data.session_id,
-      startedAt: data.study_sessions.started_at,
+      startedAt: session.started_at,
       created: false,
       history: await historyOf(admin, data.id, studentId),
     };
@@ -74,6 +82,7 @@ export async function openConversation(
       mode: 'written',
       subject_id: topic.subjectId,
       chapter_id: topic.chapterId,
+      level_id: topic.levelId ?? null,
     })
     .select('id, started_at')
     .single();

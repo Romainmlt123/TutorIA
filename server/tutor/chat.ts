@@ -21,20 +21,17 @@ import { getOpenAI } from '../openai';
 import { getAdminClient, type AdminClient } from '../supabase';
 import { requireTutorAccess } from './access';
 import { openConversation, recordMessage, type Conversation } from './conversation';
-import {
-  LEVEL_TOOLS,
-  levelInstructions,
-  levelOfTopic,
-  unavailableLevelStore,
-  type LevelStore,
-} from './level';
+import { LEVEL_TOOLS, levelInstructions, levelOfTopic, type LevelStore } from './level';
+import { supabaseLevelStore } from './levelStore';
 import { buildTutorInstructions, TUTOR_PROMPT_VERSION } from './prompt';
 import { promptContextOf } from './topic';
 
-/** Délai maximal de la réponse du modèle. */
+/** Délai maximal d'un passage du modèle (une réponse peut en demander deux). */
 const UPSTREAM_TIMEOUT_MS = 20_000;
 /** Réponses courtes par consigne ; la marge couvre un éventuel raisonnement du modèle. */
 const MAX_OUTPUT_TOKENS = 800;
+/** Une étape de leçon explique, illustre et résout un exemple : elle a besoin de plus de place. */
+const MAX_LESSON_OUTPUT_TOKENS = 1500;
 
 type ChatClient = Pick<OpenAI, 'moderations' | 'responses'>;
 
@@ -42,14 +39,15 @@ export type ChatDeps = {
   openai: () => ChatClient;
   textModel: () => string;
   admin: () => AdminClient;
-  /** Enregistrement des niveaux d'Explorer (absent : les niveaux ne se jouent qu'en simulé). */
-  levels?: () => LevelStore;
+  /** Enregistrement des niveaux d'Explorer. */
+  levels: (admin: AdminClient) => LevelStore;
 };
 
 const defaultDeps: ChatDeps = {
   openai: getOpenAI,
   textModel: () => getServerEnv().textModel,
   admin: getAdminClient,
+  levels: supabaseLevelStore,
 };
 
 type Recording = { admin: AdminClient; conversation: Conversation; studentId: string };
@@ -80,8 +78,9 @@ async function* applyLevelCalls(
   await store.save(sessionId, recording.studentId, turn.play);
   if (turn.progressed) yield { type: 'step', ...progressOf(place.level, turn.play) };
   if (turn.outcome) {
-    await store.finish(sessionId, recording.studentId, place, turn.outcome);
-    yield { type: 'levelResult', outcome: turn.outcome };
+    // L'XP annoncée est celle réellement accordée (rejouer ne rapporte que les étoiles nouvelles).
+    const xp = await store.finish(sessionId, recording.studentId, place, turn.outcome);
+    yield { type: 'levelResult', outcome: { ...turn.outcome, xp } };
   }
 }
 
@@ -98,10 +97,18 @@ async function* streamReply(
     yield { type: 'conversation', id: recording.conversation.id };
   }
   const context = promptContextOf(chat.topic, 'text');
+  const lesson = level?.place.level.type === 'lecon';
   const instructions = buildTutorInstructions(
-    level ? { ...context, level: levelInstructions(level.place, level.play, 'text') } : context,
+    level
+      ? {
+          ...context,
+          level: levelInstructions(level.place, level.play, 'text'),
+          lesson,
+        }
+      : context,
   );
   const tools = level && !level.play.finished ? LEVEL_TOOLS : [];
+  const maxOutputTokens = lesson ? MAX_LESSON_OUTPUT_TOKENS : MAX_OUTPUT_TOKENS;
   let input: ModelInput = [
     ...chat.history.map((turn) => ({
       role: turn.role === 'student' ? ('user' as const) : ('assistant' as const),
@@ -111,8 +118,10 @@ async function* streamReply(
   ];
   let text = '';
   const calls: FunctionCall[] = [];
+  let roundSignal = signal;
   try {
     for (let round = 0; round < MAX_MODEL_ROUNDS; round++) {
+      roundSignal = AbortSignal.any([signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]);
       const roundCalls: FunctionCall[] = [];
       const stream = await client.responses.create(
         {
@@ -122,11 +131,11 @@ async function* streamReply(
           ...(tools.length && round === 0 ? { tools, tool_choice: 'auto' as const } : {}),
           stream: true,
           store: false,
-          max_output_tokens: MAX_OUTPUT_TOKENS,
+          max_output_tokens: maxOutputTokens,
           safety_identifier: safetyId,
           prompt_cache_key: `tutoria-tutor-${TUTOR_PROMPT_VERSION}`,
         },
-        { signal },
+        { signal: roundSignal },
       );
       for await (const event of stream) {
         if (event.type === 'response.output_text.delta') {
@@ -166,7 +175,7 @@ async function* streamReply(
     }
   } catch (error) {
     serverLog.error('chat.stream', error);
-    yield { type: 'error', code: signal.aborted ? 'timeout' : 'upstream' };
+    yield { type: 'error', code: roundSignal.aborted ? 'timeout' : 'upstream' };
     return;
   }
 
@@ -252,8 +261,6 @@ export async function handleChat(
   const chat = validateChat(body);
   if (!chat.ok) return errorResponse(chat.code);
   const place = levelOfTopic(chat.value.topic);
-  const levels = deps.levels?.() ?? unavailableLevelStore;
-  if (place && levels === unavailableLevelStore) return errorResponse('not_allowed');
 
   try {
     const verdict = await moderateText(client, chat.value.message);
@@ -284,8 +291,9 @@ export async function handleChat(
   let level: LevelContext | null = null;
   if (place) {
     try {
-      const play = await levels.load(conversation.sessionId, studentId, place.level.id);
-      level = { place, play: play ?? startPlay(place.level.id), store: levels };
+      const store = deps.levels(admin);
+      const play = await store.load(conversation.sessionId, studentId, place.level.id);
+      level = { place, play: play ?? startPlay(place.level.id), store };
     } catch (error) {
       serverLog.error('chat.level_load', error);
       return errorResponse('upstream');
@@ -293,7 +301,7 @@ export async function handleChat(
   }
 
   await recordMessage(admin, conversation, studentId, 'student', chat.value.message);
-  const signal = AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]);
+  const signal = request.signal;
   const safetyId = await sha256(studentId);
   const withHistory: ValidChat = { ...chat.value, history: conversation.history };
   return ndjsonResponse(

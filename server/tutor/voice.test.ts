@@ -52,4 +52,42 @@ describe('POST /api/tutor/realtime-session · niveaux d’Explorer', () => {
       expect(await response.json()).toEqual({ error: 'not_allowed' });
     },
   );
+
+  it('donne au tuteur vocal le déroulé d’une leçon, et la séance porte le niveau', async () => {
+    const create = jest.fn(async () => ({ value: 'secret', expires_at: 1 }));
+    const inserts: Record<string, unknown>[] = [];
+    const recording = {
+      ...admin,
+      from: (table: string) =>
+        table === 'study_sessions'
+          ? {
+              select: () => ({
+                eq: () => ({
+                  eq: () => ({
+                    is: () => ({ lt: () => ({ limit: async () => ({ data: [], error: null }) }) }),
+                  }),
+                }),
+              }),
+              insert: async (row: Record<string, unknown>) => {
+                inserts.push(row);
+                return { error: null };
+              },
+            }
+          : (admin.from as (t: string) => unknown)(table),
+    } as unknown as AdminClient;
+    const request = voiceRequest('maths-equations.isoler-x');
+    request.headers.set('X-Client-Id', '0123456789abcdef');
+    const response = await handleVoiceSessionStart(request, {
+      admin: () => recording,
+      realtime: {
+        openai: () => ({ realtime: { clientSecrets: { create } } }) as never,
+        vocalModel: () => 'vocal',
+      },
+    });
+    expect(response.status).toBe(200);
+    const params = (create.mock.calls[0] as unknown as [{ session: { instructions: string } }])[0];
+    expect(params.session.instructions).toContain('« Isoler x »');
+    expect(params.session.instructions).toContain("tu n'as pas d'outil");
+    expect(inserts[0]).toMatchObject({ mode: 'voice', level_id: 'maths-equations.isoler-x' });
+  });
 });

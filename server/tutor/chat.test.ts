@@ -43,6 +43,7 @@ function fakeAdmin({
   context = { consent_status: 'granted', evening_pause: false } as Context,
   limited = false,
   history = [] as { role: 'student' | 'tutor'; content: string }[],
+  sessionLevel = null as string | null,
 } = {}) {
   const inserts: { table: string; row: Record<string, unknown> }[] = [];
   const table = (name: string) => {
@@ -70,7 +71,11 @@ function fakeAdmin({
               data: {
                 id: 'conversation-1',
                 session_id: 'session-1',
-                study_sessions: { started_at: new Date().toISOString() },
+                study_sessions: {
+                  started_at: new Date().toISOString(),
+                  chapter_id: 'maths-equations',
+                  level_id: sessionLevel,
+                },
               },
               error: null,
             },
@@ -113,6 +118,7 @@ function deps(openai: ReturnType<typeof fakeOpenAI>, admin: unknown): ChatDeps {
     openai: () => openai as never,
     textModel: () => 'modele-texte',
     admin: () => admin as AdminClient,
+    levels: () => fakeLevelStore().store,
   };
 }
 
@@ -260,7 +266,7 @@ function fakeLevelOpenAI(rounds: StreamEvent[][]) {
 }
 
 /** Faux enregistrement des niveaux, en mémoire. */
-function fakeLevelStore() {
+function fakeLevelStore(awarded = 20) {
   const plays = new Map<string, LevelPlay>();
   const finished: LevelOutcome[] = [];
   const store: LevelStore = {
@@ -270,6 +276,7 @@ function fakeLevelStore() {
     },
     finish: async (_sessionId, _studentId, _place, outcome) => {
       finished.push(outcome);
+      return awarded;
     },
   };
   return { store, plays, finished };
@@ -333,8 +340,8 @@ describe('POST /api/tutor/chat · niveaux d’Explorer', () => {
     const openai = fakeLevelOpenAI([
       [text('C’est noté.'), toolCall('record_answer', { correct: true, hinted: false }), completed],
     ]);
-    const { admin } = fakeAdmin();
-    const { store, plays, finished } = fakeLevelStore();
+    const { admin } = fakeAdmin({ sessionLevel: 'maths-equations.bilan' });
+    const { store, plays, finished } = fakeLevelStore(10);
     plays.set('session-1', {
       levelId: 'maths-equations.bilan',
       answers: [
@@ -356,9 +363,37 @@ describe('POST /api/tutor/chat · niveaux d’Explorer', () => {
     );
     const result = events.find((e) => e.type === 'levelResult');
     expect(result).toMatchObject({
-      outcome: { correct: 5, total: 8, stars: 1, passed: false, xp: 20 },
+      outcome: { correct: 5, total: 8, stars: 1, passed: false, xp: 10 },
     });
     expect(finished).toHaveLength(1);
+  });
+
+  it('ne reprend pas la partie d’un niveau dans un autre niveau', async () => {
+    const { admin } = fakeAdmin({ sessionLevel: 'maths-equations.bilan' });
+    const response = await handleChat(
+      chatRequest(
+        levelBody('maths-equations.isoler-x', {
+          conversationId: '6f8fad5b-d9cb-469f-a165-70867728950e',
+        }),
+      ),
+      levelDeps(fakeLevelOpenAI([]), admin),
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it('enregistre le niveau sur la nouvelle séance', async () => {
+    const openai = fakeLevelOpenAI([[text('On commence !'), completed]]);
+    const { admin, inserts } = fakeAdmin();
+    await readEvents(
+      await handleChat(
+        chatRequest(levelBody('maths-equations.isoler-x')),
+        levelDeps(openai, admin),
+      ),
+    );
+    expect(inserts.find((i) => i.table === 'study_sessions')?.row).toMatchObject({
+      chapter_id: 'maths-equations',
+      level_id: 'maths-equations.isoler-x',
+    });
   });
 
   it('relance le modèle quand il n’a fait qu’appeler un outil', async () => {
@@ -438,14 +473,5 @@ describe('POST /api/tutor/chat · niveaux d’Explorer', () => {
       );
       expect(response.status).toBe(400);
     }
-  });
-
-  it('refuse les niveaux tant que leur enregistrement n’est pas branché', async () => {
-    const { admin } = fakeAdmin();
-    const response = await handleChat(
-      chatRequest(levelBody('maths-equations.isoler-x')),
-      levelDeps(fakeLevelOpenAI([]), admin),
-    );
-    expect(await response.json()).toEqual({ error: 'not_allowed' });
   });
 });

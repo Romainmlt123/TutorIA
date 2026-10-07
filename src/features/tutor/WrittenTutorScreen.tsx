@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useRef } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { FlatList, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 
 import { useBottomNavLayout } from '@/components/navigation/useBottomNavLayout';
 import { fr } from '@/i18n/fr';
@@ -63,10 +63,8 @@ export function WrittenTutorScreen() {
         />
       </TutorHeader>
 
-      <KeyboardAvoidingView
-        style={styles.body}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={0}>
+      {/* Android bord à bord : la fenêtre ne rétrécit plus avec le clavier, `padding` le compense. */}
+      <KeyboardAvoidingView style={styles.body} behavior="padding">
         {offline ? (
           <View style={styles.banner}>
             <OfflineBanner onRetry={retry} />
@@ -80,6 +78,8 @@ export function WrittenTutorScreen() {
           accessibilityLabel={fr.tutor.conversationLabel}
           contentContainerStyle={styles.messages}
           onContentSizeChange={() => list.current?.scrollToEnd({ animated: true })}
+          // Le clavier réduit la liste : le dernier message reste en vue.
+          onLayout={() => list.current?.scrollToEnd({ animated: false })}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         />

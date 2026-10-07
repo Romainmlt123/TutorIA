@@ -6,7 +6,8 @@ import { progressOf, type LevelCall, type LevelPlay } from '@/features/explorer/
  * évaluer) et émet les mêmes jugements que le vrai tuteur. Aucune aide en évaluation.
  */
 
-export type MockLevelState = { play: LevelPlay; hintGiven: boolean };
+/** `asked` : la première question a été posée (le premier message de l'élève ne fait que lancer le niveau). */
+export type MockLevelState = { play: LevelPlay; hintGiven: boolean; asked: boolean };
 
 export type MockLevelTurn = { reply: string; calls: LevelCall[]; hintGiven: boolean };
 
@@ -19,7 +20,7 @@ function question(place: LevelPlace, index: number): string {
     const a = index + 2;
     const b = index * 3 + 1;
     const c = a * (index + 4) + b;
-    return `Résous ${a}x + ${b} = ${c}.`;
+    return `Résous $${a}x + ${b} = ${c}$.`;
   }
   return `Question ${index + 1} : explique avec tes mots « ${place.level.title} ».`;
 }
@@ -42,9 +43,11 @@ function lessonTurn(place: LevelPlace, state: MockLevelState, message: string): 
     };
   }
   const next =
-    done + 1 < total ? ` Étape suivante : on continue avec « ${place.level.title} ». Prêt ?` : '';
+    done + 1 < total
+      ? ` Étape suivante : on continue avec « ${place.level.title} ». On y va ?`
+      : ' Tu as fini la leçon, bravo !';
   return {
-    reply: `Propre ! Étape ${done + 1} réussie.${next || ' Tu as fini la leçon, bravo !'}`,
+    reply: `Propre !${next}`,
     calls: [{ name: 'complete_step' }],
     hintGiven: false,
   };
@@ -89,11 +92,22 @@ function evaluationTurn(place: LevelPlace, state: MockLevelState, message: strin
   };
 }
 
+/** Premier tour : le tuteur lance le niveau et pose sa première question, sans rien juger. */
+function firstTurn(place: LevelPlace): MockLevelTurn {
+  const opening = {
+    lecon: `Imagine que tu achètes 3 places de cinéma au même prix, plus un pop-corn à 5 €, pour 20 € en tout. Le prix d’une place est l’*inconnue* $x$.\n\nUne équation, c’est une balance en équilibre :\n$$3x + 5 = 20$$\nCe que tu fais d’un côté du signe $=$, tu le fais de l’autre. Pour garder l’équilibre, que fais-tu du $+5$ ?`,
+    exercices: `Premier exercice : ${question(place, 0)}`,
+    evaluation: `Question 1 : ${question(place, 0)} Rédige ta démarche.`,
+  };
+  return { reply: opening[place.level.type], calls: [], hintGiven: false };
+}
+
 export function mockLevelTurn(
   place: LevelPlace,
   state: MockLevelState,
   message: string,
 ): MockLevelTurn {
+  if (!state.asked) return firstTurn(place);
   switch (place.level.type) {
     case 'lecon':
       return lessonTurn(place, state, message);

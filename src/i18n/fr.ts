@@ -82,7 +82,8 @@ export const fr = {
       unauthorized: 'Ta session a expiré. Reconnecte-toi pour parler au tuteur.',
       consent_required: 'Le tuteur s’ouvre dès qu’un parent a validé ton compte.',
       not_allowed: 'Cette fonction est désactivée dans les réglages de ton parent.',
-      paused: 'On fait une pause pour aujourd’hui. On reprend demain ?',
+      paused:
+        'Le tuteur est en pause pour le moment, comme convenu avec tes parents. On se retrouve plus tard !',
       too_long: 'Ton message est un peu long. Tu peux le couper en deux ?',
       flagged: 'Je préfère qu’on reste sur tes révisions. On reprend l’exercice ?',
       distress:
@@ -285,6 +286,86 @@ export const fr = {
     explore: 'Explorer l’île',
     start: 'Commencer',
     islandLabel: (name: string) => `Île ${name}`,
+    /** Un niveau : sa fiche (X3), sa discussion (X4) et son bilan (X5). */
+    level: {
+      sheetLabel: (title: string) => `Fiche du niveau ${title}`,
+      close: 'Fermer la fiche',
+      place: (city: string, region: string) => `${city} · ${region}`,
+      minutes: (n: number) => `~${n} min`,
+      minutesLabel: (n: number) => `Environ ${n} minutes`,
+      count: {
+        lecon: (n: number) => `${n} ${plural(n, 'étape', 'étapes')}`,
+        exercices: (n: number) => `${n} ${plural(n, 'exercice', 'exercices')}`,
+        evaluation: (n: number) => `${n} ${plural(n, 'question', 'questions')}`,
+      },
+      starsLabel: (n: number) => `${n} ${plural(n, 'étoile', 'étoiles')} sur 3`,
+      objectives: 'Objectifs',
+      write: 'À l’écrit',
+      voice: 'À la voix',
+      voiceLabel: 'À la voix (la leçon compte comme une séance, sans étoiles)',
+      evaluationRule:
+        'Le tuteur ne t’aidera pas cette fois : montre ce que tu sais faire. Si tu quittes avant la fin, l’évaluation sera à recommencer.',
+      locked: {
+        soon: 'Ce niveau arrive bientôt.',
+        city: (names: string) => `Termine d’abord le Bilan de : ${names}.`,
+        bilan: (n: number) =>
+          `Termine d’abord ${n === 1 ? 'le dernier niveau' : `les ${n} niveaux`} de la ville pour débloquer le bilan.`,
+        previous: (type: string, title: string) => `Termine d’abord : ${type} · ${title}.`,
+      },
+      // X4 · discussion
+      back: 'Retour à la carte',
+      unit: { lecon: 'Étape', exercices: 'Exercice', evaluation: 'Question' },
+      progress: (unit: string, current: number, total: number, city: string) =>
+        `${unit} ${current} sur ${total} · ${city}`,
+      progressLabel: (done: number, total: number) => `${done} sur ${total} terminés`,
+      voiceProgress: (time: string, city: string) => `À la voix · ${time} · ${city}`,
+      opening: {
+        lecon: (title: string, n: number) =>
+          `On découvre « ${title} » en ${n} petites étapes. Je t’explique, puis je te pose une petite question à chaque étape. On commence ?`,
+        exercices: (title: string, n: number) =>
+          `${n} exercices pour t’entraîner : « ${title} ». Tu cherches, et je te donne un indice si tu bloques. On y va ?`,
+        evaluation: (title: string, n: number) =>
+          `C’est le bilan de la ville, « ${title} » : ${n} questions, sans aide cette fois. Rédige ta démarche à chaque réponse. On commence ?`,
+      },
+      go: 'C’est parti !',
+      stepDone: (n: number) => `Étape ${n} réussie !`,
+      leave: {
+        title: 'Quitter le niveau ?',
+        body: 'Ta progression dans ce niveau ne sera pas gardée : tu le reprendras depuis le début.',
+        evaluationBody: 'Si tu quittes maintenant, l’évaluation sera à recommencer.',
+        stay: 'Continuer',
+        leave: 'Quitter',
+      },
+      // X5 · bilan
+      resultLabel: 'Résultat du niveau',
+      verdict: {
+        lecon: { passed: 'réussie', retry: 'à revoir' },
+        exercices: { passed: 'réussis', retry: 'à revoir' },
+        evaluation: { passed: 'réussie', retry: 'à consolider' },
+      },
+      kicker: (type: string, verdict: string) => `${type} · ${verdict}`,
+      passedTitle: (name: string) => (name ? `Bien joué, ${name} !` : 'Bien joué !'),
+      retryTitle: (name: string) => (name ? `Presque, ${name} !` : 'Presque !'),
+      passedBody: (title: string) => `Tu as validé « ${title} ».`,
+      retryBody: {
+        lecon: 'On reprend tranquillement, et tu retentes quand tu veux.',
+        exercices:
+          'Il faut une étoile pour ouvrir la suite. On revoit la notion, et tu retentes quand tu veux.',
+        evaluation:
+          'Il faut 70 % pour valider la ville. On consolide, et tu retentes quand tu veux.',
+      },
+      lessonScore: (done: number, total: number) => `${done} étapes sur ${total}`,
+      score: (correct: number, total: number, percent: number) =>
+        `${correct} sur ${total} · ${percent} %`,
+      xp: (n: number) => `+${n} XP`,
+      xpLabel: (n: number) => `${n} points d’expérience gagnés`,
+      worked: 'Ce que tu as travaillé',
+      toReview: (title: string) => `À revoir : la leçon « ${title} », puis retente.`,
+      moreStars: 'Rejoue quand tu veux pour décrocher plus d’étoiles.',
+      continue: 'Continuer',
+      review: 'Revoir la notion',
+      backToMap: 'Retour à la carte',
+    },
   },
   comingSoon: {
     body: 'Cette partie arrive bientôt. On garde le rythme en attendant ?',
@@ -298,7 +379,6 @@ export const fr = {
       conditions: 'Conditions et confidentialité',
       abonnement: 'Abonnement',
       carte: 'La carte de l’île',
-      niveau: 'La fiche du niveau',
     },
   },
   /** Dates en toutes lettres (sans dépendre de la langue de l'appareil). */

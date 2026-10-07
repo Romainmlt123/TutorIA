@@ -25,7 +25,6 @@ const TOPICS: Record<string, { title: string; icon: IconName; body?: string }> =
     body: fr.comingSoon.neutralBody,
   },
   carte: { title: fr.comingSoon.topics.carte, icon: 'boussole' },
-  niveau: { title: fr.comingSoon.topics.niveau, icon: 'livre' },
   abonnement: {
     title: fr.comingSoon.topics.abonnement,
     icon: 'etoile',

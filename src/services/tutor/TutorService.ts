@@ -30,4 +30,9 @@ export interface TutorService {
   startVoiceSession(request: StartVoiceRequest): Promise<VoiceSession>;
   /** Signale une réponse inappropriée du tuteur. */
   reportMessage(excerpt: string, topic: TutorTopic): Promise<void>;
+  /**
+   * Oublie la conversation en cours sur ce sujet : le prochain message ouvre une nouvelle séance
+   * (une nouvelle partie, pour un niveau d'Explorer).
+   */
+  forgetConversation(topic: TutorTopic): void;
 }

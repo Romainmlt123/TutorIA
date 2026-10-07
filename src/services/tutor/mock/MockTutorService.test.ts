@@ -112,9 +112,16 @@ describe('tuteur simulé · niveaux d’Explorer', () => {
   });
   const text = (events: TutorStreamEvent[]) =>
     events.map((e) => (e.type === 'delta' ? e.text : '')).join('');
+  /** Service simulé dont le niveau est lancé : le tuteur a posé sa première question. */
+  const started = async (slug: string) => {
+    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const first = await collect(service.sendMessage(level(slug, 'C’est parti !')));
+    expect(first.some((e) => e.type === 'step')).toBe(false);
+    return service;
+  };
 
   it('enseigne en leçon : chaque étape réussie fait avancer la barre, jusqu’au bilan', async () => {
-    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const service = await started('isoler-x');
     const all: TutorStreamEvent[] = [];
     for (let i = 0; i < 4; i++)
       all.push(...(await collect(service.sendMessage(level('isoler-x', 'Je divise par 3')))));
@@ -127,7 +134,7 @@ describe('tuteur simulé · niveaux d’Explorer', () => {
   });
 
   it('donne un indice en exercices, et la réponse aidée compte pour moitié', async () => {
-    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const service = await started('resoudre-ax-b-c');
     const hint = await collect(
       service.sendMessage(level('resoudre-ax-b-c', 'Je peux avoir un indice ?')),
     );
@@ -138,7 +145,7 @@ describe('tuteur simulé · niveaux d’Explorer', () => {
   });
 
   it('refuse toute aide en évaluation et reprend la question', async () => {
-    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const service = await started('bilan');
     const events = await collect(service.sendMessage(level('bilan', 'Tu peux m’aider ?')));
     expect(text(events)).toMatch(/je ne peux pas t’aider/);
     expect(text(events)).not.toMatch(/indice/i);
@@ -146,7 +153,7 @@ describe('tuteur simulé · niveaux d’Explorer', () => {
   });
 
   it('exige une démarche rédigée en évaluation', async () => {
-    const service = createMockTutorService({ chunkDelayMs: 0 });
+    const service = await started('bilan');
     const all: TutorStreamEvent[] = [];
     for (let i = 0; i < 8; i++) {
       const message = i < 5 ? '2x = 10 donc x = 5' : '5';

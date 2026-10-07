@@ -38,9 +38,10 @@ async function closeStaleCalls(admin: AdminClient, studentId: string, now: Date)
 }
 
 /**
- * POST /api/tutor/realtime-session, enveloppe de `handleRealtimeSession` (inchangé) :
+ * POST /api/tutor/realtime-session, enveloppe de `handleRealtimeSession` :
  * élève autorisé (consentement, vocal activé par le parent, pause du soir, limite du jour),
- * puis début de la séance vocale enregistré quand le jeton est délivré.
+ * puis début de la séance vocale enregistré quand le jeton est délivré. Une leçon d'Explorer à
+ * la voix compte comme une séance, sans étoiles ni validation du niveau.
  */
 export async function handleVoiceSessionStart(
   request: Request,
@@ -80,6 +81,7 @@ export async function handleVoiceSessionStart(
       mode: 'voice',
       subject_id: topic.value.subjectId,
       chapter_id: topic.value.chapterId,
+      level_id: place?.level.id ?? null,
       started_at: now.toISOString(),
     });
     if (error) throw error;
