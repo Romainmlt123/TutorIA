@@ -106,6 +106,7 @@ export type Database = {
           last_message_at: string;
           session_id: string;
           student_id: string;
+          title: string | null;
         };
         Insert: {
           created_at?: string;
@@ -113,6 +114,7 @@ export type Database = {
           last_message_at?: string;
           session_id: string;
           student_id: string;
+          title?: string | null;
         };
         Update: {
           created_at?: string;
@@ -120,6 +122,7 @@ export type Database = {
           last_message_at?: string;
           session_id?: string;
           student_id?: string;
+          title?: string | null;
         };
         Relationships: [
           {
