@@ -109,6 +109,8 @@ describe('tuteur simulé · niveaux d’Explorer', () => {
     topic: { subjectId: 'maths', chapterId: 'maths-equations', levelId: `maths-equations.${slug}` },
     history: [],
     message,
+    // Une partie se suit par sa discussion, comme avec le serveur.
+    conversationId: `partie-${slug}`,
   });
   const text = (events: TutorStreamEvent[]) =>
     events.map((e) => (e.type === 'delta' ? e.text : '')).join('');

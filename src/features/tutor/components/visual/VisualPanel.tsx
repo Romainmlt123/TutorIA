@@ -23,7 +23,8 @@ export const VISUAL_ICON: Record<VisualKind, IconName> = {
 
 type HeaderProps = {
   visual: TutorVisual;
-  subjectId: SubjectId;
+  /** Absente : discussion libre sur toutes les matières (le surtitre ne nomme que le visuel). */
+  subjectId?: SubjectId;
   /** Repliable : absent en plein écran. */
   open?: boolean;
   onToggle?: () => void;
@@ -40,7 +41,7 @@ export function VisualHeader({
   onExpand,
   onClose,
 }: HeaderProps) {
-  const subject = subjectTheme(subjectId);
+  const subject = subjectId ? subjectTheme(subjectId) : undefined;
   const kind = visualArt.kinds[visual.kind];
   const noun = T.nouns[visual.kind];
   const titles = (
@@ -50,7 +51,7 @@ export function VisualHeader({
       </GradientSurface>
       <View style={styles.titles}>
         <Text variant="overline" color={kind.ink} numberOfLines={1}>
-          {T.kicker(T.kinds[visual.kind], subject.name)}
+          {subject ? T.kicker(T.kinds[visual.kind], subject.name) : T.kinds[visual.kind]}
         </Text>
         <Text variant="body" weight="bold" numberOfLines={2}>
           {visual.title}

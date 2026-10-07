@@ -20,12 +20,18 @@ import { serverLog } from '../log';
 import { getOpenAI } from '../openai';
 import { getAdminClient, type AdminClient } from '../supabase';
 import { requireTutorAccess } from './access';
-import { openConversation, recordMessage, type Conversation } from './conversation';
+import {
+  openConversation,
+  recordMessage,
+  nameConversation,
+  type Conversation,
+} from './conversation';
 import type { TutorVisual } from '@/services/tutor/visuals';
 
 import { LEVEL_TOOLS, levelInstructions, levelOfTopic, type LevelStore } from './level';
 import { supabaseLevelStore } from './levelStore';
 import { buildTutorInstructions, TUTOR_PROMPT_VERSION } from './prompt';
+import { nameOf } from './title';
 import { promptContextOf } from './topic';
 import { parseVisualCall, VISUAL_TOOL_NAMES, VISUAL_TOOLS, visualText } from './visuals';
 
@@ -211,6 +217,15 @@ async function* streamReply(
       visual,
     );
     if (visual) yield { type: 'visual', visual };
+    // Une discussion libre sans titre (nouvelle, ou d'avant les titres) en reçoit un, pour le volet.
+    if (recording.conversation.untitled && !level) {
+      const { title, subjectId } = await nameOf(client, model, chat.message, text, safetyId);
+      // La matière reconnue ne remplace jamais celle d'une discussion qui en a déjà une.
+      const { topic } = recording.conversation;
+      const detected = topic.subjectId || topic.chapterId ? undefined : subjectId;
+      await nameConversation(recording.admin, recording.conversation, title, detected);
+      yield detected ? { type: 'title', title, subjectId: detected } : { type: 'title', title };
+    }
     // Les jugements ne comptent qu'avec une réponse gardée (jamais avec une réponse retirée).
     if (level && calls.length) {
       try {
@@ -342,7 +357,12 @@ export async function handleChat(
   await recordMessage(admin, conversation, studentId, 'student', chat.value.message);
   const signal = request.signal;
   const safetyId = await sha256(studentId);
-  const withHistory: ValidChat = { ...chat.value, history: conversation.history };
+  // Une discussion rouverte garde le sujet enregistré avec elle.
+  const withHistory: ValidChat = {
+    ...chat.value,
+    topic: conversation.topic,
+    history: conversation.history,
+  };
   return ndjsonResponse(
     streamReply(
       client,

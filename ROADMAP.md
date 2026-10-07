@@ -30,6 +30,8 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Explorer      | La suite (art des régions, contenu, allègement…)                              | ⏸️ en pause |                       |
 | Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`  |
 | Tuteur visuel | V4 · les visuels à la voix                                                    | à venir     |                       |
+| Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`     |
+| Chat libre    | C4 · la photo d'un exercice                                                   | à venir     |                       |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -152,6 +154,24 @@ Romain met Explorer en pause : chaque essai d'art attend de longues cuissons Ble
 3. **V3 · dans la discussion :** le panneau réduit, agrandi en plein écran, et les pastilles « Voir » sur les messages → validation de Romain sur le Pixel.
 4. **V4 · à la voix (2D, 2F) :** les visuels dessinés en direct. À la voix, les appels d'outils arrivent sur le téléphone sans passer par le serveur : à reprendre avec la surveillance du vocal (§ 11 du CLAUDE.md).
 
+## Chantier 4 · Le chat libre
+
+**Principes validés le 07/10 :**
+
+- L'onglet Tutor'IA devient un vrai chat libre, comme ChatGPT : l'élève pose une question spontanée ou demande de l'aide sur un exercice de classe.
+- Un volet glissant garde ses discussions (Aujourd'hui, Hier, 7 derniers jours, Plus ancien). Il permet d'en ouvrir une nouvelle, d'en rouvrir une, ou d'en supprimer une après confirmation.
+- Une nouvelle discussion part sur toutes les matières. Après le premier échange, le modèle lui donne un titre (modéré, à défaut le début de la question) et reconnaît sa matière, dans le même appel (décision du 07/10, à la place des pastilles de matière).
+- « Reprendre » rouvre la dernière discussion du chapitre affiché sur l'Accueil, ou en ouvre une nouvelle.
+- Les parties des niveaux d'Explorer n'entrent pas dans le volet.
+- Les parents ne voient jamais les discussions.
+
+**Les étapes :**
+
+1. **C1 · la base :** titre des discussions, suppression par l'élève (avec ses messages), et purge des discussions vides au bout de 6 mois. C'est la migration `free_chat`, testée en local, avec SQL montré à Romain avant de l'appliquer en ligne.
+2. **C2 · le serveur :** le sujet facultatif (`subjectId`, `chapterId`), la consigne du chat libre, le titre (`server/tutor/title.ts`). Une discussion reprise garde le sujet de sa séance. Après 30 minutes de silence, elle ouvre une nouvelle séance.
+3. **C3 · l'app :** le service des discussions, le volet, « Reprendre », et l'identifiant de discussion tenu par l'écran (plus par le service du tuteur) → validation de Romain sur le Pixel.
+4. **C4 · la photo d'un exercice :** l'élève photographie son exercice dans la discussion écrite.
+
 ## Journal des décisions
 
 - **30/09 :**
@@ -205,6 +225,14 @@ Romain met Explorer en pause : chaque essai d'art attend de longues cuissons Ble
   - V1 à V3 sont validés par Romain sur le Pixel, sur `feat/tuteur-visuel` : quatre outils de dessin, migration `messages.visual` (appliquée en ligne le 07/10, version `20261007091113`, avec l'accord de Romain), composants dans la charte et panneau dans les deux discussions. Les mots d'une formule (`\text{…}`) sont écrits en Satoshi par l'app : ils gardent la police de la marque, et les accents n'exigent pas une police mathématique de plus (370 Ko).
   - Retours de Romain intégrés : une couleur d'accent par sorte de visuel, un tableau blanc net (sans points, sans cadre, sans légende) qui défile dans les deux sens, des pastilles « Voir… » unies, et le bandeau touchable même clavier ouvert.
   - Corrigé en chemin : le tuteur libre refusait les chapitres d'Explorer (`maths-relatifs`) repris par « Reprendre » ; le catalogue des chapitres les reconnaît désormais.
+  - Le chantier 4, le chat libre, est validé par Romain (principes ci-dessus), sur `feat/chat-libre`, empilée sur `feat/tuteur-visuel` en attendant la fusion de la pull request #7.
+  - C1 à C3 sont livrés, à valider sur le Pixel. La migration `free_chat` est appliquée en ligne (version `20261007133630`, par Romain avec `supabase db push`, après son accord).
+  - Retour de Romain sur le Pixel : le clavier recouvrait la saisie du chat libre (la zone qui évite le clavier n'était plus placée directement dans l'écran). C'est corrigé.
+  - Les fonctions du chat libre sont validées par Romain. Plus de couleur, à sa demande : la carte du sujet en dégradé de la matière, des idées de départ en pastilles colorées qui défilent au-dessus de la saisie, et un bandeau bleu en tête du volet.
+  - Une discussion sans titre (y compris d'avant les titres) reçoit le sien au prochain échange.
+  - La matière n'est plus choisie par l'élève : elle est reconnue par le modèle avec le titre, puis écrite dans la séance (la liste des séances des parents, P3, montre donc la matière de ces séances, sans aucun contenu).
+  - C1 à C3 sont validés par Romain sur le Pixel, puis commités sur `feat/chat-libre`. Prochaine étape : C4, la photo d'un exercice.
+  - La nouvelle version de l'interface (design v2.5) est déjà dans `design/`. Elle sera implémentée plus tard.
 
 ## En attente
 

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
-import { openingConversation } from '@/data/mock/tutorConversation';
 import { cardsOfChapter, chapterById } from '@/features/flashcards/logic/catalog';
+import type { SubjectId } from '@/data/types';
 import { fr } from '@/i18n/fr';
 import { logError } from '@/lib/logger';
 import {
@@ -13,6 +13,8 @@ import {
 import type { LevelOutcome } from '@/services/tutor/api-contract';
 import type { TutorVisual } from '@/services/tutor/visuals';
 import { checkPracticeAnswer, practiceQuestion } from '@/services/tutor/mock/practice';
+
+import { splitTip } from '../logic/conversations';
 
 export type ChatMessage = {
   id: string;
@@ -50,7 +52,6 @@ type State = {
 };
 
 type Action =
-  | { type: 'reset'; messages: ChatMessage[] }
   | { type: 'add'; message: ChatMessage }
   | { type: 'addBefore'; id: string; message: ChatMessage }
   | { type: 'delta'; id: string; text: string }
@@ -65,17 +66,12 @@ type Action =
   | { type: 'result'; result: LevelOutcome }
   | { type: 'visual'; id: string; visual: TutorVisual };
 
-/** Un conseil de méthode peut suivre la réponse, sur une ligne « Conseil : … ». */
-const TIP_LINE = /\n+\s*Conseil\s*:\s*/i;
-
 function reducer(state: State, action: Action): State {
   const update = (id: string, change: (m: ChatMessage) => ChatMessage) => ({
     ...state,
     messages: state.messages.map((m) => (m.id === id ? change(m) : m)),
   });
   switch (action.type) {
-    case 'reset':
-      return initialState(action.messages);
     case 'add':
       return { ...state, messages: [...state.messages, action.message] };
     case 'addBefore':
@@ -88,13 +84,13 @@ function reducer(state: State, action: Action): State {
     case 'finish': {
       const message = state.messages.find((m) => m.id === action.id);
       if (!message) return state;
-      const [answer = '', tip] = message.text.split(TIP_LINE);
-      const done = { ...message, text: answer.trim(), streaming: false };
+      const { answer, tip } = splitTip(message.text);
+      const done = { ...message, text: answer, streaming: false };
       const messages = state.messages.flatMap((m) =>
         m.id !== action.id
           ? [m]
-          : tip?.trim()
-            ? [done, { id: action.tipId, kind: 'tip' as const, text: tip.trim() }]
+          : tip
+            ? [done, { id: action.tipId, kind: 'tip' as const, text: tip }]
             : [done],
       );
       return { ...state, messages };
@@ -123,61 +119,72 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-function initialState(messages: ChatMessage[]): State {
+function initialState(messages: readonly ChatMessage[]): State {
   return {
-    messages,
+    messages: [...messages],
     pending: false,
     offline: false,
     practiceIndex: 0,
     progress: null,
     result: null,
-    visual: null,
+    // Une discussion rouverte montre son dernier visuel.
+    visual: messages.findLast((m) => m.visual)?.visual ?? null,
   };
 }
 
 const OFFLINE_CODES: readonly TutorErrorCode[] = ['network', 'timeout', 'upstream'];
 
-function openingFor(topic: TutorTopic, isResume: boolean, level?: LevelChat): ChatMessage[] {
+function openingFor(topic: TutorTopic, level?: LevelChat): ChatMessage[] {
   if (level) return [{ id: 'opening-0', kind: 'tutor', text: level.opening }];
-  if (isResume) {
-    return openingConversation.map((m, i) => ({ id: `opening-${i}`, kind: m.role, text: m.text }));
-  }
-  const title = chapterById(topic.chapterId)?.title ?? '';
-  return [{ id: 'opening-0', kind: 'tutor', text: fr.tutor.opening(title) }];
+  const chapter = topic.chapterId ? chapterById(topic.chapterId) : undefined;
+  const text = chapter ? fr.tutor.opening(chapter.title) : fr.tutor.freeOpening;
+  return [{ id: 'opening-0', kind: 'tutor', text }];
 }
 
+export type TutorChatOptions = {
+  topic: TutorTopic;
+  service?: TutorService;
+  /** Niveau d'Explorer joué dans la discussion. */
+  level?: LevelChat;
+  /** Discussion rouverte depuis le volet : son identifiant et ses messages enregistrés. */
+  resume?: { conversationId: string; messages: readonly ChatMessage[] };
+  /** Le serveur vient d'ouvrir la discussion (premier message envoyé). */
+  onConversation?: (conversationId: string) => void;
+  /** Le serveur a donné un titre à la discussion, avec sa matière s'il en a reconnu une. */
+  onTitle?: (title: string, subjectId?: SubjectId) => void;
+};
+
 /**
- * Conversation écrite avec le tuteur : envoi, réponse en flux, erreurs bienveillantes,
+ * Discussion écrite avec le tuteur : envoi, réponse en flux, erreurs bienveillantes,
  * signalement, et bascule en mode hors ligne assumé (questions d'entraînement du chapitre).
  * Pour un niveau d'Explorer (`topic.levelId`), elle suit aussi l'avancement et le bilan.
+ * Une discussion dure le temps du composant : l'écran change de clé pour en ouvrir une autre.
  */
-export function useTutorChat(
-  topic: TutorTopic,
-  isResume: boolean,
-  service: TutorService = tutorService,
-  level?: LevelChat,
-) {
+export function useTutorChat({
+  topic,
+  service = tutorService,
+  level,
+  resume,
+  onConversation,
+  onTitle,
+}: TutorChatOptions) {
   const [state, dispatch] = useReducer(reducer, undefined, () =>
-    initialState(openingFor(topic, isResume, level)),
+    initialState(resume?.messages ?? openingFor(topic, level)),
   );
   const counter = useRef(0);
   const abort = useRef<AbortController | null>(null);
+  const conversationId = useRef(resume?.conversationId);
   const stateRef = useRef(state);
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
+  useEffect(() => () => abort.current?.abort(), []);
 
   const nextId = () => `m${++counter.current}`;
-  const practiceCards = cardsOfChapter(topic.chapterId);
-
-  useEffect(() => {
-    dispatch({ type: 'reset', messages: openingFor(topic, isResume, level) });
-    // Chaque visite d'un niveau est une nouvelle partie.
-    if (topic.levelId) service.forgetConversation(topic);
-    return () => abort.current?.abort();
-    // Nouvelle conversation à chaque changement de chapitre ou de niveau.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topic.chapterId, topic.levelId]);
+  const practiceCards = useMemo(
+    () => (topic.chapterId ? cardsOfChapter(topic.chapterId) : []),
+    [topic.chapterId],
+  );
 
   const askPractice = useCallback(
     (index: number) => {
@@ -226,12 +233,15 @@ export function useTutorChat(
       let finished = false;
       try {
         for await (const event of service.sendMessage(
-          { topic, history, message: text },
+          { topic, history, message: text, conversationId: conversationId.current },
           controller.signal,
         )) {
-          // L'identifiant de conversation est géré par le service ; rien à afficher.
-          if (event.type === 'conversation') continue;
-          if (event.type === 'step') {
+          if (event.type === 'conversation') {
+            conversationId.current = event.id;
+            onConversation?.(event.id);
+          } else if (event.type === 'title') {
+            onTitle?.(event.title, event.subjectId);
+          } else if (event.type === 'step') {
             const card = level?.stepCard?.(event.done);
             // La carte se place avant la réponse du tuteur, qui enchaîne sur l'étape suivante.
             if (card) {
@@ -255,7 +265,7 @@ export function useTutorChat(
           } else if (event.type === 'done') {
             if (!finished) dispatch({ type: 'finish', id, tipId: nextId() });
             finished = true;
-          } else if (OFFLINE_CODES.includes(event.code) && !received) {
+          } else if (OFFLINE_CODES.includes(event.code) && !received && practiceCards.length > 0) {
             dispatch({ type: 'remove', id });
             dispatch({ type: 'offline', offline: true });
             askPractice(stateRef.current.practiceIndex);
@@ -281,7 +291,7 @@ export function useTutorChat(
         dispatch({ type: 'pending', pending: false });
       }
     },
-    [askPractice, level, practiceCards, service, topic],
+    [askPractice, level, onConversation, onTitle, practiceCards, service, topic],
   );
 
   const retry = useCallback(() => dispatch({ type: 'offline', offline: false }), []);

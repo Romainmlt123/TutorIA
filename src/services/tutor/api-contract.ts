@@ -10,7 +10,12 @@ import type { TutorVisual } from './visuals';
  * Sujet d'une discussion. `levelId` : niveau d'Explorer (île, ville, niveau) ; le serveur en déduit
  * seul le type, la notion et les consignes du tuteur. L'app n'envoie jamais de consigne.
  */
-export type TutorTopic = { subjectId: SubjectId; chapterId: string; levelId?: string };
+/**
+ * Sujet d'une discussion. Chat libre : ni matière ni chapitre (« toutes matières »), ou une matière
+ * choisie par l'élève. Un chapitre (lien depuis l'accueil, les révisions) ou un niveau d'Explorer
+ * précise le sujet ; un niveau exige son chapitre.
+ */
+export type TutorTopic = { subjectId?: SubjectId; chapterId?: string; levelId?: string };
 
 /** Bilan d'un niveau d'Explorer, calculé par le serveur à partir des réponses enregistrées. */
 export type LevelOutcome = {
@@ -65,6 +70,9 @@ export type TutorStreamEvent =
   | { type: 'levelResult'; outcome: LevelOutcome }
   /** Visuel validé et modéré, attaché à la réponse en cours (2C, 2E). */
   | { type: 'visual'; visual: TutorVisual }
+  /** Titre d'une nouvelle discussion libre, donné après le premier échange (volet). */
+  /** Titre de la nouvelle discussion, et sa matière si le modèle en a reconnu une (chat libre). */
+  | { type: 'title'; title: string; subjectId?: SubjectId }
   | { type: 'error'; code: TutorErrorCode };
 
 export type ErrorResponse = { error: TutorErrorCode };

@@ -1,5 +1,6 @@
 import { config } from '@/lib/config';
 
+import { mockConversationService } from '../conversations';
 import { mockExplorerService } from '../explorer';
 
 import { createLiveTutorService } from './live/LiveTutorService';
@@ -13,7 +14,9 @@ const recordLevel = mockExplorerService
 
 /** Tuteur utilisé par l'app : réel par défaut, simulé avec EXPO_PUBLIC_TUTOR_MODE=mock. */
 export const tutorService: TutorService =
-  config.tutorMode === 'mock' ? createMockTutorService({ recordLevel }) : createLiveTutorService();
+  config.tutorMode === 'mock'
+    ? createMockTutorService({ recordLevel, conversations: mockConversationService ?? undefined })
+    : createLiveTutorService();
 
 /** Tuteur simulé, utilisé aussi en mode hors ligne et quand le vocal en direct est indisponible. */
 export const mockTutorService: TutorService = createMockTutorService();

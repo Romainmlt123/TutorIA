@@ -48,7 +48,8 @@ export function HomeScreen() {
         onResume={() =>
           router.push({
             pathname: '/tuteur',
-            params: { subject: resume.subjectId, chapter: resume.chapterId },
+            // La dernière discussion sur ce chapitre, ou une nouvelle s'il n'y en a pas.
+            params: { reprendre: '1', chapter: resume.chapterId },
           })
         }
       />

@@ -10,7 +10,7 @@ import { VisualView } from './VisualView';
 
 type Props = {
   visual: TutorVisual | null;
-  subjectId: SubjectId;
+  subjectId?: SubjectId;
   onClose: () => void;
 };
 

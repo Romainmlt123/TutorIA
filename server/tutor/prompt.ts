@@ -3,13 +3,14 @@
  * (clé de cache et traçabilité des signalements).
  * Aucune donnée personnelle : seulement la classe, la matière et le chapitre.
  */
-export const TUTOR_PROMPT_VERSION = '2026-10-07.1';
+export const TUTOR_PROMPT_VERSION = '2026-10-07.2';
 
 export type PromptContext = {
   mode: 'text' | 'voice';
   grade: string;
-  subject: string;
-  chapter: string;
+  /** Absents : chat libre, toutes matières. */
+  subject?: string;
+  chapter?: string;
   /** Consignes d'un niveau d'Explorer (server/tutor/level.ts), construites par le serveur seul. */
   level?: string;
   /** Leçon d'Explorer à l'écrit : le tuteur enseigne, avec des messages plus riches. */
@@ -54,6 +55,10 @@ const TEXT_FORMAT = `Mise en forme
 
 ${MATH_FORMAT}`;
 
+/** Chat libre : l'élève vient avec sa propre question, un cours ou un exercice de classe. */
+const FREE_CHAT =
+  "Chat libre : l'élève pose sa propre question, sur un cours ou un exercice vu en classe. Commence par comprendre ce qu'il cherche (le sujet, l'énoncé exact, là où il bloque), puis aide-le avec ta pédagogie habituelle : guide-le sans faire l'exercice à sa place.";
+
 const VISUAL_FORMAT = `Visuels
 - Tu peux montrer un visuel quand il aide vraiment à comprendre : show_graph (fonctions, droites, lecture ou résolution graphique), show_chart (statistiques : effectifs, fréquences, moyenne), draw_figure (géométrie : triangles, Pythagore, angles, cercles, symétries), write_board (calcul ou résolution pas à pas).
 - Un seul visuel par message, et seulement s'il apporte quelque chose : pas pour une question simple.
@@ -87,7 +92,11 @@ export function buildTutorInstructions({
   lesson = false,
   visuals = false,
 }: PromptContext): string {
-  const context = `Contexte : l'élève est en ${grade}. Matière : ${subject}. Chapitre : ${chapter}.`;
+  const context = chapter
+    ? `Contexte : l'élève est en ${grade}. Matière : ${subject}. Chapitre : ${chapter}.`
+    : subject
+      ? `Contexte : l'élève est en ${grade}. Matière : ${subject}. ${FREE_CHAT}`
+      : `Contexte : l'élève est en ${grade}. ${FREE_CHAT} Toutes les matières du collège sont possibles.`;
   const format = mode === 'voice' ? VOICE_FORMAT : lesson ? LESSON_FORMAT : TEXT_FORMAT;
   const parts = [COMMON, format, context];
   // Les visuels ne s'affichent qu'à l'écrit (le vocal viendra avec l'étape V4).

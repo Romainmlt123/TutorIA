@@ -28,6 +28,7 @@ const ICONS = {
   'fleche-droite': [{ d: 'M5 12h14M13 6l6 6-6 6' }],
   'chevron-gauche': [{ d: 'M15 5l-7 7 7 7' }],
   croix: [{ d: 'M6 6l12 12M18 6 6 18' }],
+  menu: [{ d: 'M4 7h16M4 12h16M4 17h10' }],
   envoi: [{ d: 'M12 19V5M6 11l6-6 6 6' }],
   micro: [{ rect: [9, 3, 6, 11, 3] }, { d: 'M5 11a7 7 0 0 0 14 0M12 18v3' }],
   'micro-barre': [{ rect: [9, 3, 6, 11, 3] }, { d: 'M5 11a7 7 0 0 0 14 0M12 18v3M4 4l16 16' }],

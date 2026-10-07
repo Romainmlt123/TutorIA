@@ -70,6 +70,56 @@ export const fr = {
     typing: 'Le tuteur écrit…',
     opening: (chapter: string) =>
       `On révise « ${chapter} » ? Dis-moi ce qui te pose problème, ou je te pose une première question ?`,
+    freeOpening:
+      'Salut ! Pose-moi ta question, ou raconte-moi l’exercice qui te bloque : on le fait ensemble, pas à pas.',
+    freeInputPlaceholder: 'Pose ta question…',
+    /** Chat libre : volet des discussions, nouvelle discussion, matière. */
+    chat: {
+      openHistory: 'Ouvrir tes discussions',
+      newChat: 'Nouvelle discussion',
+      drawerTitle: 'Tes discussions',
+      close: 'Fermer',
+      allSubjects: 'Toutes les matières',
+      freeTopic: 'Discussion libre',
+      groups: {
+        today: 'Aujourd’hui',
+        yesterday: 'Hier',
+        week: '7 derniers jours',
+        older: 'Plus ancien',
+      },
+      empty: 'Tes discussions avec le tuteur apparaîtront ici.',
+      listError: 'Je n’arrive pas à charger tes discussions. Réessaie dans un instant.',
+      openError: 'Je n’arrive pas à rouvrir cette discussion.',
+      loading: 'Je retrouve ta discussion…',
+      current: 'Discussion en cours',
+      deleteHint: 'Appui long pour supprimer',
+      deleteAction: 'Supprimer',
+      deleteTitle: 'Supprimer cette discussion ?',
+      deleteBody: 'Elle disparaîtra avec tous ses messages. Tu ne pourras pas la retrouver.',
+      deleteConfirm: 'Supprimer',
+      deleteCancel: 'Garder',
+      deleteError: 'La discussion n’a pas pu être supprimée. Réessaie dans un instant.',
+      startersLabel: 'Idées pour commencer',
+      /** Idées de départ : le libellé de la carte, puis le message envoyé au tuteur. */
+      starters: {
+        notion: {
+          label: 'Explique-moi une notion',
+          message: 'Tu peux m’expliquer une notion que je n’ai pas bien comprise ?',
+        },
+        exercise: {
+          label: 'Aide-moi sur un exercice',
+          message: 'J’ai un exercice de classe qui me bloque. Tu peux m’aider à le faire ?',
+        },
+        review: {
+          label: 'Fais-moi réviser',
+          message: 'Fais-moi réviser avec quelques questions, une par une.',
+        },
+        graph: {
+          label: 'Montre-moi un graphique',
+          message: 'Tu peux m’expliquer quelque chose avec un graphique ?',
+        },
+      },
+    },
     report: 'Signaler cette réponse',
     reportDone: 'Merci, on va regarder ça.',
     reportHint: 'Appui long pour signaler une réponse du tuteur',

@@ -124,6 +124,8 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
 ## Tuteur IA
 
 - **Écrit** : `POST /api/tutor/chat` (route API Expo Router).
+  - C'est un chat libre : le sujet (matière, chapitre) est facultatif. Le premier message ouvre une discussion (événement `conversation`). Le serveur lui donne ensuite un titre (événement `title`), produit par le modèle et modéré.
+  - Le volet de l'onglet Tutor'IA liste les discussions libres de l'élève (pas les niveaux d'Explorer) et permet de les rouvrir ou de les supprimer (`conversationService`).
   - Le serveur vérifie l'élève connecté, le consentement parental et les réglages du parent, puis applique une limite de débit partagée.
   - Il valide la requête, relit l'historique en base, modère l'entrée, appelle OpenAI (`store: false`) et renvoie la réponse en flux NDJSON. La réponse complète est aussi modérée, puis enregistrée.
 - **Vocal** : `POST /api/tutor/realtime-session` délivre un jeton temporaire (60 s) après les mêmes vérifications. L'app se connecte ensuite directement à l'API Realtime d'OpenAI en WebRTC. La configuration de la session (modèle, consignes, voix) est fixée par le serveur. La fin de l'appel est déclarée par `POST /api/tutor/voice/end`.
@@ -167,7 +169,7 @@ src/
   features/       auth, onboarding, access, home, tutor, flashcards, stats, explorer, avatar, comingSoon, profile, parents :
                   écrans, composants, logique, hooks
   services/       services derrière des interfaces, versions Supabase et simulée :
-                  auth, family, onboarding, student, parents, tutor, explorer, avatar ; db/ = types générés
+                  auth, family, onboarding, student, parents, tutor, conversations, explorer, avatar ; db/ = types générés
   data/           types et programme (classes, chapitres) ; mock/ = données fictives de démonstration
   theme/          thème typé généré depuis design/tokens/ + police Satoshi + espaces élève et parent
   i18n/fr.ts      tous les textes de l'app
