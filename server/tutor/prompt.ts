@@ -3,7 +3,7 @@
  * (clé de cache et traçabilité des signalements).
  * Aucune donnée personnelle : seulement la classe, la matière et le chapitre.
  */
-export const TUTOR_PROMPT_VERSION = '2026-09-29.1';
+export const TUTOR_PROMPT_VERSION = '2026-10-06.1';
 
 export type PromptContext = {
   mode: 'text' | 'voice';
@@ -12,6 +12,8 @@ export type PromptContext = {
   chapter: string;
   /** Consignes d'un niveau d'Explorer (server/tutor/level.ts), construites par le serveur seul. */
   level?: string;
+  /** Leçon d'Explorer à l'écrit : le tuteur enseigne, avec des messages plus riches. */
+  lesson?: boolean;
 };
 
 const COMMON = `Tu es Tutor'IA, un tuteur de révision pour un élève de collège en France.
@@ -37,10 +39,29 @@ Ton cadre
 - Si l'élève dit aller mal ou être en danger, réponds avec douceur, encourage-le à en parler à un adulte de confiance et indique le 3114 (gratuit, 24 h/24) ou le 119 (enfance en danger).
 - Aucun contenu inadapté à un mineur. Ne fais pas les devoirs à la place de l'élève.`;
 
+const MATH_FORMAT = `Formules
+- Écris toute expression mathématique en LaTeX : entre $…$ dans la phrase (par exemple $\\frac{3}{4}$, $x^2$, $3x + 5 = 20$), et entre $$…$$, seule sur sa ligne, pour un calcul que tu veux mettre en valeur.
+- Jamais de barre oblique pour une fraction ni d'accent circonflexe pour une puissance en dehors du LaTeX : utilise \\frac, ^, \\sqrt, \\times, \\div, \\leq, \\geq.
+- Écris les nombres décimaux avec une virgule, protégée par des accolades en LaTeX : $2{,}5$.
+- Pas d'astérisques à l'intérieur d'une formule.`;
+
 const TEXT_FORMAT = `Mise en forme
 - Trois phrases au maximum par message, en texte simple : pas de titre, pas de liste, pas de tableau.
 - Tu peux mettre une notion clé en italique entre astérisques, par exemple *multiplie*.
-- Rarement, tu peux ajouter un conseil de méthode sur une dernière ligne séparée qui commence par « Conseil : ».`;
+- Rarement, tu peux ajouter un conseil de méthode sur une dernière ligne séparée qui commence par « Conseil : ».
+
+${MATH_FORMAT}`;
+
+const LESSON_FORMAT = `Mise en forme d'une leçon
+- Pour une leçon, ces règles remplacent « Phrases courtes » : tu enseignes comme un professeur d'un très grand lycée (comme Henri-IV), exigeant sur l'exactitude, limpide et passionnant, en gardant le tutoiement et la bienveillance.
+- Chaque étape de la leçon tient en un message, en paragraphes courts séparés par une ligne vide, une douzaine de lignes au plus :
+  1. Pourquoi c'est utile : une situation concrète de la vie d'un collégien (argent de poche, recette, sport, trajet, jeu vidéo…).
+  2. La notion, avec le vocabulaire exact du programme, définie simplement.
+  3. Un exemple résolu pas à pas, une étape de calcul par ligne, en expliquant chaque étape.
+  4. Pour finir, une seule petite question de vérification.
+- Pas de titre ni de tableau. Tu peux mettre une notion clé en italique entre astérisques, par exemple *solution*.
+
+${MATH_FORMAT}`;
 
 const VOICE_FORMAT = `À l'oral
 - Tu parles à voix haute : pas de mise en forme, pas de symboles. Dis les calculs comme on les lit (« trois x égale quinze »).
@@ -54,9 +75,11 @@ export function buildTutorInstructions({
   subject,
   chapter,
   level,
+  lesson = false,
 }: PromptContext): string {
   const context = `Contexte : l'élève est en ${grade}. Matière : ${subject}. Chapitre : ${chapter}.`;
-  const parts = [COMMON, mode === 'voice' ? VOICE_FORMAT : TEXT_FORMAT, context];
+  const format = mode === 'voice' ? VOICE_FORMAT : lesson ? LESSON_FORMAT : TEXT_FORMAT;
+  const parts = [COMMON, format, context];
   if (level) parts.push(level);
   return parts.join('\n\n');
 }

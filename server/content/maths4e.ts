@@ -43,6 +43,15 @@ export function attendusOfLevel(levelId: string): string[] {
   return (chapter?.attendus ?? []).flatMap((id) => attendus.get(id)?.resume ?? []);
 }
 
+/** Précisions du programme sur le chapitre d'un niveau (ce qui est attendu, ou non, en 4e). */
+export function precisionsOfLevel(levelId: string): string[] {
+  const chapter = chapterOfLevel(levelId);
+  if (!chapter) return [];
+  return referentiel.precisions_reperes
+    .filter((p) => p.chapitre === chapter.id)
+    .flatMap((p) => p.resume ?? []);
+}
+
 /** Exercices corrigés d'un niveau, du plus facile au plus difficile, sans les brouillons. */
 export function exercisesOfLevel(levelId: string): Exercise[] {
   const entry = MATHS_4E_BANK[levelId];

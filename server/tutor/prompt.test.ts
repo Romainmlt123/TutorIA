@@ -33,6 +33,22 @@ describe('prompt système du tuteur', () => {
     expect(text).not.toContain(student.firstName);
   });
 
+  it('écrit les formules en LaTeX à l’écrit, jamais à l’oral', () => {
+    expect(text).toContain('$\\frac{3}{4}$');
+    expect(voice).not.toContain('LaTeX');
+  });
+
+  it('enseigne une leçon comme un grand professeur, avec utilité et exemple résolu', () => {
+    const lesson = buildTutorInstructions({
+      ...promptContextOf({ subjectId: 'maths', chapterId: 'maths-equations' }, 'text'),
+      lesson: true,
+    });
+    expect(lesson).toMatch(/Henri-IV/);
+    expect(lesson).toMatch(/Pourquoi c'est utile/);
+    expect(lesson).toMatch(/exemple résolu pas à pas/);
+    expect(lesson).not.toMatch(/Trois phrases au maximum/);
+  });
+
   it('adapte la forme au vocal', () => {
     expect(voice).toMatch(/voix haute/);
     expect(voice).not.toMatch(/astérisques/);
@@ -48,6 +64,13 @@ describe('consignes d’un niveau d’Explorer', () => {
     expect(block('isoler-x')).toContain('Ton rôle : tu enseignes');
     expect(block('resoudre-ax-b-c')).toContain('indices gradués');
     expect(block('bilan')).toMatch(/Aucune aide : pas d'indice/);
+  });
+
+  it('donne au tuteur le programme du niveau et, hors leçon, les exercices corrigés', () => {
+    expect(block('isoler-x')).toContain('Résoudre une équation du premier degré');
+    expect(block('isoler-x')).not.toContain('Corrigé :');
+    expect(block('resoudre-ax-b-c')).toContain('Corrigé :');
+    expect(block('bilan')).toContain('ne montre jamais le corrigé');
   });
 
   it('donne la notion, les objectifs et l’avancement, sans donnée personnelle', () => {
