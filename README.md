@@ -129,7 +129,9 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
   - Le serveur vérifie l'élève connecté, le consentement parental et les réglages du parent, puis applique une limite de débit partagée.
   - Il valide la requête, relit l'historique en base, modère l'entrée, appelle OpenAI (`store: false`) et renvoie la réponse en flux NDJSON. La réponse complète est aussi modérée, puis enregistrée.
 - **Vocal** : `POST /api/tutor/realtime-session` délivre un jeton temporaire (60 s) après les mêmes vérifications. L'app se connecte ensuite directement à l'API Realtime d'OpenAI en WebRTC. La configuration de la session (modèle, consignes, voix) est fixée par le serveur. La fin de l'appel est déclarée par `POST /api/tutor/voice/end`.
-- **Photo de l'exercice** : `POST /api/tutor/image-check` vérifie la taille et modère la photo avant son envoi dans l'appel.
+- **Photo de l'exercice** :
+  - au vocal, `POST /api/tutor/image-check` vérifie la taille et modère la photo avant son envoi dans l'appel ;
+  - à l'écrit, la photo (appareil photo ou galerie, réduite sur l'appareil) part avec le message de `POST /api/tutor/chat` (`image`). Elle est refusée si le parent a désactivé la caméra et pendant une évaluation d'Explorer. Elle est modérée, envoyée au modèle, et jamais enregistrée : la mention « 📷 Photo de l'exercice » la remplace dans l'historique.
 - **Signalement** : appui long sur une réponse du tuteur, qui appelle `POST /api/tutor/report`.
 - **Résumés pour les parents** : `POST /api/tutor/session/summary` (notions comprises et à revoir, sortie structurée et modérée) et `POST /api/parents/weekly-report` (à partir des agrégats seulement, sans prénom). Jamais de transcription.
 - **Hors ligne** : si le serveur ne répond pas, un bandeau « Tutor'IA est hors ligne » s'affiche et des questions d'entraînement du chapitre prennent le relais.

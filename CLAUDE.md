@@ -187,6 +187,10 @@ Chaque choix doit rester compatible avec une publication sur les stores :
     - l'historique relu par le modèle rappelle les visuels montrés (`visualSummary`), et la séance note `graph` ou `whiteboard` (P3) ;
     - l'app les dessine avec ses composants (`src/features/tutor/components/visual/` : `MathGraph`, `StatChart`, `GeoFigure`, `Whiteboard`, `VisualPanel`, `VisualModal`, `VisualChip`) et les couleurs de `src/theme/visualArt.ts` ; les mots d'une formule (`\text{…}`) sont écrits en Satoshi ;
     - le contrat partagé est dans `src/services/tutor/visuals.ts`.
+  - Photo d'un exercice à l'écrit (C4) :
+    - `ChatRequest.image` (data URL JPEG ou PNG, `TUTOR_LIMITS.imageMaxBytes`), préparée par `takeExercisePhoto` (appareil photo ou galerie) et tenue par `usePhotoDraft` jusqu'à l'envoi ;
+    - le serveur la refuse si le parent a désactivé la caméra ou pendant une évaluation d'Explorer, applique la limite des photos (`consumeImageLimit`), la modère (`moderateImage`) puis l'envoie au modèle (`input_image`) ;
+    - la photo n'est jamais enregistrée ni journalisée : le message garde `PHOTO_NOTE`, et la consigne `PHOTO_FORMAT` demande au tuteur de recopier l'énoncé (sans nom ni établissement) pour s'en souvenir.
   - Résumés pour le parent (`server/tutor/summaries.ts`) : sortie structurée (notions comprises, points à revoir, résultat) et modérée, mise en forme dans l'app. Jamais de transcription ni de texte libre de l'élève.
   - Aucune donnée personnelle n'est envoyée à OpenAI : ni prénom, ni âge exact, ni auto-évaluation, et e-mails et téléphones sont masqués. `safety_identifier` est un hachage de l'identifiant. Le résumé de la semaine écrit `{prenom}`, remplacé dans l'app.
 - **Accessibilité :**
@@ -223,6 +227,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
    - Ne pas classer l'app dans la catégorie Kids d'Apple.
    - Déclarer l'usage de l'IA sur Google Play : le signalement est déjà dans l'app.
    - Remplacer l'icône provisoire de 250 px par une source de 1024 px.
+   - Vérifier sur un vrai iPhone que « Choisir dans la galerie » (photo d'un exercice) s'ouvre sans demander d'autorisation : `photosPermission` est désactivé dans `app.config.ts`, et le sélecteur du système ne devrait pas en avoir besoin.
    - `expo-notifications`, `expo-sharing` et `expo-file-system` sont des modules natifs : il faut un nouveau build de développement EAS.
 6. **Déploiement :**
    - Sur EAS, `OPENAI_API_KEY`, `SUPABASE_SECRET_KEY` et `LINK_CODE_PEPPER` doivent être des variables « sensitive ». Changer `LINK_CODE_PEPPER` invalide les codes de liaison en cours.
