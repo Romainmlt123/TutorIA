@@ -127,6 +127,14 @@ function studentSections(admin: AdminClient, id: string) {
         .select('level_id, best_score, stars, passed, attempts, first_finished_at, last_played_at')
         .eq('student_id', id),
     ],
+    [
+      'avatar',
+      admin
+        .from('avatars')
+        .select('look, owned, announced, updated_at')
+        .eq('student_id', id)
+        .maybeSingle(),
+    ],
   ] as const;
 }
 
