@@ -14,19 +14,19 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
    - ce fichier est à jour (statut, date, décisions).
 4. **Avant de coder une étape**, son contenu est relu ici. S'il faut s'en écarter, on le dit à Romain et on corrige ce fichier d'abord.
 
-## Où on en est — 6 octobre 2026
+## Où on en est — 7 octobre 2026
 
-| Chantier | Étape                                                  | Statut    | Branche            |
-| -------- | ------------------------------------------------------ | --------- | ------------------ |
-| Explorer | X1 · les îles                                          | ✅ validé | `feat/explorer-3d` |
-| Explorer | X2a · les régions de l'île                             | ✅ validé | `feat/explorer-3d` |
-| Explorer | X2b · la carte d'une région (art de la région Nombres) | ✅ validé | `feat/explorer-3d` |
-| Avatar   | Figurine, visage et atelier `/dev/avatars`             | ✅ validé | `feat/avatar`      |
-| Avatar   | A1 · l'éditeur « Crée ton avatar »                     | ✅ validé | `feat/avatar`      |
-| Avatar   | A2 · l'avatar sur la carte                             | ✅ validé | `feat/avatar`      |
-| Avatar   | **A3 · la garde-robe**                                 | ✅ validé | `feat/avatar`      |
-| Avatar   | A4 · l'avatar dans Supabase                            | à venir   |                    |
-| Explorer | X3 à X5b · fiche, discussion et bilan d'un niveau      | à venir   |                    |
+| Chantier | Étape                                                  | Statut                              | Branche            |
+| -------- | ------------------------------------------------------ | ----------------------------------- | ------------------ |
+| Explorer | X1 · les îles                                          | ✅ validé                           | `feat/explorer-3d` |
+| Explorer | X2a · les régions de l'île                             | ✅ validé                           | `feat/explorer-3d` |
+| Explorer | X2b · la carte d'une région (art de la région Nombres) | ✅ validé                           | `feat/explorer-3d` |
+| Avatar   | Figurine, visage et atelier `/dev/avatars`             | ✅ validé                           | `feat/avatar`      |
+| Avatar   | A1 · l'éditeur « Crée ton avatar »                     | ✅ validé                           | `feat/avatar`      |
+| Avatar   | A2 · l'avatar sur la carte                             | ✅ validé                           | `feat/avatar`      |
+| Avatar   | **A3 · la garde-robe**                                 | ✅ validé                           | `feat/avatar`      |
+| Avatar   | A4 · l'avatar dans Supabase                            | 🔜 prochaine étape (plan à valider) |                    |
+| Explorer | **X3 à X5b · fiche, discussion et bilan d'un niveau**  | ✅ validé                           | `feat/avatar`      |
 
 `feat/explorer-3d` et `feat/avatar` ne sont pas encore fusionnées dans `dev`.
 
@@ -101,7 +101,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 
 ### A4 · L'avatar dans Supabase
 
-- **Prérequis :** la migration `level_progress` d'Explorer, car les objets se gagnent sur la progression enregistrée en base.
+- **Prérequis :** la migration `level_progress` d'Explorer, car les objets se gagnent sur la progression enregistrée en base (appliquée en ligne le 06/10).
 - L'apparence et les objets gagnés sont enregistrés en base :
   - les objets gagnés sont **calculés par la base** (déclencheurs), et l'élève ne choisit que parmi les siens ;
   - la figurine de l'appareil est reprise à la première connexion ;
@@ -122,7 +122,7 @@ Le plan détaillé d'Explorer reste celui validé le 30 septembre. Dans l'ordre 
 1. **X3 / X3b · la fiche d'un niveau :** objectifs, puis « À l'écrit » et « À la voix ».
 2. **X4 / X4b · la discussion de niveau,** écrite et vocale, sur le fond de l'île.
 3. **X5 / X5b · le bilan :** étoiles, XP, réussi ou à revoir.
-4. **La migration `level_progress`** (SQL montré d'abord), qui remplace la progression simulée.
+4. **La migration `level_progress`** (SQL montré d'abord), qui remplace la progression simulée : faite avec X3 à X5, appliquée en ligne le 06/10.
 5. **L'art des autres régions :** Données, Espace et Algorithmique (9 monuments).
 6. **Le contenu :** les exercices générés par IA doivent être relus par un enseignant (référentiel v0.7), et il manque 14 évaluations « Bilan ». Avant cette relecture, aucune autre ville que les Équations n'ouvre.
 7. **L'allègement :**
@@ -156,6 +156,25 @@ Le plan détaillé d'Explorer reste celui validé le 30 septembre. Dans l'ordre 
   - le plan d'A3 est validé : 15 objets à gagner, tous ouverts à tous, gardés pour toujours, en deux livraisons ;
   - la première livraison (six objets) est validée ;
   - la deuxième livraison (neuf objets) est validée : A3 est terminée.
+  - X3 à X5 (niveaux jouables, avec la migration `level_progress`) passent avant A4 : l'avatar dans Supabase s'appuiera sur une vraie progression.
+  - le plan de X3 à X5 est validé :
+    - la fiche et le bilan reprennent le HUD de jeu, la discussion garde les bulles de la marque ;
+    - XP d'un niveau : 10 XP la première fois qu'il est terminé, réussi ou non (la maquette X5b donne +20 XP à un bilan raté), et 10 XP par étoile ; rejouer ne rapporte que les étoiles nouvelles ;
+    - une leçon à la voix compte comme une séance, sans étoiles ni validation du niveau ;
+    - la maîtrise du chapitre ne bouge pas pour l'instant.
+  - X3 à X5b sont livrés, à valider sur le Pixel :
+    - la migration `explorer_levels` (`level_attempts`, `level_progress`, `finish_level`) est testée en local ;
+    - « Le bilan de ton tuteur » montre pour l'instant les objectifs du niveau ou la leçon à revoir, sans texte écrit par le tuteur.
+  - retours de Romain sur le Pixel : le parcours lui plaît ; l'avatar doit marcher jusqu'au niveau touché avant que la fiche s'ouvre, et les étoiles se placent au-dessus du niveau, façon Mario (fait) ;
+  - la migration `explorer_levels` est appliquée en ligne (version `20261006135139`), avec l'accord de Romain.
+  - après le premier essai du vrai tuteur, validé par Romain :
+    - une réponse longue ne coupe plus la leçon : l'app n'attend que le début de la réponse, puis surveille les silences ;
+    - les leçons sont enseignées comme par un professeur d'un très grand lycée (utilité dans la vie, notion, exemple résolu, question), avec le programme du niveau tiré du référentiel, et ses exercices corrigés hors leçon ;
+    - les formules du tuteur sont de vraies formules (LaTeX dessiné par MathJax sur l'appareil, environ 1,5 Mo de JavaScript ajoutés à l'app).
+
+- **07/10 :**
+  - X3 à X5b sont validés par Romain sur le Pixel, avec le vrai tuteur : fiche, marche vers le niveau touché, étoiles façon Mario, leçons de grand professeur, formules MathJax, pause parentale avant d'entrer dans un niveau, clavier qui ne cache plus la saisie.
+  - Prochaine étape : A4.
 
 ## En attente
 

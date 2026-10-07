@@ -149,7 +149,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - Une migration par changement, testée en local (`db:reset` puis `db:test`), montrée à Romain avant d'être appliquée en ligne. Rien d'irréversible (suppression de table ou de colonne, réécriture de données) sans son accord explicite.
   - Chaque table : RLS activée, politiques `to authenticated` avec `(select auth.uid())`, une politique par action, `GRANT` explicites (rien pour `anon`), FK indexées.
   - Les fonctions d'aide vivent dans le schéma `private` (non exposé), en `security definer` avec `set search_path = ''`, et `revoke execute … from public`.
-  - L'élève n'écrit que des colonnes précises (droits `UPDATE` par colonne) et ses réponses de flashcards ; XP, séries, maîtrise et agrégats sont calculés par des déclencheurs. Le reste (conversations, séances écrites et vocales, codes, consentements) est écrit par le serveur.
+  - L'élève n'écrit que des colonnes précises (droits `UPDATE` par colonne) et ses réponses de flashcards ; XP, séries, maîtrise et agrégats sont calculés par des déclencheurs. Le reste (conversations, séances écrites et vocales, parties des niveaux d'Explorer, codes, consentements) est écrit par le serveur.
   - Les parents ne lisent jamais les conversations ni les messages : seulement des agrégats et des résumés structurés.
   - Le « jour » est celui de l'heure de Paris, en SQL comme en TypeScript (`@/lib/parisTime`).
 - **Tuteur IA :**
@@ -162,6 +162,13 @@ Chaque choix doit rester compatible avec une publication sur les stores :
     - La limite en mémoire (`server/guards/rateLimit.ts`) reste une première barrière par installation.
   - L'historique de la discussion est relu en base à partir de `conversationId`, jamais repris de l'app. Les messages sont enregistrés par le serveur ; une réponse retirée par la modération ne l'est pas.
   - Le vocal enregistre le début de séance dans l'enveloppe `server/tutor/voice.ts`, et la fin via `/api/tutor/voice/end` (plafond 10 min) : `server/tutor/realtime.ts` n'est pas modifié pour cela.
+  - Niveaux d'Explorer (`topic.levelId`, `server/tutor/level.ts`) :
+    - le tuteur écrit juge par des outils (`record_answer`, `complete_step`), plafonnés par `applyCalls` (`src/features/explorer/logic/levelPlay.ts`) : c'est le serveur qui calcule le score, jamais l'app ;
+    - la partie d'une séance est dans `level_attempts`, et `finish_level` (une fois par partie) garde le meilleur résultat dans `level_progress` et ajoute l'XP à la séance : 10 XP la première fois que le niveau est terminé, puis 10 XP par étoile nouvelle (même règle que `awardedXp` en TypeScript). La maîtrise du chapitre n'en dépend pas ;
+    - chaque visite d'un niveau est une nouvelle partie (`tutorService.forgetConversation`), et une conversation ne se reprend que sur le même chapitre et le même niveau ;
+    - à la voix, seules les leçons se jouent, sans outil : l'appel compte comme une séance (avec son `level_id`), sans étoiles ni validation ;
+    - une leçon écrite prend le format `LESSON_FORMAT` (professeur d'un très grand lycée : utilité dans la vie, notion, exemple résolu, question de vérification) et jusqu'à 1 500 tokens ; les consignes reçoivent le programme du niveau (`server/content/maths4e.ts` : capacités, attendus, précisions) et, hors leçon, ses exercices corrigés, qui ne partent jamais dans l'app.
+  - Formules : à l'écrit, le tuteur écrit ses calculs en LaTeX (`$…$` dans la phrase, `$$…$$` seul sur sa ligne), selon `MATH_FORMAT` de `server/tutor/prompt.ts`. L'app les dessine sur l'appareil avec MathJax 4 (`@mathjax/src`, `src/features/tutor/math/texToSvg.ts`, chargé au premier besoin, dans un bloc protégé) et `react-native-svg`. Une formule invalide, ou qui demanderait une police non incluse, reste affichée en texte. Les « imports » de package.json de MathJax (`#default-font/…`) sont traduits dans `metro.config.js`. Ni le vocal ni les résumés pour le parent n'écrivent de LaTeX.
   - Résumés pour le parent (`server/tutor/summaries.ts`) : sortie structurée (notions comprises, points à revoir, résultat) et modérée, mise en forme dans l'app. Jamais de transcription ni de texte libre de l'élève.
   - Aucune donnée personnelle n'est envoyée à OpenAI : ni prénom, ni âge exact, ni auto-évaluation, et e-mails et téléphones sont masqués. `safety_identifier` est un hachage de l'identifiant. Le résumé de la semaine écrit `{prenom}`, remplacé dans l'app.
 - **Accessibilité :**

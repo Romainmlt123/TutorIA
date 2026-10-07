@@ -32,6 +32,8 @@ Mobile d'abord (iOS et Android), avec le même code pour le web. Données et com
 | Flashcards · Session | `/revisions/session?chapter=…` ou `?mode=daily`           | `03b-Flashcards-Session.dc.html`    |
 | Stats                | `/stats`                                                  | `04-Stats.dc.html`                  |
 | Explorer · Les îles  | `/explorer`                                               | `X1-Explorer-Iles.dc.html`          |
+| Explorer · Régions   | `/explorer?ile=maths` puis `&region=maths-nombres`        | `X2-Explorer-Carte.dc.html`         |
+| Explorer · Un niveau | `/niveau?id=maths-equations.isoler-x` (`&mode=voix`)      | `X3` à `X5b` (fiche sur la carte)   |
 | Profil               | `/profil` (déconnexion, code parent, export, suppression) | pas de maquette                     |
 | Crée ton avatar      | `/avatar` (`?premiere=1` à la première visite d'Explorer) | pas de maquette                     |
 | Relier un parent     | `/relier-parent`                                          | pas de maquette                     |
