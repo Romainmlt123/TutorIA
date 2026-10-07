@@ -2,6 +2,7 @@ import { layout } from './layout';
 import {
   colors,
   game,
+  goal,
   gradientAngle,
   hero,
   kpi,
@@ -9,6 +10,8 @@ import {
   onColor,
   palette,
   radius,
+  screenBand,
+  sectionTitle,
   settingTiles,
   shadow,
   space,
@@ -16,6 +19,7 @@ import {
   subjects,
   typeScale,
   voice,
+  voiceCall,
 } from './tokens.generated';
 import { spaces } from './spaces';
 
@@ -42,6 +46,12 @@ export const theme = {
   statuses,
   settingTiles,
   spaces,
+  /** v2.5 : bandeau de marque, titres de section dans leur carte, objectif du jour. */
+  screenBand,
+  sectionTitle,
+  goal,
+  /** v2.6 : appel vocal plein écran. */
+  voiceCall,
 } as const;
 
 export type Theme = typeof theme;

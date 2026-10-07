@@ -18,7 +18,11 @@ export function AdviceCard({ text }: { text: string }) {
           contentStyle={styles.center}>
           <Icon name="ampoule" size={20} color={theme.colors.textOnColor} strokeWidth={2} />
         </GradientSurface>
-        <Text variant="section" color={theme.palette.violet[600]} accessibilityRole="header">
+        <Text
+          variant="h3"
+          weight="black"
+          color={theme.palette.violet[600]}
+          accessibilityRole="header">
           {fr.parent.home.adviceTitle}
         </Text>
       </View>

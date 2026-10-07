@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
+import { ScreenBand } from '@/components/ScreenBand';
 import { ScreenContainer } from '@/components/ScreenContainer';
+import { SectionCard } from '@/components/SectionCard';
 import { ConsentBanner } from '@/features/access/ConsentBanner';
-import { SectionHeader } from '@/components/SectionHeader';
 import { SubjectCard } from '@/components/subject/SubjectCard';
 import { TwoColumnGrid } from '@/components/TwoColumnGrid';
 import { fr } from '@/i18n/fr';
@@ -17,28 +18,36 @@ import { ResumeCard } from './components/ResumeCard';
 import { StreakCard } from './components/StreakCard';
 import { useHomeData } from './hooks/useHomeData';
 
-/** 01 · Accueil (design/screens/01-Accueil.dc.html). */
+/** Ce que les cartes de jeu recouvrent du bandeau, sur l'Accueil seulement. */
+const HOME_OVERLAP = 64;
+
+/** 01 · Accueil (design/screens/01-Accueil.dc.html), bandeau de marque bleu (v2.5). */
 export function HomeScreen() {
   const router = useRouter();
   const { student, quote, subjects, resume } = useHomeData();
 
   return (
-    <ScreenContainer contentStyle={styles.content}>
-      <HomeHeader
-        firstName={student.firstName}
-        unreadNotifications={student.unreadNotifications}
-        onNotifications={() =>
-          router.push({ pathname: '/bientot', params: { sujet: 'notifications' } })
-        }
-        onProfile={() => router.push('/profil')}
-      />
-      <ConsentBanner />
-      {quote ? <QuoteOfTheDay quote={quote} /> : null}
-
+    <ScreenContainer
+      contentStyle={styles.content}
+      bandOverlap={HOME_OVERLAP}
+      band={
+        <ScreenBand tone="student" overlap={HOME_OVERLAP} accessibilityLabel={fr.home.welcome}>
+          <HomeHeader
+            firstName={student.firstName}
+            unreadNotifications={student.unreadNotifications}
+            onNotifications={() =>
+              router.push({ pathname: '/bientot', params: { sujet: 'notifications' } })
+            }
+            onProfile={() => router.push('/profil')}
+          />
+          {quote ? <QuoteOfTheDay quote={quote} /> : null}
+        </ScreenBand>
+      }>
       <View accessibilityLabel={fr.home.gameSection} style={styles.gameRow}>
         <StreakCard days={student.streakDays} />
         <LevelCard level={student.level} xp={student.xp} xpForNextLevel={student.xpForNextLevel} />
       </View>
+      <ConsentBanner />
 
       <ResumeCard
         subjectId={resume.subjectId}
@@ -56,12 +65,9 @@ export function HomeScreen() {
 
       <GoalCard {...student.dailyGoal} />
 
-      <View style={styles.subjects}>
-        <SectionHeader
-          title={fr.home.subjects}
-          actionLabel={fr.home.seeAll}
-          onAction={() => router.push('/revisions')}
-        />
+      <SectionCard
+        title={fr.home.subjects}
+        action={{ label: fr.home.seeAll, onPress: () => router.push('/revisions') }}>
         <TwoColumnGrid
           items={subjects}
           keyOf={(s) => s.id}
@@ -77,7 +83,7 @@ export function HomeScreen() {
             />
           )}
         />
-      </View>
+      </SectionCard>
     </ScreenContainer>
   );
 }
@@ -85,5 +91,4 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   content: { gap: theme.space[4] },
   gameRow: { flexDirection: 'row', gap: theme.space[3] },
-  subjects: { gap: theme.space[3], marginTop: theme.space[4] },
 });

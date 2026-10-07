@@ -57,21 +57,22 @@ export function MasteryCard({ points, unit = 'week' }: Props) {
       gradient={theme.kpi.mastery}
       shadow={theme.shadow.md}
       contentStyle={styles.content}>
-      <View style={styles.header}>
-        <View style={styles.titles}>
-          <Text variant="body" weight="black" color="textOnColor" accessibilityRole="header">
-            {fr.stats.mastery}
-          </Text>
+      <View style={styles.titles}>
+        <Text variant="h3" weight="black" color="textOnColor" accessibilityRole="header">
+          {fr.stats.mastery}
+        </Text>
+        {/* v2.5 : le titre prend toute la largeur, le badge suit le pourcentage. */}
+        <View style={styles.header}>
           <Text variant="h1" weight="black" color="textOnColor">
             {`${last.percent} %`}
           </Text>
+          <Pill
+            label={fr.stats.masteryDelta(last.percent - first.percent, points.length, unit)}
+            icon="tendance-haut"
+            backgroundColor={theme.palette.green[500]}
+            color={theme.palette.green[900]}
+          />
         </View>
-        <Pill
-          label={fr.stats.masteryDelta(last.percent - first.percent, points.length, unit)}
-          icon="tendance-haut"
-          backgroundColor={theme.palette.green[500]}
-          color={theme.palette.green[900]}
-        />
       </View>
       <View
         accessible
@@ -155,11 +156,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.space[4],
     paddingBottom: theme.space[4],
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: theme.space[2],
-  },
+  header: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
   titles: { gap: theme.space[1] },
 });

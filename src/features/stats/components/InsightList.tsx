@@ -20,8 +20,8 @@ export function InsightList(props: Props) {
     <>
       <View style={styles.header}>
         <View style={styles.title}>
-          <Icon name={strengths ? 'etoile' : 'cible'} size={20} color={theme.colors.textOnColor} />
-          <Text variant="body" weight="black" color="textOnColor" accessibilityRole="header">
+          <Icon name={strengths ? 'etoile' : 'cible'} size={24} color={theme.colors.textOnColor} />
+          <Text variant="h3" weight="black" color="textOnColor" accessibilityRole="header">
             {strengths ? fr.stats.strengths : fr.stats.toWork}
           </Text>
         </View>

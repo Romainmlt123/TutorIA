@@ -15,6 +15,7 @@ import { useParentAccount } from '@/lib/session/SessionProvider';
 import type { LinkedChild } from '@/services/family';
 import { subjectTheme, theme } from '@/theme';
 
+import { ParentBand } from './components/ParentBand';
 import { AdviceCard } from './components/AdviceCard';
 import { AlertCard } from './components/AlertCard';
 import { ChildSwitcher } from './components/ChildSwitcher';
@@ -137,45 +138,49 @@ export function ParentHomeScreen() {
   const addChild = () => router.push('/parents/enfant');
 
   return (
-    <ScreenContainer contentStyle={styles.content}>
-      <View style={styles.top}>
-        {child ? (
-          <ChildSwitcher
-            childList={children}
-            selected={child}
-            onSelect={select}
-            onAddChild={addChild}
-          />
-        ) : (
-          <View />
-        )}
-        <View style={styles.topRight}>
-          <Pill
-            label={t.spaceBadge}
-            backgroundColor={theme.colors.primary}
-            color={theme.colors.textOnColor}
-            size="md"
-            style={styles.badge}
-          />
-          <IconButton
-            icon="cloche"
-            accessibilityLabel={t.notifications}
-            onPress={() =>
-              router.push({ pathname: '/bientot', params: { sujet: 'notifications' } })
-            }
-          />
-        </View>
-      </View>
-      <View style={styles.header}>
-        <Text variant="heading" accessibilityRole="header">
-          {parent?.firstName ? t.greeting(parent.firstName) : t.greetingNoName}
-        </Text>
-        {child ? (
-          <Text variant="bodySm" color="textSecondary">
-            {t.weekIntro(child.firstName, weekRangeLabel(addDays(parisDay(new Date()), -6)))}
-          </Text>
-        ) : null}
-      </View>
+    <ScreenContainer
+      contentStyle={styles.content}
+      band={
+        <ParentBand
+          title={parent?.firstName ? t.greeting(parent.firstName) : t.greetingNoName}
+          intro={
+            child
+              ? t.weekIntro(child.firstName, weekRangeLabel(addDays(parisDay(new Date()), -6)))
+              : undefined
+          }
+          top={
+            <View style={styles.top}>
+              {child ? (
+                <ChildSwitcher
+                  childList={children}
+                  selected={child}
+                  onSelect={select}
+                  onAddChild={addChild}
+                />
+              ) : (
+                <View />
+              )}
+              <View style={styles.topRight}>
+                <Pill
+                  label={t.spaceBadge}
+                  backgroundColor={theme.screenBand.controlVeil}
+                  color={theme.colors.textOnColor}
+                  size="md"
+                  style={styles.badge}
+                />
+                <IconButton
+                  icon="cloche"
+                  onBand
+                  accessibilityLabel={t.notifications}
+                  onPress={() =>
+                    router.push({ pathname: '/bientot', params: { sujet: 'notifications' } })
+                  }
+                />
+              </View>
+            </View>
+          }
+        />
+      }>
       {(requests.data ?? []).map((request) => (
         <LinkRequestCard key={request.studentId} request={request} />
       ))}
@@ -209,11 +214,10 @@ export function ParentHomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { gap: theme.space[6] },
+  content: { gap: theme.space[4] },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   topRight: { flexDirection: 'row', alignItems: 'center', gap: theme.space[2] },
   badge: { alignSelf: 'center' },
-  header: { gap: theme.space[1], marginTop: -4 },
   kpis: { flexDirection: 'row', gap: theme.space[3] },
   section: { gap: theme.space[3] },
   loader: { marginTop: theme.space[8] },

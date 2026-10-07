@@ -22,7 +22,7 @@ export function WeekSummaryCard({ text, caption, verdict }: Props) {
           <Logo variant="onWhite" size={36} />
         </View>
         <View style={styles.titles}>
-          <Text variant="section" color="textOnColor" accessibilityRole="header">
+          <Text variant="h3" weight="black" color="textOnColor" accessibilityRole="header">
             {t.summaryTitle}
           </Text>
           <Text variant="caption" color="textOnColor" style={styles.caption}>

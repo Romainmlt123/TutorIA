@@ -24,7 +24,7 @@ export function ResumeCard({ subjectId, chapterTitle, subtitle, progress, onResu
       <View style={styles.row}>
         <SubjectTile subjectId={subjectId} size={48} />
         <View style={styles.texts}>
-          <Text variant="h3">{chapterTitle}</Text>
+          <Text variant="metric">{chapterTitle}</Text>
           <Text variant="bodySm" color="textSecondary">
             {subtitle}
           </Text>

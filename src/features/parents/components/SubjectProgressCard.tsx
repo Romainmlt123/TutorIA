@@ -87,9 +87,7 @@ export function SubjectProgressCard({ summary, open, onToggle }: Props) {
       {open ? (
         <View style={styles.chapters}>
           {summary.chapters.map((chapter) => (
-            <View
-              key={chapter.chapterId}
-              style={[styles.chapter, { backgroundColor: subject.soft }]}>
+            <View key={chapter.chapterId} style={[styles.chapter, styles.chapterRow]}>
               <View style={styles.chapterText}>
                 <Text variant="label" weight="bold">
                   {chapterTitle(chapter.chapterId)}
@@ -110,10 +108,10 @@ export function SubjectProgressCard({ summary, open, onToggle }: Props) {
 }
 
 const styles = StyleSheet.create({
+  // Dans la carte de section (v2.5) : un bloc sur le fond `bg`, sans ombre.
   card: {
-    borderRadius: theme.radius['3xl'],
-    backgroundColor: theme.colors.surface,
-    boxShadow: theme.shadow.md,
+    borderRadius: theme.radius['2xl'],
+    backgroundColor: theme.colors.bg,
     overflow: 'hidden',
   },
   head: { gap: 14, paddingVertical: 18, paddingHorizontal: theme.space[5] },
@@ -136,5 +134,7 @@ const styles = StyleSheet.create({
     paddingRight: theme.space[3],
     borderRadius: theme.radius['2xl'],
   },
+  // Chapitres dépliés : lignes blanches dans le bloc (v2.5).
+  chapterRow: { backgroundColor: theme.colors.surface },
   chapterText: { flex: 1 },
 });

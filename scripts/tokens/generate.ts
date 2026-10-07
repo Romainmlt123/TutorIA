@@ -56,6 +56,46 @@ export type AppTokens = {
     { label: string; background: string; text: string } | Record<string, string>
   >;
   settingTiles: Record<string, string>;
+  screenBand: {
+    eleve: string[];
+    violet: string[];
+    angle: string;
+    radiusBottom: string;
+    overlap: string;
+    titleSize: string;
+    text: string;
+    controlVeil: string;
+    segmentActive: { background: string; textOnViolet: string; textOnEleve: string };
+  };
+  sectionTitle: { fontSize: string; lineHeight: string; fontWeight: number };
+  goal: { gradient: string[]; text: string };
+  voiceCall: {
+    background: string[];
+    angle: string;
+    glass: string;
+    dock: string;
+    status: { speaking: string[]; listening: string[]; listeningOrange: string[]; neutral: string };
+    avatar: {
+      size: string;
+      compactSize: string;
+      hop: string;
+      compactHop: string;
+      cycle: string;
+      squash: number;
+      pauseFactor: number;
+      tilt: string;
+      breath: string;
+    };
+    captions: {
+      spoken: string;
+      upcoming: string;
+      size: string;
+      lineHeight: string;
+      compactSize: string;
+      compactLineHeight: string;
+    };
+    hangup: string;
+  };
 };
 
 export type Gradient = { colors: string[]; locations: number[] };
@@ -70,6 +110,18 @@ export function kebabToCamel(name: string): string {
 export function parsePx(value: string): number {
   const match = /^(-?\d+(?:\.\d+)?)px$/.exec(value.trim());
   if (!match?.[1]) throw new Error(`Valeur en px attendue, reçu « ${value} »`);
+  return Number(match[1]);
+}
+
+export function parseMs(value: string): number {
+  const match = /^(\d+(?:\.\d+)?)ms$/.exec(value.trim());
+  if (!match?.[1]) throw new Error(`Durée en ms attendue, reçu « ${value} »`);
+  return Number(match[1]);
+}
+
+export function parseDeg(value: string): number {
+  const match = /^(-?\d+(?:\.\d+)?)deg$/.exec(value.trim());
+  if (!match?.[1]) throw new Error(`Angle en deg attendu, reçu « ${value} »`);
   return Number(match[1]);
 }
 
@@ -273,6 +325,58 @@ export function buildTokens(design: DesignTokens, app: AppTokens) {
     hero: { gradient: parseGradient(app.hero.gradient, resolve), text: resolve(app.hero.text) },
     statuses,
     settingTiles,
+    screenBand: {
+      student: parseGradient(app.screenBand.eleve, resolve),
+      violet: parseGradient(app.screenBand.violet, resolve),
+      angle: parseDeg(app.screenBand.angle),
+      radiusBottom: parsePx(app.screenBand.radiusBottom),
+      overlap: parsePx(app.screenBand.overlap),
+      titleSize: parsePx(app.screenBand.titleSize),
+      text: resolve(app.screenBand.text),
+      controlVeil: app.screenBand.controlVeil,
+      segmentActive: {
+        background: resolve(app.screenBand.segmentActive.background),
+        textOnViolet: resolve(app.screenBand.segmentActive.textOnViolet),
+        textOnStudent: resolve(app.screenBand.segmentActive.textOnEleve),
+      },
+    },
+    sectionTitle: {
+      fontSize: parsePx(app.sectionTitle.fontSize),
+      lineHeight: parsePx(app.sectionTitle.lineHeight),
+    },
+    goal: { gradient: parseGradient(app.goal.gradient, resolve), text: resolve(app.goal.text) },
+    voiceCall: {
+      background: parseGradient(app.voiceCall.background, resolve),
+      angle: parseDeg(app.voiceCall.angle),
+      glass: app.voiceCall.glass,
+      dock: app.voiceCall.dock,
+      status: {
+        speaking: parseGradient(app.voiceCall.status.speaking, resolve),
+        listening: parseGradient(app.voiceCall.status.listening, resolve),
+        listeningOrange: parseGradient(app.voiceCall.status.listeningOrange, resolve),
+        neutral: app.voiceCall.status.neutral,
+      },
+      avatar: {
+        size: parsePx(app.voiceCall.avatar.size),
+        compactSize: parsePx(app.voiceCall.avatar.compactSize),
+        hop: parsePx(app.voiceCall.avatar.hop),
+        compactHop: parsePx(app.voiceCall.avatar.compactHop),
+        cycleMs: parseMs(app.voiceCall.avatar.cycle),
+        squash: app.voiceCall.avatar.squash,
+        pauseFactor: app.voiceCall.avatar.pauseFactor,
+        tilt: parseDeg(app.voiceCall.avatar.tilt),
+        breathMs: parseMs(app.voiceCall.avatar.breath),
+      },
+      captions: {
+        spoken: resolve(app.voiceCall.captions.spoken),
+        upcoming: app.voiceCall.captions.upcoming,
+        size: parsePx(app.voiceCall.captions.size),
+        lineHeight: parsePx(app.voiceCall.captions.lineHeight),
+        compactSize: parsePx(app.voiceCall.captions.compactSize),
+        compactLineHeight: parsePx(app.voiceCall.captions.compactLineHeight),
+      },
+      hangup: resolve(app.voiceCall.hangup),
+    },
   };
 }
 

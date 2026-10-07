@@ -21,7 +21,7 @@ export function AlertCard({ text, onDetail }: Props) {
         <View style={styles.badge}>
           <Icon name="alerte" size={20} color={theme.palette.orange[500]} strokeWidth={2} />
         </View>
-        <Text variant="section" color="textOnColor" accessibilityRole="header">
+        <Text variant="h3" weight="black" color="textOnColor" accessibilityRole="header">
           {t.alertTitle}
         </Text>
       </View>
