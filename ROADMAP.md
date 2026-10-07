@@ -250,7 +250,7 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - La v2.5 est validée par Romain sur le Pixel, avec ses retours intégrés :
     - P1 sans le badge « Espace Parents », chiffres clés centrés sans évolution, et « Comment l'encourager » propose deux questions à poser (rédigées à l'avance, sans IA) ;
     - P2 : chaque matière de « Par matière » est un bloc teinté de sa couleur ;
-    - l'objectif du jour passe en dégradé violet → bleu (écart 18) ;
+    - l'objectif du jour passe en dégradé violet → bleu (écart 18), qui glisse lentement (figé avec « Réduire les animations », en pause hors de l'Accueil) ;
     - la saisie du chat libre remonte au-dessus du logo de la barre.
   - Corrigé : le résumé de la semaine était coupé au milieu d'une phrase. Le modèle consomme une partie des jetons de sortie pour réfléchir, et la limite de 300 jetons l'arrêtait. Les résumés passent à 1 500 jetons, et une réponse coupée n'est plus jamais enregistrée.
 
