@@ -2,7 +2,7 @@ import { Fragment, useState, type ReactNode } from 'react';
 import { Image, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { GradientSurface } from '@/components/GradientSurface';
-import { Icon } from '@/components/Icon';
+import { Icon, type IconName } from '@/components/Icon';
 import { Text } from '@/components/Text';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
@@ -10,7 +10,7 @@ import { explorerArt } from '@/theme/explorerArt';
 import { GameText } from './GameText';
 
 // Texture de planches rendue par Blender (tools/explorer-3d/wood_panel.py).
-const WOOD = require('../../../assets/explorer/images/wood-panel.webp');
+export const WOOD = require('../../../assets/explorer/images/wood-panel.webp');
 
 const HUD = explorerArt.hud;
 const WOOD_COLORS = HUD.wood;
@@ -102,16 +102,21 @@ export function WoodFrame({ tab, accessibilityLabel, children, fill = false }: F
   );
 }
 
-/** Pastille des étoiles gagnées, dans une encoche sombre. */
-export function StarChip({ stars, label }: { stars: number; label: string }) {
+/** Pastille dorée dans une encoche sombre : une icône pleine et un compte. */
+export function WoodChip({ icon, value, label }: { icon: IconName; value: string; label: string }) {
   return (
     <View accessible accessibilityLabel={label} style={styles.stars}>
-      <Icon name="etoile" variant="fill" size={18} color={HUD.gold.face[1]} />
+      <Icon name={icon} variant="fill" size={18} color={HUD.gold.face[1]} />
       <GameText size={17} stroke={2} drop={0}>
-        {String(stars)}
+        {value}
       </GameText>
     </View>
   );
+}
+
+/** Pastille des étoiles gagnées. */
+export function StarChip({ stars, label }: { stars: number; label: string }) {
+  return <WoodChip icon="etoile" value={String(stars)} label={label} />;
 }
 
 /** Étiquette de parchemin : la prochaine étape, bien lisible sur le bois (2 lignes au plus par défaut). */

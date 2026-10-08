@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 
+import { GameText } from '@/components/game/GameText';
+import { WoodButton } from '@/components/game/WoodButton';
 import { Icon } from '@/components/Icon';
 import { IconButton } from '@/components/IconButton';
-import { PressableBase } from '@/components/PressableBase';
 import { ScreenBand } from '@/components/ScreenBand';
 import { Text } from '@/components/Text';
 import type { AvatarAnimation } from '@/features/avatar/avatar3d/Avatar3D';
@@ -16,9 +17,13 @@ import { useSceneActive } from '@/lib/three/useSceneActive';
 import { useSceneKey } from '@/lib/three/useSceneKey';
 import { canUseWebGL } from '@/lib/three/webgl';
 import { extras, theme } from '@/theme';
+import { explorerArt } from '@/theme/explorerArt';
 
 const t = fr.profile;
 const H = theme.profile.hero;
+const HUD = explorerArt.hud;
+/** Colonne des textes, à gauche de la figurine ; le bouton de l'avatar en prend toute la largeur. */
+const TEXTS_WIDTH = 190;
 /** Le résumé déborde de 72 px sur le bas du bandeau. */
 export const PROFILE_OVERLAP = 72;
 /** Durée du salut à l'arrivée, avant l'attente. */
@@ -129,25 +134,28 @@ export function ProfileHero(props: Props) {
             {t.since(sinceMonth)}
           </Text>
         ) : null}
-        <PressableBase
-          onPress={onAvatar}
-          accessibilityRole="button"
-          accessibilityLabel={
-            news > 0 ? `${look ? t.avatarEdit : t.avatarCreate}, ${t.news(news)}` : undefined
-          }
-          style={({ pressed }) => [styles.avatarButton, pressed && styles.pressed]}>
-          <Icon name="crayon" size={16} color={theme.palette.blue[600]} strokeWidth={2} />
-          <Text variant="label" weight="bold" color={theme.palette.blue[600]}>
-            {look ? t.avatarEdit : t.avatarCreate}
-          </Text>
+        <View style={styles.avatarButton}>
+          <WoodButton
+            size={46}
+            label={look ? t.avatarEdit : t.avatarCreate}
+            icon="crayon"
+            accessibilityLabel={
+              news > 0
+                ? `${look ? t.avatarEdit : t.avatarCreate}, ${t.news(news)}`
+                : look
+                  ? t.avatarEdit
+                  : t.avatarCreate
+            }
+            onPress={onAvatar}
+          />
           {news > 0 ? (
             <View aria-hidden style={styles.badge}>
-              <Text variant="caption" weight="black" color="textOnColor">
+              <GameText size={12} stroke={2} drop={0} align="center">
                 {String(news)}
-              </Text>
+              </GameText>
             </View>
           ) : null}
-        </PressableBase>
+        </View>
       </View>
     </ScreenBand>
   );
@@ -155,7 +163,7 @@ export function ProfileHero(props: Props) {
 
 const styles = StyleSheet.create({
   back: { alignSelf: 'flex-start' },
-  texts: { maxWidth: 190, gap: theme.space[2], marginTop: theme.space[4] },
+  texts: { maxWidth: TEXTS_WIDTH, gap: theme.space[2], marginTop: theme.space[4] },
   soft: { opacity: 0.85 },
   grade: {
     alignSelf: 'flex-start',
@@ -168,31 +176,18 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.full,
     backgroundColor: theme.screenBand.controlVeil,
   },
-  avatarButton: {
-    alignSelf: 'flex-start',
-    minHeight: 40,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.space[2],
-    marginTop: theme.space[2],
-    paddingLeft: theme.space[3],
-    paddingRight: theme.space[4],
-    borderRadius: theme.radius.full,
-    backgroundColor: theme.colors.surface,
-    boxShadow: extras.call.avatarShadow,
-  },
-  pressed: { opacity: 0.85 },
+  avatarButton: { width: TEXTS_WIDTH, marginTop: theme.space[2] },
   badge: {
     position: 'absolute',
-    top: -4,
-    right: -4,
-    minWidth: 20,
-    height: 20,
-    paddingHorizontal: 5,
+    top: -6,
+    right: -6,
+    minWidth: 22,
+    height: 22,
+    paddingHorizontal: 4,
     borderRadius: theme.radius.full,
     borderWidth: 2,
-    borderColor: theme.colors.surface,
-    backgroundColor: H.newsBadge,
+    borderColor: HUD.ink,
+    backgroundColor: HUD.streak.face[1],
     alignItems: 'center',
     justifyContent: 'center',
   },
