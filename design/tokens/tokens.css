@@ -149,6 +149,12 @@
   --sheet-shadow: 0 -12px 32px rgba(3,39,110,0.25);
   --field-filled-border: #e1e6f0; /* champ rempli (fond --gray-100) dans une carte ou une feuille blanche */
 
+  /* Profil de l'élève (v2.8) */
+  --level-gradient: linear-gradient(90deg, #2e6be6 0%, #662ee6 100%);
+  --level-badge-gradient: linear-gradient(160deg, #662ee6 0%, #2e6be6 100%);
+  --trophy-locked: #eef1f6;
+  --trophy-locked-ring: #dce2ec;
+
   /* Voiles blancs sur fonds colorés */
   --on-color-veil: rgba(255,255,255,0.24);
   --on-color-track: rgba(255,255,255,0.30);

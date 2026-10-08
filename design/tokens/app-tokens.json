@@ -66,6 +66,13 @@
     "field": { "filledBackground": "{gray-100}", "filledBorder": "#e1e6f0" },
     "note": "Connexion plein écran (L2, L3, v2.7) : dégradé de l'espace, logo qui dit bonjour, formulaire dans une feuille blanche."
   },
+  "profile": {
+    "summaryTile": { "size": "48px", "radius": "16px", "icon": "24px", "glow": { "orange": "rgba(208,136,37,0.35)", "violet": "rgba(82,29,200,0.30)", "blue": "rgba(23,80,196,0.30)" } },
+    "level": { "gradient": ["#2e6be6", "#662ee6"], "badgeGradient": ["#662ee6", "#2e6be6"], "track": "{blue-100}", "height": "12px", "knob": "18px" },
+    "trophy": { "size": "64px", "locked": "#eef1f6", "lockedRing": "#dce2ec", "lockedInk": "{gray-300}" },
+    "hero": { "figure": ["168px", "282px"], "halo": "rgba(255,255,255,0.22)", "newsBadge": "{orange-600}" },
+    "note": "Profil de l'élève (05-Profil, v2.8) : bandeau, résumé centré, barre de niveau, trophées."
+  },
   "goal": { "gradient": ["#662ee6", "#2e6be6"], "text": "#ffffff", "note": "Carte Objectif du jour (Accueil), en dégradé violet → bleu de la marque depuis le 07/10 (le vert ressemblait trop à l'Histoire-Géo). L'objectif hebdomadaire des Parents garde le dégradé de l'Histoire-Géo." },
   "statuses": {
     "acquired": { "label": "Acquis", "background": "{green-700}", "text": "#ffffff" },

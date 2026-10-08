@@ -811,6 +811,72 @@ export interface SettingRowProps {
   divider?: boolean;
 }
 export declare function SettingRow(props: SettingRowProps): React.ReactElement;
+export type ProfileTone = 'orange' | 'violet' | 'blue' | 'green' | 'red' | 'cyan';
+export interface ProfileHeroProps {
+  /** Prénom, en 44 Black. */
+  name?: string;
+  /** Classe (« 4e » donne « Élève de 4e »). */
+  grade?: string;
+  /** Ligne sous la classe (« Depuis septembre »). */
+  since?: string;
+  /** Surtitre (« Mon profil » par défaut). */
+  kicker?: string;
+  /** Image de la figurine (dans l'app : la figurine 3D) ; sans image, l'initiale dans un disque blanc. */
+  avatarSrc?: string;
+  /** Texte alternatif de la figurine. */
+  avatarAlt?: string;
+  /** Nouveautés de la garde-robe : pastille orange sur « Modifier l'avatar ». */
+  newsCount?: number;
+  /** « Modifier l'avatar » (ou « Créer mon avatar » sans figurine). */
+  onEditAvatar?: () => void;
+  /** Retour ; null masque la flèche. */
+  onBack?: (() => void) | null;
+}
+export declare function ProfileHero(props: ProfileHeroProps): React.ReactElement;
+export interface LevelBarProps {
+  /** Niveau atteint. */
+  level?: number;
+  /** XP gagnés dans ce niveau. */
+  xp?: number;
+  /** XP du niveau (seuil du suivant). */
+  xpMax?: number;
+}
+export declare function LevelBar(props: LevelBarProps): React.ReactElement;
+export interface ProfileSummaryProps {
+  /** Trois chiffres : icône, couleur, valeur, légende. */
+  stats?: { icon: string; tone?: ProfileTone; value: string; label: string }[];
+  /** Niveau, XP et seuil : affiche la barre de niveau sous les chiffres. */
+  level?: number;
+  xp?: number;
+  xpMax?: number;
+  /** Libellé accessible de la carte. */
+  label?: string;
+}
+export declare function ProfileSummary(props: ProfileSummaryProps): React.ReactElement;
+export interface TrophyBadgeProps {
+  /** Nom du trophée (deux lignes au plus). */
+  label: string;
+  /** Icône (crown, flame, compass, star, trophy…). */
+  icon?: string;
+  /** Couleur de la médaille. */
+  tone?: ProfileTone;
+  /** Pas encore gagné : grisé avec un cadenas. */
+  locked?: boolean;
+  /** Ouvre le détail du trophée. */
+  onClick?: () => void;
+}
+export declare function TrophyBadge(props: TrophyBadgeProps): React.ReactElement;
+export interface TrophyShelfProps {
+  /** Titre (« Mes trophées »). */
+  title?: string;
+  /** Trophées, les gagnés d'abord. */
+  trophies?: TrophyBadgeProps[];
+  /** Nombre gagné (calculé sinon). */
+  earned?: number;
+  /** Nombre total de trophées. */
+  total?: number;
+}
+export declare function TrophyShelf(props: TrophyShelfProps): React.ReactElement;
 
 /** Grande carte de choix du profil (élève en bleu, parent en violet) sur l'écran de bienvenue. */
 export interface ProfileChoiceCardProps {

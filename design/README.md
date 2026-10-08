@@ -1,7 +1,7 @@
 # Tutor'IA — dossier design (app élève)
 
 Maquettes validées de l'application mobile élève Tutor'IA, prêtes à être implémentées.
-Source de vérité visuelle : le canevas Design « Tutor'IA · App mobile élève » sur claude.ai. Il contient 34 écrans iPhone de 390 px de large : 10 côté élève, 8 pour l'onglet Explorer, 4 dans l'espace Parents et 12 pour la connexion, l'inscription et l'onboarding.
+Source de vérité visuelle : le canevas Design « Tutor'IA · App mobile élève » sur claude.ai. Il contient 35 écrans iPhone de 390 px de large : 11 côté élève, 8 pour l'onglet Explorer, 4 dans l'espace Parents et 12 pour la connexion, l'inscription et l'onboarding.
 
 ## Contenu
 
@@ -10,11 +10,13 @@ design/
 ├── README.md            ← ce fichier : vue d'ensemble, écrans, règles
 ├── COMPONENTS.md        ← inventaire des composants à créer, avec leurs specs
 ├── DESIGN_SYSTEM.md     ← README du design system Tutor'IA (règles de marque, couleurs des matières, écarts validés)
-├── design-system/       ← les 87 composants publiés dans le design system (référence : bundle, props typées, fiches)
+├── design-system/       ← les 92 composants publiés dans le design system (référence : bundle, props typées, fiches)
 ├── tokens/
 │   ├── tokens.json      ← tokens officiels du design system (couleurs, type, espaces, rayons, ombres)
 │   ├── app-tokens.json  ← ajouts propres à l'app (matières, jeu, KPI, vocal, bandeaux, appel vocal)
 │   └── tokens.css       ← tout en variables CSS + @font-face Satoshi
+├── assets/              ← images des maquettes
+│   └── lea-debout.png        ← la figurine de Léa (rendu de la figurine de l'app, assets/avatar/avatar.glb)
 ├── components/          ← composants partagés des maquettes (importés par les écrans)
 │   ├── support.js            ← moteur de rendu des maquettes (copie, voir « Voir une maquette dans un navigateur »)
 │   ├── BottomNav.dc.html     ← barre de navigation élève et Parents (props espace, active)
@@ -39,6 +41,7 @@ design/
     ├── 03a-Flashcards-Choix.dc.html
     ├── 03b-Flashcards-Session.dc.html
     ├── 04-Stats.dc.html
+    ├── 05-Profil.dc.html              ← profil de l'élève (v2.8)
     ├── P1-Parents-Accueil.dc.html      ← espace Parents
     ├── P2-Parents-Progres.dc.html
     ├── P3-Parents-Sessions.dc.html
@@ -116,6 +119,12 @@ design/
   - Design system (87 composants) : nouveau `AuthScreen`, `TextField` avec `filled`, fiches `AuthHero`, `AuthProviderButtons` et `OrDivider` mises à jour. Copié dans `design-system/` et `DESIGN_SYSTEM.md`.
   - Tokens : `auth` dans `tokens/app-tokens.json`, variables `--auth-parent-gradient`, `--sheet-*` et `--field-filled-border` dans `tokens/tokens.css`.
   - Les trois pistes restent en haut du canevas (rangée « Pistes · Connexion et inscription »).
+- **v2.8** (8 octobre 2026)
+  - **Profil de l'élève** (`05-Profil.dc.html`), l'écran ouvert en touchant son rond sur l'accueil, qui n'avait pas de maquette. Validé par Romain parmi trois variantes (carte d'identité, carte de joueur, épuré) : la carte d'identité, avec les trophées de la carte de joueur et un résumé retravaillé.
+  - La figurine de Léa est un vrai rendu de la figurine de l'app (`assets/avatar/avatar.glb` : chignons, sweat orange, sac à dos violet), dans `design/assets/`.
+  - Design system (92 composants) : `ProfileHero`, `ProfileSummary`, `LevelBar`, `TrophyShelf`, `TrophyBadge` ; icônes `download`, `logout`, `trash`, `gift`, `trophy`. Copié dans `design-system/` et `DESIGN_SYSTEM.md`.
+  - Tokens : `profile` dans `tokens/app-tokens.json`, variables `--level-*` et `--trophy-locked*` dans `tokens/tokens.css`.
+  - Le rond « L » de l'accueil mène maintenant au profil dans les maquettes. Les trois variantes restent en haut du canevas.
 
 Les logos et les polices ne sont pas dupliqués : les écrans pointent vers `../../assets/logo/` et `../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/`.
 
@@ -161,7 +170,7 @@ Les données (citations, matières, cartes, stats) sont des exemples réalistes 
 
 ## Les écrans
 
-Format : iPhone 390 × 844. Marges d'écran 20 px. La barre de navigation flotte à 20 px du bas ; le contenu défilant garde ~116 px libres en bas pour ne pas passer dessous. Accueil (1460 px), Flashcards · Choix (1420 px), Stats (2560 px) et les écrans Parents (P1 1540 px, P2 2000 px, P3 1860 px, P4 1820 px) sont montrés en entier : ce sont des écrans qui défilent.
+Format : iPhone 390 × 844. Marges d'écran 20 px. La barre de navigation flotte à 20 px du bas ; le contenu défilant garde ~116 px libres en bas pour ne pas passer dessous. Accueil (1460 px), Flashcards · Choix (1420 px), Stats (2560 px), Profil (1937 px) et les écrans Parents (P1 1540 px, P2 2000 px, P3 1860 px, P4 1820 px) sont montrés en entier : ce sont des écrans qui défilent.
 
 Depuis la v2.5, l'Accueil, les Flashcards · Choix, les Stats et l'espace Parents s'ouvrent sur un **bandeau de marque**, et chaque titre de section est dans sa carte (voir « Bandeau de marque et cartes de section » dans les Règles clés).
 
@@ -218,6 +227,22 @@ Depuis la v2.6, l'appel vocal (2B, 2D, 2F) est plein écran, sans barre de navig
 - Calendrier d'activité (heatmap 13 semaines, 5 niveaux de bleu).
 - **Tes points forts** : carte dégradé vert, titre blanc, lignes blanches.
 - **À retravailler** : carte orange uni, titre blanc, lignes blanches avec bouton **Réviser** (`primary`).
+
+### 5 · Profil — `05-Profil.dc.html`
+
+Validé par Romain le 8 octobre (v2.8). On y arrive en touchant son rond « L » sur l'accueil ; pas de barre de navigation, le retour ramène à l'accueil. Composants : `ProfileHero`, `ProfileSummary`, `LevelBar`, `TrophyShelf`, `SettingRow`, `Button`.
+
+- **Bandeau de marque bleu** (`ProfileHero`) : retour en verre, surtitre « Mon profil », prénom en 44 Black, pastille en verre « Élève de 4e », « Depuis septembre », et le bouton blanc **Modifier l'avatar** (vers l'éditeur d'avatar), avec une pastille orange du nombre de nouveautés de la garde-robe. La figurine de l'élève se tient à droite, sur une ombre au sol, devant un halo clair.
+  - Dans l'app, c'est la vraie figurine 3D (`AvatarPreview`, en pied, animation « attente », un « salut » à l'arrivée sur l'écran). L'image de la maquette (`design/assets/lea-debout.png`) est un rendu de cette figurine.
+  - Sans avatar : l'initiale dans un disque blanc à la place de la figurine, et le bouton devient « Créer mon avatar ».
+- **Résumé** (`ProfileSummary`), qui déborde de 72 px sur le bandeau : trois colonnes séparées par des filets, chaque chiffre **centré sous son icône** (tuile de 48 px en dégradé, avec une lueur de sa couleur) : série (orange, flamme, « 12 jours de série »), étoiles gagnées (violet, « 18 étoiles gagnées »), temps de la semaine (bleu, « 4 h 40 cette semaine »). Dessous, la **barre de niveau** (`LevelBar`) : pastille « 7 », barre en dégradé bleu → violet avec un curseur, pastille « 8 » en pointillés, « Niveau 7 · 340 / 500 XP » et « encore 160 XP ». La barre glisse quand l'XP change.
+- **Mes trophées** (`TrophyShelf`) : « 6 sur 24 » à droite du titre, médailles de 64 px qui défilent sur le côté, les gagnées d'abord, la prochaine à gagner en dernier, grisée avec un cadenas. Toucher une médaille ouvrira son détail (écran à concevoir).
+- **Ma famille** : chaque parent relié (initiale dans un disque violet, prénom, « Reliée depuis le 2 septembre », bouton **Retirer** avec confirmation), la phrase de transparence (« Claire voit tes progrès et le résumé de chaque session. Jamais tes conversations. »), puis **Relier un autre parent** en violet doux (vers « Relier mon compte à un parent »). Sans parent relié : « Aucun parent relié pour l'instant » et le même bouton.
+- **Préférences** (`SettingRow` + `Switch`) : rappel de révision (« Tous les jours à 18 h », l'heure se change en touchant la ligne), sous-titres pendant l'appel (le même réglage que le bouton « Sous-titres » de l'appel), sons et vibrations.
+- **Compte et données** : « Télécharger mes données » (l'export actuel), « Confidentialité » (ce que voient les parents, les droits de l'élève).
+- **Deux boutons pleine largeur en bas** : **Se déconnecter** en bleu doux (`Button` `soft`), puis **Supprimer mon compte** en rouge doux (`Button` `danger`, avec la confirmation actuelle). Le rouge reste réservé à la seule action qui efface. Puis « Tutor'IA · version 1.0 ».
+- Le bandeau d'accord parental (`ConsentBanner`), quand il s'affiche, se place juste sous le résumé.
+- À changer dans le code : `ProfileScreen` (`src/features/profile/`) suit cet ordre et ces composants. Données à exposer : étoiles gagnées, temps de la semaine, niveau et XP, trophées (gagnés, total, prochain), date d'arrivée, nombre de nouveautés de la garde-robe, préférences (rappel et sons sont nouveaux ; les sous-titres existent déjà dans l'appel).
 
 ### 2C / 2D · Tuteur + graphique — `02c-…`, `02d-…`
 - Le tuteur peut **tracer un graphique** pour illustrer son explication. Exemple : la droite y = 3x + 5 (rouge Maths) et la droite y = 20 (bleu pointillé), avec leur intersection x = 5 mise en évidence.
