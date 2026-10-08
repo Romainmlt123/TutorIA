@@ -12,12 +12,14 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
-import { Logo } from '@/components/Logo';
-import { PressableBase } from '@/components/PressableBase';
 import { fr } from '@/i18n/fr';
 import { extras, theme } from '@/theme';
 
-import type { CallState } from '../../logic/callState';
+import { Logo } from './Logo';
+import { PressableBase } from './PressableBase';
+
+/** Qui a la parole : le tuteur (il rebondit), l'élève (il penche la tête), ou personne (il respire). */
+export type AvatarMood = 'speaking' | 'listening' | 'idle';
 
 const A = theme.voiceCall.avatar;
 /** Lissage du niveau de la voix, comme dans les maquettes. */
@@ -30,26 +32,29 @@ const REPORT_DELAY_MS = 600;
 const HALO_FADE_MS = 400;
 
 type Props = {
-  state: CallState;
+  mood: AvatarMood;
   /** Niveau de la voix du tuteur, de 0 à 1 (valeur partagée, sans rendu React). */
   level: SharedValue<number>;
-  /** 148 sans visuel, 96 quand un visuel occupe le haut (2D, 2F). */
+  /** 148 sans visuel, 96 quand un visuel occupe le haut (2D, 2F) et sur la connexion (v2.7). */
   compact?: boolean;
-  onInterrupt: () => void;
-  onReport: () => void;
+  /** Appel vocal : le toucher interrompt le tuteur, l'appui long signale sa réponse. */
+  onInterrupt?: () => void;
+  onReport?: () => void;
 };
 
 /**
  * Le logo du tuteur (VoiceAvatar, v2.6) : il rebondit au niveau de sa voix et se pose aux pauses,
- * penche la tête quand l'élève a la parole, respire au repos. Le toucher interrompt le tuteur ;
- * l'appui long signale sa réponse. Tout s'arrête si l'élève a demandé moins d'animations.
+ * penche la tête quand l'élève a la parole, respire au repos. Dans l'appel, le toucher interrompt
+ * le tuteur et l'appui long signale sa réponse ; sur la connexion (v2.7), il dit bonjour.
+ * Tout s'arrête si l'élève a demandé moins d'animations.
  */
-export function VoiceAvatar({ state, level, compact = false, onInterrupt, onReport }: Props) {
+export function VoiceAvatar({ mood, level, compact = false, onInterrupt, onReport }: Props) {
   const size = compact ? A.compactSize : A.size;
   const hop = compact ? A.compactHop : A.hop;
   const reduceMotion = useReducedMotion();
-  const speaking = state === 'speaking';
-  const listening = state === 'listening';
+  const speaking = mood === 'speaking';
+  const listening = mood === 'listening';
+  const interactive = !!onInterrupt || !!onReport;
 
   const phase = useSharedValue(0);
   const breath = useSharedValue(0);
@@ -63,6 +68,7 @@ export function VoiceAvatar({ state, level, compact = false, onInterrupt, onRepo
   );
   // Les halos sont centrés sur le logo.
   const center = hop + size / 2;
+  const disc = { width: size, height: size, boxShadow: extras.call.avatarShadow };
 
   useEffect(() => {
     if (reduceMotion) {
@@ -154,18 +160,24 @@ export function VoiceAvatar({ state, level, compact = false, onInterrupt, onRepo
         style={[styles.ground, { width: size * 0.82, top: hop + size + 6 }, ground]}
       />
       <Animated.View style={[{ marginTop: hop }, body]}>
-        <PressableBase
-          onPress={speaking ? onInterrupt : undefined}
-          onLongPress={onReport}
-          delayLongPress={REPORT_DELAY_MS}
-          accessibilityRole="button"
-          accessibilityLabel={
-            speaking ? fr.tutor.call.avatarInterrupt : fr.tutor.call.avatarListening
-          }
-          accessibilityHint={fr.tutor.reportHint}
-          style={[styles.disc, { width: size, height: size, boxShadow: extras.call.avatarShadow }]}>
-          <Logo variant="onWhite" size={size * 0.82} borderRadius={(size * 0.82) / 2} />
-        </PressableBase>
+        {interactive ? (
+          <PressableBase
+            onPress={speaking ? onInterrupt : undefined}
+            onLongPress={onReport}
+            delayLongPress={REPORT_DELAY_MS}
+            accessibilityRole="button"
+            accessibilityLabel={
+              speaking ? fr.tutor.call.avatarInterrupt : fr.tutor.call.avatarListening
+            }
+            accessibilityHint={fr.tutor.reportHint}
+            style={[styles.disc, disc]}>
+            <Logo variant="onWhite" size={size * 0.82} borderRadius={(size * 0.82) / 2} />
+          </PressableBase>
+        ) : (
+          <View aria-hidden style={[styles.disc, disc]}>
+            <Logo variant="onWhite" size={size * 0.82} borderRadius={(size * 0.82) / 2} />
+          </View>
+        )}
       </Animated.View>
     </View>
   );

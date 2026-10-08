@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SubjectTile } from '@/components/subject/SubjectTile';
 import { Text } from '@/components/Text';
+import { VoiceAvatar } from '@/components/VoiceAvatar';
 import { fr } from '@/i18n/fr';
 import { useStudyRules } from '@/lib/session/useStudyRules';
 import type { TutorVisual } from '@/services/tutor/visuals';
@@ -15,7 +16,6 @@ import { angleToPoints, theme } from '@/theme';
 import { CallDock } from './components/call/CallDock';
 import { CallTopBar } from './components/call/CallTopBar';
 import { LiveCaptions } from './components/call/LiveCaptions';
-import { VoiceAvatar } from './components/call/VoiceAvatar';
 import { VoiceStatus } from './components/call/VoiceStatus';
 import { VisualModal } from './components/visual/VisualModal';
 import { CallVisualCard } from './components/visual/VisualPanel';
@@ -124,7 +124,7 @@ export function VoiceTutorScreen() {
 
         <Animated.View layout={LinearTransition.duration(300)} style={styles.middle}>
           <VoiceAvatar
-            state={state}
+            mood={state === 'speaking' ? 'speaking' : state === 'listening' ? 'listening' : 'idle'}
             level={call.level}
             compact={!!visual}
             onInterrupt={call.interrupt}

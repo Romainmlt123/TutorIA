@@ -16,24 +16,25 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 
 ## Où on en est — 7 octobre 2026
 
-| Chantier      | Étape                                                                         | Statut      | Branche               |
-| ------------- | ----------------------------------------------------------------------------- | ----------- | --------------------- |
-| Explorer      | X1 · les îles                                                                 | ✅ validé   | `feat/explorer-3d`    |
-| Explorer      | X2a · les régions de l'île                                                    | ✅ validé   | `feat/explorer-3d`    |
-| Explorer      | X2b · la carte d'une région (art de la région Nombres)                        | ✅ validé   | `feat/explorer-3d`    |
-| Avatar        | Figurine, visage et atelier `/dev/avatars`                                    | ✅ validé   | `feat/avatar`         |
-| Avatar        | A1 · l'éditeur « Crée ton avatar »                                            | ✅ validé   | `feat/avatar`         |
-| Avatar        | A2 · l'avatar sur la carte                                                    | ✅ validé   | `feat/avatar`         |
-| Avatar        | **A3 · la garde-robe**                                                        | ✅ validé   | `feat/avatar`         |
-| Avatar        | A4 · l'avatar dans Supabase                                                   | ✅ validé   | `feat/avatar-en-base` |
-| Explorer      | **X3 à X5b · fiche, discussion et bilan d'un niveau**                         | ✅ validé   | `feat/avatar`         |
-| Explorer      | La suite (art des régions, contenu, allègement…)                              | ⏸️ en pause |                       |
-| Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`  |
-| Tuteur visuel | **V4 · les visuels à la voix**                                                | ✅ validé   | `feat/appel-vocal`    |
-| Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`     |
-| Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice` |
-| Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6` |
-| Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`    |
+| Chantier      | Étape                                                                         | Statut      | Branche                      |
+| ------------- | ----------------------------------------------------------------------------- | ----------- | ---------------------------- |
+| Explorer      | X1 · les îles                                                                 | ✅ validé   | `feat/explorer-3d`           |
+| Explorer      | X2a · les régions de l'île                                                    | ✅ validé   | `feat/explorer-3d`           |
+| Explorer      | X2b · la carte d'une région (art de la région Nombres)                        | ✅ validé   | `feat/explorer-3d`           |
+| Avatar        | Figurine, visage et atelier `/dev/avatars`                                    | ✅ validé   | `feat/avatar`                |
+| Avatar        | A1 · l'éditeur « Crée ton avatar »                                            | ✅ validé   | `feat/avatar`                |
+| Avatar        | A2 · l'avatar sur la carte                                                    | ✅ validé   | `feat/avatar`                |
+| Avatar        | **A3 · la garde-robe**                                                        | ✅ validé   | `feat/avatar`                |
+| Avatar        | A4 · l'avatar dans Supabase                                                   | ✅ validé   | `feat/avatar-en-base`        |
+| Explorer      | **X3 à X5b · fiche, discussion et bilan d'un niveau**                         | ✅ validé   | `feat/avatar`                |
+| Explorer      | La suite (art des régions, contenu, allègement…)                              | ⏸️ en pause |                              |
+| Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`         |
+| Tuteur visuel | **V4 · les visuels à la voix**                                                | ✅ validé   | `feat/appel-vocal`           |
+| Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`            |
+| Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice`        |
+| Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6`        |
+| Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`           |
+| Interface     | **v2.7 · la connexion plein écran (L2, L3)**                                  | à valider   | `feat/connexion-plein-ecran` |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -180,6 +181,7 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
 
 1. **v2.5 · bandeau de marque et cartes de section :** tokens `screenBand`, `sectionTitle`, `goal` et `voiceCall` exportés par le générateur ; composants `ScreenBand` et `SectionCard` ; Accueil et Flashcards · Choix en bleu, Stats et espace Parents (P1 à P4) en violet ; titres de section de 22 px dans leur carte ; objectif du jour en vert.
 2. **v2.6 · l'appel vocal plein écran (2B, 2D, 2F) :** en-tête d'appel, logo qui rebondit selon la voix, pastille d'état, sous-titres, commandes en verre ; les visuels pendant l'appel, validés et modérés par le serveur (`/api/tutor/visual-check`).
+3. **v2.7 · la connexion plein écran (L2, L3) :** `AuthScreen` (dégradé de l'espace, logo qui dit bonjour, feuille blanche), champs remplis, boutons Apple et Google officiels, et le code parent sur un écran à part (option A : gardé, puis relié à la connexion).
 
 ## Journal des décisions
 
@@ -267,6 +269,10 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - La v2.6 et V4 sont validées par Romain avec la vraie voix (halos seulement quand le tuteur parle, sous-titres calés sur sa voix, sans transcription de l'élève).
   - La limite de 5 appels vocaux par jour a son propre message (« Tu as fait tes appels du jour… ») : le serveur renvoie `daily_limit` quand c'est la limite du jour qui est atteinte, et non plus la même erreur que la limite d'une minute.
 
+- **08/10 (v2.7) :**
+  - Plan de la v2.7 validé par Romain, avec l'option A pour le code parent : saisi sur un écran à part, gardé, puis relié juste après la connexion (rien ne change côté serveur).
+  - La v2.7 est livrée sur `feat/connexion-plein-ecran` (empilée sur la v2.6, pull request #11), à valider sur le Pixel.
+
 ## En attente
 
 Ces idées ne sont pas planifiées. Elles entrent dans le plan sur décision de Romain.
@@ -274,3 +280,4 @@ Ces idées ne sont pas planifiées. Elles entrent dans le plan sur décision de 
 - Des vignettes dessinées pour les formes du visage dans l'éditeur, à la place des libellés.
 - L'avatar de l'élève ailleurs dans l'app : accueil, profil, tuteur.
 - La dette d'Explorer relevée le 06/10 (§ 9 de `docs/explorer-creer-une-ile.md`), à traiter quand on y touche ou avant la publication. Les points les plus visibles : les chiffres de la cascade avec « Réduire les animations », les flèches de 44 px du panneau de ville, le poids de l'île (1,98 Mo) et de la carte de Nombres (5,6 Mo).
+- La connexion d'un enfant par son code parent (option B) : un enfant dont le parent a créé le profil (L5, L6) se connecte la première fois avec le code, puis choisit son mot de passe. Nouveau parcours d'authentification, à concevoir à part (sécurité).

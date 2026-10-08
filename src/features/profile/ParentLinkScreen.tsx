@@ -78,11 +78,11 @@ export function ParentLinkScreen() {
       <View style={styles.card}>
         <Text variant="section">{t.codeSection}</Text>
         <TextField
-          label={fr.studentAuth.signIn.parentCode}
+          label={fr.studentAuth.linkCode.label}
           value={code}
           onChangeText={(value) => setCode(normalizeLinkCode(value))}
           icon="cle"
-          placeholder={fr.studentAuth.signIn.parentCodePlaceholder}
+          placeholder={fr.studentAuth.linkCode.placeholder}
           keyboardType="number-pad"
           inputMode="numeric"
           maxLength={6}

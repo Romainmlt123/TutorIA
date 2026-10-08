@@ -549,6 +549,7 @@ export const fr = {
     ruleDone: 'validé',
     ruleTodo: 'à faire',
     or: 'ou',
+    orContinue: 'ou continuer avec',
     providers: { apple: 'Continuer avec Apple', google: 'Continuer avec Google' },
     providersShort: { apple: 'Avec Apple', google: 'Avec Google' },
     optional: 'Facultatif',
@@ -593,15 +594,23 @@ export const fr = {
       emailPlaceholder: 'Ex. lea@exemple.fr',
       passwordPlaceholder: 'Ton mot de passe',
       forgot: 'Mot de passe oublié ?',
-      parentCode: 'Code parent',
-      parentCodePlaceholder: 'Ex. 482913',
-      parentCodeHint:
-        'Pour relier ton compte à celui de ton parent. Tu pourras aussi l’ajouter plus tard dans ton profil.',
       submit: 'Me connecter',
       noAccount: 'Pas encore de compte ? ',
       createAccount: 'Créer mon compte',
       linkFailed:
         'Tu es connecté, mais le code parent n’a pas marché. Tu pourras le saisir à nouveau dans ton profil.',
+    },
+    /** Code parent hors de la connexion (v2.7) : saisi à part, relié dès la connexion. */
+    linkCode: {
+      open: 'J’ai un code de mon parent',
+      title: 'Relier mon compte à un parent',
+      subtitle: 'Tape le code à 6 chiffres que ton parent a créé dans son espace.',
+      label: 'Code parent',
+      placeholder: 'Ex. 482913',
+      hint: 'Il est valable 24 h. Il sera relié dès que tu te connectes.',
+      submit: 'Garder ce code',
+      kept: (code: string) => `Code ${code} gardé : il sera relié à ta connexion.`,
+      remove: 'Retirer le code',
     },
     signUp: {
       title: 'Crée ton compte',

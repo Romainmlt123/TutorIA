@@ -45,6 +45,8 @@ export type TextFieldProps = Pick<
   error?: string;
   /** Code à chiffres : texte espacé. */
   spaced?: boolean;
+  /** Dans une carte ou une feuille blanche (v2.7) : fond `bg`, bordure claire, sans ombre. */
+  filled?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -62,6 +64,7 @@ export function TextField({
   hint,
   error,
   spaced = false,
+  filled = false,
   style,
   ...inputProps
 }: TextFieldProps) {
@@ -106,6 +109,7 @@ export function TextField({
             icon ? styles.withIcon : null,
             secure ? styles.withToggle : null,
             spaced ? styles.spaced : null,
+            filled ? styles.filled : null,
             error ? styles.invalid : null,
             focused ? styles.focused : null,
           ]}
@@ -161,6 +165,11 @@ const styles = StyleSheet.create({
   withIcon: { paddingLeft: theme.space[12] },
   withToggle: { paddingRight: FIELD_HEIGHT },
   spaced: { letterSpacing: 1.3 },
+  filled: {
+    backgroundColor: theme.auth.field.filledBackground,
+    borderColor: theme.auth.field.filledBorder,
+    boxShadow: 'none',
+  },
   invalid: { borderColor: theme.colors.warning },
   focused: { borderColor: theme.colors.primary, boxShadow: theme.shadow.focus },
   toggle: {
