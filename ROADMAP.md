@@ -34,7 +34,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice`        |
 | Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6`        |
 | Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`           |
-| Interface     | **v2.7 · la connexion plein écran (L2, L3)**                                  | à valider   | `feat/connexion-plein-ecran` |
+| Interface     | **v2.7 · la connexion plein écran (L2, L3)**                                  | ✅ validé   | `feat/connexion-plein-ecran` |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -272,6 +272,7 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
 - **08/10 (v2.7) :**
   - Plan de la v2.7 validé par Romain, avec l'option A pour le code parent : saisi sur un écran à part, gardé, puis relié juste après la connexion (rien ne change côté serveur).
   - La v2.7 est livrée sur `feat/connexion-plein-ecran` (empilée sur la v2.6, pull request #11), à valider sur le Pixel.
+  - La v2.7 est validée par Romain sur le Pixel, avec deux corrections : l'exemple et l'icône d'un champ s'effacent dès qu'on le touche, et la pastille d'état de l'appel ne s'étire plus sous Android.
 
 ## En attente
 
