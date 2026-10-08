@@ -37,3 +37,8 @@
 @media (prefers-reduced-motion: reduce) {
   .tia-blink, .tia-halo, .tia-wave, .tia-pulse, .tia-bob, .tia-float, .tia-voice-hop, .tia-voice-breathe, .tia-voice-shadow, .tia-pen { animation: none; }
 }
+
+/* Connexion plein écran (v2.7) : la feuille blanche monte du bas */
+@keyframes tiaSheet{from{opacity:0;transform:translateY(48px)}to{opacity:1;transform:none}}
+.tia-sheet{animation:tiaSheet .55s cubic-bezier(.2,.8,.3,1) both}
+@media (prefers-reduced-motion:reduce){.tia-sheet{animation:none}}

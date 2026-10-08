@@ -69,6 +69,14 @@ export type AppTokens = {
   };
   sectionTitle: { fontSize: string; lineHeight: string; fontWeight: number };
   goal: { gradient: string[]; text: string };
+  auth: {
+    background: { eleve: string[]; parents: string[] };
+    angle: string;
+    glows: { top: string; eleve: string; parents: string };
+    sheet: { radius: string; shadow: string; padding: string; enter: string };
+    avatar: { size: string; greetLevel: number; greetFrom: string; greetTo: string };
+    field: { filledBackground: string; filledBorder: string };
+  };
   voiceCall: {
     background: string[];
     angle: string;
@@ -345,6 +353,39 @@ export function buildTokens(design: DesignTokens, app: AppTokens) {
       lineHeight: parsePx(app.sectionTitle.lineHeight),
     },
     goal: { gradient: parseGradient(app.goal.gradient, resolve), text: resolve(app.goal.text) },
+    auth: (() => {
+      const [top = 0, side = 0, bottom = 0] = app.auth.sheet.padding.split(/\s+/).map(parsePx);
+      return {
+        background: {
+          student: parseGradient(app.auth.background.eleve, resolve),
+          parent: parseGradient(app.auth.background.parents, resolve),
+        },
+        angle: parseDeg(app.auth.angle),
+        glows: {
+          top: app.auth.glows.top,
+          student: app.auth.glows.eleve,
+          parent: app.auth.glows.parents,
+        },
+        sheet: {
+          radius: parsePx(app.auth.sheet.radius),
+          shadow: app.auth.sheet.shadow,
+          paddingTop: top,
+          paddingHorizontal: side,
+          paddingBottom: bottom,
+          enterMs: parseMs(app.auth.sheet.enter),
+        },
+        avatar: {
+          size: parsePx(app.auth.avatar.size),
+          greetLevel: app.auth.avatar.greetLevel,
+          greetFromMs: parseMs(app.auth.avatar.greetFrom),
+          greetToMs: parseMs(app.auth.avatar.greetTo),
+        },
+        field: {
+          filledBackground: resolve(app.auth.field.filledBackground),
+          filledBorder: resolve(app.auth.field.filledBorder),
+        },
+      };
+    })(),
     voiceCall: {
       background: parseGradient(app.voiceCall.background, resolve),
       angle: parseDeg(app.voiceCall.angle),

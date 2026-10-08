@@ -1,5 +1,6 @@
 import { layout } from './layout';
 import {
+  auth,
   colors,
   game,
   goal,
@@ -52,6 +53,8 @@ export const theme = {
   goal,
   /** v2.6 : appel vocal plein écran. */
   voiceCall,
+  /** v2.7 : connexion plein écran (L2, L3). */
+  auth,
 } as const;
 
 export type Theme = typeof theme;

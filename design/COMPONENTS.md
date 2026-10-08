@@ -2,7 +2,7 @@
 
 > **Déjà factorisés dans les maquettes** (`components/`) : **BottomNav** (élève + Parents), **ModeToggle**, **TopicCard**, **PanelHeader**, **CallControls** (X4b), et pour l'appel vocal **CallTopBar**, **VoiceAvatar**, **VoiceStatus**, **CallDock**. Leurs props figurent en tête de chaque fichier (`data-props`). Les autres composants ci-dessous sont encore dessinés directement dans les écrans : leurs specs font foi pour le code.
 
-> **Implémentation de référence** : les 86 composants existent dans `design-system/` (publiés dans le design system Tutor'IA). Pour chaque composant, `design-system/index.d.ts` donne les props exactes et `design-system/components/<Nom>/README.md` son usage ; les noms peuvent différer légèrement de cet inventaire (par exemple `CallControls` pour les boutons d'appel, `LineChart`/`BarChart`/`Heatmap` pour `ChartCard`). TopBar de session, SessionComplete et Greeting restent des assemblages d'écran, décrits seulement ici.
+> **Implémentation de référence** : les 87 composants existent dans `design-system/` (publiés dans le design system Tutor'IA). Pour chaque composant, `design-system/index.d.ts` donne les props exactes et `design-system/components/<Nom>/README.md` son usage ; les noms peuvent différer légèrement de cet inventaire (par exemple `CallControls` pour les boutons d'appel, `LineChart`/`BarChart`/`Heatmap` pour `ChartCard`). TopBar de session, SessionComplete et Greeting restent des assemblages d'écran, décrits seulement ici.
 
 Inventaire des composants à créer, tirés des maquettes (`screens/`). Valeurs = tokens de `tokens/`.
 Chaque composant liste : rôle, anatomie, specs, états / variantes, écrans où il apparaît.
@@ -377,12 +377,19 @@ Implémentation de référence de chacun dans `design-system/` (props dans `desi
 ### SubjectCluster
 - Illustration décorative (`aria-hidden`) : six tuiles de 56 px en dégradé des matières, inclinées, autour du logo (carré blanc de 96 px, rayon 28).
 
+### AuthScreen (v2.7)
+- Écran de connexion plein écran (L2, L3). Fond : dégradé de l'espace à 170° sur tout l'écran (élève `--call-gradient`, parent `--auth-parent-gradient`), deux halos doux (blanc en haut à gauche, bleu clair ou lilas en bas à droite).
+- En-tête centré, padding 56 / 20 / 18 : retour en verre de 44 px (`rgba(255,255,255,0.16)`) en haut à gauche, `VoiceAvatar` de 96 px remonté de 34 px, titre 28/34 Black blanc, phrase 15/22 à 85 % de blanc (320 px de large au plus).
+- Feuille blanche : rayon 32 en haut, ombre `--sheet-shadow`, padding 24 / 20 / 32, éléments espacés de 16 px ; elle monte du bas en 0,55 s. Le bas de la feuille (`footer`) est collé en bas : liens centrés 15/22.
+- Le logo rebondit une fois à l'arrivée (niveau 0,45 de 0,35 s à 2,1 s), puis respire. Moins d'animations : rien ne bouge.
+
 ### AuthHero
-- En-tête de connexion en dégradé de l'espace, padding 24, filigrane (mortier ou famille). Surtitre, titre 28 Black, phrase 15.
+- En-tête de connexion en dégradé de l'espace, padding 24, filigrane (mortier ou famille). Surtitre, titre 28 Black, phrase 15. Plus utilisé par L2 et L3 depuis la v2.7 (`AuthScreen`).
 
 ### TextField
 - Libellé 14 Bold au-dessus, champ de 52 px, rayon 16, bordure `border`, `shadow-sm`, icône 20 px à gauche. Focus : bordure `primary` + `shadow-focus`.
 - Mot de passe : bouton œil de 40 px à droite (« Afficher / Masquer le mot de passe »). Champ facultatif : pastille « Facultatif » (`primary-soft`) à droite du libellé et aide 13 sous le champ.
+- **Rempli** (`filled`, v2.7) : dans une carte ou une feuille blanche, fond `gray-100` (`bg`), bordure 1 px `--field-filled-border`, sans ombre. Focus inchangé (violet sur les écrans parents).
 
 ### PasswordRules
 - Liste des règles avec une pastille de 18 px : verte cochée si validée, grise sinon. En colonne ou en ligne.
@@ -391,7 +398,7 @@ Implémentation de référence de chacun dans `design-system/` (props dans `desi
 - `button role="checkbox"`, carré de 24 px (rayon 8), plein dans la couleur de l'espace quand coché, texte 14/22.
 
 ### OrDivider · AuthProviderButtons
-- « ou » entre deux filets `border`. Boutons de 52 px : Apple noir (`gray-900`), Google blanc bordé. Toujours **sous** le formulaire. Dans l'app, utiliser les boutons officiels des SDK.
+- « ou » entre deux filets `border` (« ou continuer avec » sur L2 et L3). Boutons de 52 px : Apple noir (`gray-900`), Google blanc bordé. Toujours **sous** le formulaire, **empilés en pleine largeur** depuis la v2.7 (côte à côte seulement sur E1). Dans l'app, utiliser les boutons officiels des SDK (« Continuer avec Apple / Google », avec leurs logos).
 
 ### ParentCodeCard · StepList
 - Carte violette : surtitre, code 48 Black espacé, « Valable 24 h », bouton blanc « Partager le code ». StepList : carte blanche, numéros dans des ronds de 32 px de la couleur douce de l'espace.

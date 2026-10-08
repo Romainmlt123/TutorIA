@@ -628,6 +628,63 @@ export const goal = {
   "text": "#ffffff"
 } as const;
 
+export const auth = {
+  "background": {
+    "student": {
+      "colors": [
+        "#2e6be6",
+        "#1750c4",
+        "#0a3b9d",
+        "#03276e"
+      ],
+      "locations": [
+        0,
+        0.42,
+        0.78,
+        1
+      ]
+    },
+    "parent": {
+      "colors": [
+        "#8558ea",
+        "#521dc8",
+        "#3b0da2",
+        "#210267"
+      ],
+      "locations": [
+        0,
+        0.42,
+        0.78,
+        1
+      ]
+    }
+  },
+  "angle": 170,
+  "glows": {
+    "top": "rgba(255,255,255,0.16)",
+    "student": "rgba(126,170,255,0.20)",
+    "parent": "rgba(190,160,255,0.22)"
+  },
+  "sheet": {
+    "radius": 32,
+    "shadow": "0 -12px 32px rgba(3,39,110,0.25)",
+    "paddingTop": 24,
+    "paddingHorizontal": 20,
+    "paddingBottom": 32,
+    "enterMs": 550
+  },
+  "avatar": {
+    "size": 96,
+    "greetLevel": 0.45,
+    "greetFromMs": 350,
+    "greetToMs": 2100
+  },
+  "field": {
+    "filledBackground": "#f5f8ff",
+    "filledBorder": "#e1e6f0"
+  }
+} as const;
+
 export const voiceCall = {
   "background": {
     "colors": [

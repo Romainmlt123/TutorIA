@@ -146,8 +146,9 @@ Ces choix ont été validés sur les maquettes de l'application et priment sur l
 ## Connexion, inscription et onboarding
 
 - **Deux couleurs, deux espaces.** Tout ce qui concerne l'élève est en bleu (`primary`, dégradé des cartes Français) et le tutoie ; tout ce qui concerne les parents est en violet (`accent`, dégradé Physique-Chimie) et les vouvoie. L'écran de bienvenue les présente côte à côte, sans autre texte que « Je suis élève » et « Je suis parent ».
-- **L'élève est autonome.** Il peut créer son compte et se connecter seul. Le code parent (6 chiffres, valable 24 h) est un champ **facultatif** qui relie les deux comptes ; il peut aussi être ajouté plus tard. Si l'élève indique avoir moins de 15 ans, on demande l'e-mail d'un parent pour valider le compte.
-- **Formulaire d'abord, Apple et Google ensuite.** Les champs e-mail et mot de passe viennent en premier, puis le séparateur « ou » et les boutons Apple / Google. Dans l'app, ces boutons sont les boutons officiels des SDK.
+- **L'élève est autonome.** Il peut créer son compte et se connecter seul. Le code parent (6 chiffres, valable 24 h) relie les deux comptes ; depuis la v2.7, ce n'est plus un champ de la connexion mais un lien « J'ai un code de mon parent » sous le formulaire, qui ouvre sa saisie. Il peut aussi être ajouté plus tard. Si l'élève indique avoir moins de 15 ans, on demande l'e-mail d'un parent pour valider le compte.
+- **Connexion plein écran (v2.7).** Les connexions élève (L2) et parent (L3) reprennent l'univers de l'appel vocal : le dégradé de l'espace couvre tout l'écran, le logo du tuteur, dans son disque blanc, fait un petit rebond pour dire bonjour, et le formulaire est dans une feuille blanche qui monte du bas (`AuthScreen`). Les champs y sont remplis (`TextField` `filled`), comme tout ce qui est rangé dans une carte blanche. L'écran de bienvenue (L1) ne change pas.
+- **Formulaire d'abord, Apple et Google ensuite.** Les champs e-mail et mot de passe viennent en premier, puis le séparateur « ou continuer avec » et les boutons Apple / Google, empilés en pleine largeur. Dans l'app, ces boutons sont les boutons officiels des SDK.
 - **Onboarding en quatre étapes, toutes passables** : classe, auto-évaluation par matière (« Galère », « Bof », « Ça va », « À l'aise », jamais présentée comme une note), objectifs et temps par jour, façon d'apprendre et moment de révision. Il se termine sur un plan personnalisé qui commence par la matière la moins à l'aise.
 
 ## Explorer
@@ -169,7 +170,7 @@ Ces choix ont été validés sur les maquettes de l'application et priment sur l
 
 ## Composants
 
-Les 86 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
+Les 87 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
 
 - **Fondations** : `Icon`, `Logo`, `StatusChip`, `ProgressRing`, `Quote`.
 - **Actions** : `Button`, `IconButton`, `SegmentedControl`, `Switch`, `GoalStepper`.
@@ -180,7 +181,7 @@ Les 86 composants de l'app sont dans `components/` et exposés par `window.Tutor
 - **Flashcards** : `DailyReviewCard`, `ChapterRow`, `SessionProgress`, `AnswerOption`, `QuizCard`, `TallyChips`.
 - **Stats** : `KpiCard`, `BarChart`, `LineChart`, `Heatmap`, `SubjectProgressRow`, `InsightList`.
 - **Parents** : `HeroCard`, `AlertCard`, `AdviceCard`, `SubjectProgressCard`, `SessionSummaryCard`, `SettingRow`.
-- **Connexion** : `ProfileChoiceCard`, `SubjectCluster`, `AuthHero`, `TextField`, `PasswordRules`, `Checkbox`, `OrDivider`, `AuthProviderButtons`, `ParentCodeCard`, `StepList`.
+- **Connexion** : `ProfileChoiceCard`, `SubjectCluster`, `AuthScreen`, `AuthHero`, `TextField`, `PasswordRules`, `Checkbox`, `OrDivider`, `AuthProviderButtons`, `ParentCodeCard`, `StepList`.
 - **Onboarding** : `StepHeader`, `GradePicker`, `SelfAssessmentRow`, `GoalTile`, `DurationPicker`, `ChoiceRow`, `ToggleChip`, `PlanRow`.
 - **Explorer** : `IslandIllustration`, `IslandCarousel`, `IslandProgressCard`, `ExplorerHud`, `WorldMap`, `LevelNode`, `MapAvatar`, `CityBanner`, `RegionSign`, `Stars`, `LevelTypePill`, `LevelSheet`, `IslandBackdrop`, `LevelProgressHeader`, `VoiceBoardCard`, `LevelResultCard`, `TutorFeedback`.
 

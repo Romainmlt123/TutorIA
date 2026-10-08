@@ -101,3 +101,11 @@ export const call = {
   speakingGlow: '0 6px 18px rgba(12,158,66,0.45)',
   listeningGlow: '0 6px 18px rgba(194,26,26,0.45)',
 } as const;
+
+/** Couleurs officielles du « G » de Google, pour le bouton « Continuer avec Google » (v2.7). */
+export const googleLogo = {
+  blue: '#4285F4',
+  green: '#34A853',
+  yellow: '#FBBC05',
+  red: '#EA4335',
+} as const;

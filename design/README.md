@@ -10,7 +10,7 @@ design/
 ├── README.md            ← ce fichier : vue d'ensemble, écrans, règles
 ├── COMPONENTS.md        ← inventaire des composants à créer, avec leurs specs
 ├── DESIGN_SYSTEM.md     ← README du design system Tutor'IA (règles de marque, couleurs des matières, écarts validés)
-├── design-system/       ← les 86 composants publiés dans le design system (référence : bundle, props typées, fiches)
+├── design-system/       ← les 87 composants publiés dans le design system (référence : bundle, props typées, fiches)
 ├── tokens/
 │   ├── tokens.json      ← tokens officiels du design system (couleurs, type, espaces, rayons, ombres)
 │   ├── app-tokens.json  ← ajouts propres à l'app (matières, jeu, KPI, vocal, bandeaux, appel vocal)
@@ -110,6 +110,12 @@ design/
   - Design system (86 composants) : `CallTopBar`, `VoiceAvatar`, `VoiceStatus`, `LiveCaptions`, `CallDock` ; `VisualPanel` et `PanelHeader` teintés par sorte de visuel (comme dans l'app), `MathGraph` avec `focus`, `Whiteboard` qui s'écrit en direct (`progress`, `writing`). Copié dans `design-system/` et `DESIGN_SYSTEM.md`.
   - Tokens : `voiceCall` dans `tokens/app-tokens.json`, variables `--call-*`, `--voice-*` et `--caption-upcoming` dans `tokens/tokens.css`. Le générateur ne les exporte pas encore (sa sortie est inchangée).
   - `support.js` ajouté dans `screens/` et `components/` : les maquettes s'ouvrent maintenant dans un navigateur (voir « Voir une maquette dans un navigateur »).
+- **v2.7** (8 octobre 2026)
+  - **Connexion plein écran** (L2 élève, L3 parent), validée par Romain parmi trois pistes (bandeau de marque, plein écran, le tuteur t'accueille) : dégradé de l'espace sur tout l'écran, logo du tuteur de 96 px qui fait un petit rebond pour dire bonjour, titre en blanc, formulaire dans une feuille blanche qui monte du bas, champs remplis, Apple / Google empilés en pleine largeur. L1 ne change pas ; L4 à L6 et E1 non plus pour l'instant.
+  - Le champ « Code parent » quitte la connexion élève : un lien « J'ai un code de mon parent » sous le formulaire ouvre sa saisie.
+  - Design system (87 composants) : nouveau `AuthScreen`, `TextField` avec `filled`, fiches `AuthHero`, `AuthProviderButtons` et `OrDivider` mises à jour. Copié dans `design-system/` et `DESIGN_SYSTEM.md`.
+  - Tokens : `auth` dans `tokens/app-tokens.json`, variables `--auth-parent-gradient`, `--sheet-*` et `--field-filled-border` dans `tokens/tokens.css`.
+  - Les trois pistes restent en haut du canevas (rangée « Pistes · Connexion et inscription »).
 
 Les logos et les polices ne sont pas dupliqués : les écrans pointent vers `../../assets/logo/` et `../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/`.
 
@@ -338,19 +344,22 @@ Navigation à 4 onglets, dans le même style que l'élève : **Accueil · Progr�
 
 ## Connexion et inscription (L1 à L6)
 
-Élève en **bleu** (tutoiement), parent en **violet** (vouvoiement). Pas de barre de navigation sur ces écrans.
+Élève en **bleu** (tutoiement), parent en **violet** (vouvoiement). Pas de barre de navigation sur ces écrans. Depuis la v2.7, les deux écrans de connexion (L2, L3) sont en **plein écran**, dans l'univers de l'appel vocal (composant `AuthScreen`).
 
 ### L1 · Bienvenue — `L1-Connexion-Choix.dc.html`
 - Illustration des six matières autour du logo, titre « Bienvenue sur Tutor'IA ».
 - Deux cartes **ProfileChoiceCard** « Je suis élève » / « Je suis parent », sans autre texte. Le bouton du bas prend la couleur du profil choisi.
 
 ### L2 · Connexion élève — `L2-Connexion-Eleve.dc.html`
-- En-tête **AuthHero** bleu, « Identifiant ou e-mail », mot de passe (avec l'œil), « Mot de passe oublié ? ».
-- Champ **Code parent facultatif** : l'élève se connecte seul, le code sert seulement à relier son compte à celui d'un parent.
-- « Pas encore de compte ? Créer mon compte » → E1.
+- **Plein écran** (v2.7) sur le dégradé de l'appel (`--call-gradient`). En haut : retour en verre (44 px, vers L1), puis le logo du tuteur de 96 px dans son disque blanc (`VoiceAvatar`), qui fait un petit rebond à l'arrivée pour dire bonjour puis respire. Titre « Content de te revoir ! » 28 Black et phrase 15 en blanc.
+- **Feuille blanche** qui monte du bas (rayon 32 en haut, `--sheet-shadow`) : « Identifiant ou e-mail », mot de passe (avec l'œil), « Mot de passe oublié ? » à droite, bouton bleu **Me connecter**, « ou continuer avec », puis Apple et Google empilés en pleine largeur. Les champs sont remplis (fond `bg`, bordure `--field-filled-border`, sans ombre), comme tout ce qui est rangé dans une carte blanche.
+- En bas de la feuille : « J'ai un code de mon parent » (clé), puis « Pas encore de compte ? Créer mon compte » → E1.
+- Le **code parent n'est plus un champ** de la connexion : le lien ouvre la saisie du code à 6 chiffres (écran « Relier mon compte à un parent »). À préciser côté produit : si le profil a été créé par le parent (L5, L6), ce code sert aussi à la première connexion de l'enfant, qui choisit ensuite son mot de passe.
 
 ### L3 · Connexion parent — `L3-Connexion-Parent.dc.html`
-- En-tête violet, e-mail et mot de passe **d'abord**, puis « ou » et Apple / Google.
+- Même construction en **violet** (`--auth-parent-gradient`) : « Bon retour parmi nous », « Connectez-vous pour suivre les progrès de votre enfant. ».
+- E-mail et mot de passe **d'abord**, bouton violet **Se connecter**, puis « ou continuer avec » et Apple / Google empilés. Liens en `violet-600`. « Pas encore de compte ? Créer un compte » → L4.
+- Clavier ouvert : la feuille défile, le logo et le titre peuvent sortir de l'écran. Moins d'animations demandé : ni rebond ni montée de la feuille.
 
 ### L4 · Inscription parent, étape 1 — `L4-Inscription-Parent.dc.html`
 - Prénom, e-mail, mot de passe avec ses règles, conditions d'utilisation et bilan de la semaine par e-mail.
@@ -497,3 +506,5 @@ Ces choix ont été validés sur les maquettes. Ils sont à reporter dans le des
 22. **Le logo du tuteur remplace les barres** (validé par Romain le 07/10, les ondes ont été jugées « cheap ») : il rebondit au niveau de la voix, se pose à chaque pause et penche la tête quand il écoute. Les quatre barres du design system ne servent plus que dans la discussion vocale d'Explorer.
 23. **Pilules décoratives du bandeau à la même place sur tous les écrans** (v2.5, dans l'app) : les maquettes déplacent les deux pilules blanches d'un écran à l'autre ; l'app les pose toujours en haut à droite (136 × 44 px à 20 px du haut, 88 × 32 px à 72 px), et le bas du bandeau garde 32 px visibles sous la carte qui déborde (80 à 96 px selon les maquettes). Le volet « Tes discussions » s'ouvre sur ce même bandeau, sans carte qui déborde. Le badge de « Évolution de ta maîtrise » suit le pourcentage, sous le titre de 22 px.
 24. **Le rythme des sous-titres et du tableau de l'appel** (v2.6, dans l'app, retours de Romain le 08/10) : l'API Realtime ne donne pas l'instant où chaque mot est prononcé, et le texte du tuteur arrive bien avant sa voix. La phrase du tuteur s'affiche donc à 45 % de blanc, et les mots s'allument au débit estimé de sa voix (15 caractères par seconde au départ, recalé sur chaque réponse entendue en entier) ; la courbe nommée s'allume quand sa couleur est prononcée. Les sous-titres de l'élève (« Toi ») sont retirés, à la demande de Romain : la transcription ne commençait qu'à la fin de sa phrase et arrivait après coup ; sa voix n'est donc plus transcrite (moins de données envoyées, aucun coût). Pendant que l'élève parle, les sous-titres gardent la dernière phrase du tuteur. Le tableau blanc s'écrit au rythme d'une ligne toutes les 1,6 s pendant que le tuteur parle, en entier quand il a fini. La pastille « Solution » du graphique n'est pas reprise. Les halos du logo n'apparaissent que quand le tuteur parle, et respirent avec sa voix ; le logo garde un petit rebond tant que le tuteur parle, même si le niveau de sa voix ne peut pas être mesuré.
+25. **Connexion plein écran** (v2.7, validé par Romain le 08/10) : le design system posait la connexion sur le fond `bg`, sous un en-tête en carte (`AuthHero`). L2 et L3 couvrent maintenant tout l'écran du dégradé de l'espace, comme l'appel vocal, avec le formulaire dans une feuille blanche ; le logo y apparaît dans son disque blanc et rebondit une fois. Les boutons Apple et Google sont les boutons officiels (« Continuer avec Apple / Google », avec leurs logos), empilés en pleine largeur.
+26. **Le code parent hors de la connexion, en attendant la connexion par code** (v2.7, dans l'app, option A validée par Romain le 08/10) : le lien « J'ai un code de mon parent » ouvre l'écran « Relier mon compte à un parent », construit sur `AuthScreen` (bleu, le logo qui dit bonjour, le champ du code dans la feuille). Le code y est gardé, rappelé sur L2 dans une bande verte (« Code 482913 gardé… », avec « Retirer le code »), puis relié juste après la connexion. Le premier champ de L2 reste « E-mail » : la connexion d'un enfant par identifiant ou par code (profil créé par le parent, L5 et L6) viendra avec cette fonction.

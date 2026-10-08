@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"CallTopBar"},{"name":"VoiceAvatar"},{"name":"VoiceStatus"},{"name":"LiveCaptions"},{"name":"CallDock"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"PlanRow"},{"name":"Stars"},{"name":"IslandIllustration"},{"name":"IslandCarousel"},{"name":"IslandProgressCard"},{"name":"ExplorerHud"},{"name":"LevelNode"},{"name":"MapAvatar"},{"name":"CityBanner"},{"name":"RegionSign"},{"name":"WorldMap"},{"name":"LevelTypePill"},{"name":"LevelSheet"},{"name":"IslandBackdrop"},{"name":"LevelProgressHeader"},{"name":"VoiceBoardCard"},{"name":"LevelResultCard"},{"name":"TutorFeedback"}]} */
+/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"CallTopBar"},{"name":"VoiceAvatar"},{"name":"VoiceStatus"},{"name":"LiveCaptions"},{"name":"CallDock"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"AuthScreen"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"PlanRow"},{"name":"Stars"},{"name":"IslandIllustration"},{"name":"IslandCarousel"},{"name":"IslandProgressCard"},{"name":"ExplorerHud"},{"name":"LevelNode"},{"name":"MapAvatar"},{"name":"CityBanner"},{"name":"RegionSign"},{"name":"WorldMap"},{"name":"LevelTypePill"},{"name":"LevelSheet"},{"name":"IslandBackdrop"},{"name":"LevelProgressHeader"},{"name":"VoiceBoardCard"},{"name":"LevelResultCard"},{"name":"TutorFeedback"}]} */
 (function () {
   'use strict';
   var React = window.React;
@@ -940,6 +940,7 @@
   function space(id) { return SPACE[id === 'parent' || id === 'parents' || id === 'violet' ? 'parents' : 'eleve']; }
   function grad(t) { return t === 'brown' ? SUBJECTS.svt.gradient : (TONES[t] && t !== 'blue' ? TONES[t] : (SUBJECTS[t] ? SUBJECTS[t].gradient : SUBJECTS.francais.gradient)); }
   var FIELD = { width: '100%', height: 52, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 'var(--radius-2xl)', background: 'var(--surface)', boxShadow: 'var(--shadow-sm)', fontFamily: FONT, fontSize: 16, color: 'var(--text)' };
+  var FILLED = { background: 'var(--gray-100)', border: '1px solid #E1E6F0', boxShadow: 'none' };
   var LABEL = { fontSize: 14, lineHeight: '20px', fontWeight: 700, color: 'var(--text)' };
 
   function TextField(p) {
@@ -956,7 +957,7 @@
       h('span', { style: { position: 'relative', display: 'block' } },
         p.icon ? h('span', { style: { position: 'absolute', left: 16, top: 16, color: 'var(--gray-400)', display: 'flex' } }, h(Icon, { name: p.icon, size: 20 })) : null,
         h('input', { type: type, value: val, onChange: change, placeholder: p.placeholder, autoComplete: p.autoComplete, inputMode: p.inputMode, maxLength: p.maxLength,
-          style: assign({}, FIELD, { padding: '0 ' + (pw ? 52 : 16) + 'px 0 ' + (p.icon ? 48 : 16) + 'px', letterSpacing: p.inputMode === 'numeric' ? '0.08em' : undefined }) }),
+          style: assign({}, FIELD, p.filled ? FILLED : null, { padding: '0 ' + (pw ? 52 : 16) + 'px 0 ' + (p.icon ? 48 : 16) + 'px', letterSpacing: p.inputMode === 'numeric' ? '0.08em' : undefined }) }),
         pw ? h('button', { type: 'button', onClick: function () { shown[1](!shown[0]); }, 'aria-label': shown[0] ? 'Masquer le mot de passe' : 'Afficher le mot de passe',
           style: { position: 'absolute', right: 6, top: 6, width: 40, height: 40, border: 'none', borderRadius: 12, background: 'transparent', color: 'var(--gray-400)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } },
           h(Icon, { name: shown[0] ? 'eyeOff' : 'eye', size: 20 })) : null),
@@ -1003,6 +1004,36 @@
       h(Overline, { color: 'rgba(255,255,255,0.9)', style: { position: 'relative' } }, p.kicker || s.kicker),
       h('h1', { style: { position: 'relative', margin: 0, fontSize: 28, lineHeight: '34px', fontWeight: 900 } }, p.title),
       p.subtitle ? h('p', { style: { position: 'relative', margin: 0, fontSize: 15, lineHeight: '22px', fontWeight: 500, opacity: 0.92 } }, p.subtitle) : null);
+  }
+
+  var AUTH_BG = {
+    eleve: 'linear-gradient(170deg, var(--blue-500) 0%, var(--blue-600) 42%, var(--blue-700) 78%, var(--blue-800) 100%)',
+    parents: 'linear-gradient(170deg, var(--violet-400) 0%, var(--violet-600) 42%, var(--violet-700) 78%, var(--violet-800) 100%)'
+  };
+  /* Connexion plein écran (L2, L3 · v2.7) : dégradé de l'espace, logo du tuteur qui dit bonjour, formulaire dans une feuille blanche. */
+  function AuthScreen(p) {
+    var parent = p.space === 'parent' || p.space === 'parents';
+    var hop = useState(0);
+    useEffect(function () {
+      if (p.greet === false) return undefined;
+      var a = setTimeout(function () { hop[1](0.45); }, 350);
+      var z = setTimeout(function () { hop[1](0); }, 2100);
+      return function () { clearTimeout(a); clearTimeout(z); };
+    }, []);
+    var glow = parent ? 'rgba(190,160,255,0.22)' : 'rgba(126,170,255,0.20)';
+    return h('div', { style: { position: 'relative', overflow: 'hidden', width: '100%', minHeight: p.height || 844, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', background: AUTH_BG[parent ? 'parents' : 'eleve'], color: '#fff', fontFamily: FONT } },
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', left: -120, top: -80, width: 420, height: 420, borderRadius: 999, background: 'radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 65%)', pointerEvents: 'none' } }),
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: -160, bottom: 120, width: 380, height: 380, borderRadius: 999, background: 'radial-gradient(circle, ' + glow + ' 0%, rgba(255,255,255,0) 65%)', pointerEvents: 'none' } }),
+      h('header', { style: { position: 'relative', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '56px 20px 18px', textAlign: 'center' } },
+        h('div', { style: { alignSelf: 'stretch', height: 44, display: 'flex' } },
+          p.onBack === null ? null : h('button', { type: 'button', onClick: p.onBack, 'aria-label': 'Retour', style: { width: 44, height: 44, padding: 0, border: 'none', borderRadius: 999, background: GLASS, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } },
+            h(Icon, { name: 'chevronLeft', size: 22, strokeWidth: 2 }))),
+        h('div', { style: { marginTop: -34 } }, h(VoiceAvatar, { size: 96, state: 'speaking', level: hop[0], label: 'Tutor’IA' })),
+        h('h1', { style: { margin: '4px 0 0', fontSize: 28, lineHeight: '34px', fontWeight: 900 } }, p.title),
+        p.subtitle ? h('p', { style: { margin: '4px 0 0', maxWidth: 320, fontSize: 15, lineHeight: '22px', fontWeight: 500, color: 'rgba(255,255,255,0.85)' } }, p.subtitle) : null),
+      h('main', { className: 'tia-sheet', style: { position: 'relative', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 16, padding: '24px 20px 32px', background: 'var(--surface)', borderRadius: '32px 32px 0 0', boxShadow: '0 -12px 32px rgba(3,39,110,0.25)', color: 'var(--text)' } },
+        p.children,
+        p.footer ? h('div', { style: { marginTop: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center', fontSize: 15, lineHeight: '22px', color: 'var(--text-secondary)' } }, p.footer) : null));
   }
 
   function ProfileChoiceCard(p) {
@@ -1442,7 +1473,7 @@
     KpiCard: KpiCard, BarChart: BarChart, LineChart: LineChart, Heatmap: Heatmap, SubjectProgressRow: SubjectProgressRow, InsightList: InsightList,
     ChildSwitcher: ChildSwitcher, HeroCard: HeroCard, AlertCard: AlertCard, AdviceCard: AdviceCard, SubjectProgressCard: SubjectProgressCard,
     SessionSummaryCard: SessionSummaryCard, SettingRow: SettingRow,
-    TextField: TextField, PasswordRules: PasswordRules, Checkbox: Checkbox, OrDivider: OrDivider, AuthProviderButtons: AuthProviderButtons, AuthHero: AuthHero, ProfileChoiceCard: ProfileChoiceCard, SubjectCluster: SubjectCluster, StepHeader: StepHeader, GradePicker: GradePicker, SelfAssessmentRow: SelfAssessmentRow, GoalTile: GoalTile, DurationPicker: DurationPicker, ChoiceRow: ChoiceRow, ToggleChip: ToggleChip, ParentCodeCard: ParentCodeCard, StepList: StepList, PlanRow: PlanRow,
+    TextField: TextField, PasswordRules: PasswordRules, Checkbox: Checkbox, OrDivider: OrDivider, AuthProviderButtons: AuthProviderButtons, AuthHero: AuthHero, AuthScreen: AuthScreen, ProfileChoiceCard: ProfileChoiceCard, SubjectCluster: SubjectCluster, StepHeader: StepHeader, GradePicker: GradePicker, SelfAssessmentRow: SelfAssessmentRow, GoalTile: GoalTile, DurationPicker: DurationPicker, ChoiceRow: ChoiceRow, ToggleChip: ToggleChip, ParentCodeCard: ParentCodeCard, StepList: StepList, PlanRow: PlanRow,
     Stars: Stars, IslandIllustration: IslandIllustration, IslandCarousel: IslandCarousel, IslandProgressCard: IslandProgressCard, ExplorerHud: ExplorerHud, LevelNode: LevelNode, MapAvatar: MapAvatar, CityBanner: CityBanner, RegionSign: RegionSign, WorldMap: WorldMap, LevelTypePill: LevelTypePill, LevelSheet: LevelSheet, IslandBackdrop: IslandBackdrop, LevelProgressHeader: LevelProgressHeader, VoiceBoardCard: VoiceBoardCard, LevelResultCard: LevelResultCard, TutorFeedback: TutorFeedback,
     LEVEL_TYPES: LEVEL_TYPES, SUBJECTS: SUBJECTS, ICONS: ICONS, VISUAL_KINDS: VISUAL_KINDS
   };

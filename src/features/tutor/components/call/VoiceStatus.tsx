@@ -38,7 +38,11 @@ export function VoiceStatus({ state, size = 'md' }: Props) {
   );
   const colored = state === 'speaking' || state === 'listening';
   return (
-    <View accessible accessibilityLiveRegion="polite" accessibilityLabel={T[state]}>
+    <View
+      accessible
+      accessibilityLiveRegion="polite"
+      accessibilityLabel={T[state]}
+      style={styles.wrap}>
       {colored ? (
         <GradientSurface
           gradient={
@@ -48,7 +52,9 @@ export function VoiceStatus({ state, size = 'md' }: Props) {
           }
           radius={theme.radius.full}
           shadow={state === 'speaking' ? extras.call.speakingGlow : extras.call.listeningGlow}
-          contentStyle={[styles.pill, styles.ring, { height }]}>
+          // Taille fixée sur la surface elle-même : sur Android, elle s'étirait sur tout l'écran.
+          style={{ height }}
+          contentStyle={[styles.pill, styles.ring]}>
           {label}
         </GradientSurface>
       ) : (
@@ -59,6 +65,7 @@ export function VoiceStatus({ state, size = 'md' }: Props) {
 }
 
 const styles = StyleSheet.create({
+  wrap: { alignSelf: 'center' },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',

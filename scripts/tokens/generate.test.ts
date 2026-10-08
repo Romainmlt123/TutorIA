@@ -89,4 +89,17 @@ describe('générateur de tokens', () => {
     expect(tokens.voiceCall.avatar).toMatchObject({ size: 148, cycleMs: 420, tilt: -8 });
     expect(tokens.voiceCall.hangup).toBe(tokens.palette.red?.['500']);
   });
+
+  it('exporte la connexion plein écran (v2.7)', () => {
+    const { auth } = buildTokens(design, app);
+    expect(auth.background.parent.colors[0]).toBe('#8558ea');
+    expect(auth.sheet).toMatchObject({
+      radius: 32,
+      paddingTop: 24,
+      paddingHorizontal: 20,
+      enterMs: 550,
+    });
+    expect(auth.avatar).toMatchObject({ size: 96, greetFromMs: 350, greetToMs: 2100 });
+    expect(auth.field.filledBackground).toBe(buildTokens(design, app).palette.gray?.['100']);
+  });
 });
