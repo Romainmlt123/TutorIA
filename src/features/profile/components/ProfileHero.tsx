@@ -32,6 +32,8 @@ type Props = {
   /** Mois d'arrivée, déjà mis en forme (« septembre »). */
   sinceMonth: string | null;
   look: AvatarLook | null;
+  /** L'apparence est encore lue : ni initiale ni figurine, pour ne pas montrer l'une puis l'autre. */
+  lookLoading: boolean;
   /** Nouveautés de la garde-robe pas encore vues. */
   news: number;
   onBack: () => void;
@@ -39,7 +41,15 @@ type Props = {
 };
 
 /** La figurine en pied, qui salue à l'arrivée sur l'écran puis attend ; l'initiale sans avatar. */
-function Figure({ look, firstName }: { look: AvatarLook | null; firstName: string }) {
+function Figure({
+  look,
+  loading,
+  firstName,
+}: {
+  look: AvatarLook | null;
+  loading: boolean;
+  firstName: string;
+}) {
   const reduceMotion = useReducedMotion();
   const active = useSceneActive();
   const sceneKey = useSceneKey();
@@ -64,7 +74,7 @@ function Figure({ look, firstName }: { look: AvatarLook | null; firstName: strin
       style={styles.figure}>
       <View aria-hidden style={styles.halo} />
       <View aria-hidden style={styles.ground} />
-      {look && canUseWebGL() ? (
+      {loading ? null : look && canUseWebGL() ? (
         <SceneBoundary key={sceneKey} scope="profile.avatar" fallback={initial}>
           <AvatarPreview
             look={look}
@@ -87,10 +97,10 @@ function Figure({ look, firstName }: { look: AvatarLook | null; firstName: strin
  * le bouton de l'avatar avec ses nouveautés, et la figurine de l'élève à droite.
  */
 export function ProfileHero(props: Props) {
-  const { firstName, grade, sinceMonth, look, news, onBack, onAvatar } = props;
+  const { firstName, grade, sinceMonth, look, lookLoading, news, onBack, onAvatar } = props;
   return (
     <ScreenBand tone="student" overlap={PROFILE_OVERLAP} accessibilityLabel={t.kicker}>
-      <Figure look={look} firstName={firstName} />
+      <Figure look={look} loading={lookLoading} firstName={firstName} />
       <View style={styles.back}>
         <IconButton
           icon="chevron-gauche"

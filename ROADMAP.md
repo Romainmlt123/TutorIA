@@ -35,7 +35,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6`        |
 | Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`           |
 | Interface     | **v2.7 · la connexion plein écran (L2, L3)**                                  | ✅ validé   | `feat/connexion-plein-ecran` |
-| Interface     | **v2.8 · le profil de l'élève**                                               | à valider   | `feat/profil-eleve`          |
+| Interface     | **v2.8 · le profil de l'élève**                                               | ✅ validé   | `feat/profil-eleve`          |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -278,7 +278,8 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
 
 - **08/10 (v2.8) :**
   - Plan du profil validé par Romain : les 24 trophées (calculés dans l'app, gardés pour toujours), « Sons et vibrations » gardé sans effet pour y penser plus tard, l'interrupteur du rappel de révision, et plus de « Retirer » un parent pour l'élève (ce n'est pas à lui de choisir).
-  - La v2.8 est livrée sur `feat/profil-eleve`, à valider sur le Pixel. La migration `parent_links_parent_only` est appliquée en ligne (version `20261008090000`, par Romain avec `supabase db push`, après son accord).
+  - La v2.8 est validée par Romain sur le Pixel. Retour intégré : la figurine 3D du profil arrivait lentement ; l'apparence et le modèle (1,6 Mo) sont maintenant chargés dès l'Accueil, et le profil n'affiche plus l'initiale avant la figurine.
+  - La v2.8 a d'abord été livrée sur `feat/profil-eleve`. La migration `parent_links_parent_only` est appliquée en ligne (version `20261008090000`, par Romain avec `supabase db push`, après son accord).
 
 ## Prochaines étapes, gardées en tête (08/10)
 

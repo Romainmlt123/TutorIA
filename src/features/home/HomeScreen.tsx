@@ -5,6 +5,7 @@ import { ScreenBand } from '@/components/ScreenBand';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { SectionCard } from '@/components/SectionCard';
 import { ConsentBanner } from '@/features/access/ConsentBanner';
+import { usePreloadAvatar } from '@/features/avatar/hooks/usePreloadAvatar';
 import { SubjectCard } from '@/components/subject/SubjectCard';
 import { TwoColumnGrid } from '@/components/TwoColumnGrid';
 import { fr } from '@/i18n/fr';
@@ -25,6 +26,8 @@ const HOME_OVERLAP = 64;
 export function HomeScreen() {
   const router = useRouter();
   const { student, quote, subjects, resume } = useHomeData();
+  // La figurine se charge pendant que l'élève lit l'Accueil (profil, carte d'Explorer).
+  usePreloadAvatar();
 
   return (
     <ScreenContainer

@@ -122,6 +122,7 @@ export function ProfileScreen() {
           grade={student?.grade ?? null}
           sinceMonth={since}
           look={avatar.data ?? null}
+          lookLoading={avatar.isPending}
           news={fresh.length}
           onBack={() => router.back()}
           onAvatar={() => router.push('/avatar')}
