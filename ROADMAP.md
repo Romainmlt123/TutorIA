@@ -29,11 +29,11 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Explorer      | **X3 à X5b · fiche, discussion et bilan d'un niveau**                         | ✅ validé   | `feat/avatar`         |
 | Explorer      | La suite (art des régions, contenu, allègement…)                              | ⏸️ en pause |                       |
 | Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`  |
-| Tuteur visuel | V4 · les visuels à la voix                                                    | à venir     |                       |
+| Tuteur visuel | **V4 · les visuels à la voix**                                                | ✅ validé   | `feat/appel-vocal`    |
 | Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`     |
 | Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice` |
 | Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6` |
-| Interface     | v2.6 · l'appel vocal plein écran                                              | à venir     | `feat/interface-v2-6` |
+| Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`    |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -246,13 +246,26 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - C4 est validée par Romain sur le Pixel (prompt `2026-10-07.3`).
   - La nouvelle version de l'interface (design v2.5) est déjà dans `design/`. Elle sera implémentée plus tard.
 
-- **08/10 :**
+- **07/10 (v2.5) :**
   - La v2.5 est validée par Romain sur le Pixel, avec ses retours intégrés :
     - P1 sans le badge « Espace Parents », chiffres clés centrés sans évolution, et « Comment l'encourager » propose deux questions à poser (rédigées à l'avance, sans IA) ;
     - P2 : chaque matière de « Par matière » est un bloc teinté de sa couleur ;
     - l'objectif du jour passe en dégradé violet → bleu (écart 18), qui glisse lentement (figé avec « Réduire les animations », en pause hors de l'Accueil) ;
     - la saisie du chat libre remonte au-dessus du logo de la barre.
   - Corrigé : le résumé de la semaine était coupé au milieu d'une phrase. Le modèle consomme une partie des jetons de sortie pour réfléchir, et la limite de 300 jetons l'arrêtait. Les résumés passent à 1 500 jetons, et une réponse coupée n'est plus jamais enregistrée.
+
+- **08/10 (v2.6) :**
+  - La v2.6 et V4 sont livrées sur `feat/appel-vocal` (empilée sur la v2.5, pull request #10), à valider sur le Pixel :
+    - écran d'appel plein écran, sans barre d'onglets : « Écrit » et chrono, sujet centré, logo qui rebondit selon le niveau de la voix (mesures WebRTC), pastille verte ou rouge, sous-titres, commandes en verre ;
+    - les sous-titres reprennent ce que dit le tuteur ; la voix de l'élève n'est pas transcrite (retour de Romain : ses propres sous-titres arrivaient après coup et ne servaient à rien) ;
+    - les visuels à la voix : les appels d'outils arrivent sur le téléphone, qui les fait valider et modérer par `/api/tutor/visual-check` avant de les dessiner ; la courbe nommée passe au premier plan, le tableau s'écrit ligne à ligne ;
+    - l'appel simulé (Expo Go) joue aussi sous-titres, rebond et visuels ;
+    - X4b (la voix dans Explorer) garde son ancien écran.
+  - Le rebond selon la vraie voix ne se voit qu'avec un build de développement ou dans le navigateur du téléphone (pas de WebRTC dans Expo Go).
+  - Premier essai de Romain avec la vraie voix (navigateur) : rebond, discussion, graphiques et tableaux validés. Retours intégrés : les sous-titres du tuteur s'allument au rythme de sa voix (ils arrivaient d'un coup, avant l'audio), et les halos du logo n'apparaissent que quand il parle.
+
+  - La v2.6 et V4 sont validées par Romain avec la vraie voix (halos seulement quand le tuteur parle, sous-titres calés sur sa voix, sans transcription de l'élève).
+  - La limite de 5 appels vocaux par jour a son propre message (« Tu as fait tes appels du jour… ») : le serveur renvoie `daily_limit` quand c'est la limite du jour qui est atteinte, et non plus la même erreur que la limite d'une minute.
 
 ## En attente
 

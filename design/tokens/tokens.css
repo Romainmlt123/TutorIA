@@ -132,7 +132,7 @@
   --section-title-size: 22px; /* 22/30 Black */
 
   /* Objectif du jour (Accueil) */
-  --goal-gradient: linear-gradient(160deg, #662ee6 0%, #2e6be6 100%); /* violet → bleu (08/10) */
+  --goal-gradient: linear-gradient(160deg, #662ee6 0%, #2e6be6 100%); /* violet → bleu (07/10) */
 
   /* Appel vocal (v2.6) */
   --call-gradient: linear-gradient(170deg, #2e6be6 0%, #1750c4 42%, #0a3b9d 78%, #03276e 100%);

@@ -8,11 +8,12 @@ import { Icon } from '../Icon';
 type Props = {
   /** Sans matière (discussion libre « Toutes les matières ») : tuile bleue de l'élève, bulle. */
   subjectId?: SubjectId;
-  /** 48 (Reprendre), 40 (Sujet de la discussion), 36 (pastilles de la révision du jour). */
-  size: 36 | 40 | 48;
+  /** 48 (Reprendre), 40 (Sujet de la discussion), 36 (pastilles de la révision du jour), 24 (appel vocal). */
+  size: 24 | 36 | 40 | 48;
 };
 
 const SHAPES = {
+  24: { radius: 7, icon: 14, stroke: 2 },
   48: { radius: theme.radius['2xl'], icon: 24, stroke: 1.75 },
   40: { radius: 12, icon: 22, stroke: 1.75 },
   36: { radius: theme.radius.full, icon: 16, stroke: 2 },

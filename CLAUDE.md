@@ -175,6 +175,10 @@ Chaque choix doit rester compatible avec une publication sur les stores :
     - le titre et la matière sont donnés ensemble par `nameOf` (`server/tutor/title.ts`, sortie structurée, titre modéré, sinon le début de la question) après le premier échange d'une discussion sans titre (nouvelle, ou d'avant les titres), jamais pour un niveau ; la matière reconnue est écrite dans la séance seulement si la discussion n'avait ni matière ni chapitre, et arrive dans l'événement `title` ;
     - le volet lit les discussions par `conversationService` (`@/services/conversations`) : l'élève les liste et les supprime (RLS), les parents n'y ont jamais accès.
   - Le vocal enregistre le début de séance dans l'enveloppe `server/tutor/voice.ts`, et la fin via `/api/tutor/voice/end` (plafond 10 min) : `server/tutor/realtime.ts` n'est pas modifié pour cela.
+  - Appel vocal plein écran (v2.6, `VoiceTutorScreen`, composants `src/features/tutor/components/call/`) :
+    - les sous-titres ne reprennent que la voix du tuteur : celle de l'élève n'est jamais transcrite ; `startVoiceSession` reçoit `onCaption`, `onLevel` (niveau de la voix du tuteur, lu par `getStats`) et `onVisual`, et `useVoiceCall` expose `caption`, `level` (valeur partagée Reanimated, sans rendu), `captionsOn` (retenu sur l'appareil) et `visual`, sans changer les états de `voice.ts` ;
+    - hors d'Explorer et si le parent les autorise, le tuteur vocal a les outils de visuels ; chaque appel d'outil reçu sur le téléphone passe par `/api/tutor/visual-check` (`server/tutor/visualCheck.ts` : mêmes validations qu'à l'écrit, modération) avant d'être dessiné, et un visuel refusé n'est jamais affiché ;
+    - la barre d'onglets se masque pendant l'appel (`BottomNav`) ; X4b (la voix dans Explorer) garde `CallControls` et `VoiceVisualizer`.
   - Niveaux d'Explorer (`topic.levelId`, `server/tutor/level.ts`) :
     - le tuteur écrit juge par des outils (`record_answer`, `complete_step`), plafonnés par `applyCalls` (`src/features/explorer/logic/levelPlay.ts`) : c'est le serveur qui calcule le score, jamais l'app ;
     - la partie d'une séance est dans `level_attempts`, et `finish_level` (une fois par partie) garde le meilleur résultat dans `level_progress` et ajoute l'XP à la séance : 10 XP la première fois que le niveau est terminé, puis 10 XP par étoile nouvelle (même règle que `awardedXp` en TypeScript). La maîtrise du chapitre n'en dépend pas ;
@@ -205,7 +209,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
 - **Hooks git :** le pre-commit lance `lint-staged` (ESLint + Prettier sur les fichiers modifiés) et `npm run typecheck`. La CI (`.github/workflows/ci.yml`) vérifie que les tokens sont à jour et lance `npm run check`.
 
 ## 11. Points de vigilance avant publication
-1. **Vocal :** avec l'API Realtime, le client peut modifier les consignes de sa session (`session.update`), et un appel peut durer 60 min.
+1. **Vocal :** avec l'API Realtime, le client peut modifier les consignes de sa session (`session.update`), et un appel peut durer 60 min. Les visuels demandés par le tuteur sont validés et modérés par le serveur (`/api/tutor/visual-check`), mais la voix elle-même ne l'est pas encore.
    - Avant la production, il faut une surveillance côté serveur : une connexion « sideband » qui vérifie les `session.updated`, modère les transcriptions et raccroche via `/v1/realtime/calls/{id}/hangup`. Elle demande un petit service Node séparé, car EAS Hosting tourne sur des Workers.
    - Autre piste : évaluer GPT-Live, où le serveur détient la configuration.
    - `react-native-webrtc` n'est pas officiellement testé sur la nouvelle architecture : à valider sur un build de développement. Sur iOS, vérifier aussi que le son sort par le haut-parleur.

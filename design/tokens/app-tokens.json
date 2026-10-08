@@ -54,7 +54,7 @@
     "hangup": "{red-500}",
     "note": "Appel vocal plein écran (2B, 2D, 2F, v2.6) : fond, pastilles d'état, logo qui rebondit, sous-titres."
   },
-  "goal": { "gradient": ["#662ee6", "#2e6be6"], "text": "#ffffff", "note": "Carte Objectif du jour (Accueil), en dégradé violet → bleu de la marque depuis le 08/10 (le vert ressemblait trop à l'Histoire-Géo). L'objectif hebdomadaire des Parents garde le dégradé de l'Histoire-Géo." },
+  "goal": { "gradient": ["#662ee6", "#2e6be6"], "text": "#ffffff", "note": "Carte Objectif du jour (Accueil), en dégradé violet → bleu de la marque depuis le 07/10 (le vert ressemblait trop à l'Histoire-Géo). L'objectif hebdomadaire des Parents garde le dégradé de l'Histoire-Géo." },
   "statuses": {
     "acquired": { "label": "Acquis", "background": "{green-700}", "text": "#ffffff" },
     "inProgress": { "label": "En cours", "background": "{blue-500}", "text": "#ffffff" },

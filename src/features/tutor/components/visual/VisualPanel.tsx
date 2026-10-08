@@ -6,8 +6,8 @@ import { PressableBase } from '@/components/PressableBase';
 import { Text } from '@/components/Text';
 import type { SubjectId } from '@/data/types';
 import { fr } from '@/i18n/fr';
-import type { TutorVisual, VisualKind } from '@/services/tutor/visuals';
-import { subjectTheme, theme } from '@/theme';
+import type { TutorVisual, VisualKind, VisualTone } from '@/services/tutor/visuals';
+import { extras, subjectTheme, theme } from '@/theme';
 import { visualArt } from '@/theme/visualArt';
 
 import { VisualView } from './VisualView';
@@ -112,15 +112,23 @@ export function VisualHeader({
   );
 }
 
-/** Légende d'un graphique : chaque courbe nommée, dans sa couleur (« la droite rouge »). */
-function Legend({ visual }: { visual: TutorVisual }) {
+/**
+ * Légende d'un graphique : chaque courbe nommée, dans sa couleur (« la droite rouge »). Au vocal,
+ * la courbe que le tuteur nomme s'allume (`focus`).
+ */
+function Legend({ visual, focus = null }: { visual: TutorVisual; focus?: VisualTone | null }) {
   if (visual.kind !== 'graph') return null;
   const named = visual.curves.filter((c) => c.label);
   if (!named.length) return null;
   return (
     <View style={styles.legend}>
       {named.map((curve, i) => (
-        <View key={i} style={styles.legendItem}>
+        <View
+          key={i}
+          style={[
+            styles.legendItem,
+            focus === curve.tone && { backgroundColor: visualArt.soft[curve.tone] },
+          ]}>
           <View
             style={[
               styles.legendLine,
@@ -164,6 +172,41 @@ export function VisualPanel(props: Props) {
   );
 }
 
+/** Hauteur du dessin dans la carte de l'appel : la carte occupe la moitié haute de l'écran. */
+const CALL_VISUAL_HEIGHT = 180;
+
+type CallProps = {
+  visual: TutorVisual;
+  subjectId?: SubjectId;
+  /** Couleur que le tuteur vient de nommer (graphique). */
+  focus: VisualTone | null;
+  /** Lignes du tableau déjà écrites. */
+  progress?: number;
+  onExpand: () => void;
+};
+
+/**
+ * 2D et 2F · le visuel pendant l'appel vocal : la même carte teintée, surélevée, sans chevron
+ * (seulement « Agrandir »), et qui avance avec la voix du tuteur.
+ */
+export function CallVisualCard({ visual, subjectId, focus, progress, onExpand }: CallProps) {
+  const kind = visualArt.kinds[visual.kind];
+  return (
+    <View
+      style={[
+        styles.panel,
+        styles.elevated,
+        { backgroundColor: kind.soft, borderColor: kind.border },
+      ]}>
+      <VisualHeader visual={visual} subjectId={subjectId} onExpand={onExpand} />
+      <View style={styles.sheet}>
+        <VisualView visual={visual} height={CALL_VISUAL_HEIGHT} focus={focus} progress={progress} />
+        <Legend visual={visual} focus={focus} />
+      </View>
+    </View>
+  );
+}
+
 export { Legend as VisualLegend };
 
 const styles = StyleSheet.create({
@@ -182,6 +225,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius['2xl'],
     backgroundColor: theme.colors.surface,
   },
+  elevated: { boxShadow: extras.call.visualShadow },
   header: { flexDirection: 'row', alignItems: 'center', gap: theme.space[2] },
   band: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: theme.space[3], minHeight: 48 },
   tile: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
@@ -195,7 +239,14 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
   },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[3] },
-  legendItem: { flexDirection: 'row', alignItems: 'center', gap: theme.space[2] },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.space[2],
+    paddingVertical: 2,
+    paddingHorizontal: theme.space[2],
+    borderRadius: theme.radius.full,
+  },
   legendLine: { width: 18, borderTopWidth: 3 },
   legendDashed: { borderStyle: 'dashed' },
 });

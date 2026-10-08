@@ -27,6 +27,7 @@ const KNOWN_CODES: readonly TutorErrorCode[] = [
   'paused',
   'too_long',
   'rate_limited',
+  'daily_limit',
   'flagged',
   'distress',
   'timeout',

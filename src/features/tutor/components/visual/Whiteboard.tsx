@@ -1,4 +1,14 @@
+import { useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import Animated, {
+  cancelAnimation,
+  FadeIn,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { Text } from '@/components/Text';
 import type { BoardVisual } from '@/services/tutor/visuals';
@@ -17,15 +27,32 @@ type Props = {
   visual: BoardVisual;
   /** Hauteur au-delà de laquelle le tableau défile vers le bas (plus grande en plein écran). */
   maxHeight: number;
+  /** Au vocal (2F) : lignes déjà écrites, le tableau s'écrivant pendant que le tuteur parle. */
+  progress?: number;
 };
+
+/** Stylo du tableau qui s'écrit (2F) : un point `primary` de 8 px qui pulse. */
+function PenDot() {
+  const reduceMotion = useReducedMotion();
+  const pulse = useSharedValue(1);
+  useEffect(() => {
+    if (reduceMotion) return;
+    pulse.value = withRepeat(withTiming(0.35, { duration: 600 }), -1, true);
+    return () => cancelAnimation(pulse);
+  }, [pulse, reduceMotion]);
+  const style = useAnimatedStyle(() => ({ opacity: pulse.value }));
+  return <Animated.View style={[styles.pen, style]} />;
+}
 
 /**
  * 2E · tableau blanc du tuteur : un calcul ligne à ligne, l'opération de chaque passage en bleu, les
  * notes numérotées dans la marge et le résultat entouré de rouge. Une ligne n'est jamais coupée :
  * un long calcul fait défiler le tableau sur le côté, un long tableau le fait défiler vers le bas.
  */
-export function Whiteboard({ visual, maxHeight }: Props) {
+export function Whiteboard({ visual, maxHeight, progress }: Props) {
   let noteNumber = 0;
+  const shown = progress ?? visual.steps.length;
+  const writing = shown < visual.steps.length;
   return (
     <ScrollView
       style={{ maxHeight }}
@@ -34,8 +61,8 @@ export function Whiteboard({ visual, maxHeight }: Props) {
       accessibilityLabel={visual.description}>
       <ScrollView horizontal nestedScrollEnabled contentContainerStyle={styles.board}>
         <View style={styles.lines}>
-          {visual.steps.map((step, i) => (
-            <View key={i} style={styles.step}>
+          {visual.steps.slice(0, shown).map((step, i) => (
+            <Animated.View key={i} entering={FadeIn.duration(450)} style={styles.step}>
               <View style={styles.row}>
                 <MathFormula
                   tex={step.tex}
@@ -57,9 +84,11 @@ export function Whiteboard({ visual, maxHeight }: Props) {
                   <MathFormula tex={step.operation} color={visualArt.boardOperation} wrap={false} />
                 </View>
               ) : null}
-            </View>
+              {/* Le stylo : un point bleu au bout de la ligne en cours d'écriture. */}
+              {writing && i === shown - 1 ? <PenDot /> : null}
+            </Animated.View>
           ))}
-          {visual.result ? (
+          {visual.result && !writing ? (
             <View style={styles.result}>
               <MathFormula
                 tex={visual.result}
@@ -81,6 +110,13 @@ const styles = StyleSheet.create({
   step: { gap: theme.space[1] },
   row: { flexDirection: 'row', alignItems: 'center', gap: theme.space[4] },
   note: { width: NOTE_WIDTH },
+  pen: {
+    width: 8,
+    height: 8,
+    marginLeft: theme.space[3],
+    borderRadius: theme.radius.full,
+    backgroundColor: theme.colors.primary,
+  },
   operation: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -219,6 +219,19 @@ describe('POST /api/tutor/chat', () => {
     expect((await at('2026-09-28T15:30:00Z')).ok).toBe(true);
   });
 
+  it('distingue la limite du jour, qui a son propre message', async () => {
+    const { admin } = fakeAdmin();
+    const rpc = admin.rpc;
+    admin.rpc = jest.fn(async (name: string, args?: { p_window_seconds?: number }) =>
+      name === 'consume_rate_limit'
+        ? { data: (args?.p_window_seconds ?? 0) < 86_400, error: null }
+        : rpc(name),
+    ) as typeof admin.rpc;
+    const response = await handleChat(chatRequest(body), deps(fakeOpenAI(), admin));
+    expect(response.status).toBe(429);
+    expect(await response.json()).toEqual({ error: 'daily_limit' });
+  });
+
   it('limite le débit par élève', async () => {
     const { admin } = fakeAdmin({ limited: true });
     const response = await handleChat(chatRequest(body), deps(fakeOpenAI(), admin));

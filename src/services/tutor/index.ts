@@ -21,7 +21,7 @@ export const tutorService: TutorService =
 /** Tuteur simulé, utilisé aussi en mode hors ligne et quand le vocal en direct est indisponible. */
 export const mockTutorService: TutorService = createMockTutorService();
 
-export type { TutorService, VoiceSession } from './TutorService';
+export type { TutorService, VoiceCaption, VoiceSession } from './TutorService';
 export type { ChatTurn, TutorErrorCode, TutorStreamEvent, TutorTopic } from './api-contract';
 export { TUTOR_LIMITS } from './api-contract';
 export { VoiceSessionError, type VoiceErrorCode } from './live/realtimeVoice';
