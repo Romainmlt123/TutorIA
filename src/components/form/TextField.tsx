@@ -88,11 +88,6 @@ export function TextField({
         ) : null}
       </View>
       <View>
-        {icon ? (
-          <View style={styles.icon}>
-            <Icon name={icon} size={20} color={theme.palette.gray[400]} />
-          </View>
-        ) : null}
         <TextInput
           {...inputProps}
           value={value}
@@ -114,6 +109,12 @@ export function TextField({
             focused ? styles.focused : null,
           ]}
         />
+        {/* Dessinée après le champ : sur Android, l'ombre de focus le ferait passer au-dessus. */}
+        {icon ? (
+          <View style={styles.icon}>
+            <Icon name={icon} size={20} color={theme.palette.gray[400]} />
+          </View>
+        ) : null}
         {secure ? (
           <PressableBase
             onPress={() => setRevealed((shown) => !shown)}
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: theme.space[2],
   },
-  icon: { position: 'absolute', left: theme.space[4], top: theme.space[4], zIndex: 1 },
+  icon: { position: 'absolute', left: theme.space[4], top: theme.space[4], pointerEvents: 'none' },
   input: {
     ...textStyle('body'),
     height: FIELD_HEIGHT,
