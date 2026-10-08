@@ -46,6 +46,8 @@ export function ChatStarters({ onPick }: { onPick: (message: string) => void }) 
               angle={90}
               radius={theme.radius.full}
               shadow={theme.shadow.sm}
+              // Hauteur fixée sur la surface elle-même, comme la pastille d'état de l'appel.
+              style={styles.chipFrame}
               contentStyle={styles.chip}>
               <Icon name={icon} size={16} color={theme.colors.textOnColor} />
               <Text variant="bodySm" weight="bold" color="textOnColor" numberOfLines={1}>
@@ -66,11 +68,11 @@ const styles = StyleSheet.create({
     paddingVertical: theme.space[1],
   },
   pressed: { opacity: 0.85 },
+  chipFrame: { height: HEIGHT },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.space[2],
-    height: HEIGHT,
     paddingHorizontal: theme.space[4],
   },
 });
