@@ -278,7 +278,7 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
 
 - **08/10 (v2.8) :**
   - Plan du profil validé par Romain : les 24 trophées (calculés dans l'app, gardés pour toujours), « Sons et vibrations » gardé sans effet pour y penser plus tard, l'interrupteur du rappel de révision, et plus de « Retirer » un parent pour l'élève (ce n'est pas à lui de choisir).
-  - La v2.8 est livrée sur `feat/profil-eleve`, à valider sur le Pixel. La migration `parent_links_parent_only` est testée en local, pas encore appliquée en ligne.
+  - La v2.8 est livrée sur `feat/profil-eleve`, à valider sur le Pixel. La migration `parent_links_parent_only` est appliquée en ligne (version `20261008090000`, par Romain avec `supabase db push`, après son accord).
 
 ## Prochaines étapes, gardées en tête (08/10)
 
