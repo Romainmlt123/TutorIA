@@ -17,7 +17,7 @@ import { theme } from '@/theme';
 import { ParentBand } from './components/ParentBand';
 import { ChildProfileCard } from './components/ChildProfileCard';
 import { GoalStepper } from './components/GoalStepper';
-import { SettingRow, SettingsGroup } from './components/SettingRow';
+import { SettingRow, SettingsGroup } from '@/components/SettingRow';
 import { useParentalSettings, useParentNotifications } from './hooks/useParentData';
 import { useSelectedChild } from './hooks/useSelectedChild';
 

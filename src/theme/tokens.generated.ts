@@ -568,6 +568,64 @@ export const settingTiles = {
       0,
       1
     ]
+  },
+  "reminder": {
+    "colors": [
+      "#e6992e",
+      "#e6992e"
+    ],
+    "locations": [
+      0,
+      1
+    ]
+  },
+  "captions": {
+    "colors": [
+      "#4d81ea",
+      "#1750c4",
+      "#0a3b9d"
+    ],
+    "locations": [
+      0,
+      0.6,
+      1
+    ]
+  },
+  "sounds": {
+    "colors": [
+      "#1bc85b",
+      "#0c9e42",
+      "#03702b"
+    ],
+    "locations": [
+      0,
+      0.45,
+      1
+    ]
+  },
+  "download": {
+    "colors": [
+      "#17a5be",
+      "#09879d",
+      "#026273"
+    ],
+    "locations": [
+      0,
+      0.45,
+      1
+    ]
+  },
+  "privacy": {
+    "colors": [
+      "#8558ea",
+      "#521dc8",
+      "#3b0da2"
+    ],
+    "locations": [
+      0,
+      0.6,
+      1
+    ]
   }
 } as const;
 
@@ -626,6 +684,56 @@ export const goal = {
     ]
   },
   "text": "#ffffff"
+} as const;
+
+export const profile = {
+  "summaryTile": {
+    "size": 48,
+    "radius": 16,
+    "icon": 24,
+    "glow": {
+      "orange": "rgba(208,136,37,0.35)",
+      "violet": "rgba(82,29,200,0.30)",
+      "blue": "rgba(23,80,196,0.30)"
+    }
+  },
+  "level": {
+    "gradient": {
+      "colors": [
+        "#2e6be6",
+        "#662ee6"
+      ],
+      "locations": [
+        0,
+        1
+      ]
+    },
+    "badgeGradient": {
+      "colors": [
+        "#662ee6",
+        "#2e6be6"
+      ],
+      "locations": [
+        0,
+        1
+      ]
+    },
+    "track": "#ebf1ff",
+    "height": 12,
+    "knob": 18
+  },
+  "trophy": {
+    "size": 64,
+    "locked": "#eef1f6",
+    "lockedRing": "#dce2ec",
+    "lockedInk": "#9da6b9"
+  },
+  "hero": {
+    "figureWidth": 168,
+    "figureHeight": 282,
+    "halo": "rgba(255,255,255,0.22)",
+    "newsBadge": "#d08825"
+  }
 } as const;
 
 export const auth = {

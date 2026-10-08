@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Switch } from '@/components/form/Switch';
-import { GradientSurface } from '@/components/GradientSurface';
-import { Icon, type IconName } from '@/components/Icon';
-import { PressableBase } from '@/components/PressableBase';
-import { Text } from '@/components/Text';
+import { Switch } from './form/Switch';
+import { GradientSurface } from './GradientSurface';
+import { Icon, type IconName } from './Icon';
+import { PressableBase } from './PressableBase';
+import { Text } from './Text';
 import { theme, type SettingTileId } from '@/theme';
 
 type Common = {
@@ -20,7 +20,7 @@ type Props =
   | (Common & { value: boolean; onValueChange: (value: boolean) => void; onPress?: never })
   | (Common & { onPress: () => void; value?: never; onValueChange?: never });
 
-/** Ligne de réglage (P4) : tuile colorée, libellé, aide, interrupteur ou chevron. */
+/** Ligne de réglage (P4, profil de l'élève) : tuile colorée, libellé, aide, interrupteur ou chevron. */
 export function SettingRow(props: Props) {
   const { label, hint, icon, tile, divider = false } = props;
   const content = (
@@ -64,7 +64,7 @@ export function SettingRow(props: Props) {
   );
 }
 
-/** Groupe de réglages (P4, v2.5) : carte blanche, son titre (22 Black) dans la carte. */
+/** Groupe de réglages (P4 et profil, v2.5) : carte blanche, son titre (22 Black) dans la carte. */
 export function SettingsGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
     <View style={styles.card}>

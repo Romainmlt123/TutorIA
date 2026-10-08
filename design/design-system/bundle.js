@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"CallTopBar"},{"name":"VoiceAvatar"},{"name":"VoiceStatus"},{"name":"LiveCaptions"},{"name":"CallDock"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"AuthScreen"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"PlanRow"},{"name":"Stars"},{"name":"IslandIllustration"},{"name":"IslandCarousel"},{"name":"IslandProgressCard"},{"name":"ExplorerHud"},{"name":"LevelNode"},{"name":"MapAvatar"},{"name":"CityBanner"},{"name":"RegionSign"},{"name":"WorldMap"},{"name":"LevelTypePill"},{"name":"LevelSheet"},{"name":"IslandBackdrop"},{"name":"LevelProgressHeader"},{"name":"VoiceBoardCard"},{"name":"LevelResultCard"},{"name":"TutorFeedback"}]} */
+/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"CallTopBar"},{"name":"VoiceAvatar"},{"name":"VoiceStatus"},{"name":"LiveCaptions"},{"name":"CallDock"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"ProfileHero"},{"name":"ProfileSummary"},{"name":"LevelBar"},{"name":"TrophyShelf"},{"name":"TrophyBadge"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"AuthScreen"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"PlanRow"},{"name":"Stars"},{"name":"IslandIllustration"},{"name":"IslandCarousel"},{"name":"IslandProgressCard"},{"name":"ExplorerHud"},{"name":"LevelNode"},{"name":"MapAvatar"},{"name":"CityBanner"},{"name":"RegionSign"},{"name":"WorldMap"},{"name":"LevelTypePill"},{"name":"LevelSheet"},{"name":"IslandBackdrop"},{"name":"LevelProgressHeader"},{"name":"VoiceBoardCard"},{"name":"LevelResultCard"},{"name":"TutorFeedback"}]} */
 (function () {
   'use strict';
   var React = window.React;
@@ -23,6 +23,11 @@
   /* ---------- Icônes (contour, grille 24) ---------- */
   var ICONS = {
     pencil: 'M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16zM13.5 6.5l4 4',
+    download: 'M12 3v12M7 10l5 5 5-5M5 21h14',
+    logout: 'M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4',
+    trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
+    gift: 'M4 11h16v10H4zM2 7h20v4H2zM12 7v14M12 7S10.5 3 8 3a2 2 0 0 0 0 4M12 7s1.5-4 4-4a2 2 0 0 1 0 4',
+    trophy: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4',
     crown: 'M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5zM5 19h14',
     compass: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM15.5 8.5l-2 5-5 2 2-5z',
     checkCircle: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM8 12.5l2.7 2.7L16 10',
@@ -932,6 +937,96 @@
     return h('div', { style: style }, body);
   }
 
+  /* ---------- Profil de l'élève (v2.8) ---------- */
+  var PROFILE_TONES = {
+    orange: ['linear-gradient(160deg, var(--orange-400) 0%, var(--orange-600) 50%, var(--orange-700) 100%)', 'rgba(208,136,37,0.35)'],
+    violet: [SUBJECTS['physique-chimie'].gradient, 'rgba(82,29,200,0.30)'],
+    blue: [SUBJECTS.francais.gradient, 'rgba(23,80,196,0.30)'],
+    green: [SUBJECTS['histoire-geo'].gradient, 'rgba(12,158,66,0.30)'],
+    red: [SUBJECTS.maths.gradient, 'rgba(194,26,26,0.30)'],
+    cyan: [SUBJECTS.anglais.gradient, 'rgba(9,135,157,0.30)']
+  };
+  function profileTone(t) { return PROFILE_TONES[t] || PROFILE_TONES.blue; }
+
+  /* En-tête du profil : bandeau de marque, prénom, classe, figurine à droite et « Modifier l'avatar ». */
+  function ProfileHero(p) {
+    var news = p.newsCount || 0;
+    var initial = String(p.name || '?').charAt(0).toUpperCase();
+    return h('section', { 'aria-label': 'Profil', style: { position: 'relative', overflow: 'hidden', padding: '56px 20px 100px', borderRadius: '0 0 32px 32px', background: 'linear-gradient(170deg, var(--blue-500) 0%, var(--blue-600) 55%, var(--blue-700) 100%)', color: '#fff', fontFamily: FONT } },
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: -10, top: 70, width: 250, height: 250, borderRadius: 999, background: 'radial-gradient(circle, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 68%)' } }),
+      p.avatarSrc
+        ? [h('span', { key: 's', 'aria-hidden': 'true', style: { position: 'absolute', right: 46, top: 318, width: 130, height: 18, borderRadius: '50%', background: 'radial-gradient(ellipse at center, rgba(2,22,66,0.45) 0%, rgba(2,22,66,0) 70%)' } }),
+           h('img', { key: 'i', src: p.avatarSrc, alt: p.avatarAlt || ('L’avatar de ' + (p.name || '')), style: { position: 'absolute', right: 26, top: 50, width: 168, height: 282, objectFit: 'contain' } })]
+        : h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: 40, top: 110, width: 128, height: 128, borderRadius: 999, background: '#fff', color: 'var(--blue-600)', boxShadow: '0 12px 28px rgba(3,39,110,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 56, fontWeight: 900 } }, initial),
+      h('div', { style: { position: 'relative', display: 'flex', height: 44 } },
+        p.onBack === null ? null : h('button', { type: 'button', onClick: p.onBack, 'aria-label': 'Retour', style: { width: 44, height: 44, padding: 0, border: 'none', borderRadius: 999, background: GLASS, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, h(Icon, { name: 'chevronLeft', size: 22, strokeWidth: 2 }))),
+      h('div', { style: { position: 'relative', marginTop: 28, maxWidth: 190, display: 'flex', flexDirection: 'column', gap: 8 } },
+        h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.85 } }, p.kicker || 'Mon profil'),
+        h('h1', { style: { margin: 0, fontSize: 44, lineHeight: '48px', fontWeight: 900 } }, p.name),
+        p.grade ? h('span', { style: { alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 6, height: 30, padding: '0 12px 0 10px', borderRadius: 999, background: GLASS, fontSize: 13, fontWeight: 700 } }, h(Icon, { name: 'cap', size: 16, strokeWidth: 2 }), 'Élève de ' + p.grade) : null,
+        p.since ? h('span', { style: { fontSize: 13, lineHeight: '18px', fontWeight: 500, opacity: 0.85 } }, p.since) : null,
+        h('button', { type: 'button', onClick: p.onEditAvatar, 'aria-label': (p.avatarSrc ? 'Modifier l’avatar' : 'Créer mon avatar') + (news ? ', ' + news + ' nouveauté' + (news > 1 ? 's' : '') : ''),
+          style: { position: 'relative', alignSelf: 'flex-start', marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px 0 12px', border: 'none', borderRadius: 999, background: '#fff', color: 'var(--blue-600)', fontFamily: FONT, fontSize: 14, fontWeight: 700, boxShadow: '0 8px 20px rgba(3,39,110,0.25)', cursor: 'pointer' } },
+          h(Icon, { name: 'pencil', size: 16, strokeWidth: 2 }), p.avatarSrc ? 'Modifier l’avatar' : 'Créer mon avatar',
+          news ? h('span', { 'aria-hidden': 'true', style: { position: 'absolute', top: -4, right: -4, minWidth: 20, height: 20, padding: '0 5px', boxSizing: 'border-box', borderRadius: 999, background: 'var(--orange-600)', border: '2px solid #fff', color: '#fff', fontSize: 11, lineHeight: '16px', fontWeight: 900, textAlign: 'center' } }, news) : null)));
+  }
+
+  /* Barre de niveau : pastille du niveau atteint, barre et curseur, pastille du suivant en pointillés. */
+  function LevelBar(p) {
+    var level = p.level || 1, xp = p.xp || 0, max = p.xpMax || 100;
+    var pct = Math.round(Math.max(0, Math.min(1, xp / max)) * 1000) / 10;
+    var badge = { width: 34, height: 34, flexShrink: 0, boxSizing: 'border-box', borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 900 };
+    return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10, fontFamily: FONT } },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
+        h('span', { 'aria-hidden': 'true', style: assign({}, badge, { background: 'linear-gradient(160deg, var(--violet-500) 0%, var(--blue-500) 100%)', color: '#fff', boxShadow: '0 4px 10px rgba(82,29,200,0.30)' }) }, level),
+        h('span', { role: 'progressbar', 'aria-label': 'Niveau ' + level, 'aria-valuemin': 0, 'aria-valuemax': max, 'aria-valuenow': xp, style: { position: 'relative', flexGrow: 1, height: 12, borderRadius: 999, background: 'var(--blue-100)' } },
+          h('span', { style: { position: 'absolute', left: 0, top: 0, bottom: 0, width: pct + '%', borderRadius: 999, background: 'linear-gradient(90deg, var(--blue-500) 0%, var(--violet-500) 100%)', transition: 'width 0.6s ease' } }),
+          h('span', { style: { position: 'absolute', left: pct + '%', top: '50%', width: 18, height: 18, margin: '-9px 0 0 -9px', boxSizing: 'border-box', borderRadius: 999, background: '#fff', border: '4px solid var(--violet-500)', boxShadow: '0 2px 6px rgba(82,29,200,0.35)', transition: 'left 0.6s ease' } })),
+        h('span', { 'aria-hidden': 'true', style: assign({}, badge, { background: 'var(--bg)', border: '2px dashed var(--gray-200)', color: 'var(--gray-400)' }) }, level + 1)),
+      h('div', { style: { display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 13, lineHeight: '18px' } },
+        h('b', { style: { fontWeight: 700 } }, 'Niveau ' + level + ' · ' + xp + ' / ' + max + ' XP'),
+        h('span', { style: { color: 'var(--text-secondary)' } }, 'encore ' + Math.max(0, max - xp) + ' XP')));
+  }
+
+  /* Résumé du profil : trois chiffres centrés sous leur icône, puis la barre de niveau. */
+  function ProfileSummary(p) {
+    var stats = p.stats || [];
+    return h('section', { 'aria-label': p.label || 'Mon résumé', style: { display: 'flex', flexDirection: 'column', gap: 16, padding: 20, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' } },
+      h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(' + Math.max(1, stats.length) + ', minmax(0, 1fr))' } },
+        stats.map(function (s, i) {
+          var t = profileTone(s.tone);
+          return h('div', { key: i, style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '2px 6px', textAlign: 'center', borderLeft: i > 0 ? '1px solid var(--blue-100)' : 'none' } },
+            h('span', { 'aria-hidden': 'true', style: { width: 48, height: 48, borderRadius: 16, background: t[0], color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px ' + t[1] + ', inset 0 0 0 1.5px rgba(255,255,255,0.25)' } }, h(Icon, { name: s.icon || 'star', size: 24, strokeWidth: 2 })),
+            h('span', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 } },
+              h('span', { style: { fontSize: 24, lineHeight: '28px', fontWeight: 900, whiteSpace: 'nowrap' } }, s.value),
+              h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 500, color: 'var(--text-secondary)' } }, s.label)));
+        })),
+      p.level != null ? h('div', { style: { paddingTop: 16, borderTop: '1px solid var(--blue-100)' } }, h(LevelBar, { level: p.level, xp: p.xp, xpMax: p.xpMax })) : null);
+  }
+
+  /* Une médaille : disque en dégradé avec son icône, ou grisée avec un cadenas si elle n'est pas gagnée. */
+  function TrophyBadge(p) {
+    var t = profileTone(p.tone);
+    var medal = p.locked
+      ? { background: '#EEF1F6', color: 'var(--gray-300)', boxShadow: 'inset 0 0 0 3px #DCE2EC' }
+      : { background: t[0], color: '#fff', boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.35), 0 6px 14px rgba(9,17,34,0.14)' };
+    return h('div', { role: 'listitem', 'aria-label': p.label + (p.locked ? ' (à gagner)' : ''), onClick: p.onClick, style: { flexShrink: 0, width: 84, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center', fontFamily: FONT, cursor: p.onClick ? 'pointer' : 'default' } },
+      h('span', { 'aria-hidden': 'true', style: assign({ width: 64, height: 64, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }, medal) }, h(Icon, { name: p.locked ? 'lock' : (p.icon || 'trophy'), size: p.locked ? 24 : 28, strokeWidth: 2 })),
+      h('span', { style: { fontSize: 12, lineHeight: '15px', fontWeight: 700, color: p.locked ? 'var(--gray-300)' : 'var(--text)' } }, p.label));
+  }
+
+  /* Carte « Mes trophées » : titre, compteur, médailles qui défilent sur le côté (les gagnées d'abord). */
+  function TrophyShelf(p) {
+    var list = p.trophies || [];
+    var earned = p.earned != null ? p.earned : list.filter(function (t) { return !t.locked; }).length;
+    return h('section', { 'aria-label': p.title || 'Mes trophées', style: { display: 'flex', flexDirection: 'column', gap: 14, padding: 20, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' } },
+      h('div', { style: { display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 } },
+        h('h2', { style: { margin: 0, fontSize: 22, lineHeight: '28px', fontWeight: 900 } }, p.title || 'Mes trophées'),
+        h('span', { style: { fontSize: 13, lineHeight: '18px', fontWeight: 700, color: 'var(--text-secondary)' } }, earned + ' sur ' + (p.total != null ? p.total : list.length))),
+      h('div', { role: 'list', style: { display: 'flex', gap: 6, margin: '0 -20px', padding: '2px 20px 4px', overflowX: 'auto' } },
+        list.map(function (t, i) { return h(TrophyBadge, assign({ key: i }, t)); })));
+  }
+
   /* ---------- Connexion, inscription et onboarding ---------- */
   var SPACE = {
     eleve: { grad: SUBJECTS.francais.gradient, main: 'var(--primary)', ink: 'var(--blue-600)', soft: 'var(--blue-100)', shadow: 'var(--shadow-brand)', icon: 'cap', kicker: 'Espace élève' },
@@ -1472,7 +1567,7 @@
     DailyReviewCard: DailyReviewCard, ChapterRow: ChapterRow, SessionProgress: SessionProgress, AnswerOption: AnswerOption, QuizCard: QuizCard, TallyChips: TallyChips,
     KpiCard: KpiCard, BarChart: BarChart, LineChart: LineChart, Heatmap: Heatmap, SubjectProgressRow: SubjectProgressRow, InsightList: InsightList,
     ChildSwitcher: ChildSwitcher, HeroCard: HeroCard, AlertCard: AlertCard, AdviceCard: AdviceCard, SubjectProgressCard: SubjectProgressCard,
-    SessionSummaryCard: SessionSummaryCard, SettingRow: SettingRow,
+    SessionSummaryCard: SessionSummaryCard, SettingRow: SettingRow, ProfileHero: ProfileHero, ProfileSummary: ProfileSummary, LevelBar: LevelBar, TrophyShelf: TrophyShelf, TrophyBadge: TrophyBadge,
     TextField: TextField, PasswordRules: PasswordRules, Checkbox: Checkbox, OrDivider: OrDivider, AuthProviderButtons: AuthProviderButtons, AuthHero: AuthHero, AuthScreen: AuthScreen, ProfileChoiceCard: ProfileChoiceCard, SubjectCluster: SubjectCluster, StepHeader: StepHeader, GradePicker: GradePicker, SelfAssessmentRow: SelfAssessmentRow, GoalTile: GoalTile, DurationPicker: DurationPicker, ChoiceRow: ChoiceRow, ToggleChip: ToggleChip, ParentCodeCard: ParentCodeCard, StepList: StepList, PlanRow: PlanRow,
     Stars: Stars, IslandIllustration: IslandIllustration, IslandCarousel: IslandCarousel, IslandProgressCard: IslandProgressCard, ExplorerHud: ExplorerHud, LevelNode: LevelNode, MapAvatar: MapAvatar, CityBanner: CityBanner, RegionSign: RegionSign, WorldMap: WorldMap, LevelTypePill: LevelTypePill, LevelSheet: LevelSheet, IslandBackdrop: IslandBackdrop, LevelProgressHeader: LevelProgressHeader, VoiceBoardCard: VoiceBoardCard, LevelResultCard: LevelResultCard, TutorFeedback: TutorFeedback,
     LEVEL_TYPES: LEVEL_TYPES, SUBJECTS: SUBJECTS, ICONS: ICONS, VISUAL_KINDS: VISUAL_KINDS

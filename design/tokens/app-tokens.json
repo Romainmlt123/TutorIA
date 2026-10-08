@@ -66,6 +66,13 @@
     "field": { "filledBackground": "{gray-100}", "filledBorder": "#e1e6f0" },
     "note": "Connexion plein écran (L2, L3, v2.7) : dégradé de l'espace, logo qui dit bonjour, formulaire dans une feuille blanche."
   },
+  "profile": {
+    "summaryTile": { "size": "48px", "radius": "16px", "icon": "24px", "glow": { "orange": "rgba(208,136,37,0.35)", "violet": "rgba(82,29,200,0.30)", "blue": "rgba(23,80,196,0.30)" } },
+    "level": { "gradient": ["#2e6be6", "#662ee6"], "badgeGradient": ["#662ee6", "#2e6be6"], "track": "{blue-100}", "height": "12px", "knob": "18px" },
+    "trophy": { "size": "64px", "locked": "#eef1f6", "lockedRing": "#dce2ec", "lockedInk": "{gray-300}" },
+    "hero": { "figure": ["168px", "282px"], "halo": "rgba(255,255,255,0.22)", "newsBadge": "{orange-600}" },
+    "note": "Profil de l'élève (05-Profil, v2.8) : bandeau, résumé centré, barre de niveau, trophées."
+  },
   "goal": { "gradient": ["#662ee6", "#2e6be6"], "text": "#ffffff", "note": "Carte Objectif du jour (Accueil), en dégradé violet → bleu de la marque depuis le 07/10 (le vert ressemblait trop à l'Histoire-Géo). L'objectif hebdomadaire des Parents garde le dégradé de l'Histoire-Géo." },
   "statuses": {
     "acquired": { "label": "Acquis", "background": "{green-700}", "text": "#ffffff" },
@@ -74,7 +81,7 @@
     "notStarted": { "label": "Pas commencé", "background": "{gray-200}", "text": "{gray-700}" },
     "sessionOutcome": { "understood": "acquired", "progressing": "inProgress", "toReview": "toConsolidate" }
   },
-  "settingTiles": { "screenTime": "{orange-500}", "night": "violet", "voice": "blue", "camera": "cyan", "visuals": "red", "email": "green", "alerts": "{orange-500}" },
+  "settingTiles": { "screenTime": "{orange-500}", "night": "violet", "voice": "blue", "camera": "cyan", "visuals": "red", "email": "green", "alerts": "{orange-500}", "reminder": "{orange-500}", "captions": "blue", "sounds": "green", "download": "cyan", "privacy": "violet" },
   "visualPanel": {
     "graph": { "grid": "{blue-100}", "axis": "{gray-300}", "mainCurve": "subject.ink, 3px", "secondaryCurve": "{blue-500}, 2.5px, dash 7 5", "keyPoint": "#ffffff fill, subject.ink 3px stroke", "halo": "scale 0.6→2.2, 1.6s" },
     "whiteboard": { "background": "#fbfcff", "dots": "{gray-200}, r1, 16px", "ink": "{gray-900}", "operations": "{blue-500}", "result": "subject.ink, 30px Black", "annotations": "{blue-600}" }

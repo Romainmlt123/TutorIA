@@ -102,4 +102,11 @@ describe('générateur de tokens', () => {
     expect(auth.avatar).toMatchObject({ size: 96, greetFromMs: 350, greetToMs: 2100 });
     expect(auth.field.filledBackground).toBe(buildTokens(design, app).palette.gray?.['100']);
   });
+
+  it('exporte le profil de l’élève (v2.8)', () => {
+    const { profile, palette } = buildTokens(design, app);
+    expect(profile.trophy).toMatchObject({ size: 64, lockedInk: palette.gray?.['300'] });
+    expect(profile.level).toMatchObject({ height: 12, knob: 18, track: palette.blue?.['100'] });
+    expect(profile.hero).toMatchObject({ figureWidth: 168, figureHeight: 282 });
+  });
 });

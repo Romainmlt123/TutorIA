@@ -91,6 +91,7 @@ async function fetchAccount(supabase: AppSupabaseClient, user: User): Promise<Ac
     consentStatus: student.consent_status,
     consentDeadline: deadline,
     onboardingCompleted: student.onboarding_completed_at !== null,
+    createdAt: student.created_at,
   };
 }
 

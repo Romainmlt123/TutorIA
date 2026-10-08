@@ -85,13 +85,14 @@ export class SupabaseFamilyService implements FamilyService {
     const studentId = await this.userId();
     const { data, error } = await this.supabase
       .from('parent_links')
-      .select('parent_id')
+      .select('parent_id, created_at')
       .eq('student_id', studentId);
     if (error) throw error;
     const names = await this.firstNames(data.map((link) => link.parent_id));
     return data.map((link) => ({
       id: link.parent_id,
       firstName: names.get(link.parent_id) ?? null,
+      linkedAt: link.created_at,
     }));
   }
 

@@ -151,6 +151,13 @@ Ces choix ont été validés sur les maquettes de l'application et priment sur l
 - **Formulaire d'abord, Apple et Google ensuite.** Les champs e-mail et mot de passe viennent en premier, puis le séparateur « ou continuer avec » et les boutons Apple / Google, empilés en pleine largeur. Dans l'app, ces boutons sont les boutons officiels des SDK.
 - **Onboarding en quatre étapes, toutes passables** : classe, auto-évaluation par matière (« Galère », « Bof », « Ça va », « À l'aise », jamais présentée comme une note), objectifs et temps par jour, façon d'apprendre et moment de révision. Il se termine sur un plan personnalisé qui commence par la matière la moins à l'aise.
 
+## Profil de l'élève
+
+- **On y arrive en touchant son rond sur l'accueil.** Il reprend le bandeau de marque bleu (`ProfileHero`) : le prénom en grand, la classe, et la figurine de l'élève à droite, avec le bouton blanc « Modifier l'avatar » (pastille orange quand la garde-robe a des nouveautés).
+- **Un résumé qui donne envie** (`ProfileSummary`) : trois chiffres centrés sous leur icône en dégradé (série, étoiles, temps de la semaine), puis la barre de niveau (`LevelBar`). Puis les trophées (`TrophyShelf`, médailles qui défilent, les gagnées d'abord).
+- **Le reste en cartes** : Ma famille (parents reliés, « Retirer », phrase de transparence « Jamais tes conversations », « Relier un autre parent » en violet), Préférences et Compte et données (`SettingRow`).
+- **Deux boutons à part, en bas** : « Se déconnecter » en bleu doux (`Button` `soft`) puis « Supprimer mon compte » en rouge doux (`Button` `danger`). Le rouge reste réservé à la seule action qui efface.
+
 ## Explorer
 
 - **Une île = une matière.** L'onglet Explorer (boussole dans la barre du bas, ex-« Parcours ») s'ouvre sur un carrousel d'îles flottantes. Chaque île est découpée en **régions** (thèmes du programme), puis en **villes** (chapitres), puis en **niveaux**.
@@ -170,7 +177,7 @@ Ces choix ont été validés sur les maquettes de l'application et priment sur l
 
 ## Composants
 
-Les 87 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
+Les 92 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
 
 - **Fondations** : `Icon`, `Logo`, `StatusChip`, `ProgressRing`, `Quote`.
 - **Actions** : `Button`, `IconButton`, `SegmentedControl`, `Switch`, `GoalStepper`.
@@ -181,6 +188,7 @@ Les 87 composants de l'app sont dans `components/` et exposés par `window.Tutor
 - **Flashcards** : `DailyReviewCard`, `ChapterRow`, `SessionProgress`, `AnswerOption`, `QuizCard`, `TallyChips`.
 - **Stats** : `KpiCard`, `BarChart`, `LineChart`, `Heatmap`, `SubjectProgressRow`, `InsightList`.
 - **Parents** : `HeroCard`, `AlertCard`, `AdviceCard`, `SubjectProgressCard`, `SessionSummaryCard`, `SettingRow`.
+- **Profil** : `ProfileHero`, `ProfileSummary`, `LevelBar`, `TrophyShelf`, `TrophyBadge`
 - **Connexion** : `ProfileChoiceCard`, `SubjectCluster`, `AuthScreen`, `AuthHero`, `TextField`, `PasswordRules`, `Checkbox`, `OrDivider`, `AuthProviderButtons`, `ParentCodeCard`, `StepList`.
 - **Onboarding** : `StepHeader`, `GradePicker`, `SelfAssessmentRow`, `GoalTile`, `DurationPicker`, `ChoiceRow`, `ToggleChip`, `PlanRow`.
 - **Explorer** : `IslandIllustration`, `IslandCarousel`, `IslandProgressCard`, `ExplorerHud`, `WorldMap`, `LevelNode`, `MapAvatar`, `CityBanner`, `RegionSign`, `Stars`, `LevelTypePill`, `LevelSheet`, `IslandBackdrop`, `LevelProgressHeader`, `VoiceBoardCard`, `LevelResultCard`, `TutorFeedback`.

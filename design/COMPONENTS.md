@@ -2,7 +2,7 @@
 
 > **Déjà factorisés dans les maquettes** (`components/`) : **BottomNav** (élève + Parents), **ModeToggle**, **TopicCard**, **PanelHeader**, **CallControls** (X4b), et pour l'appel vocal **CallTopBar**, **VoiceAvatar**, **VoiceStatus**, **CallDock**. Leurs props figurent en tête de chaque fichier (`data-props`). Les autres composants ci-dessous sont encore dessinés directement dans les écrans : leurs specs font foi pour le code.
 
-> **Implémentation de référence** : les 87 composants existent dans `design-system/` (publiés dans le design system Tutor'IA). Pour chaque composant, `design-system/index.d.ts` donne les props exactes et `design-system/components/<Nom>/README.md` son usage ; les noms peuvent différer légèrement de cet inventaire (par exemple `CallControls` pour les boutons d'appel, `LineChart`/`BarChart`/`Heatmap` pour `ChartCard`). TopBar de session, SessionComplete et Greeting restent des assemblages d'écran, décrits seulement ici.
+> **Implémentation de référence** : les 92 composants existent dans `design-system/` (publiés dans le design system Tutor'IA). Pour chaque composant, `design-system/index.d.ts` donne les props exactes et `design-system/components/<Nom>/README.md` son usage ; les noms peuvent différer légèrement de cet inventaire (par exemple `CallControls` pour les boutons d'appel, `LineChart`/`BarChart`/`Heatmap` pour `ChartCard`). TopBar de session, SessionComplete et Greeting restent des assemblages d'écran, décrits seulement ici.
 
 Inventaire des composants à créer, tirés des maquettes (`screens/`). Valeurs = tokens de `tokens/`.
 Chaque composant liste : rôle, anatomie, specs, états / variantes, écrans où il apparaît.
@@ -364,6 +364,31 @@ Même base que l'élève (tokens, cartes, BottomNav). Sections séparées de 24 
 - **Switch** : `button role="switch"`, 52 × 32, piste `primary` quand il est activé et `gray-200` quand il est désactivé, rond blanc de 24 px, transition de 200 ms, `aria-checked`.
 - Variante « lien » : chevron à la place du switch (abonnement, données, ajout d'un enfant).
 - **DangerButton** « Supprimer le compte » : fond `red-100`, texte `red-600` 14 Bold, 48 px de haut, séparé du reste, sous la carte « Compte ».
+
+---
+
+## Profil (v2.8)
+
+Implémentation de référence dans `design-system/` (props dans `design-system/index.d.ts`). Écran : `screens/05-Profil.dc.html`.
+
+### ProfileHero
+- Bandeau de marque bleu (dégradé 170°, `blue-500` → `blue-600` → `blue-700`), coins bas de 32, padding 56 / 20 / 100. Retour en verre de 44 px.
+- Colonne de gauche (190 px au plus) : surtitre 12 en capitales à 85 %, prénom 44/48 Black, pastille en verre « Élève de 4e » (30 px, mortier de 16), ligne 13 à 85 %, bouton blanc de 40 px « Modifier l'avatar » (crayon, texte `blue-600`, ombre bleue) avec une pastille orange de 20 px pour les nouveautés.
+- Figurine à droite (168 × 282, à 26 px du bord et 50 px du haut), halo blanc radial de 250 px derrière, ombre au sol de 130 × 18. Sans figurine : initiale dans un disque blanc de 128 px.
+
+### ProfileSummary · LevelBar
+- Carte blanche `radius-3xl`, `shadow-md`, padding 20, qui déborde de 72 px sur le bandeau.
+- Trois colonnes égales, filets `blue-100` entre elles. Dans chacune, centrés : tuile de 48 px (rayon 16) en dégradé (orange, violet, bleu) avec une lueur de sa couleur et un liseré blanc à 25 %, icône blanche de 24 ; valeur 24/28 Black ; légende 12/16 `text-secondary`.
+- `LevelBar`, sous un filet : pastilles de 34 px (niveau atteint en dégradé violet → bleu, suivant en pointillés `gray-200` sur `bg`), barre de 12 px `blue-100` remplie en dégradé `blue-500` → `violet-500` (`--level-gradient`), curseur blanc de 18 px cerclé de 4 px `violet-500`. Dessous, 13 px : « Niveau 7 · 340 / 500 XP » en gras, « encore 160 XP » en `text-secondary`. La barre glisse en 0,6 s.
+
+### TrophyShelf · TrophyBadge
+- Carte blanche, titre 22 Black, compteur 13 Bold à droite. Ligne de médailles qui défile jusqu'aux bords de la carte, écart de 6 px.
+- Médaille : 84 px de large, disque de 64 en dégradé avec un liseré blanc à 35 % et une ombre, icône de 28 ; nom 12/15 Bold sur deux lignes. Pas encore gagnée : disque `--trophy-locked`, liseré `--trophy-locked-ring`, cadenas et nom en `gray-300`.
+
+### Ma famille · Préférences · Compte et données
+- Ma famille : ligne du parent (disque de 44 en dégradé violet avec l'initiale, prénom 16 Bold, date 13, bouton « Retirer » de 36 px sur `bg`), encart de transparence (`bg`, rayon 16, bouclier violet, texte 13/19), bouton violet doux de 48 px « Relier un autre parent ».
+- Préférences et Compte et données : `SettingRow` (tuile de 40 px en dégradé, libellé 16 Bold, aide 13, interrupteur ou chevron), séparés par des filets `blue-100`.
+- Boutons du bas : `Button` pleine largeur, `soft` « Se déconnecter » (icône `logout`) puis `danger` « Supprimer mon compte » (icône `trash`), 52 px dans la maquette.
 
 ---
 

@@ -41,6 +41,14 @@ const VARIANTS = {
   white: { bg: c.surface, hover: c.bg, pressed: c.bg, fg: c.primary },
 } as const;
 
+/** Violet doux (profil : « Relier un autre parent », v2.8). */
+const PARENT_SOFT = {
+  bg: p.violet[100],
+  hover: p.violet[200],
+  pressed: p.violet[200],
+  fg: p.violet[600],
+};
+
 const PARENT_PRIMARY = {
   bg: c.accent,
   hover: p.violet[600],
@@ -65,7 +73,12 @@ export function Button({
   accessibilityHint,
   style,
 }: ButtonProps) {
-  const colors = variant === 'primary' && tone === 'parent' ? PARENT_PRIMARY : VARIANTS[variant];
+  const colors =
+    tone === 'parent' && variant === 'primary'
+      ? PARENT_PRIMARY
+      : tone === 'parent' && variant === 'soft'
+        ? PARENT_SOFT
+        : VARIANTS[variant];
   const fg = labelColor ?? colors.fg;
   const shadow = disabled
     ? undefined

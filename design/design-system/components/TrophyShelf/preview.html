@@ -1,0 +1,14 @@
+<!-- @dsCard group="Profil" height=230 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { width: 350 } }, h(T.TrophyShelf, { earned: 6, total: 24, trophies: [
+      { icon: 'crown', tone: 'red', label: '1re évaluation réussie' }, { icon: 'flame', tone: 'orange', label: '7 jours de suite' },
+      { icon: 'compass', tone: 'green', label: 'Région Nombres' }, { icon: 'star', tone: 'violet', label: 'Quiz parfait' },
+      { label: '30 jours de suite', locked: true }] }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

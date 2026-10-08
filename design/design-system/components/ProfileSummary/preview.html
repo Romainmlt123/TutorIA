@@ -1,0 +1,14 @@
+<!-- @dsCard group="Profil" height=300 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { width: 350 } }, h(T.ProfileSummary, { stats: [
+      { icon: 'flame', tone: 'orange', value: '12', label: 'jours de série' },
+      { icon: 'star', tone: 'violet', value: '18', label: 'étoiles gagnées' },
+      { icon: 'clock', tone: 'blue', value: '4\u00a0h\u00a040', label: 'cette semaine' }], level: 7, xp: 340, xpMax: 500 }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>
