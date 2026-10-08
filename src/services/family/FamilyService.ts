@@ -13,7 +13,8 @@ export type LinkedChild = {
   consentGivenByMe: boolean;
 };
 
-export type LinkedParent = { id: string; firstName: string | null };
+/** Parent relié, vu par l'élève, avec la date du lien (profil : « Reliée depuis le 2 septembre »). */
+export type LinkedParent = { id: string; firstName: string | null; linkedAt: string };
 
 /** Liens entre un parent et ses enfants, vus de l'un ou de l'autre côté. */
 export interface FamilyService {
@@ -29,7 +30,7 @@ export interface FamilyService {
   children(): Promise<LinkedChild[]>;
   /** Élève : parents reliés. */
   parents(): Promise<LinkedParent[]>;
-  /** Retire le lien avec un enfant (parent) ou un parent (élève). */
+  /** Parent : retire le lien avec un enfant. L'élève ne peut pas retirer un parent (v2.8). */
   unlink(otherId: string): Promise<void>;
   /** Parent qui a validé le compte d'un enfant de moins de 15 ans : retrait de l'accord et suppression. */
   deleteChildAccount(studentId: string): Promise<void>;
