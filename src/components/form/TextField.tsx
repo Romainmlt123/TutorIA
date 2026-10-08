@@ -66,10 +66,13 @@ export function TextField({
   spaced = false,
   filled = false,
   style,
+  placeholder,
   ...inputProps
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  // Dès que le champ est touché, l'exemple et l'icône s'effacent : le texte part de la gauche.
+  const showIcon = Boolean(icon) && !focused && !value;
   const message = error ?? hint;
 
   return (
@@ -96,12 +99,13 @@ export function TextField({
           accessibilityHint={message}
           aria-invalid={Boolean(error)}
           secureTextEntry={secure && !revealed}
+          placeholder={focused ? undefined : placeholder}
           placeholderTextColor={theme.colors.textDisabled}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           style={[
             styles.input,
-            icon ? styles.withIcon : null,
+            showIcon ? styles.withIcon : null,
             secure ? styles.withToggle : null,
             spaced ? styles.spaced : null,
             filled ? styles.filled : null,
@@ -110,7 +114,7 @@ export function TextField({
           ]}
         />
         {/* Dessinée après le champ : sur Android, l'ombre de focus le ferait passer au-dessus. */}
-        {icon ? (
+        {showIcon && icon ? (
           <View style={styles.icon}>
             <Icon name={icon} size={20} color={theme.palette.gray[400]} />
           </View>
