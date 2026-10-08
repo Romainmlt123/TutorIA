@@ -35,6 +35,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6`        |
 | Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`           |
 | Interface     | **v2.7 · la connexion plein écran (L2, L3)**                                  | ✅ validé   | `feat/connexion-plein-ecran` |
+| Interface     | **v2.8 · le profil de l'élève**                                               | à valider   | `feat/profil-eleve`          |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -182,6 +183,7 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
 1. **v2.5 · bandeau de marque et cartes de section :** tokens `screenBand`, `sectionTitle`, `goal` et `voiceCall` exportés par le générateur ; composants `ScreenBand` et `SectionCard` ; Accueil et Flashcards · Choix en bleu, Stats et espace Parents (P1 à P4) en violet ; titres de section de 22 px dans leur carte ; objectif du jour en vert.
 2. **v2.6 · l'appel vocal plein écran (2B, 2D, 2F) :** en-tête d'appel, logo qui rebondit selon la voix, pastille d'état, sous-titres, commandes en verre ; les visuels pendant l'appel, validés et modérés par le serveur (`/api/tutor/visual-check`).
 3. **v2.7 · la connexion plein écran (L2, L3) :** `AuthScreen` (dégradé de l'espace, logo qui dit bonjour, feuille blanche), champs remplis, boutons Apple et Google officiels, et le code parent sur un écran à part (option A : gardé, puis relié à la connexion).
+4. **v2.8 · le profil de l'élève (05-Profil) :** bandeau avec la figurine 3D qui salue, résumé (série, étoiles, temps de la semaine, barre de niveau), 24 trophées calculés à partir de la progression, famille sans « Retirer » (migration : seul le parent supprime un lien), préférences et compte.
 
 ## Journal des décisions
 
@@ -274,6 +276,18 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - La v2.7 est livrée sur `feat/connexion-plein-ecran` (empilée sur la v2.6, pull request #11), à valider sur le Pixel.
   - La v2.7 est validée par Romain sur le Pixel, avec deux corrections : l'exemple et l'icône d'un champ s'effacent dès qu'on le touche, et la pastille d'état de l'appel ne s'étire plus sous Android.
 
+- **08/10 (v2.8) :**
+  - Plan du profil validé par Romain : les 24 trophées (calculés dans l'app, gardés pour toujours), « Sons et vibrations » gardé sans effet pour y penser plus tard, l'interrupteur du rappel de révision, et plus de « Retirer » un parent pour l'élève (ce n'est pas à lui de choisir).
+  - La v2.8 est livrée sur `feat/profil-eleve`, à valider sur le Pixel. La migration `parent_links_parent_only` est testée en local, pas encore appliquée en ligne.
+
+## Prochaines étapes, gardées en tête (08/10)
+
+Retenues par Romain après l'interface v2.7, sans ordre fixé :
+
+1. **La surveillance du vocal côté serveur**, avant la production (§ 11 du CLAUDE.md) : une connexion « sideband » qui vérifie les `session.updated`, modère la voix du tuteur et raccroche si besoin (petit service Node séparé, EAS Hosting tournant sur des Workers). Piste à évaluer aussi : GPT-Live, où le serveur détient la configuration.
+2. **La connexion d'un enfant par son code parent** (option B, ci-dessous).
+3. **La reprise d'Explorer** (chantier 2, en pause depuis le 07/10).
+
 ## En attente
 
 Ces idées ne sont pas planifiées. Elles entrent dans le plan sur décision de Romain.
@@ -282,3 +296,6 @@ Ces idées ne sont pas planifiées. Elles entrent dans le plan sur décision de 
 - L'avatar de l'élève ailleurs dans l'app : accueil, profil, tuteur.
 - La dette d'Explorer relevée le 06/10 (§ 9 de `docs/explorer-creer-une-ile.md`), à traiter quand on y touche ou avant la publication. Les points les plus visibles : les chiffres de la cascade avec « Réduire les animations », les flèches de 44 px du panneau de ville, le poids de l'île (1,98 Mo) et de la carte de Nombres (5,6 Mo).
 - La connexion d'un enfant par son code parent (option B) : un enfant dont le parent a créé le profil (L5, L6) se connecte la première fois avec le code, puis choisit son mot de passe. Nouveau parcours d'authentification, à concevoir à part (sécurité).
+- **Sons et vibrations** : l'interrupteur du profil existe déjà (retenu sur l'appareil) mais ne commande rien. À développer : une vibration légère (`expo-haptics`, module natif, donc un nouveau build EAS) ou un son sur les bonnes réponses, les séries et les trophées.
+- La fiche détaillée d'un trophée (toucher une médaille du profil), et un trophée « Quiz parfait » une fois les sessions de flashcards réussies à 100 % enregistrées.
+- L'heure du rappel de révision, choisie par l'élève depuis son profil (nouvelle colonne et reprogrammation de la notification).
