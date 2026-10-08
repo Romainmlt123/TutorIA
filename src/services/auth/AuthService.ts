@@ -17,6 +17,8 @@ export type StudentAccount = {
   /** Sous 15 ans sans validation : date de suppression automatique du compte. */
   consentDeadline: string | null;
   onboardingCompleted: boolean;
+  /** Création du compte (profil : « Depuis septembre »). */
+  createdAt: string;
 };
 
 export type ParentAccount = {

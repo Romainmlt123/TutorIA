@@ -12,6 +12,7 @@ const student: StudentAccount = {
   consentStatus: 'granted',
   consentDeadline: null,
   onboardingCompleted: true,
+  createdAt: '2026-09-01T08:00:00.000Z',
 };
 
 const parent: ParentAccount = {

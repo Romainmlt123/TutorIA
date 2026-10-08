@@ -29,6 +29,8 @@ const ICONS = {
   'chevron-gauche': [{ d: 'M15 5l-7 7 7 7' }],
   croix: [{ d: 'M6 6l12 12M18 6 6 18' }],
   menu: [{ d: 'M4 7h16M4 12h16M4 17h10' }],
+  couronne: [{ d: 'M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5zM5 19h14' }],
+  carte: [{ d: 'M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14' }],
   'haut-parleur': [
     { d: 'M11 5 6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14' },
   ],

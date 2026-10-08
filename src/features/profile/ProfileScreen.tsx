@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -7,38 +8,80 @@ import { Button } from '@/components/Button';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { DangerButton } from '@/components/DangerButton';
 import { FormMessage } from '@/components/form/FormMessage';
-import { Icon } from '@/components/Icon';
-import { IconButton } from '@/components/IconButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
+import { SettingRow, SettingsGroup } from '@/components/SettingRow';
 import { Text } from '@/components/Text';
 import { ConsentBanner } from '@/features/access/ConsentBanner';
 import { authErrorMessage } from '@/features/auth/logic/errors';
 import { useAvatarLook } from '@/features/avatar/hooks/useAvatarLook';
+import { useWardrobe } from '@/features/avatar/hooks/useWardrobe';
+import { requestReminderPermission } from '@/features/onboarding/logic/reminder';
+import { useCaptionsPreference } from '@/features/tutor/hooks/useCaptionsPreference';
 import { fr } from '@/i18n/fr';
 import { deliverJsonFile } from '@/lib/exportFile';
 import { logError } from '@/lib/logger';
 import { showNotice } from '@/lib/notice';
-import { useStudentAccount } from '@/lib/session/SessionProvider';
+import { monthIndex, parisDay } from '@/lib/parisTime';
+import { useDevicePreference } from '@/lib/useDevicePreference';
 import { authService } from '@/services/auth';
 import { avatarService } from '@/services/avatar';
 import { familyService } from '@/services/family';
+import { onboardingService } from '@/services/onboarding';
 import { theme } from '@/theme';
 
-const t = fr.profile;
+import { FamilyCard } from './components/FamilyCard';
+import { PROFILE_OVERLAP, ProfileHero } from './components/ProfileHero';
+import { ProfileSummary } from './components/ProfileSummary';
+import { TrophyShelf } from './components/TrophyShelf';
+import { useProfileData } from './hooks/useProfileData';
 
-/** Profil de l'élève (sans maquette) : parents reliés, transparence, export et suppression du compte. */
+const t = fr.profile;
+/** Sons et vibrations : retenu sur l'appareil, sans effet pour l'instant (feuille de route). */
+const SOUNDS_KEY = 'tutoria.sounds';
+const onboardingKey = ['onboarding', 'answers'] as const;
+
+/**
+ * 05 · Profil de l'élève (design/screens/05-Profil.dc.html, v2.8) : bandeau avec la figurine,
+ * résumé et niveau, trophées, famille, préférences, compte et données.
+ */
 export function ProfileScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const student = useStudentAccount();
+  const data = useProfileData();
+  const student = data.account;
   const parents = useQuery({
     queryKey: ['family', 'parents'],
     queryFn: () => familyService.parents(),
   });
   const avatar = useAvatarLook();
+  const { fresh } = useWardrobe();
+  const answers = useQuery({ queryKey: onboardingKey, queryFn: () => onboardingService.load() });
+  const { captionsOn, setCaptionsOn } = useCaptionsPreference();
+  const [sounds, setSounds] = useDevicePreference(SOUNDS_KEY, false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  const since = student?.createdAt
+    ? (fr.dates.months[monthIndex(parisDay(new Date(student.createdAt)))] ?? null)
+    : null;
+
+  const setReminder = async (on: boolean) => {
+    const current = answers.data;
+    if (!current) return;
+    setMessage(null);
+    // La permission des notifications n'est demandée qu'au moment de l'usage.
+    const allowed = on ? await requestReminderPermission() : true;
+    const next = { ...current, reminder: on && allowed };
+    queryClient.setQueryData(onboardingKey, next);
+    try {
+      await onboardingService.save(next);
+    } catch (error) {
+      logError('profile.reminder', error);
+      queryClient.setQueryData(onboardingKey, current);
+      setMessage(t.preferences.saveFailed);
+    }
+  };
 
   const exportData = async () => {
     setMessage(null);
@@ -51,23 +94,13 @@ export function ProfileScreen() {
     }
   };
 
-  const unlink = async (parentId: string) => {
-    setMessage(null);
-    try {
-      await familyService.unlink(parentId);
-      await queryClient.invalidateQueries({ queryKey: ['family', 'parents'] });
-    } catch (error) {
-      setMessage(authErrorMessage(error, 'student'));
-    }
-  };
-
   const deleteAccount = async () => {
     setBusy(true);
     setMessage(null);
     const accountId = student?.id;
     try {
       await authService.deleteAccount();
-      // L'avatar n'est que sur l'appareil : il part avec le compte.
+      // L'avatar gardé sur l'appareil part avec le compte.
       if (accountId) {
         avatarService.forget(accountId).catch((error: unknown) => logError('avatar.forget', error));
       }
@@ -79,90 +112,82 @@ export function ProfileScreen() {
   };
 
   return (
-    <ScreenContainer withNav={false} contentStyle={styles.content}>
-      <View style={styles.top}>
-        <IconButton
-          icon="chevron-gauche"
-          iconSize={22}
-          accessibilityLabel={fr.form.back}
-          onPress={() => router.back()}
+    <ScreenContainer
+      withNav={false}
+      contentStyle={styles.content}
+      bandOverlap={PROFILE_OVERLAP}
+      band={
+        <ProfileHero
+          firstName={student?.firstName ?? ''}
+          grade={student?.grade ?? null}
+          sinceMonth={since}
+          look={avatar.data ?? null}
+          news={fresh.length}
+          onBack={() => router.back()}
+          onAvatar={() => router.push('/avatar')}
         />
-      </View>
-      <View style={styles.identity}>
-        <View style={styles.avatar}>
-          <Text variant="h2" weight="black" color="textOnColor">
-            {(student?.firstName ?? '?').charAt(0).toUpperCase()}
-          </Text>
-        </View>
-        <View style={styles.identityText}>
-          <Text variant="heading" accessibilityRole="header">
-            {student?.firstName}
-          </Text>
-          <Text variant="bodySm" color="textSecondary">
-            {student?.grade ? t.grade(student.grade) : t.noGrade}
-          </Text>
-        </View>
-      </View>
+      }>
+      <ProfileSummary
+        streak={data.streak}
+        stars={data.stars}
+        weekMinutes={data.weekMinutes}
+        level={data.level.level}
+        xp={data.level.xp}
+        max={data.level.xpForNextLevel}
+      />
       <ConsentBanner />
       <FormMessage message={message} />
-      <View style={styles.card}>
-        <View style={styles.avatarRow}>
-          <Icon name="utilisateur" size={22} color={theme.colors.primary} strokeWidth={2} />
-          <View style={styles.avatarText}>
-            <Text variant="section">{t.avatarTitle}</Text>
-            <Text variant="bodySm" color="textSecondary">
-              {t.avatarBody}
-            </Text>
-          </View>
-        </View>
-        <Button
-          label={avatar.data ? t.avatarEdit : t.avatarCreate}
-          onPress={() => router.push('/avatar')}
-          variant="soft"
+      <TrophyShelf {...data.shelf} />
+      <FamilyCard parents={parents.data ?? []} onLink={() => router.push('/relier-parent')} />
+
+      <SettingsGroup title={t.preferences.title}>
+        <SettingRow
+          label={t.preferences.reminder}
+          hint={t.preferences.reminderHint}
+          icon="cloche"
+          tile="reminder"
+          value={answers.data?.reminder ?? false}
+          onValueChange={(on) => void setReminder(on)}
         />
-      </View>
-      <View style={styles.card}>
-        <Text variant="section">{t.parents}</Text>
-        {(parents.data ?? []).length === 0 ? (
-          <Text variant="bodySm" color="textSecondary">
-            {t.noParent}
-          </Text>
-        ) : (
-          (parents.data ?? []).map((parent) => (
-            <View key={parent.id} style={styles.parentRow}>
-              <Icon name="famille" size={20} color={theme.colors.accent} strokeWidth={2} />
-              <Text variant="body" weight="bold" style={styles.parentName}>
-                {parent.firstName ?? ''}
-              </Text>
-              <Button
-                label={t.unlinkShort}
-                onPress={() => void unlink(parent.id)}
-                variant="soft"
-                accessibilityLabel={t.unlink(parent.firstName ?? '')}
-              />
-            </View>
-          ))
-        )}
-        <Button
-          label={t.linkParent}
-          onPress={() => router.push('/relier-parent')}
-          variant="soft"
-          leadingIcon="lien"
+        <SettingRow
+          label={t.preferences.captions}
+          hint={t.preferences.captionsHint}
+          icon="sous-titres"
+          tile="captions"
+          divider
+          value={captionsOn}
+          onValueChange={setCaptionsOn}
         />
-        <View style={styles.transparency}>
-          <Icon name="bouclier" size={18} color={theme.colors.textSecondary} strokeWidth={2} />
-          <Text variant="hint" color="textSecondary" style={styles.transparencyText}>
-            {t.transparency}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.actions}>
-        <Button
+        <SettingRow
+          label={t.preferences.sounds}
+          hint={t.preferences.soundsHint}
+          icon="haut-parleur"
+          tile="sounds"
+          divider
+          value={sounds}
+          onValueChange={setSounds}
+        />
+      </SettingsGroup>
+
+      <SettingsGroup title={t.account.title}>
+        <SettingRow
           label={t.export}
+          hint={t.account.exportHint}
+          icon="telechargement"
+          tile="download"
           onPress={() => void exportData()}
-          variant="soft"
-          leadingIcon="telechargement"
         />
+        <SettingRow
+          label={t.account.privacy}
+          hint={t.account.privacyHint}
+          icon="bouclier"
+          tile="privacy"
+          divider
+          onPress={() => router.push('/confidentialite')}
+        />
+      </SettingsGroup>
+
+      <View style={styles.actions}>
         <Button
           label={t.signOut}
           onPress={() => {
@@ -171,8 +196,11 @@ export function ProfileScreen() {
           variant="soft"
           leadingIcon="sortie"
         />
+        <DangerButton label={t.delete} onPress={() => setConfirmDelete(true)} />
       </View>
-      <DangerButton label={t.delete} onPress={() => setConfirmDelete(true)} />
+      <Text variant="caption" color="textDisabled" align="center">
+        {t.version(Constants.expoConfig?.version ?? '')}
+      </Text>
       <ConfirmDialog
         visible={confirmDelete}
         title={t.deleteTitle}
@@ -188,30 +216,6 @@ export function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { gap: theme.space[6] },
-  top: { flexDirection: 'row' },
-  identity: { flexDirection: 'row', alignItems: 'center', gap: theme.space[4] },
-  avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: theme.radius.full,
-    backgroundColor: theme.colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  identityText: { flex: 1 },
-  card: {
-    gap: theme.space[3],
-    padding: theme.space[5],
-    borderRadius: theme.radius['3xl'],
-    backgroundColor: theme.colors.surface,
-    boxShadow: theme.shadow.md,
-  },
-  avatarRow: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
-  avatarText: { flex: 1 },
-  parentRow: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
-  parentName: { flex: 1 },
-  transparency: { flexDirection: 'row', gap: theme.space[2], alignItems: 'flex-start' },
-  transparencyText: { flex: 1 },
+  content: { gap: theme.space[4] },
   actions: { gap: theme.space[3] },
 });

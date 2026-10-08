@@ -109,3 +109,16 @@ export const googleLogo = {
   yellow: '#FBBC05',
   red: '#EA4335',
 } as const;
+
+/** Médailles des trophées (profil, v2.8) : une teinte de la palette par famille. */
+export const trophyGradients = {
+  orange: [palette.orange[400], palette.orange[600], palette.orange[700]],
+  blue: [palette.blue[400], palette.blue[600], palette.blue[700]],
+  green: [palette.green[600], palette.green[700], palette.green[800]],
+  red: [palette.red[400], palette.red[600], palette.red[700]],
+  violet: [palette.violet[400], palette.violet[600], palette.violet[700]],
+  cyan: [palette.cyan[600], palette.cyan[700], palette.cyan[800]],
+} as const;
+
+/** Liseré blanc des médailles gagnées et des tuiles du résumé (profil, v2.8). */
+export const medalRing = 'rgba(255,255,255,0.35)';

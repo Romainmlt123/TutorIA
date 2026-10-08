@@ -32,6 +32,7 @@ export const PERSONAS: Record<PersonaId, Account> = {
     consentStatus: 'granted',
     consentDeadline: null,
     onboardingCompleted: true,
+    createdAt: '2026-09-01T08:00:00.000Z',
   },
   claire: {
     role: 'parent',
@@ -50,6 +51,7 @@ export const PERSONAS: Record<PersonaId, Account> = {
     consentStatus: 'pending',
     consentDeadline: new Date(Date.now() + 30 * 86_400_000).toISOString(),
     onboardingCompleted: false,
+    createdAt: '2026-09-15T08:00:00.000Z',
   },
 };
 
@@ -145,6 +147,7 @@ export class MockAuthService implements AuthService {
       consentStatus: under15 ? 'pending' : 'not_required',
       consentDeadline: under15 ? new Date(Date.now() + 30 * 86_400_000).toISOString() : null,
       onboardingCompleted: false,
+      createdAt: new Date().toISOString(),
     });
   }
 

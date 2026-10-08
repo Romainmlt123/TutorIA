@@ -69,6 +69,23 @@ export type AppTokens = {
   };
   sectionTitle: { fontSize: string; lineHeight: string; fontWeight: number };
   goal: { gradient: string[]; text: string };
+  profile: {
+    summaryTile: {
+      size: string;
+      radius: string;
+      icon: string;
+      glow: { orange: string; violet: string; blue: string };
+    };
+    level: {
+      gradient: string[];
+      badgeGradient: string[];
+      track: string;
+      height: string;
+      knob: string;
+    };
+    trophy: { size: string; locked: string; lockedRing: string; lockedInk: string };
+    hero: { figure: string[]; halo: string; newsBadge: string };
+  };
   auth: {
     background: { eleve: string[]; parents: string[] };
     angle: string;
@@ -353,6 +370,33 @@ export function buildTokens(design: DesignTokens, app: AppTokens) {
       lineHeight: parsePx(app.sectionTitle.lineHeight),
     },
     goal: { gradient: parseGradient(app.goal.gradient, resolve), text: resolve(app.goal.text) },
+    profile: {
+      summaryTile: {
+        size: parsePx(app.profile.summaryTile.size),
+        radius: parsePx(app.profile.summaryTile.radius),
+        icon: parsePx(app.profile.summaryTile.icon),
+        glow: app.profile.summaryTile.glow,
+      },
+      level: {
+        gradient: parseGradient(app.profile.level.gradient, resolve),
+        badgeGradient: parseGradient(app.profile.level.badgeGradient, resolve),
+        track: resolve(app.profile.level.track),
+        height: parsePx(app.profile.level.height),
+        knob: parsePx(app.profile.level.knob),
+      },
+      trophy: {
+        size: parsePx(app.profile.trophy.size),
+        locked: resolve(app.profile.trophy.locked),
+        lockedRing: resolve(app.profile.trophy.lockedRing),
+        lockedInk: resolve(app.profile.trophy.lockedInk),
+      },
+      hero: {
+        figureWidth: parsePx(app.profile.hero.figure[0] ?? '0px'),
+        figureHeight: parsePx(app.profile.hero.figure[1] ?? '0px'),
+        halo: app.profile.hero.halo,
+        newsBadge: resolve(app.profile.hero.newsBadge),
+      },
+    },
     auth: (() => {
       const [top = 0, side = 0, bottom = 0] = app.auth.sheet.padding.split(/\s+/).map(parsePx);
       return {

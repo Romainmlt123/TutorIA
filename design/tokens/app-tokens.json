@@ -81,7 +81,7 @@
     "notStarted": { "label": "Pas commencé", "background": "{gray-200}", "text": "{gray-700}" },
     "sessionOutcome": { "understood": "acquired", "progressing": "inProgress", "toReview": "toConsolidate" }
   },
-  "settingTiles": { "screenTime": "{orange-500}", "night": "violet", "voice": "blue", "camera": "cyan", "visuals": "red", "email": "green", "alerts": "{orange-500}" },
+  "settingTiles": { "screenTime": "{orange-500}", "night": "violet", "voice": "blue", "camera": "cyan", "visuals": "red", "email": "green", "alerts": "{orange-500}", "reminder": "{orange-500}", "captions": "blue", "sounds": "green", "download": "cyan", "privacy": "violet" },
   "visualPanel": {
     "graph": { "grid": "{blue-100}", "axis": "{gray-300}", "mainCurve": "subject.ink, 3px", "secondaryCurve": "{blue-500}, 2.5px, dash 7 5", "keyPoint": "#ffffff fill, subject.ink 3px stroke", "halo": "scale 0.6→2.2, 1.6s" },
     "whiteboard": { "background": "#fbfcff", "dots": "{gray-200}, r1, 16px", "ink": "{gray-900}", "operations": "{blue-500}", "result": "subject.ink, 30px Black", "annotations": "{blue-600}" }

@@ -10,6 +10,7 @@ import {
   navigation,
   onColor,
   palette,
+  profile,
   radius,
   screenBand,
   sectionTitle,
@@ -55,6 +56,8 @@ export const theme = {
   voiceCall,
   /** v2.7 : connexion plein écran (L2, L3). */
   auth,
+  /** v2.8 : profil de l'élève. */
+  profile,
 } as const;
 
 export type Theme = typeof theme;
