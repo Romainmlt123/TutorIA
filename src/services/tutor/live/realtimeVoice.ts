@@ -15,7 +15,8 @@ import type { RtcDataChannel } from './webrtc.types';
 /** Échange SDP avec l'API Realtime, authentifié par le jeton temporaire (jamais la clé). */
 const REALTIME_CALLS_URL = 'https://api.openai.com/v1/realtime/calls';
 
-export type VoiceErrorCode = 'unavailable' | 'microphone' | 'rate_limited' | 'network' | 'upstream';
+export type VoiceErrorCode =
+  'unavailable' | 'microphone' | 'rate_limited' | 'daily_limit' | 'network' | 'upstream';
 
 export class VoiceSessionError extends Error {
   constructor(readonly code: VoiceErrorCode) {
@@ -74,8 +75,11 @@ export async function startRealtimeVoiceSession({
     secret = (await response.json()) as RealtimeSessionResponse;
   } catch (error) {
     stopMicrophone();
-    if (error instanceof TutorHttpError && error.code === 'rate_limited') {
-      throw new VoiceSessionError('rate_limited');
+    if (
+      error instanceof TutorHttpError &&
+      (error.code === 'rate_limited' || error.code === 'daily_limit')
+    ) {
+      throw new VoiceSessionError(error.code);
     }
     throw new VoiceSessionError(error instanceof TutorHttpError ? 'upstream' : 'network');
   }

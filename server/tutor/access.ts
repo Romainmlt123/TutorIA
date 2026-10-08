@@ -101,12 +101,17 @@ export async function requireTutorAccess(
     key: `tutor-${feature}-${limit.windowSeconds}:${auth.user.id}`,
     ...limit,
   }));
-  const verdict = await consumeSharedLimits(admin, limits);
-  if (verdict !== 'allowed') {
-    return {
-      ok: false,
-      response: errorResponse(verdict === 'limited' ? 'rate_limited' : 'upstream'),
-    };
+  // Limites vérifiées une à une, la plus courte d'abord : celle du jour a son propre message.
+  for (const limit of limits) {
+    const verdict = await consumeSharedLimits(admin, [limit]);
+    if (verdict === 'allowed') continue;
+    const code =
+      verdict === 'error'
+        ? 'upstream'
+        : limit.windowSeconds >= DAY
+          ? 'daily_limit'
+          : 'rate_limited';
+    return { ok: false, response: errorResponse(code) };
   }
   return { ok: true, user: auth.user, visualsEnabled, cameraEnabled };
 }

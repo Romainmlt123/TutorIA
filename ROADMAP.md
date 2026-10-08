@@ -29,11 +29,11 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Explorer      | **X3 à X5b · fiche, discussion et bilan d'un niveau**                         | ✅ validé   | `feat/avatar`         |
 | Explorer      | La suite (art des régions, contenu, allègement…)                              | ⏸️ en pause |                       |
 | Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`  |
-| Tuteur visuel | **V4 · les visuels à la voix**                                                | à valider   | `feat/appel-vocal`    |
+| Tuteur visuel | **V4 · les visuels à la voix**                                                | ✅ validé   | `feat/appel-vocal`    |
 | Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`     |
 | Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice` |
 | Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6` |
-| Interface     | **v2.6 · l'appel vocal plein écran**                                          | à valider   | `feat/appel-vocal`    |
+| Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`    |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -263,6 +263,9 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
     - X4b (la voix dans Explorer) garde son ancien écran.
   - Le rebond selon la vraie voix ne se voit qu'avec un build de développement ou dans le navigateur du téléphone (pas de WebRTC dans Expo Go).
   - Premier essai de Romain avec la vraie voix (navigateur) : rebond, discussion, graphiques et tableaux validés. Retours intégrés : les sous-titres du tuteur s'allument au rythme de sa voix (ils arrivaient d'un coup, avant l'audio), et les halos du logo n'apparaissent que quand il parle.
+
+  - La v2.6 et V4 sont validées par Romain avec la vraie voix (halos seulement quand le tuteur parle, sous-titres calés sur sa voix, sans transcription de l'élève).
+  - La limite de 5 appels vocaux par jour a son propre message (« Tu as fait tes appels du jour… ») : le serveur renvoie `daily_limit` quand c'est la limite du jour qui est atteinte, et non plus la même erreur que la limite d'une minute.
 
 ## En attente
 

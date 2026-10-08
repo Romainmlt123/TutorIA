@@ -153,6 +153,7 @@ export const fr = {
     },
     errors: {
       rate_limited: 'On fait une petite pause ? Tu pourras m’écrire à nouveau dans un instant.',
+      daily_limit: 'Tu as bien travaillé aujourd’hui ! On se retrouve demain.',
       unauthorized: 'Ta session a expiré. Reconnecte-toi pour parler au tuteur.',
       consent_required: 'Le tuteur s’ouvre dès qu’un parent a validé ton compte.',
       not_allowed: 'Cette fonction est désactivée dans les réglages de ton parent.',
@@ -174,6 +175,8 @@ export const fr = {
       ended: 'Appel terminé',
       error: 'Le vocal ne répond pas. Tu peux continuer à l’écrit.',
     },
+    voiceDailyLimit:
+      'Tu as fait tes appels du jour. Tu peux continuer à l’écrit, le vocal revient demain !',
     voiceHint: 'Touche l’écran pour interrompre',
     /** Appel vocal plein écran (v2.6, 2B, 2D, 2F). */
     call: {

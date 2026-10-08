@@ -78,9 +78,11 @@ export function useVoiceCall(
       setPersistentNotice(
         code === 'microphone'
           ? fr.tutor.micDenied
-          : code === 'rate_limited'
-            ? fr.tutor.errors.rate_limited
-            : fr.tutor.voiceStatus.error,
+          : code === 'daily_limit'
+            ? fr.tutor.voiceDailyLimit
+            : code === 'rate_limited'
+              ? fr.tutor.errors.rate_limited
+              : fr.tutor.voiceStatus.error,
       );
       dispatch({ type: 'failed' });
     });
