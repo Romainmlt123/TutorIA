@@ -846,6 +846,25 @@ export interface AuthHeroProps {
   subtitle?: string;
 }
 export declare function AuthHero(props: AuthHeroProps): React.ReactElement;
+export interface AuthScreenProps {
+  /** Espace : bleu élève (tutoiement) ou violet parents (vouvoiement). */
+  space?: 'eleve' | 'parents';
+  /** Titre en blanc sous le logo. */
+  title?: string;
+  /** Phrase sous le titre. */
+  subtitle?: string;
+  /** Retour (flèche en verre en haut à gauche) ; null pour la masquer. */
+  onBack?: (() => void) | null;
+  /** Le logo fait un petit rebond à l'arrivée (true par défaut). */
+  greet?: boolean;
+  /** Hauteur minimale de l'écran (844 par défaut). */
+  height?: number;
+  /** Bas de la feuille : « J'ai un code de mon parent », « Créer un compte ». */
+  footer?: React.ReactNode;
+  /** Contenu de la feuille blanche : formulaire, séparateur, boutons Apple / Google. */
+  children?: React.ReactNode;
+}
+export declare function AuthScreen(props: AuthScreenProps): React.ReactElement;
 
 /** Champ de formulaire 52px avec libellé, icône, pastille optionnelle, aide et bouton « afficher » pour les mots de passe. */
 export interface TextFieldProps {
@@ -860,9 +879,11 @@ export interface TextFieldProps {
   /** Valeur initiale. */
   defaultValue?: string;
   /** Saisie. */
-  onChange?: (value: number) => void;
+  onChange?: (value: string) => void;
   /** Exemple. */
   placeholder?: string;
+  /** Champ rempli (fond bg, sans ombre) : dans une carte ou une feuille blanche. */
+  filled?: boolean;
   /** Pastille à droite du libellé. */
   badge?: string;
   /** Aide sous le champ. */

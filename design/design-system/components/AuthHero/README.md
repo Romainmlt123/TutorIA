@@ -4,7 +4,7 @@ En-tête coloré des écrans de connexion : surtitre de l'espace, titre et phras
 
 ## Quand l'utiliser
 
-Connexion élève (bleu, tutoiement) et connexion parent (violet, vouvoiement).
+En-tête de connexion dans une page qui défile. Depuis la v2.7, les écrans de connexion élève (L2) et parent (L3) utilisent `AuthScreen`, en plein écran.
 
 ## Props
 
