@@ -28,7 +28,7 @@ export function SubjectProgressCard({ summary, open, onToggle }: Props) {
   const percent = summary.mastery === null ? '–' : `${summary.mastery} %`;
   const up = (summary.delta ?? 0) >= 0;
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: subject.soft }]}>
       <PressableBase
         onPress={onToggle}
         accessibilityRole="button"
@@ -87,9 +87,7 @@ export function SubjectProgressCard({ summary, open, onToggle }: Props) {
       {open ? (
         <View style={styles.chapters}>
           {summary.chapters.map((chapter) => (
-            <View
-              key={chapter.chapterId}
-              style={[styles.chapter, { backgroundColor: subject.soft }]}>
+            <View key={chapter.chapterId} style={[styles.chapter, styles.chapterRow]}>
               <View style={styles.chapterText}>
                 <Text variant="label" weight="bold">
                   {chapterTitle(chapter.chapterId)}
@@ -110,12 +108,8 @@ export function SubjectProgressCard({ summary, open, onToggle }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: theme.radius['3xl'],
-    backgroundColor: theme.colors.surface,
-    boxShadow: theme.shadow.md,
-    overflow: 'hidden',
-  },
+  // Dans la carte « Par matière » : un bloc teinté de sa matière, sans ombre.
+  card: { borderRadius: theme.radius['2xl'], overflow: 'hidden' },
   head: { gap: 14, paddingVertical: 18, paddingHorizontal: theme.space[5] },
   top: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   tile: { width: theme.space[12], height: theme.space[12] },
@@ -136,5 +130,7 @@ const styles = StyleSheet.create({
     paddingRight: theme.space[3],
     borderRadius: theme.radius['2xl'],
   },
+  // Chapitres dépliés : lignes blanches dans le bloc (v2.5).
+  chapterRow: { backgroundColor: theme.colors.surface },
   chapterText: { flex: 1 },
 });

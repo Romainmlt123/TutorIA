@@ -137,9 +137,11 @@ Ces choix ont été validés sur les maquettes de l'application et priment sur l
 1. **Texte blanc sur l'orange vif** (`orange-500`), uniquement sur les encadrés de jeu (série, carte « À retravailler », alerte Parents), en gras.
 2. **Titres en Black (900)** sur les écrans et les cartes en couleur, avec trois exceptions en Bold ou Medium : « Révision du jour » (700), la carte « Reprendre » de l'accueil (500) et les titres de sujet du tuteur (700).
 3. **Espace Parents coloré** comme l'espace élève (dégradés, chiffres sur fond coloré, 24px entre les blocs), sans gamification.
-4. **La barre de navigation reste visible en mode vocal**, et la caméra se place à droite du bouton raccrocher.
+4. **L'appel vocal est plein écran**, sur le dégradé de marque et sans barre de navigation : on en sort par « Écrit » ou « Raccrocher » (validé le 7 octobre 2026 ; avant, la barre restait visible).
 5. **Flashcards en QCM** : quatre réponses en grille 2×2, sans boutons d'auto-évaluation ; le bouton « C'est parti » est en violet vif.
 6. **Pas de date sur l'accueil** : une citation courte en italique discret la remplace sous le bonjour.
+7. **Rouge pour « Je t'écoute… »** dans l'appel vocal : il signale l'écoute, comme un voyant d'enregistrement, jamais une erreur (orange possible).
+8. **Violet et azur pour les visuels du tuteur** : le graphique est violet, le tableau azur (tuile, surtitre, carte teintée), pour les distinguer de la carte du chapitre ; le dessin reste sur une feuille blanche, le tableau sans grille de points.
 
 ## Connexion, inscription et onboarding
 
@@ -157,15 +159,24 @@ Ces choix ont été validés sur les maquettes de l'application et priment sur l
 - **Le tuteur change de comportement selon le type.** Leçon : il explique, montre des exemples et vérifie la compréhension. Exercices : il laisse chercher et donne des indices progressifs. Évaluation : il est exigeant, ne donne ni indice ni correction pendant l'épreuve et corrige seulement dans le bilan.
 - **Bilan de fin de niveau** : carte verte « Bien joué ! » ou orange « Presque ! », étoiles, score et XP, puis ce qui est réussi et ce qui est à revoir. Une évaluation ratée met la ville « à consolider » (orange) au lieu de la bloquer.
 
+## Appel vocal
+
+- **Un vrai écran d'appel.** Le tuteur vocal occupe tout l'écran sur le dégradé de marque (`blue-500` → `blue-800`, à 170°), tout en blanc, sans barre de navigation. En haut, « Écrit » et le chrono (`CallTopBar`) ; en bas, les commandes en verre (`CallDock`).
+- **Le tuteur a un visage.** Son logo, dans un disque blanc (`VoiceAvatar`), rebondit quand il parle, au niveau de sa voix, et se pose à chaque pause ; quand c'est à l'élève, il s'arrête et penche la tête. Toucher le logo interrompt le tuteur. Pas de barres ni d'ondes.
+- **Une pastille dit qui a la parole** (`VoiceStatus`) : verte « Je t'explique… », rouge « Je t'écoute… », neutre pour le micro coupé, la connexion ou la fin d'appel.
+- **Sous-titres en direct** (`LiveCaptions`), activés par défaut : les mots s'allument au fil de la voix ; une couleur nommée par le tuteur s'affiche dans une pastille de sa couleur.
+- **Avec un graphique ou un tableau blanc**, le visuel prend la moitié haute dans sa carte teintée (`VisualPanel` `elevated`), le logo passe à 96 px dessous. La voix et le visuel avancent ensemble : la courbe nommée s'épaissit (`MathGraph` `focus`), le tableau s'écrit ligne à ligne avec un stylo (`Whiteboard` `progress` et `writing`), puis le résultat s'entoure.
+
 ## Composants
 
-Les 81 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
+Les 86 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
 
 - **Fondations** : `Icon`, `Logo`, `StatusChip`, `ProgressRing`, `Quote`.
 - **Actions** : `Button`, `IconButton`, `SegmentedControl`, `Switch`, `GoalStepper`.
 - **Navigation** : `BottomNav` (élève avec Explorer, et Parents), `ModeToggle` (écrit / vocal), `ChildSwitcher`.
 - **Élève** : `SubjectCard`, `StreakCard`, `LevelCard`, `ResumeCard`, `GoalCard`.
-- **Tuteur** : `TopicCard`, `ChatBubble`, `TipCard`, `ChatInput`, `VoiceVisualizer`, `CallControls`, `PanelHeader`, `VisualPanel`, `MathGraph`, `Whiteboard`.
+- **Tuteur** : `TopicCard`, `ChatBubble`, `TipCard`, `ChatInput`, `PanelHeader`, `VisualPanel`, `MathGraph`, `Whiteboard`, et pour la discussion vocale d'Explorer `VoiceVisualizer` et `CallControls`.
+- **Appel vocal** : `CallTopBar`, `VoiceAvatar`, `VoiceStatus`, `LiveCaptions`, `CallDock`.
 - **Flashcards** : `DailyReviewCard`, `ChapterRow`, `SessionProgress`, `AnswerOption`, `QuizCard`, `TallyChips`.
 - **Stats** : `KpiCard`, `BarChart`, `LineChart`, `Heatmap`, `SubjectProgressRow`, `InsightList`.
 - **Parents** : `HeroCard`, `AlertCard`, `AdviceCard`, `SubjectProgressCard`, `SessionSummaryCard`, `SettingRow`.

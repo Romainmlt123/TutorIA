@@ -75,4 +75,18 @@ describe('générateur de tokens', () => {
     expect(tokens.settingTiles.voice).toEqual(tokens.subjects.francais?.gradient);
     expect(tokens.settingTiles.alerts?.colors).toEqual(['#e6992e', '#e6992e']);
   });
+
+  it('exporte le bandeau de marque, les titres de section, l’objectif et l’appel vocal (v2.5, v2.6)', () => {
+    const tokens = buildTokens(design, app);
+    expect(tokens.screenBand.student).toEqual({
+      colors: ['#2e6be6', '#1750c4', '#0a3b9d'],
+      locations: [0, 0.55, 1],
+    });
+    expect(tokens.screenBand).toMatchObject({ angle: 170, radiusBottom: 32, overlap: 56 });
+    expect(tokens.screenBand.segmentActive.textOnViolet).toBe(tokens.palette.violet?.['600']);
+    expect(tokens.sectionTitle).toEqual({ fontSize: 22, lineHeight: 30 });
+    expect(tokens.goal.gradient.colors).toEqual(['#662ee6', '#2e6be6']);
+    expect(tokens.voiceCall.avatar).toMatchObject({ size: 148, cycleMs: 420, tilt: -8 });
+    expect(tokens.voiceCall.hangup).toBe(tokens.palette.red?.['500']);
+  });
 });

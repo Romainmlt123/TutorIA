@@ -7,12 +7,12 @@ import { theme } from '@/theme';
 
 type Props = { title: string; meta?: string; hint?: string; children: ReactNode };
 
-/** Carte de graphique : titre 16 Black, métadonnée à droite ou sous-titre. */
+/** Carte de graphique (v2.5) : titre de section 22 Black, métadonnée à droite ou sous-titre. */
 export function ChartCard({ title, meta, hint, children }: Props) {
   return (
-    <Card style={styles.card}>
+    <Card radius="3xl" style={styles.card}>
       <View style={hint ? styles.stacked : styles.header}>
-        <Text variant="body" weight="black" accessibilityRole="header">
+        <Text variant="h3" weight="black" accessibilityRole="header" style={styles.title}>
           {title}
         </Text>
         {meta ? (
@@ -37,7 +37,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-between',
-    gap: theme.space[2],
+    flexWrap: 'wrap',
+    columnGap: theme.space[3],
+    rowGap: 2,
   },
+  title: { flexShrink: 1 },
   stacked: { gap: theme.space[1] },
 });

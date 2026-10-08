@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { ScreenBand } from '@/components/ScreenBand';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import { Text } from '@/components/Text';
@@ -24,25 +25,30 @@ const PERIODS = [
   { value: 'quarter', label: fr.stats.periods.quarter },
 ] as const;
 
-/** 04 · Stats (design/screens/04-Stats.dc.html). */
+/** 04 · Stats (design/screens/04-Stats.dc.html), bandeau violet (v2.5). */
 export function StatsScreen() {
   const router = useRouter();
   const [period, setPeriod] = useState<PeriodKey>('week');
   const stats = useStats(period);
 
   return (
-    <ScreenContainer contentStyle={styles.content}>
-      <Text variant="h2" weight="black" accessibilityRole="header">
-        {fr.stats.title}
-      </Text>
-      <SegmentedControl
-        options={PERIODS}
-        value={period}
-        onChange={setPeriod}
-        accessibilityLabel={fr.stats.periodLabel}
-        fullWidth
-      />
-
+    <ScreenContainer
+      contentStyle={styles.content}
+      band={
+        <ScreenBand tone="violet" accessibilityLabel={fr.stats.title}>
+          <Text variant="hero" color="textOnColor" accessibilityRole="header">
+            {fr.stats.title}
+          </Text>
+          <SegmentedControl
+            options={PERIODS}
+            value={period}
+            onChange={setPeriod}
+            accessibilityLabel={fr.stats.periodLabel}
+            fullWidth
+            onBand="violet"
+          />
+        </ScreenBand>
+      }>
       <View accessibilityLabel={fr.stats.keyFigures} style={styles.kpis}>
         <View style={styles.kpiRow}>
           <KpiCard

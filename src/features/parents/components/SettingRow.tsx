@@ -64,14 +64,14 @@ export function SettingRow(props: Props) {
   );
 }
 
-/** Groupe de réglages (P4) : titre de section et carte blanche. */
+/** Groupe de réglages (P4, v2.5) : carte blanche, son titre (22 Black) dans la carte. */
 export function SettingsGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <View style={styles.group}>
-      <Text variant="section" accessibilityRole="header">
+    <View style={styles.card}>
+      <Text variant="h3" weight="black" accessibilityRole="header" style={styles.groupTitle}>
         {title}
       </Text>
-      <View style={styles.card}>{children}</View>
+      <View>{children}</View>
     </View>
   );
 }
@@ -90,11 +90,13 @@ const styles = StyleSheet.create({
   tile: { width: 44, height: 44 },
   center: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
   text: { flex: 1, gap: 2 },
-  group: { gap: theme.space[3] },
   card: {
+    paddingTop: theme.space[5],
+    paddingBottom: 6,
     borderRadius: theme.radius['3xl'],
     backgroundColor: theme.colors.surface,
     boxShadow: theme.shadow.md,
     overflow: 'hidden',
   },
+  groupTitle: { marginHorizontal: theme.space[5], marginBottom: 6 },
 });

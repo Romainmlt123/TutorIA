@@ -26,7 +26,7 @@ export function StudyTimeChart({ days, goalMinutes, note }: Props) {
   return (
     <View style={styles.card}>
       <View style={styles.head}>
-        <Text variant="section" accessibilityRole="header">
+        <Text variant="h3" weight="black" accessibilityRole="header">
           {t.chartTitle}
         </Text>
         <Pill

@@ -5,14 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/Button';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { GradientSurface } from '@/components/GradientSurface';
 import { IconButton } from '@/components/IconButton';
 import { PressableBase } from '@/components/PressableBase';
 import { SubjectTile } from '@/components/subject/SubjectTile';
 import { Text } from '@/components/Text';
 import { fr } from '@/i18n/fr';
 import type { ConversationSummary } from '@/services/conversations';
-import { Watermark } from '@/components/Watermark';
+import { ScreenBand } from '@/components/ScreenBand';
 import { extras, theme } from '@/theme';
 
 import { useConversationList, useDeleteConversation } from '../hooks/useConversations';
@@ -130,22 +129,16 @@ export function ConversationDrawer({
             styles.panel,
             { width: Math.min(MAX_WIDTH, width * 0.86), paddingBottom: insets.bottom },
           ]}>
-          {/* Bandeau bleu de l'élève, dans l'esprit du ScreenBand de la version 2.5. */}
-          <GradientSurface
-            gradient={theme.spaces.student.gradient}
-            angle={170}
-            radius={theme.radius['3xl']}
-            style={styles.bandFrame}
-            contentStyle={[styles.band, { paddingTop: insets.top + theme.space[4] }]}>
-            <Watermark icon="bulle-chat" opacity={extras.watermarkOpacity.level} />
+          {/* Bandeau de marque bleu (v2.5), sans carte qui déborde dessus. */}
+          <ScreenBand tone="student" overlap={0} accessibilityLabel={T.drawerTitle}>
             <View style={styles.header}>
               <Text variant="title" color="textOnColor" accessibilityRole="header">
                 {T.drawerTitle}
               </Text>
-              <IconButton icon="croix" accessibilityLabel={T.close} onPress={onClose} />
+              <IconButton icon="croix" onBand accessibilityLabel={T.close} onPress={onClose} />
             </View>
             <Button label={T.newChat} icon="plus" variant="white" onPress={onNew} />
-          </GradientSurface>
+          </ScreenBand>
           {remove.isError ? (
             <Text variant="bodySm" color="error" style={styles.notice}>
               {T.deleteError}
@@ -205,15 +198,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: theme.radius['3xl'],
     borderBottomRightRadius: theme.radius['3xl'],
     boxShadow: theme.shadow.lg,
-  },
-  // Coins du haut droits : le volet les arrondit lui-même ; ceux du bas comme un bandeau.
-  bandFrame: { borderTopLeftRadius: 0, borderTopRightRadius: 0 },
-  band: {
-    gap: theme.space[4],
-    paddingHorizontal: theme.space[4],
-    paddingBottom: theme.space[5],
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
   },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   notice: { paddingHorizontal: theme.space[4] },

@@ -26,6 +26,7 @@ export const fr = {
       n > 0 ? `Notifications, ${n} ${plural(n, 'nouvelle', 'nouvelles')}` : 'Notifications',
     profile: 'Ton profil',
     gameSection: 'Ta série et ton niveau',
+    welcome: 'Bienvenue',
     streakDays: (days: number) => `${days} ${plural(days, 'jour', 'jours')}`,
     streakCaption: 'de série, continue !',
     level: (level: number) => `Niveau ${level}`,
@@ -220,6 +221,7 @@ export const fr = {
         : names.join(', '),
     start: 'C’est parti',
     chooseSubject: 'Choisis ta matière',
+    totalCards: (n: number) => `${n} cartes en tout`,
     subjectSection: 'Matière',
     chapterSection: 'Chapitre',
     chapters: (subject: string) => `Chapitres · ${subject}`,
@@ -983,7 +985,6 @@ export const fr = {
       greeting: (name: string) => `Bonjour ${name}`,
       greetingNoName: 'Bonjour',
       weekIntro: (child: string, range: string) => `Voici la semaine de ${child}, ${range}.`,
-      spaceBadge: 'Espace Parents',
       notifications: 'Notifications',
       switchChild: (name: string) => `Changer d’enfant, enfant affiché : ${name}`,
       chooseChild: 'Choisir un enfant',
@@ -1018,6 +1019,22 @@ export const fr = {
           'Proposez un petit créneau fixe, par exemple 15 minutes après le goûter : la régularité compte plus que la durée.',
         celebrate:
           'Félicitez ses efforts plutôt que ses résultats : c’est ce qui donne envie de continuer.',
+      },
+      questionsTitle: 'Questions à lui poser',
+      /** Questions ouvertes, du parent à l'enfant, selon le conseil de la semaine. */
+      questions: {
+        explain: (chapter: string) => [
+          `Tu peux me montrer comment on fait « ${chapter} » sur un exemple ?`,
+          'Qu’est-ce qui t’a aidé à comprendre ?',
+        ],
+        routine: [
+          'À quel moment de la journée tu préfères réviser ?',
+          'Qu’est-ce qui te donnerait envie de t’y mettre un peu chaque jour ?',
+        ],
+        celebrate: [
+          'De quoi es-tu le plus fier cette semaine ?',
+          'Qu’est-ce que tu aimerais travailler la semaine prochaine ?',
+        ],
       },
       chartTitle: 'Temps d’étude par jour',
       goalPill: (minutes: number) => `Objectif ${minutes} min`,

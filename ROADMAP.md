@@ -32,6 +32,8 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Tuteur visuel | V4 · les visuels à la voix                                                    | à venir     |                       |
 | Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`     |
 | Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice` |
+| Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6` |
+| Interface     | v2.6 · l'appel vocal plein écran                                              | à venir     | `feat/interface-v2-6` |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -172,6 +174,13 @@ Romain met Explorer en pause : chaque essai d'art attend de longues cuissons Ble
 3. **C3 · l'app :** le service des discussions, le volet, « Reprendre », et l'identifiant de discussion tenu par l'écran (plus par le service du tuteur) → validation de Romain sur le Pixel.
 4. **C4 · la photo d'un exercice :** l'élève photographie son exercice (ou le choisit dans sa galerie) dans la discussion écrite de l'onglet Tutor'IA, et dans les leçons et exercices d'Explorer, jamais en évaluation. La photo est modérée, envoyée au modèle, et jamais gardée : une mention la remplace, et le tuteur recopie l'énoncé dans sa réponse pour s'en souvenir.
 
+## Chantier 5 · L'interface v2.5 et v2.6
+
+Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écarts).
+
+1. **v2.5 · bandeau de marque et cartes de section :** tokens `screenBand`, `sectionTitle`, `goal` et `voiceCall` exportés par le générateur ; composants `ScreenBand` et `SectionCard` ; Accueil et Flashcards · Choix en bleu, Stats et espace Parents (P1 à P4) en violet ; titres de section de 22 px dans leur carte ; objectif du jour en vert.
+2. **v2.6 · l'appel vocal plein écran (2B, 2D, 2F) :** en-tête d'appel, logo qui rebondit selon la voix, pastille d'état, sous-titres, commandes en verre ; les visuels pendant l'appel, validés et modérés par le serveur (`/api/tutor/visual-check`).
+
 ## Journal des décisions
 
 - **30/09 :**
@@ -236,6 +245,14 @@ Romain met Explorer en pause : chaque essai d'art attend de longues cuissons Ble
   - Plan de C4 validé par Romain : appareil photo et galerie, photo jamais gardée, et la photo aussi dans les leçons et exercices d'Explorer, interdite en évaluation (décision de Romain). Branche `feat/photo-exercice`, tirée de `dev` après la fusion des pull requests #7 et #8.
   - C4 est validée par Romain sur le Pixel (prompt `2026-10-07.3`).
   - La nouvelle version de l'interface (design v2.5) est déjà dans `design/`. Elle sera implémentée plus tard.
+
+- **08/10 :**
+  - La v2.5 est validée par Romain sur le Pixel, avec ses retours intégrés :
+    - P1 sans le badge « Espace Parents », chiffres clés centrés sans évolution, et « Comment l'encourager » propose deux questions à poser (rédigées à l'avance, sans IA) ;
+    - P2 : chaque matière de « Par matière » est un bloc teinté de sa couleur ;
+    - l'objectif du jour passe en dégradé violet → bleu (écart 18), qui glisse lentement (figé avec « Réduire les animations », en pause hors de l'Accueil) ;
+    - la saisie du chat libre remonte au-dessus du logo de la barre.
+  - Corrigé : le résumé de la semaine était coupé au milieu d'une phrase. Le modèle consomme une partie des jetons de sortie pour réfléchir, et la limite de 300 jetons l'arrêtait. Les résumés passent à 1 500 jetons, et une réponse coupée n'est plus jamais enregistrée.
 
 ## En attente
 

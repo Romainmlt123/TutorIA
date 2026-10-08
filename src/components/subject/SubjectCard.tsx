@@ -37,10 +37,11 @@ export function SubjectCard(props: SubjectCardProps) {
       accessibilityRole="button"
       accessibilityLabel={label}
       aria-selected={props.mode === 'select' ? selected : undefined}
-      shadow={selected ? extras.selectionRing(subject.ink) : theme.shadow.md}
+      shadow={selected ? extras.selectionRing(subject.ink) : theme.shadow.sm}
       style={[styles.card, { minHeight: props.mode === 'progress' ? 132 : 128 }]}>
       <GradientSurface
         gradient={subject.gradient}
+        radius={theme.radius['2xl']}
         style={styles.fill}
         contentStyle={styles.content}>
         <Watermark icon={subject.icon} opacity={extras.watermarkOpacity.subject} />
@@ -89,7 +90,8 @@ export function SubjectCard(props: SubjectCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { flex: 1, borderRadius: theme.radius['3xl'] },
+  // Rangée dans une carte de section (v2.5) : coins de 16 px et ombre légère.
+  card: { flex: 1, borderRadius: theme.radius['2xl'] },
   fill: { flex: 1 },
   content: { padding: theme.space[4], gap: theme.space[3], justifyContent: 'space-between' },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

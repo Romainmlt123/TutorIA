@@ -2,6 +2,8 @@
 
 Quatre barres animées bleu → violet qui suivent la voix du tuteur, avec l'état en dessous.
 
+> Depuis la v2.6, l’appel du tuteur (2B, 2D, 2F) n’utilise plus les barres : `VoiceAvatar` (le logo qui rebondit), `VoiceStatus` et `LiveCaptions` les remplacent. Le composant reste pour l’existant (discussion vocale d’Explorer).
+
 ## Quand l'utiliser
 
 Tuteur vocal. `compact` quand un graphique ou un tableau blanc occupe l'écran. Toute la zone interrompt le tuteur au toucher.

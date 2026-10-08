@@ -11,6 +11,29 @@
 .tia-pulse { animation: tia-pulse 1.6s ease-out infinite; }
 .tia-bob { animation: tia-bob 2.4s ease-in-out infinite; }
 .tia-float { animation: tia-float 4s ease-in-out infinite; }
+/* Appel vocal (v2.6) : le logo rebondit au niveau de la voix (--tia-h, 0 à 1) et penche la tête à l'écoute (--tia-tilt). */
+@property --tia-h { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --tia-tilt { syntax: '<number>'; inherits: true; initial-value: 0; }
+.tia-voice { transition: --tia-h 0.16s linear, --tia-tilt 0.5s cubic-bezier(.3, .7, .3, 1); }
+.tia-voice-hop { transform-origin: 50% 100%; animation: tia-voice-hop 0.42s infinite; }
+@keyframes tia-voice-hop {
+  0% { transform: translateY(0) scale(calc(1 + .06 * var(--tia-h)), calc(1 - .06 * var(--tia-h))); animation-timing-function: cubic-bezier(.2, .7, .4, 1); }
+  45% { transform: translateY(calc(-1 * var(--tia-hop) * var(--tia-h))) scale(calc(1 - .02 * var(--tia-h)), calc(1 + .03 * var(--tia-h))); animation-timing-function: cubic-bezier(.6, 0, .8, .4); }
+  88% { transform: translateY(0) scale(1, 1); }
+  100% { transform: translateY(0) scale(calc(1 + .06 * var(--tia-h)), calc(1 - .06 * var(--tia-h))); }
+}
+.tia-voice-tilt { transform: rotate(calc(var(--tia-tilt) * -8deg)) translateX(calc(var(--tia-tilt) * -3px)); }
+.tia-voice-breathe { animation: tia-voice-breathe 3.2s ease-in-out infinite; }
+@keyframes tia-voice-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.025); } }
+.tia-voice-shadow { animation: tia-voice-shadow 0.42s infinite; }
+@keyframes tia-voice-shadow {
+  0% { transform: scaleX(1); opacity: .85; animation-timing-function: cubic-bezier(.2, .7, .4, 1); }
+  45% { transform: scaleX(calc(1 - .32 * var(--tia-h))); opacity: calc(.85 - .4 * var(--tia-h)); animation-timing-function: cubic-bezier(.6, 0, .8, .4); }
+  88%, 100% { transform: scaleX(1); opacity: .85; }
+}
+/* Stylo du tableau blanc qui s'écrit pendant que le tuteur parle. */
+.tia-pen { display: inline-block; flex-shrink: 0; width: 8px; height: 8px; border-radius: 999px; background: var(--primary); box-shadow: 0 0 0 3px rgba(46, 107, 230, .22); animation: tia-pen 1s ease-in-out infinite; }
+@keyframes tia-pen { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.45); } }
 @media (prefers-reduced-motion: reduce) {
-  .tia-blink, .tia-halo, .tia-wave, .tia-pulse, .tia-bob, .tia-float { animation: none; }
+  .tia-blink, .tia-halo, .tia-wave, .tia-pulse, .tia-bob, .tia-float, .tia-voice-hop, .tia-voice-breathe, .tia-voice-shadow, .tia-pen { animation: none; }
 }

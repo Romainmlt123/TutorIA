@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Tuteur · Vocal avec graphique</title>
+<title>Tuteur · Vocal + graphique</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -14,82 +14,74 @@
 @font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
 @font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
 @font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
-:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
-body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
-a{color:#2E6BE6}a:hover{color:#1750C4}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--primary:#2E6BE6;--primary-soft:#EBF1FF;--accent:#662EE6;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#0A3B9D;color:#FFFFFF}
 button{font-family:inherit}
-a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,0.7)}
 @keyframes halo{0%{transform:scale(0.6);opacity:0.55}100%{transform:scale(2.2);opacity:0}}
 .halo{transform-box:fill-box;transform-origin:center;animation:halo 1.6s ease-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
-.live{animation:blink 1.4s ease-in-out infinite}
+@keyframes pen{0%,100%{transform:scale(1)}50%{transform:scale(1.45)}}
+.pen{display:inline-block;flex-shrink:0;width:8px;height:8px;border-radius:999px;background:#2E6BE6;box-shadow:0 0 0 3px rgba(46,107,230,.22);animation:pen 1s ease-in-out infinite;transition:opacity .3s}
+@media (prefers-reduced-motion:reduce){.halo,.pen{animation:none}}
 </style>
 </helmet>
-<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
-
-<header style="position: absolute; top: 56px; left: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 2">
-<dc-import name="../components/ModeToggle" mode="vocal" variante="graphique" hint-size="214px,48px"></dc-import>
-
-<section aria-label="Graphique du tuteur" style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
-<dc-import name="../components/PanelHeader" type="graphique" titre="3x + 5 = 20" kicker="En direct · {{ timer }}" live="{{ yes }}" open="{{ open }}" on-toggle="{{ toggle }}" hint-size="318px,44px"></dc-import>
-
-<sc-if value="{{ open }}" hint-placeholder-val="{{ true }}">
-<svg width="318" height="210" viewBox="0 0 318 210" role="img" aria-label="Droite y = 3x + 5 en rouge et droite horizontale y = 20 en bleu. Elles se croisent au point x = 5, y = 20 : c'est la solution de l'équation." style="display: block; font-family: Satoshi, system-ui, sans-serif">
-<g stroke="#EBF1FF" stroke-width="1">
-<line x1="30" y1="10" x2="30" y2="190"></line><line x1="100" y1="10" x2="100" y2="190"></line><line x1="135" y1="10" x2="135" y2="190"></line><line x1="170" y1="10" x2="170" y2="190"></line><line x1="205" y1="10" x2="205" y2="190"></line><line x1="240" y1="10" x2="240" y2="190"></line><line x1="275" y1="10" x2="275" y2="190"></line><line x1="310" y1="10" x2="310" y2="190"></line>
-<line x1="30" y1="158" x2="310" y2="158"></line><line x1="30" y1="126" x2="310" y2="126"></line><line x1="30" y1="94" x2="310" y2="94"></line><line x1="30" y1="62" x2="310" y2="62"></line><line x1="30" y1="30" x2="310" y2="30"></line>
-</g>
-<line x1="30" y1="190" x2="314" y2="190" stroke="#9DA6B9" stroke-width="1.5"></line>
-<line x1="65" y1="194" x2="65" y2="8" stroke="#9DA6B9" stroke-width="1.5"></line>
-<g font-size="11" fill="#5D677D">
-<text x="100" y="205" text-anchor="middle">1</text><text x="135" y="205" text-anchor="middle">2</text><text x="170" y="205" text-anchor="middle">3</text><text x="205" y="205" text-anchor="middle">4</text><text x="240" y="205" text-anchor="middle" font-weight="700" fill="#C21A1A">5</text><text x="275" y="205" text-anchor="middle">6</text><text x="310" y="205" text-anchor="middle">7</text>
-<text x="58" y="205" text-anchor="end">0</text>
-<text x="58" y="162" text-anchor="end">5</text><text x="58" y="130" text-anchor="end">10</text><text x="58" y="98" text-anchor="end">15</text><text x="58" y="66" text-anchor="end" font-weight="700" fill="#1750C4">20</text><text x="58" y="34" text-anchor="end">25</text>
-</g>
-<line x1="240" y1="62" x2="240" y2="190" stroke="#C21A1A" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6"></line>
-<line x1="30" y1="62" x2="310" y2="62" stroke="#2E6BE6" stroke-width="2.5" stroke-dasharray="7 5" stroke-linecap="round"></line>
-<line x1="30" y1="177.2" x2="310" y2="23.6" stroke="#E62E2E" stroke-width="3" stroke-linecap="round"></line>
-<circle cx="65" cy="158" r="4" fill="#E62E2E"></circle>
-<circle class="halo" cx="240" cy="62" r="{{ haloR }}" fill="#E62E2E"></circle>
-<circle cx="240" cy="62" r="6.5" fill="#FFFFFF" stroke="#C21A1A" stroke-width="3"></circle>
-<rect x="190" y="72" width="44" height="22" rx="11" fill="#C21A1A"></rect>
-<text x="212" y="87" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">x = 5</text>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: linear-gradient(170deg, #2E6BE6 0%, #1750C4 42%, #0A3B9D 78%, #03276E 100%); font-family: var(--font-sans); color: #FFFFFF">
+<div style="position: absolute; top: 56px; left: 20px; right: 20px; height: 44px">
+<dc-import name="../components/CallTopBar" fond="transparent" timer="{{ timer }}" ecrit-href="02c-Tuteur-Ecrit-Graphique.dc.html" hint-size="350px,44px"></dc-import>
+</div>
+<section aria-label="Graphique du tuteur" style="position: absolute; top: 112px; left: 20px; right: 20px; height: 336px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 12px; background: #F1EBFF; border: 2px solid #CAB6F6; border-radius: 24px; box-shadow: 0 16px 36px rgba(3,39,110,0.35)">
+<div style="display: flex; align-items: center; gap: 10px; height: 44px">
+<span aria-hidden="true" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(160deg, #8558EA 0%, #521DC8 100%); display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16M7 15l4-4 3 3 5-6"></path></svg></span>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+<span style="font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #3B0DA2">Graphique · Maths</span>
+<span style="font-size: 16px; line-height: 22px; font-weight: 700; color: #000612; white-space: nowrap">3x + 5 = 20</span>
+</div>
+<button type="button" aria-label="Agrandir le graphique" style="flex-shrink: 0; width: 44px; height: 44px; border: none; border-radius: 14px; background: #FFFFFF; color: #5D677D; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button>
+</div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 10px; background: #FFFFFF; border-radius: 16px">
+<svg width="302" height="196" viewBox="0 0 302 196" role="img" aria-label="Droite y = 3x + 5 en rouge et droite y = 20 en bleu pointillé. Elles se croisent en x = 5 : c'est la solution de 3x + 5 = 20." style="display: block; font-family: Satoshi, system-ui, sans-serif">
+<g stroke="#CED4E2" stroke-width="1" opacity="0.7"><line x1="30.0" y1="8" x2="30.0" y2="176"></line><line x1="92.9" y1="8" x2="92.9" y2="176"></line><line x1="124.3" y1="8" x2="124.3" y2="176"></line><line x1="155.7" y1="8" x2="155.7" y2="176"></line><line x1="187.1" y1="8" x2="187.1" y2="176"></line><line x1="218.6" y1="8" x2="218.6" y2="176"></line><line x1="250.0" y1="8" x2="250.0" y2="176"></line><line x1="281.4" y1="8" x2="281.4" y2="176"></line><line x1="30" y1="134.0" x2="294" y2="134.0"></line><line x1="30" y1="104.0" x2="294" y2="104.0"></line><line x1="30" y1="74.0" x2="294" y2="74.0"></line><line x1="30" y1="44.0" x2="294" y2="44.0"></line><line x1="30" y1="14.0" x2="294" y2="14.0"></line></g>
+<line x1="30" y1="164.0" x2="296" y2="164.0" stroke="#798398" stroke-width="1.5"></line>
+<line x1="61.4" y1="180" x2="61.4" y2="6" stroke="#798398" stroke-width="1.5"></line>
+<g font-size="11" fill="#5D677D"><text x="92.9" y="191" text-anchor="middle">1</text><text x="124.3" y="191" text-anchor="middle">2</text><text x="155.7" y="191" text-anchor="middle">3</text><text x="187.1" y="191" text-anchor="middle">4</text><text x="218.6" y="191" text-anchor="middle" font-weight="700" fill="#C21A1A">5</text><text x="250.0" y="191" text-anchor="middle">6</text><text x="281.4" y="191" text-anchor="middle">7</text><text x="55.4" y="191" text-anchor="end">0</text><text x="55.4" y="138.0" text-anchor="end">5</text><text x="55.4" y="108.0" text-anchor="end">10</text><text x="55.4" y="78.0" text-anchor="end">15</text><text x="55.4" y="48.0" text-anchor="end" font-weight="700" fill="#1750C4">20</text><text x="55.4" y="18.0" text-anchor="end">25</text></g>
+<line x1="218.6" y1="44.0" x2="218.6" y2="164.0" stroke="#C21A1A" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6"></line>
+<line x1="61.4" y1="44.0" x2="294" y2="44.0" stroke="#2E6BE6" stroke-width="12" stroke-linecap="round" opacity="{{ g.glowB }}" style="stroke-opacity: 0.16; transition: opacity 0.3s"></line>
+<line x1="61.4" y1="44.0" x2="294" y2="44.0" stroke="#2E6BE6" stroke-width="{{ g.wB }}" stroke-dasharray="7 5" stroke-linecap="round" style="transition: stroke-width 0.3s"></line>
+<line x1="61.4" y1="134.0" x2="281.4" y2="8.0" stroke="#E62E2E" stroke-width="13" stroke-linecap="round" opacity="{{ g.glowR }}" style="stroke-opacity: 0.16; transition: opacity 0.3s"></line>
+<line x1="61.4" y1="134.0" x2="281.4" y2="8.0" stroke="#E62E2E" stroke-width="{{ g.wR }}" stroke-linecap="round" style="transition: stroke-width 0.3s"></line>
+<circle cx="61.4" cy="134.0" r="4" fill="#E62E2E"></circle>
+<circle class="halo" cx="218.6" cy="44.0" r="{{ g.haloR }}" fill="#E62E2E"></circle>
+<circle cx="218.6" cy="44.0" r="6.5" fill="#FFFFFF" stroke="#C21A1A" stroke-width="3"></circle>
+<rect x="228.6" y="52.0" width="44" height="22" rx="11" fill="#C21A1A"></rect>
+<text x="250.6" y="67.0" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">x = 5</text>
 </svg>
-<div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--text-secondary)">
-<span style="display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 16px; height: 3px; border-radius: 999px; background: #E62E2E"></span>y = 3x + 5</span>
-<span style="display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 16px; height: 0; border-top: 3px dashed #2E6BE6"></span>y = 20</span>
-<span style="display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 10px; height: 10px; box-sizing: border-box; border-radius: 999px; border: 2.5px solid #C21A1A; background: #FFFFFF"></span>Solution</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; height: 26px">
+<span style="display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 999px; background: {{ g.lgR }}; font-size: 12px; font-weight: 700; color: #C21A1A; transition: background 0.3s"><span aria-hidden="true" style="width: 16px; height: 0; border-top: 3px solid #E62E2E; border-radius: 2px"></span>y = 3x + 5</span>
+<span style="display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 999px; background: {{ g.lgB }}; font-size: 12px; font-weight: 700; color: #1750C4; transition: background 0.3s"><span aria-hidden="true" style="width: 16px; height: 0; border-top: 3px dashed #2E6BE6"></span>y = 20</span>
+<span style="display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 999px; background: {{ g.lgP }}; font-size: 12px; font-weight: 700; color: #C21A1A; transition: background 0.3s"><span aria-hidden="true" style="width: 10px; height: 10px; box-sizing: border-box; border-radius: 999px; border: 2.5px solid #C21A1A; background: #FFFFFF"></span>Solution</span>
 </div>
-</sc-if>
+</div>
 </section>
-</header>
-
-<button type="button" onClick="{{ interrupt }}" aria-label="{{ stageLabel }}" style="position: absolute; top: {{ stageTop }}px; left: 0; right: 0; bottom: 220px; border: none; background: transparent; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--text); transition: top 0.25s ease">
-<span aria-hidden="true" style="height: {{ stageH }}px; display: flex; align-items: center; justify-content: center; gap: {{ barGap }}px">
-<sc-for list="{{ bars }}" as="bar" hint-placeholder-count="4">
-<span style="display: block; width: {{ bar.w }}px; height: {{ bar.h }}px; border-radius: 999px; background: linear-gradient(180deg, #2E6BE6 0%, #662EE6 100%); transition: height 0.14s ease-out"></span>
-</sc-for>
-</span>
-<span style="display: flex; flex-direction: column; align-items: center; gap: 4px">
-<span aria-live="polite" style="font-size: 18px; line-height: 24px; font-weight: 500; color: var(--text-secondary)">{{ status }}</span>
-<span style="font-size: 14px; line-height: 20px; color: var(--text-secondary)">Touche l'écran pour interrompre</span>
-</span>
-</button>
-
-<div style="position: absolute; left: 20px; right: 20px; bottom: 116px; height: 96px">
-<dc-import name="../components/CallControls" muted="{{ muted }}" cam-on="{{ camOn }}" on-mute="{{ toggleMute }}" on-cam="{{ toggleCam }}" hangup-href="../screens/02c-Tuteur-Ecrit-Graphique.dc.html" hint-size="350px,96px"></dc-import>
+<div style="position: absolute; left: 123px; top: 458px">
+<dc-import name="../components/VoiceAvatar" fond="transparent" size="96" hop="{{ hop }}" tilt="{{ tilt }}" label="{{ avatarLabel }}" on-interrupt="{{ interrupt }}" hint-size="144px,128px"></dc-import>
 </div>
-
-<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
-<dc-import name="../components/BottomNav" espace="eleve" active="tuteur" hint-size="350px,72px"></dc-import>
+<div style="position: absolute; top: 592px; left: 0; right: 0; display: flex; justify-content: center">
+<dc-import name="../components/VoiceStatus" fond="transparent" etat="{{ statusEtat }}" couleur-ecoute="{{ couleurEcoute }}" hint-size="180px,40px"></dc-import>
+</div>
+<sc-if value="{{ showCaptions }}" hint-placeholder-val="{{ true }}">
+<p aria-label="Sous-titres" style="position: absolute; top: 642px; left: 24px; right: 24px; height: 48px; margin: 0; overflow: hidden; text-align: center; font-size: 16px; line-height: 22px; text-wrap: pretty"><sc-for list="{{ words }}" as="w" hint-placeholder-count="10"><span style="color: {{ w.c }}; font-weight: {{ w.fw }}; background: {{ w.bg }}; padding: {{ w.pad }}; border-radius: 6px; transition: color 0.2s, background 0.2s">{{ w.t }}</span><span style="color: {{ w.c2 }}">{{ w.sp }}</span></sc-for></p>
+</sc-if>
+<div style="position: absolute; left: 20px; right: 20px; bottom: 32px">
+<dc-import name="../components/CallDock" fond="transparent" muted="{{ muted }}" captions="{{ showCaptions }}" cam-on="{{ camOn }}" on-mute="{{ toggleMute }}" on-captions="{{ toggleCaptions }}" on-cam="{{ toggleCam }}" hangup-href="02c-Tuteur-Ecrit-Graphique.dc.html" hint-size="350px,112px"></dc-import>
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"etat":{"editor":"enum","options":["auto","parle","ecoute","repos"],"default":"auto"},"$preview":{"width":390,"height":844}}'>
+<script type="text/x-dc" data-dc-script data-props='{"etat":{"editor":"enum","options":["auto","parle","ecoute"],"default":"auto"},"couleurEcoute":{"editor":"enum","options":["rouge","orange"],"default":"rouge"},"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
 constructor(props) {
 super(props);
-this.state = { tick: 0, muted: false, cam: false, open: true, interruptAt: -1000 };
+this.state = { tick: 0, offset: 4.0, muted: false, cam: false, captions: true };
+this.SEGS = [{"who": "user", "text": "Je ne vois pas comment résoudre 3x + 5 = 20.", "dur": 4.5}, {"who": "ai", "text": "Regarde le graphique : la droite rouge, c’est y = 3x + 5.", "dur": 5.5, "focus": {"from": "rouge", "name": "rouge"}}, {"who": "ai", "text": "Et la droite bleue en pointillés, c’est y = 20.", "dur": 4.5, "focus": {"from": "bleue", "name": "bleu"}}, {"who": "user", "text": "Elles se croisent en x = 5 !", "dur": 3.5, "focus": {"from": "croisent", "name": "point"}}, {"who": "ai", "text": "Exactement ! Ce point, c’est la solution de l’équation.", "dur": 5.5, "focus": {"from": "point", "name": "point"}}];
 }
 componentDidMount() {
 this.timer = setInterval(() => this.setState({ tick: this.state.tick + 1 }), 100);
@@ -97,71 +89,70 @@ this.timer = setInterval(() => this.setState({ tick: this.state.tick + 1 }), 100
 componentWillUnmount() {
 clearInterval(this.timer);
 }
-mode() {
+pos() {
 const etat = this.props.etat ?? 'auto';
-const tick = this.state.tick;
-let m;
-if (etat === 'parle') m = 'ai';
-else if (etat === 'ecoute') m = 'user';
-else if (etat === 'repos') m = 'idle';
-else if (tick - this.state.interruptAt < 50) m = 'user';
-else m = (Math.floor(tick / 10) % 12) < 7 ? 'ai' : 'user';
-if (m === 'user' && this.state.muted) m = 'muted';
-return m;
+if (etat === 'parle') return { i: 1, p: 0.8 + 0.0001 * (this.state.tick % 2) };
+if (etat === 'ecoute') return { i: 3, p: 0.6 };
+const total = this.SEGS.reduce((s, x) => s + x.dur, 0);
+let t = (this.state.tick * 0.1 + this.state.offset) % total;
+for (let i = 0; i < this.SEGS.length; i++) {
+if (t < this.SEGS[i].dur) return { i, p: t / this.SEGS[i].dur };
+t -= this.SEGS[i].dur;
+}
+return { i: 0, p: 0 };
 }
 renderVals() {
 const t = this.state.tick * 0.1;
-const m = this.mode();
-const open = this.state.open;
-const w = open ? 28 : 40;
-const max = open ? 84 : 150;
-const bars = [0, 1, 2, 3].map((i) => {
-let h = w;
-if (m === 'ai') {
-const env = 0.55 + 0.45 * Math.sin(t * 1.3 + i * 0.4);
-const wave = 0.5 + 0.5 * (0.6 * Math.sin(t * 7.1 + i * 1.7) + 0.4 * Math.sin(t * 3.3 + i * 2.9));
-const pause = Math.sin(t * 0.8) > 0.92 ? 0.15 : 1;
-h = w + max * wave * env * pause;
-} else if (m === 'user') {
-const wave = 0.5 + 0.5 * Math.sin(t * 3.2 + i * 1.3);
-const env = 0.6 + 0.4 * Math.sin(t * 0.9 + i);
-h = w + max * 0.4 * wave * env;
-}
-return { h: Math.round(h), w };
-});
-const labels = { ai: 'Le tuteur t’explique le graphique…', user: 'Le tuteur t’écoute…', muted: 'Ton micro est coupé', idle: 'En pause' };
-const secs = 187 + Math.floor(this.state.tick / 10);
-const timer = String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0');
+const { i, p } = this.pos();
+const seg = this.SEGS[i];
+const isAi = seg.who === 'ai';
 const muted = this.state.muted;
-const cam = this.state.cam;
+const talking = p < 0.86;
+const listeningMuted = !isAi && muted;
+const list = seg.text.split(' ');
+const shown = listeningMuted ? 0 : Math.ceil(Math.min(1, p / 0.86) * list.length);
+// Rebond : niveau de la voix du tuteur (simulé ici), posé à chaque ponctuation.
+const lastWord = list[Math.max(0, shown - 1)] || '';
+const breath = /[.,!?:]$/.test(lastWord) ? 0.25 : 1;
+const lively = (0.5 + 0.5 * Math.sin(t * 2.4)) * (0.6 + 0.4 * Math.sin(t * 0.9));
+const hop = isAi && talking ? ((0.35 + 0.65 * lively) * breath).toFixed(2) : '0';
+const tilt = !isAi && !muted ? '1' : '0';
+let focus = null;
+if (seg.focus && !listeningMuted) { const k = list.findIndex((w) => w.indexOf(seg.focus.from) === 0); if (k >= 0 && shown > k) focus = seg.focus.name; }
+const g = {
+wR: focus === 'rouge' ? 5 : 3, glowR: focus === 'rouge' ? 1 : 0,
+wB: focus === 'bleu' ? 4 : 2.5, glowB: focus === 'bleu' ? 1 : 0,
+haloR: (isAi && talking) || focus === 'point' ? 8 : 0,
+lgR: focus === 'rouge' ? '#FFEBEB' : 'transparent',
+lgB: focus === 'bleu' ? '#EBF1FF' : 'transparent',
+lgP: focus === 'point' ? '#FFEBEB' : 'transparent'
+};
+const COL = ['#FFFFFF', 'rgba(255,255,255,0.45)'];
+const words = listeningMuted
+? [{ t: 'Réactive ton micro pour répondre.', c: COL[0], c2: COL[0], fw: 500, bg: 'transparent', pad: '0', sp: '' }]
+: list.map((w, j) => {
+const on = j < shown;
+const tone = /^rouge/.test(w) ? '#E62E2E' : (/^bleue/.test(w) ? '#2E6BE6' : null);
+const core = tone ? w.replace(/[,.]$/, '') : w;
+const c = on ? COL[0] : COL[1];
+return { t: core, sp: w.slice(core.length) + ' ', c: tone && on ? '#FFFFFF' : c, c2: c, fw: /[0-9=÷×]/.test(w) || tone ? 700 : 500, bg: tone && on ? tone : 'transparent', pad: tone ? '0 6px' : '0' };
+});
+const secs = 187 + Math.floor(this.state.tick / 10);
 return {
-yes: true,
-bars,
-barGap: open ? 14 : 20,
-stageH: w + max,
-stageTop: open ? 446 : 200,
-open,
-chevron: open ? 0 : 180,
-toggleLabel: open ? 'Réduire le graphique' : 'Afficher le graphique',
-toggle: () => this.setState({ open: !this.state.open }),
-haloR: m === 'ai' ? 8 : 0,
-timer,
-status: labels[m],
-stageLabel: m === 'ai' ? 'Interrompre le tuteur' : 'Le tuteur t’écoute',
-muted,
-notMuted: !muted,
-muteLabel: muted ? 'Réactiver le micro' : 'Couper le micro',
-muteCaption: muted ? 'Micro coupé' : 'Micro',
-micColor: muted ? '#FFFFFF' : '#5D677D',
-micBg: muted ? '#000612' : '#FFFFFF',
-camOn: cam,
-camOff: !cam,
-camLabel: cam ? 'Couper la caméra' : 'Activer la caméra',
-camCaption: cam ? 'Caméra activée' : 'Caméra',
-camColor: cam ? '#FFFFFF' : '#5D677D',
-camBg: cam ? '#2E6BE6' : '#FFFFFF',
-interrupt: () => this.setState({ interruptAt: this.state.tick }),
+hop, tilt, words, g, 
+statusEtat: listeningMuted ? 'coupe' : (isAi ? 'explique' : 'ecoute'),
+couleurEcoute: this.props.couleurEcoute ?? 'rouge',
+speaker: isAi ? 'Tutor’IA' : 'Toi',
+avatarLabel: isAi ? 'Interrompre Tutor’IA' : 'Tutor’IA t’écoute',
+timer: String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0'),
+showCaptions: this.state.captions,
+muted, camOn: this.state.cam,
+interrupt: () => {
+if ((this.props.etat ?? 'auto') !== 'auto' || !isAi) return;
+this.setState({ offset: this.state.offset + (1 - p) * seg.dur });
+},
 toggleMute: () => this.setState({ muted: !this.state.muted }),
+toggleCaptions: () => this.setState({ captions: !this.state.captions }),
 toggleCam: () => this.setState({ cam: !this.state.cam })
 };
 }

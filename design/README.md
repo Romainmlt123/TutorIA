@@ -10,19 +10,25 @@ design/
 ├── README.md            ← ce fichier : vue d'ensemble, écrans, règles
 ├── COMPONENTS.md        ← inventaire des composants à créer, avec leurs specs
 ├── DESIGN_SYSTEM.md     ← README du design system Tutor'IA (règles de marque, couleurs des matières, écarts validés)
-├── design-system/       ← les 81 composants publiés dans le design system (référence : bundle, props typées, fiches)
+├── design-system/       ← les 86 composants publiés dans le design system (référence : bundle, props typées, fiches)
 ├── tokens/
 │   ├── tokens.json      ← tokens officiels du design system (couleurs, type, espaces, rayons, ombres)
-│   ├── app-tokens.json  ← ajouts propres à l'app (matières, jeu, KPI, vocal)
+│   ├── app-tokens.json  ← ajouts propres à l'app (matières, jeu, KPI, vocal, bandeaux, appel vocal)
 │   └── tokens.css       ← tout en variables CSS + @font-face Satoshi
 ├── components/          ← composants partagés des maquettes (importés par les écrans)
+│   ├── support.js            ← moteur de rendu des maquettes (copie, voir « Voir une maquette dans un navigateur »)
 │   ├── BottomNav.dc.html     ← barre de navigation élève et Parents (props espace, active)
 │   ├── ModeToggle.dc.html    ← bascule Écrit / Vocal (props mode, variante)
 │   ├── TopicCard.dc.html     ← carte sujet de discussion (props matiere, titre, badge, live)
 │   ├── PanelHeader.dc.html   ← en-tête graphique / tableau blanc (props type, titre, kicker, live, open, onToggle)
-│   ├── CallControls.dc.html  ← micro / raccrocher / caméra (props muted, camOn, onMute, onCam, hangupHref)
+│   ├── CallControls.dc.html  ← micro / raccrocher / caméra de X4b (props muted, camOn, onMute, onCam, hangupHref)
+│   ├── CallTopBar.dc.html    ← appel vocal : « Écrit » + chrono (props timer, ecritHref)
+│   ├── VoiceAvatar.dc.html   ← appel vocal : logo du tuteur qui rebondit (props size, hop, tilt, label, onInterrupt)
+│   ├── VoiceStatus.dc.html   ← appel vocal : pastille d'état (props etat, couleurEcoute)
+│   ├── CallDock.dc.html      ← appel vocal : micro, sous-titres, caméra, raccrocher (props muted, captions, camOn, cameraVisible, onMute, onCaptions, onCam, hangupHref)
 │   └── ExplorerMap.dc.html   ← carte d'une île (mer, chemin, villes, niveaux, avatar), partagée par X2 et X3
 └── screens/             ← source HTML de chaque écran (format « Design Component »)
+    ├── support.js                      ← moteur de rendu des maquettes (même fichier que dans components/)
     ├── 01-Accueil.dc.html
     ├── 02a-Tuteur-Ecrit.dc.html
     ├── 02b-Tuteur-Vocal.dc.html
@@ -89,6 +95,21 @@ design/
   - Nouveau composant partagé `components/ExplorerMap.dc.html`.
   - 17 nouveaux composants dans le design system (81 au total) et dans `COMPONENTS.md`, section « Explorer ».
   - `tokens/` n'a pas changé : les couleurs des types de niveau et de la carte sont à ajouter dans `tokens/app-tokens.json` au moment du développement (voir la section Explorer).
+- **v2.5** (7 octobre 2026)
+  - **Bandeau de marque** en haut de l'Accueil, des Flashcards · Choix, des Stats et des 4 écrans Parents : le titre de l'écran (30 px Black, en blanc) est posé sur un dégradé à 170° aux coins bas arrondis, et la première carte de l'écran déborde dessus. Bleu pour l'Accueil et les Flashcards, violet de marque pour les Stats et l'espace Parents.
+  - **Chaque titre de section vit dans sa carte** : carte blanche `radius-3xl` + `shadow-md`, titre en 22 px Black. Plus aucun titre de section n'est posé directement sur le fond `bg`.
+  - Accueil : « Objectif du jour » devient une carte verte (dégradé #0C9E42 → #03702B) et le titre de la carte « Reprendre » passe en Black.
+  - Les 7 écrans touchés sont plus hauts, pour que la fin du contenu ne passe plus sous la barre de navigation.
+  - Nouveaux tokens : `screenBand`, `sectionTitle` et `goal` dans `tokens/app-tokens.json`, variables `--band-*`, `--on-band-veil`, `--section-title-size` et `--goal-gradient` dans `tokens/tokens.css`. Le générateur (`scripts/tokens/generate.ts`) ne les exporte pas encore dans `src/theme/tokens.generated.ts`.
+  - `COMPONENTS.md` : nouvelle section « En-têtes et sections » (ScreenBand, SectionCard) ; specs des composants touchés mises à jour.
+  - Les autres écrans (Tuteur, Flashcards · Session, Explorer, connexion et onboarding) n'ont pas changé. Le design system (`DESIGN_SYSTEM.md`, `design-system/`) n'est pas encore mis à jour : les règles de la v2.5 font foi.
+- **v2.6** (7 octobre 2026)
+  - **Appel vocal refait** (2B, 2D, 2F) : écran d'appel plein écran sur le dégradé de marque, sans barre de navigation. Le logo du tuteur remplace les barres : il rebondit quand il parle et penche la tête quand il écoute. Pastille d'état verte « Je t'explique… » ou rouge « Je t'écoute… », sous-titres en direct, commandes en verre (micro, sous-titres, caméra, raccrocher). Avec un graphique ou un tableau, le visuel prend la moitié haute, le logo passe dessous, et la voix et le visuel avancent ensemble.
+  - Nouvelle section « Appel vocal : ce que l'écran doit faire » (états, interactions, synchronisation, à changer dans le code). Écarts 20 à 22 ; l'écart 6 est remplacé.
+  - Nouveaux composants partagés des maquettes : `CallTopBar`, `VoiceAvatar`, `VoiceStatus`, `CallDock`. `CallControls` ne sert plus qu'à X4b.
+  - Design system (86 composants) : `CallTopBar`, `VoiceAvatar`, `VoiceStatus`, `LiveCaptions`, `CallDock` ; `VisualPanel` et `PanelHeader` teintés par sorte de visuel (comme dans l'app), `MathGraph` avec `focus`, `Whiteboard` qui s'écrit en direct (`progress`, `writing`). Copié dans `design-system/` et `DESIGN_SYSTEM.md`.
+  - Tokens : `voiceCall` dans `tokens/app-tokens.json`, variables `--call-*`, `--voice-*` et `--caption-upcoming` dans `tokens/tokens.css`. Le générateur ne les exporte pas encore (sa sortie est inchangée).
+  - `support.js` ajouté dans `screens/` et `components/` : les maquettes s'ouvrent maintenant dans un navigateur (voir « Voir une maquette dans un navigateur »).
 
 Les logos et les polices ne sont pas dupliqués : les écrans pointent vers `../../assets/logo/` et `../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/`.
 
@@ -120,21 +141,33 @@ Chaque écran est un fichier HTML autonome avec quelques conventions :
 - `<sc-for list="{{ items }}" as="item">` répète un bloc ; `<sc-if value="{{ cond }}">` l'affiche sous condition.
 - `onClick="{{ handler }}"` branche un événement ; l'état est dans `this.state` / `setState` (comme une classe React).
 - `data-props` sur le `<script>` déclare les réglages de la maquette (ex. état du vocal) : ce ne sont pas des props de production.
-- `<script src="./support.js">` est le moteur de rendu du canevas ; il n'est pas fourni et n'est pas nécessaire pour implémenter.
+- `<script src="./support.js">` charge le moteur de rendu des maquettes (voir ci-dessous).
 
 Les données (citations, matières, cartes, stats) sont des exemples réalistes à remplacer par les vraies données de l'API.
 
+### Voir une maquette dans un navigateur
+
+- `screens/support.js` et `components/support.js` sont le **moteur de rendu des maquettes** (le « dc-runtime » du canevas, React 18 inclus, aucun accès réseau). Copié du canevas le 7 octobre 2026. C'est un fichier généré : ne pas le modifier ni le reformater ; le recopier si le canevas change de format.
+- Lancer un petit serveur à la **racine du dépôt** (les polices et logos sont lus dans `assets/`) : `python3 -m http.server 8080` ou `npx serve .`, puis ouvrir par exemple `http://localhost:8080/design/screens/02d-Tuteur-Vocal-Graphique.dc.html`.
+- Un double-clic sur le fichier (`file://`) ne suffit pas : le navigateur refuse alors de charger les composants partagés (`<dc-import>`).
+- Régler la fenêtre sur 390 px de large (outils de développement, mode mobile, iPhone 12/13/14). Les réglages `data-props` gardent leur valeur par défaut ; les animations (logo qui rebondit, tableau qui s'écrit…) tournent comme dans le canevas.
+- Pour une capture automatique (Playwright) : page de 390 × 844, attendre environ 2 s que les polices et les composants soient chargés, capture `fullPage` pour les écrans qui défilent. Une erreur de console du type `attribute r: Expected length, "{{ … }}"` est normale : le navigateur lit le gabarit avant que le moteur le remplisse.
+
 ## Les écrans
 
-Format : iPhone 390 × 844. Marges d'écran 20 px. La barre de navigation flotte à 20 px du bas ; le contenu défilant garde ~116 px libres en bas pour ne pas passer dessous. Accueil (1260 px), Flashcards · Choix (1360 px) et Stats (2480 px) sont montrés en entier : ce sont des écrans qui défilent.
+Format : iPhone 390 × 844. Marges d'écran 20 px. La barre de navigation flotte à 20 px du bas ; le contenu défilant garde ~116 px libres en bas pour ne pas passer dessous. Accueil (1460 px), Flashcards · Choix (1420 px), Stats (2560 px) et les écrans Parents (P1 1540 px, P2 2000 px, P3 1860 px, P4 1820 px) sont montrés en entier : ce sont des écrans qui défilent.
+
+Depuis la v2.5, l'Accueil, les Flashcards · Choix, les Stats et l'espace Parents s'ouvrent sur un **bandeau de marque**, et chaque titre de section est dans sa carte (voir « Bandeau de marque et cartes de section » dans les Règles clés).
+
+Depuis la v2.6, l'appel vocal (2B, 2D, 2F) est plein écran, sans barre de navigation (voir « Appel vocal : ce que l'écran doit faire »).
 
 ### 1 · Accueil — `01-Accueil.dc.html`
-- En-tête : « Salut Léa ! » (28 px, Black 900), bouton notifications (point violet `accent` = nouveauté), avatar.
-- Citation du jour sous la salutation : italique 14 px, `text-secondary`, auteur en 12 px. Une liste de citations tourne (Mandela, Sénèque, La Fontaine, Wilde, Confucius, Boileau, proverbe).
-- Deux cartes jeu côte à côte : **Série** (orange uni `--streak`, texte blanc, « 12 jours » sur une ligne) et **Niveau** (gris ardoise `--level-card`, jauge XP verte).
-- Carte « Reprendre » : matière + chapitre, progression, bouton principal **Reprendre** (`shadow-brand`, le seul de l'écran).
-- Objectif du jour : anneau 2/3 + « 15 min · 2/3 sessions ».
-- Grille 2 colonnes des 6 matières, cartes remplies du dégradé de la matière (voir Couleurs des matières).
+- **Bandeau de marque bleu** : « Salut Léa ! » (30 px, Black 900, blanc), bouton notifications en blanc translucide (point violet `accent` = nouveauté), avatar rond blanc.
+- Citation du jour sous la salutation, dans le bandeau : italique 15/22 px en blanc, auteur en 12 px Bold, largeur max 300 px. Une liste de citations tourne (Mandela, Sénèque, La Fontaine, Wilde, Confucius, Boileau, proverbe).
+- Deux cartes jeu côte à côte, qui débordent de 64 px sur le bas du bandeau : **Série** (orange uni `--streak`, texte blanc, « 12 jours » sur une ligne) et **Niveau** (gris ardoise `--level-card`, jauge XP verte).
+- Carte « Reprendre » : matière + chapitre (« Équations du 1er degré » en 20 px Black), progression, bouton principal **Reprendre** (`shadow-brand`, le seul de l'écran).
+- **Objectif du jour** : carte en dégradé vert (#0C9E42 → #03702B, 160°, `radius-3xl`, padding 20 px), anneau blanc 2/3 de 64 px, titre 22 px Black, « 15 min · 2/3 sessions » et pastille blanche « Plus qu'une ! », tout en blanc.
+- **Tes matières** : carte blanche (titre 22 px Black, lien « Tout voir ») qui contient la grille 2 colonnes des 6 matières ; cartes remplies du dégradé de la matière (voir Couleurs des matières), en `radius-2xl` et `shadow-sm` dans la carte.
 
 ### 2A · Tuteur écrit — `02a-Tuteur-Ecrit.dc.html`
 - Toggle **Écrit / Vocal** centré en haut.
@@ -144,20 +177,19 @@ Format : iPhone 390 × 844. Marges d'écran 20 px. La barre de navigation flotte
 - Barre de saisie : champ 48 px + bouton d'envoi rond `primary`.
 
 ### 2B · Tuteur vocal — `02b-Tuteur-Vocal.dc.html`
-- Même toggle et même carte sujet (avec chrono de l'appel à la place de la leçon).
-- 4 barres verticales (40 px de large, 20 px d'écart, bouts arrondis) en dégradé `blue-500 → violet-500`.
-  - Le tuteur parle : chaque barre varie de 40 à 190 px, rapide et irrégulière.
-  - L'élève parle : 40 à 100 px, plus lent et plus doux.
-  - Repos ou micro coupé : 4 pastilles rondes immobiles de 40 px.
-- Statut en `text-secondary` : « Le tuteur parle… » / « Le tuteur t'écoute… » / « Ton micro est coupé ». Puis « Touche l'écran pour interrompre » (toucher l'écran interrompt le tuteur).
-- Contrôles : Micro (rond blanc 56 px, noir quand coupé) · **Raccrocher** (rond 72 px `error-strong`, croix blanche, revient au chat écrit) · Caméra (rond blanc 56 px, bleu quand activée).
-- La barre de navigation reste visible.
+- **Un écran d'appel** (v2.6) : plein écran sur le dégradé de marque, tout en blanc, sans barre de navigation.
+- En haut : « Écrit » (passer au chat écrit) et le chrono ; au centre, la matière et le chapitre.
+- **Le logo du tuteur** (148 px, dans un disque blanc) rebondit quand il parle, au niveau de sa voix, et penche la tête quand il écoute. Le toucher interrompt le tuteur.
+- **Pastille d'état** sous le logo : verte « Je t'explique… », rouge « Je t'écoute… », neutre « Ton micro est coupé ».
+- **Sous-titres en direct** (20/30), mot à mot ; une couleur nommée s'affiche dans une pastille de sa couleur.
+- **Commandes en verre** en bas : Micro · Sous-titres · Caméra · **Raccrocher** (rond rouge de 64 px avec le combiné).
+- Comportement détaillé : « Appel vocal : ce que l'écran doit faire », plus bas.
 
 ### 3A · Flashcards · Choix — `03a-Flashcards-Choix.dc.html`
-- Titre « Flashcards » + bouton réglages.
-- Carte « Révision du jour » : 30 cartes à revoir, badge de série orange, pastilles des matières concernées, bouton **C'est parti** en violet vif (`violet-500`, ombre violette).
-- « Choisis ta matière » : grille 2 × 3 de cartes colorées sélectionnables (sélection = anneau de la couleur de la matière + coche).
-- « Chapitres · {matière} » : liste de chapitres numérotés (numéro sur le fond doux de la matière), cartes et durée, bouton radio.
+- **Bandeau de marque bleu** : titre « Flashcards » (30 px Black, blanc) + bouton réglages en blanc translucide.
+- Carte « Révision du jour », qui déborde de 56 px sur le bandeau : 30 cartes à revoir, badge de série orange, pastilles des matières concernées, bouton **C'est parti** en violet vif (`violet-500`, ombre violette).
+- Carte « Choisis ta matière » (titre 22 px Black) : grille 2 × 3 de cartes colorées sélectionnables, en `radius-2xl` (sélection = anneau blanc de 3 px puis anneau de 3 px à la couleur de la matière + coche).
+- Carte « Chapitres · {matière} » (titre 22 px Black, « 529 cartes en tout » à droite) : liste de chapitres numérotés (numéro sur le fond doux de la matière), cartes et durée, bouton radio. Les lignes sont sur fond `bg` ; la ligne choisie passe en blanc, avec un bord de 2 px à la couleur de la matière.
 - Bouton principal **Commencer · N cartes** (`shadow-brand`).
 
 ### 3B · Flashcards · Session — `03b-Flashcards-Session.dc.html`
@@ -171,11 +203,12 @@ Format : iPhone 390 × 844. Marges d'écran 20 px. La barre de navigation flotte
 - Fin de session : carte verte « Session terminée ! », bilan et « +60 XP ».
 
 ### 4 · Stats — `04-Stats.dc.html`
-- Titre « Tes stats » (Black 900) + sélecteur **Semaine / Mois / Trimestre** (change chiffres et histogramme).
-- 4 KPI en cartes colorées : temps d'étude (bleu), sessions (cyan), flashcards révisées (violet), série record (orange uni, texte blanc).
+- **Bandeau de marque violet** : titre « Tes stats » (30 px Black, blanc) + sélecteur **Semaine / Mois / Trimestre** dans le bandeau (piste en blanc translucide, pastille active blanche au texte `violet-600`, les autres en blanc ; change chiffres et histogramme).
+- 4 KPI en cartes colorées, qui débordent de 56 px sur le bandeau : temps d'étude (bleu), sessions (cyan), flashcards révisées (violet), série record (orange uni, texte blanc).
+- Tous les titres de section sont en 22 px Black dans leur carte (16 px avant la v2.5).
 - Histogramme du temps d'étude (barres en dégradé violet → bleu, axes en `text-secondary`).
 - Progression par matière : icône colorée de la matière sur son fond doux, barre en dégradé de la matière, pourcentage.
-- Évolution de la maîtrise : carte en dégradé bleu, courbe blanche, « 68 % » en grand, badge vert « +26 pts ».
+- Évolution de la maîtrise : carte en dégradé bleu, courbe blanche, « 68 % » en grand avec le badge vert « +26 pts en 8 sem. » à côté.
 - Calendrier d'activité (heatmap 13 semaines, 5 niveaux de bleu).
 - **Tes points forts** : carte dégradé vert, titre blanc, lignes blanches.
 - **À retravailler** : carte orange uni, titre blanc, lignes blanches avec bouton **Réviser** (`primary`).
@@ -184,12 +217,85 @@ Format : iPhone 390 × 844. Marges d'écran 20 px. La barre de navigation flotte
 - Le tuteur peut **tracer un graphique** pour illustrer son explication. Exemple : la droite y = 3x + 5 (rouge Maths) et la droite y = 20 (bleu pointillé), avec leur intersection x = 5 mise en évidence.
 - Le panneau graphique est en haut (carte blanche, `radius-3xl`), la discussion continue en dessous. Il se réduit en bandeau (chevron) et s'agrandit en plein écran. Le bouton d'agrandissement est dessiné mais pas encore fonctionnel sur la maquette.
 - Écrit (2C) : le tuteur fait référence aux couleurs du graphique (« la droite **rouge** »). Les anciens messages s'estompent en haut quand la place manque.
-- Vocal (2D) : les 4 barres rétrécissent sous le graphique. Le point clé pulse **seulement quand le tuteur parle**, pour synchroniser la voix et le visuel. Une pastille « En direct » clignote à côté du chrono.
+- Vocal (2D, v2.6) : l'écran d'appel de 2B, avec la carte du graphique dans la moitié haute (violette, comme dans l'app) et le logo de 96 px dessous. Quand le tuteur nomme une courbe, elle s'épaissit et sa légende s'allume ; le point clé pulse pendant qu'il parle.
 
 ### 2E / 2F · Tuteur + tableau blanc — `02e-…`, `02f-…`
 - Surface blanche avec une grille de points : le tuteur y écrit la résolution pas à pas (3x + 5 = 20 → 3x = 15 → **x = 5** entouré en rouge). Les opérations (− 5, ÷ 3) sont en bleu, et les annotations numérotées sont à droite, reliées par des flèches.
 - Sous le tableau, des pastilles d'étapes : ① Retirer 5 · ② Diviser par 3 · ③ x = 5.
-- Vocal (2F) : le tableau **s'écrit en direct**. Les étapes apparaissent l'une après l'autre (fondu), puis le cercle rouge se trace, un point bleu pulsant joue le rôle du stylo et la pastille de l'étape en cours s'allume. L'état affiché est « Le tuteur écrit au tableau… ».
+- Vocal (2F, v2.6) : l'écran d'appel de 2B, avec la carte du tableau dans la moitié haute (azur, sans grille de points ni pastilles d'étapes, comme dans l'app). Le tableau **s'écrit en direct** pendant que le tuteur parle : les lignes apparaissent l'une après l'autre, un point bleu joue le rôle du stylo, puis le résultat s'entoure de rouge.
+
+## Appel vocal : ce que l'écran doit faire (2B, 2D, 2F)
+
+Validé par Romain le 7 octobre 2026 : piste A « L'appel » pour 2B, variante 1 « La carte » pour 2D et 2F (les pistes explorées restent en haut du canevas). Composants : `CallTopBar`, `VoiceAvatar`, `VoiceStatus`, `LiveCaptions`, `CallDock`, et pour les visuels `VisualPanel`, `MathGraph`, `Whiteboard` (design system et `components/`).
+
+### Disposition
+
+- **Plein écran** sur le dégradé de marque (`--call-gradient`), tout en blanc, **sans barre de navigation** : on quitte l'appel par « Écrit » ou « Raccrocher ».
+- En haut, à 56 px : « Écrit » à gauche, chrono à droite (`CallTopBar`). En bas, à 32 px : les commandes en verre (`CallDock`).
+- **Sans visuel (2B)** : le sujet au centre (surtitre = matière avec sa tuile, titre = chapitre ; en discussion libre, « Toutes les matières » avec la tuile bleue de l'élève), le logo de 148 px au milieu, la pastille d'état dessous, puis les sous-titres en 20/30 (quatre lignes au plus, « Tutor'IA » ou « Toi » au-dessus).
+- **Avec un visuel (2D, 2F)** : la carte du visuel prend le haut (de 112 à 448 px) et remplace le sujet (elle a son propre surtitre, « Graphique · Maths ») ; le logo passe à 96 px, puis la pastille et les sous-titres en 16/22 sur deux lignes.
+- Quand le tuteur envoie un visuel pendant l'appel, on passe de 2B à 2D ou 2F : la carte descend du haut (300 ms) pendant que le logo rétrécit et glisse à sa place. Le dernier visuel reste jusqu'au suivant, qui le remplace, ou jusqu'à la fin de l'appel. « Agrandir » l'ouvre en plein écran ; l'appel continue derrière.
+
+### États
+
+Ils suivent `voiceStatus` (`src/features/tutor/logic/voice.ts`). « Neutre » = blanc translucide (`--call-glass`).
+
+| État | Pastille (`VoiceStatus`) | Logo (`VoiceAvatar`) | Sous-titres (`LiveCaptions`) |
+| --- | --- | --- | --- |
+| `connecting` | « Connexion… », neutre | immobile, il respire | vides |
+| `aiSpeaking` | « Je t'explique… », verte | il rebondit au niveau de la voix | la phrase du tuteur, mot à mot |
+| `waiting` | « Je t'écoute… », rouge | il penche la tête | la dernière phrase du tuteur, toute allumée |
+| `userSpeaking` | « Je t'écoute… », rouge | il penche la tête | la transcription de l'élève, sous « Toi » |
+| `muted` | « Ton micro est coupé », neutre | immobile | « Réactive ton micro pour répondre. » quand c'est à l'élève |
+| `ended` | « Appel terminé », neutre | immobile | puis retour au chat écrit |
+| `error` | « Connexion perdue », neutre | immobile | le message d'erreur |
+
+Le rouge de « Je t'écoute… » signale l'écoute, comme un voyant d'enregistrement, jamais une erreur. S'il paraît trop proche du bouton raccrocher à l'usage, il passe en orange (réglage `couleurEcoute` des maquettes, `--voice-listening-orange-gradient`).
+
+### Le logo du tuteur
+
+- **Il rebondit quand le tuteur parle.** La hauteur suit le niveau sonore de sa voix (sortie audio de la session, de 0 à 1, lissée sur environ 160 ms). Sans mesure disponible, la formule des maquettes donne un rebond crédible.
+- Un saut toutes les 0,42 s, de niveau × 18 px (14 px pour le logo de 96 px), avec un léger écrasement au sol (6 %) et une ombre au sol qui rétrécit quand il est en l'air. À chaque virgule ou point de la phrase, le niveau est multiplié par 0,25 : le logo se pose. Entre deux phrases, il s'arrête.
+- **Il penche la tête quand l'élève a la parole** (rotation de −8° en 0,5 s), et respire à peine au repos (échelle 1 → 1,025 en 3,2 s).
+- **Toucher le logo pendant que le tuteur parle l'interrompt** (`interrupt()`), comme si l'élève lui coupait la parole. Un appui long (600 ms) signale la réponse (`report()`), comme l'ancienne zone des barres.
+- Si l'utilisateur a demandé moins d'animations, tout s'arrête : la pastille suffit à dire qui parle.
+
+### Les sous-titres
+
+- Activés par défaut. Le bouton « Sous-titres » les masque ou les affiche ; retenir le choix de l'élève pour les appels suivants.
+- Source : la transcription de la session (texte du tuteur, transcription de la voix de l'élève). Si le texte du tuteur arrive avant sa voix, les mots pas encore prononcés sont affichés à 45 % de blanc et s'allument au rythme de l'audio ; sinon, les mots apparaissent au fil de l'eau.
+- Nombres et formules en gras, jamais coupés en fin de ligne (espaces insécables). Une couleur nommée par le tuteur (rouge, bleu, vert, orange, violet, gris : les couleurs de `visualArt.tones`) s'affiche dans une pastille de sa couleur dès qu'elle est prononcée.
+- En 2D et 2F, deux lignes au plus : la fin de la phrase reste toujours visible.
+
+### La voix et le visuel avancent ensemble (2D, 2F)
+
+- **Graphique** : quand le tuteur nomme la couleur d'une courbe, celle-ci passe au premier plan (halo de sa couleur, trait plus épais de 2 px, pastille de légende allumée) jusqu'à ce qu'il en nomme une autre ou finisse sa phrase. Le point clé pulse pendant que le tuteur parle ; quand il parle du point (« ce point », « elles se croisent »), la pastille « Solution » s'allume.
+- **Tableau blanc** : il s'écrit pendant que le tuteur parle. Chaque ligne apparaît en fondu (450 ms) quand la transcription atteint l'étape correspondante ; sans repère dans le texte, les étapes sont réparties sur la durée de la phrase. Un point bleu, le stylo, pulse au bout de la ligne en cours d'écriture, puis le résultat s'entoure de rouge.
+- Couleurs du visuel (`visualArt.kinds`) : violet pour le graphique, azur pour le tableau ; carte teintée, dessin sur une feuille blanche, tableau sans grille de points.
+
+### Les commandes (`CallDock`)
+
+- **Micro** : couper ou réactiver (`toggleMute`) ; le bouton devient blanc quand le micro est coupé.
+- **Sous-titres** : les afficher ou les masquer ; le bouton est blanc quand ils sont affichés.
+- **Caméra** : montrer un exercice (`sendPhoto`). Le micro est mis en pause pendant la photo et le bouton reste blanc pendant la prise de vue. Il disparaît si les parents ont désactivé la caméra (`cameraEnabled`) : il reste alors trois boutons.
+- **Raccrocher** : rond rouge de 64 px avec le combiné ; il termine l'appel et revient au chat écrit.
+- **Écrit** (en haut) : termine l'appel de la même façon, la conversation continue à l'écrit avec la transcription.
+
+### Les messages
+
+Les messages de `useVoiceCall` (`notice`) prennent la place des sous-titres, en blanc 15 px : 4 s pour un message ponctuel (photo envoyée, caméra refusée…), pendant tout l'appel pour un message durable (appel d'entraînement, micro refusé, limite des 10 minutes atteinte).
+
+### Accessibilité
+
+- La pastille est annoncée aux lecteurs d'écran (`aria-live="polite"`) ; les sous-titres sont l'équivalent texte de la voix.
+- Le logo est un bouton (« Interrompre Tutor'IA » quand le tuteur parle, « Tutor'IA t'écoute » sinon). Commandes de 56 px (raccrocher 64 px), avec un libellé sous chaque bouton.
+- Texte blanc sur le dégradé : contraste supérieur à 4,5:1. Les mots à 45 % ne portent pas d'information indispensable : ils s'allument quand ils sont dits.
+
+### À changer dans le code
+
+- `VoiceTutorScreen` : passer en plein écran (barre d'onglets masquée pendant l'appel, plus de `clearance`) et remplacer `TopicCard`, `TutorModeToggle`, `VoiceVisualizer` et `CallControls` par l'en-tête d'appel, le logo, la pastille, les sous-titres et les commandes décrits ici.
+- `useVoiceCall` : exposer le niveau de la voix du tuteur, la transcription (tuteur et élève) et l'état des sous-titres, en gardant les états actuels.
+- Si la session vocale ne transmet pas encore les visuels du tuteur, c'est à brancher pour 2D et 2F (même format qu'à l'écrit, `TutorVisual`).
 
 ## Espace Parents (P1 à P4)
 
@@ -199,35 +305,36 @@ Principes :
 - pas de gamification (ni série, ni XP) ;
 - mais **les mêmes couleurs, cartes en dégradé et espacements que l'app élève**, pour garder la même envie de lire.
 
-Sections séparées de 24 px, cartes en `radius-3xl`, titres de section en 18 à 22 px Black.
+Sections séparées de 24 px, cartes en `radius-3xl`. Chaque écran s'ouvre sur un **bandeau de marque violet** (titre 30 px Black et phrase d'introduction 15 px, en blanc) et chaque titre de section est dans sa carte, en 22 px Black. Le violet évite le bleu sur bleu (la première carte de chaque écran Parents est bleue) et prolonge la règle « parents = violet » des écrans de connexion.
 
 Navigation à 4 onglets, dans le même style que l'élève : **Accueil · Progrès · Sessions · Réglages**.
 
 ### P1 · Tableau de bord — `P1-Parents-Accueil.dc.html`
-- Sélecteur d'enfant (« Léa · 4e ») pour les familles avec plusieurs enfants, badge « Espace Parents » et notifications.
-- **Résumé de la semaine** rédigé par l'IA : carte en dégradé bleu vers violet, logo, badge vert.
+- Dans le bandeau : sélecteur d'enfant (« Léa · 4e », pastille blanche) pour les familles avec plusieurs enfants, badge « Espace Parents » et notifications en blanc translucide, puis « Bonjour Claire » et la semaine affichée.
+- **Résumé de la semaine** rédigé par l'IA : carte en dégradé bleu vers violet, logo, badge vert. Elle déborde de 56 px sur le bandeau.
 - 3 chiffres clés en cartes colorées : temps d'étude (cyan), jours actifs (vert), notions acquises (violet).
 - **À surveiller** : orange uni, texte blanc, bouton « Voir le détail ». N'apparaît que s'il y a un point à signaler.
 - **Comment l'encourager** : carte violette claire avec un conseil concret.
 - Temps d'étude par jour avec la ligne d'objectif, et une remarque sur les horaires de travail.
+- Titres des cartes (Résumé de la semaine, À surveiller, Comment l'encourager, Temps d'étude par jour) en 22 px Black.
 
 ### P2 · Progrès par matière — `P2-Parents-Progres.dc.html`
-- Période (ce mois-ci / ce trimestre). Maîtrise globale dans un anneau blanc sur une carte en dégradé.
-- Une carte par matière : tuile en dégradé, pourcentage, évolution, barre segmentée par chapitre. Toucher la carte **déplie les chapitres** avec leur statut.
+- Période (ce mois-ci / ce trimestre) dans le bandeau, même style que les Stats. Maîtrise globale dans un anneau blanc sur une carte en dégradé.
+- Carte « Par matière » (titre 22 px Black) avec un bloc par matière sur fond `bg` (`radius-2xl`) : tuile en dégradé, pourcentage, évolution, barre segmentée par chapitre. Toucher le bloc **déplie les chapitres** avec leur statut, en lignes blanches.
 - Statuts : **Acquis** (vert), **En cours** (bleu), **À consolider** (orange), **Pas commencé** (gris). Ce vocabulaire est plus lisible pour un parent que des pourcentages bruts.
 
 ### P3 · Sessions — `P3-Parents-Sessions.dc.html`
-- Bandeau « Cette semaine » : nombre de sessions, temps et répartition par mode.
+- Carte « Cette semaine » (dégradé, déborde sur le bandeau violet) : nombre de sessions, temps et répartition par mode.
 - **Confidentialité** : le parent voit un **résumé** de chaque session rédigé par l'IA, jamais la conversation complète, pour préserver la confiance de l'enfant. C'est une règle produit, pas seulement de l'affichage.
-- Filtres par matière. Cartes regroupées par jour : en-tête dans la couleur de la matière, résumé, résultat (Compris, En progrès ou À revoir) et mode utilisé.
+- Filtres par matière. Une carte blanche par jour (titre du jour en 22 px Black) qui regroupe les sessions de ce jour, sur fond `bg` : en-tête dans la couleur de la matière, résumé, résultat (Compris, En progrès ou À revoir) et mode utilisé.
 
 ### P4 · Réglages — `P4-Parents-Reglages.dc.html`
-- Profil de l'enfant. **Objectif hebdomadaire**, réglable avec − et +, à fixer avec l'enfant.
-- Interrupteurs répartis en trois groupes :
+- Profil de l'enfant (nom en 22 px Black). **Objectif hebdomadaire** (titre 22 px Black), réglable avec − et +, à fixer avec l'enfant.
+- Interrupteurs répartis en trois cartes, le titre du groupe (22 px Black) dans la carte :
   - temps d'écran (limite par jour, pause après 21 h) ;
   - fonctionnalités (vocal, caméra, graphiques et tableau blanc) ;
   - notifications (bilan du dimanche, alertes).
-- Compte : abonnement, données personnelles (RGPD), ajout d'un enfant, **suppression du compte** (obligatoire pour les stores).
+- Carte « Compte » (même style) : abonnement, données personnelles (RGPD), ajout d'un enfant. Sous la carte, **suppression du compte** (obligatoire pour les stores).
 
 ## Connexion et inscription (L1 à L6)
 
@@ -322,16 +429,32 @@ Flottante : `left/right/bottom: 20px`, hauteur 72 px, `radius-3xl`, `shadow-lg`,
 5 onglets : **Accueil · Explorer · Tutor'IA · Révisions · Stats** (Explorer avec une icône boussole), avec des icônes au contour (`gray-400`) et un libellé de 12 px en `text-secondary`.
 L'onglet actif a une pastille ronde `primary` de 52 px qui dépasse de la barre (bord blanc de 4 px), avec une icône blanche et un libellé en `primary` Bold.
 L'onglet **Tutor'IA** utilise le **logo** au lieu d'une icône : le logo sur fond blanc (30 px) au repos, et le logo sur fond bleu (42 px) dans une pastille de 60 px quand il est actif.
+La barre est masquée pendant l'appel vocal (2B, 2D, 2F), depuis la v2.6.
 
 ## Règles clés
 
-- **Police** : Satoshi uniquement. Titres de page et de section en Black 900. Titres de carte en Bold 700 ou Medium 500. Texte courant en Regular 400, jamais sous 16 px dans le chat.
+- **Police** : Satoshi uniquement. Titres de page et de section en Black 900 (30 px dans un bandeau de marque, 22 px pour une section). Titres de carte en Bold 700 ou Medium 500. Texte courant en Regular 400, jamais sous 16 px dans le chat.
 - **Espacements** : multiples de 4. Intérieur des cartes 16 px (grandes cartes 24 px). 12 px entre cartes, 32 px entre sections.
 - **Zones tactiles** : 48 px minimum.
 - **Rayons** : 16 px pour les cartes, champs, boutons et bulles. 24 px pour les grandes surfaces et les cartes colorées. Ronds pour les pastilles et les boutons d'appel.
 - **Ombres** : `sm` pour ce qui est posé, `md` pour les cartes, `lg` pour ce qui flotte. `shadow-brand` sur un seul élément par écran.
 - **Voix** : tutoiement, phrases courtes, une erreur n'est jamais un échec.
 - **Accessibilité** : de vrais `button` et liens, `aria-label` sur les boutons à icône seule, un focus visible (`shadow-focus`).
+
+### Bandeau de marque et cartes de section (v2.5)
+
+Appliqués à l'Accueil, aux Flashcards · Choix, aux Stats et aux écrans Parents (P1 à P4). Les écrans Tuteur, Flashcards · Session, Explorer, connexion et onboarding gardent leur propre en-tête.
+
+- **Bandeau de marque** (`app-tokens.json` › `screenBand`) : bloc pleine largeur en haut de l'écran, dégradé à 170°, coins bas arrondis à 32 px, marge intérieure 56 px en haut, 20 px sur les côtés et 80 à 96 px en bas. Deux pilules blanches décoratives à droite (opacité 0,08 et 0,06).
+  - **Bleu** (`--band-eleve-gradient` : #2E6BE6 → #1750C4 à 55 % → #0A3B9D) pour l'Accueil et les Flashcards.
+  - **Violet de marque** (`--band-violet-gradient` : #662EE6 → #521DC8 à 55 % → #3B0DA2) pour les Stats et l'espace Parents, dont la première carte est bleue : on évite le bleu sur bleu. L'élève ne voit jamais l'espace Parents, donc le violet de Stats ne crée pas de confusion.
+  - Tout le contenu est blanc : titre 30/38 px Black, phrase d'introduction ou citation 15/22 px (largeur max 300 px).
+  - Boutons et badges posés dessus : fond blanc translucide (`--on-band-veil`, 16 %), icône ou texte blanc. L'avatar et le sélecteur d'enfant restent des pastilles blanches.
+  - Sélecteur de période dans le bandeau : piste `--on-band-veil`, pastille active blanche avec le texte de la couleur du bandeau (`violet-600` sur le violet), les autres segments en blanc.
+  - Le contenu (`main`) remonte de 56 px (`--band-overlap` ; 64 px sur l'Accueil) : la première carte déborde sur le bas du bandeau.
+- **Carte de section** : chaque titre de section vit dans sa carte. Carte `surface`, `radius-3xl`, `shadow-md`, marge intérieure 16 px. Titre 22/30 px Black ; une précision éventuelle en 12 px `text-secondary` se place à droite et passe à la ligne si la place manque. Dans la carte, les éléments passent sur le fond `bg` (#F5F8FF) sans ombre, ou gardent leur dégradé pour les cartes de matière (`radius-2xl`, `shadow-sm`).
+- **Vert = objectif** : la carte « Objectif du jour » de l'Accueil est en `--goal-gradient` (#0C9E42 → #03702B à 160°), texte blanc. L'objectif hebdomadaire des Parents (P4) garde le dégradé vert à trois couleurs de l'Histoire-Géo (#1BC85B → #0C9E42 → #03702B) : la carte de l'Accueil part d'un vert plus foncé pour que le texte blanc reste lisible.
+- **Hauteur des écrans** : la fin du contenu s'arrête ~116 px au-dessus du bas pour ne pas passer sous la barre de navigation.
 
 ### Couleurs des matières
 
@@ -355,7 +478,7 @@ Ces choix ont été validés sur les maquettes. Ils sont à reporter dans le des
 3. **Plus de couleurs vives que la règle 80/20** : les cartes des matières, les KPI et les points forts/faibles sont colorés.
 4. **Black 900 sur les titres de page et de section** : le design system le réserve au style `display`, une fois par écran.
 5. **Texte blanc sur l'orange** (série, À retravailler) : le contraste est d'environ 2,3:1, sous le seuil WCAG. Il reste lisible sur les grands textes gras. À surveiller pour les petits textes (possibilité de foncer l'orange si besoin).
-6. **Barre de navigation visible pendant l'appel vocal.**
+6. ~~Barre de navigation visible pendant l'appel vocal~~ : remplacé par l'écart 20 (v2.6).
 7. **Espace Parents coloré** : le design system le voulait « plus sobre ». Il garde les couleurs et les cartes en dégradé de l'app élève, mais sans aucune gamification.
 8. **Explorer en 3D, sur fond de ciel (X1)** : validé par Romain. L'île est en 3D réaliste façon maquette, avec des couleurs naturelles hors de la palette de la marque, et tout l'écran X1 garde le ciel et ses nuages au lieu du fond `bg`. Sur ce ciel, le sous-titre « Choisis ton île » passe en `text` (le `text-secondary` serait illisible), et les points inactifs du carrousel sont blancs. Tant qu'une seule île est construite en 3D (les Maths), le carrousel ne montre qu'elle, sans flèches ni points. L'île tourne au doigt, avec un peu d'élan au lâcher ; on changera d'île avec les flèches.
 10. **X2a · les régions de l'île** : « Explorer l'île » zoome dans la même scène 3D (caméra plus haute, île entière). Les régions (domaines du référentiel de 4e) se choisissent avec un **carrousel de cartes en bois en bas de l'écran** (défilement au doigt ou flèches) : la région choisie est éclairée, teintée, avec ses frontières en pointillés, les autres sont grisées, et la caméra dérive vers elle. Rien n'est posé sur l'île. Le bouton « Entrer dans la région » déclenche un vrai zoom-in sur la région, un fondu au noir accompagne le zoom, puis la carte de la région apparaît (X2b). L'Algorithmique, région d'un seul chapitre, est un îlot flottant derrière l'île (en haut à gauche), hors de portée du carrousel. Sans WebGL ou avec un lecteur d'écran, le carrousel est remplacé par une liste de régions.
@@ -365,4 +488,11 @@ Ces choix ont été validés sur les maquettes. Ils sont à reporter dans le des
 13. **X3 à X5b · un niveau dans le HUD de jeu** (validé par Romain le 06/10) : la fiche d'un niveau et son bilan reprennent le panneau de bois d'Explorer au lieu de la feuille blanche des maquettes ; la discussion garde les bulles et la saisie de l'onglet Tutor'IA, dans un cadre clair cerné de bleu nuit, sur le ciel d'Explorer. Toucher un niveau ouvert y fait d'abord marcher l'avatar (2,5 s au plus), comme sur la carte d'un jeu, puis la fiche s'ouvre à son arrivée ; un niveau fermé ouvre sa fiche tout de suite. Les étoiles d'un niveau terminé s'affichent en arc au-dessus de son point, grandes et cernées de bleu nuit, celle du milieu plus haute. La fiche se pose en bas de la carte assombrie : ruban du type, titre en Lilita One, pastilles de durée, d'étapes et d'étoiles, objectifs sur parchemin, règle de l'évaluation sur fond rouge clair, raison du verrouillage, puis « À l'écrit » (vert) et, pour une leçon seulement, « À la voix » (bleu) : à l'oral, le tuteur ne peut pas juger les réponses, la leçon compte alors comme une séance, sans étoiles. L'en-tête de la discussion montre la progression en segments verts, et chaque étape réussie d'une leçon ajoute une carte verte « Étape n réussie ». Le bilan est calculé par le serveur ; « Le bilan de ton tuteur » devient « Ce que tu as travaillé » (les objectifs du niveau) ou la leçon à revoir, et l'XP affichée est celle réellement gagnée (rejouer ne rapporte que les étoiles nouvelles ; rien n'est affiché sans gain).
 14. **Formules mathématiques en New Computer Modern** (validé par Romain le 06/10) : dans les bulles du tuteur, les formules sont dessinées par MathJax avec sa police mathématique (fractions empilées, puissances, racines, x en italique), et non en Satoshi, comme dans un manuel. Une formule isolée est centrée sur sa ligne, un peu plus grande que le texte ; une formule trop longue défile sur le côté. Elles prennent la couleur du texte de la bulle.
 15. **Le tuteur visuel au-delà des maquettes 2C et 2E** (validé par Romain le 07/10) : en plus du graphique et du tableau blanc, le tuteur peut montrer un diagramme statistique (barres arrondies ou secteurs avec leur légende) et une figure de géométrie (points nommés, longueurs, angle droit codé par un petit carré, cercles), dans le même panneau. Les couleurs que le tuteur peut nommer sont six teintes de la palette (rouge, bleu, vert, orange, violet, gris). Chaque sorte de visuel a sa couleur d'accent, pour se distinguer de la carte du chapitre (rouge Maths) : violet pour le graphique, azur pour le tableau, orange pour les statistiques, cyan pour la figure. Le panneau est teinté de cette couleur, sa tuile est en dégradé, et le dessin reste sur une feuille blanche. Le tableau blanc est une surface blanche nette, sans grille de points, sans cadre et sans les pastilles d'étapes de la maquette (les étapes sont déjà écrites au tableau) ; une ligne n'est jamais coupée : un long calcul fait défiler le tableau sur le côté, un long tableau le fait défiler vers le bas (validé par Romain le 07/10). La pastille « Voir… » est unie, dans la couleur de son visuel. Tout le bandeau ouvre ou replie le panneau, même clavier ouvert. Les boutons du panneau font 48 px au lieu de 44 (zones tactiles). Les mots écrits dans une formule sont en Satoshi.
+16. **Bandeau de marque en tête des écrans principaux** (validé par Romain le 07/10) : le design system pose les titres d'écran directement sur le fond `bg`. Sur l'Accueil, les Flashcards · Choix, les Stats et l'espace Parents, le titre est en blanc dans un bandeau en dégradé : bleu côté élève, violet de marque pour les Stats et les Parents. Voir « Bandeau de marque et cartes de section ».
+17. **Titres de section dans leur carte, en 22 px Black** (validé par Romain le 07/10) : plus aucun titre de section n'est posé sur le fond. Le titre de la carte « Reprendre » passe aussi en Black (20 px), au lieu du Medium 500 prévu par le design system.
+18. **Objectif du jour en vert** (validé par Romain le 07/10) : la carte de l'Accueil passe en dégradé vert foncé (#0C9E42 → #03702B), texte blanc, pour mieux ressortir. Le vert y signale un objectif, comme l'objectif hebdomadaire des Parents. **Remplacé le 08/10 par un dégradé violet → bleu de la marque (#662EE6 → #2E6BE6)**, à la demande de Romain : le vert ressemblait trop à la carte Histoire-Géo, juste en dessous. Le dégradé glisse lentement d'un bout à l'autre de la carte (6 s, aller-retour), figé si l'élève a demandé moins d'animations. Les maquettes .dc.html montrent encore le vert ; le token `goal` fait foi.
 19. **Le chat libre en couleurs** (demandé par Romain le 07/10) : la carte « Sujet de la discussion » des tuteurs écrit et vocal prend le dégradé de sa matière (bleu de l'élève pour « Toutes les matières »), avec son icône en filigrane, le texte en blanc et la pastille « Leçon n/5 » blanche, au lieu de la carte blanche de la maquette 02a. Une discussion libre encore vide propose quatre idées de départ, en pastilles dégradées de la palette d'accent (violet, orange, vert, cyan) qui défilent sur le côté juste au-dessus de la saisie ; un toucher envoie la demande au tuteur. Le volet « Tes discussions » s'ouvre sur un bandeau bleu de l'élève, dans l'esprit du bandeau de marque (entrée 16).
+20. **Appel vocal plein écran, sans barre de navigation** (validé par Romain le 07/10, remplace l'écart 6) : 2B, 2D et 2F sont de vrais écrans d'appel, sur le dégradé de marque et tout en blanc. On en sort par « Écrit » ou « Raccrocher ». La caméra est à côté du bouton raccrocher.
+21. **Pastilles d'état colorées** (validé par Romain le 07/10) : verte « Je t'explique… » quand le tuteur parle, rouge « Je t'écoute… » quand c'est à l'élève. Le rouge signale ici l'écoute, pas une erreur ; l'orange est prévu si le rouge gêne à côté du bouton raccrocher.
+22. **Le logo du tuteur remplace les barres** (validé par Romain le 07/10, les ondes ont été jugées « cheap ») : il rebondit au niveau de la voix, se pose à chaque pause et penche la tête quand il écoute. Les quatre barres du design system ne servent plus que dans la discussion vocale d'Explorer.
+23. **Pilules décoratives du bandeau à la même place sur tous les écrans** (v2.5, dans l'app) : les maquettes déplacent les deux pilules blanches d'un écran à l'autre ; l'app les pose toujours en haut à droite (136 × 44 px à 20 px du haut, 88 × 32 px à 72 px), et le bas du bandeau garde 32 px visibles sous la carte qui déborde (80 à 96 px selon les maquettes). Le volet « Tes discussions » s'ouvre sur ce même bandeau, sans carte qui déborde. Le badge de « Évolution de ta maîtrise » suit le pourcentage, sous le titre de 22 px.

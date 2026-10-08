@@ -21,17 +21,21 @@ button{font-family:inherit}
 a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
 </style>
 </helmet>
-<div style="position: relative; width: 390px; height: 2480px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
-<main style="display: flex; flex-direction: column; gap: 16px; padding: 56px 20px 0; box-sizing: border-box">
+<div style="position: relative; width: 390px; height: 2560px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<section aria-label="Tes stats" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 56px 20px 80px; border-radius: 0 0 32px 32px; background: linear-gradient(170deg, #662EE6 0%, #521DC8 55%, #3B0DA2 100%); color: #FFFFFF">
+<span aria-hidden="true" style="position: absolute; top: 20px; right: -48px; width: 136px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.08)"></span>
+<span aria-hidden="true" style="position: absolute; top: 72px; right: 56px; width: 88px; height: 32px; border-radius: 16px; background: rgba(255,255,255,0.06)"></span>
+<header style="position: relative; display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 30px; line-height: 38px; font-weight: 900; color: #FFFFFF">Tes stats</h1></header>
 
-<header style="display: flex; flex-direction: column; gap: 4px">
-<h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 900">Tes stats</h1></header>
-
-<div role="group" aria-label="Période" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-sm)">
+<div role="group" aria-label="Période" style="position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; background: rgba(255,255,255,0.16); border-radius: var(--radius-3xl)">
 <sc-for list="{{ periods }}" as="o" hint-placeholder-count="3">
-<button type="button" onClick="{{ o.pick }}" aria-pressed="{{ o.selected }}" style="height: 40px; border: none; border-radius: 20px; background: {{ o.bg }}; color: {{ o.color }}; font-size: 14px; font-weight: 500; cursor: pointer">{{ o.name }}</button>
+<button type="button" onClick="{{ o.pick }}" aria-pressed="{{ o.selected }}" style="height: 40px; border: none; border-radius: 20px; background: {{ o.bg }}; color: {{ o.color }}; font-size: 14px; font-weight: 700; cursor: pointer">{{ o.name }}</button>
 </sc-for>
 </div>
+</section>
+
+<main style="position: relative; display: flex; flex-direction: column; gap: 16px; margin-top: -56px; padding: 0 20px; box-sizing: border-box">
 
 <section aria-label="Chiffres clés" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
 <div style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 55%, #0A3B9D 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
@@ -73,8 +77,8 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </section>
 
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-md)">
-<div style="display: flex; align-items: baseline; justify-content: space-between">
-<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 900">{{ p.chartTitle }}</h2>
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 12px; row-gap: 2px">
+<h2 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 900">{{ p.chartTitle }}</h2>
 <span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ p.avg }}</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px">
@@ -101,7 +105,7 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-md)">
 <div style="display: flex; flex-direction: column; gap: 4px">
-<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 900">Progression par matière</h2>
+<h2 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 900">Progression par matière</h2>
 <span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Maîtrise moyenne des chapitres travaillés</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 12px">
@@ -115,12 +119,12 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </section>
 
 <section style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 20px 16px 16px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 50%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
-<div style="display: flex; align-items: flex-start; justify-content: space-between">
 <div style="display: flex; flex-direction: column; gap: 4px">
-<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 900">Évolution de ta maîtrise</h2>
+<h2 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 900">Évolution de ta maîtrise</h2>
+<div style="display: flex; align-items: center; gap: 12px">
 <span style="font-size: 36px; line-height: 44px; font-weight: 900; letter-spacing: -0.01em">68 %</span>
+<span style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; background: #2EE671; color: #003D16; font-size: 12px; line-height: 16px; font-weight: 700; white-space: nowrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"></path></svg>+26 pts en 8 sem.</span>
 </div>
-<span style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; background: #2EE671; color: #003D16; font-size: 12px; line-height: 16px; font-weight: 700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"></path></svg>+26 pts en 8 sem.</span>
 </div>
 <svg width="318" height="160" viewBox="0 0 318 160" role="img" aria-label="Maîtrise globale passée de 42 % à 68 % entre le 3 août et le 21 septembre" style="display: block; font-family: Satoshi, system-ui, sans-serif">
 <defs><linearGradient id="aire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.35"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></linearGradient></defs>
@@ -148,8 +152,8 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </section>
 
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-md)">
-<div style="display: flex; align-items: baseline; justify-content: space-between">
-<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 900">Ton activité</h2>
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 12px; row-gap: 2px">
+<h2 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 900">Ton activité</h2>
 <span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">{{ activeDays }} jours actifs sur 91</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px">
@@ -185,7 +189,7 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </section>
 
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: linear-gradient(160deg, #1BC85B 0%, #0C9E42 45%, #03702B 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
-<h2 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 900; color: #FFFFFF"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z"></path></svg>Tes points forts</h2>
+<h2 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 22px; line-height: 30px; font-weight: 900; color: #FFFFFF"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z"></path></svg>Tes points forts</h2>
 <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
 <li style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px 8px 8px; background: #FFFFFF; border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm)">
 <span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-2xl); background: #EBFFF2; color: var(--success); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"></path></svg></span>
@@ -207,7 +211,7 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 16px; background: #E6992E; border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
 <div style="display: flex; flex-direction: column; gap: 4px">
-<h2 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 900; color: #FFFFFF"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>À retravailler</h2>
+<h2 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 22px; line-height: 30px; font-weight: 900; color: #FFFFFF"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>À retravailler</h2>
 <span style="font-size: 14px; line-height: 20px; font-weight: 500; color: #FFFFFF">Quelques cartes et c'est réglé.</span>
 </div>
 <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
@@ -236,7 +240,7 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"periode":{"editor":"enum","options":["semaine","mois","trimestre"],"default":"semaine"},"$preview":{"width":390,"height":2480}}'>
+<script type="text/x-dc" data-dc-script data-props='{"periode":{"editor":"enum","options":["semaine","mois","trimestre"],"default":"semaine"},"$preview":{"width":390,"height":2560}}'>
 class Component extends DCLogic {
 constructor(props) {
 super(props);
@@ -256,8 +260,8 @@ const p = Object.assign({}, P[key]);
 p.bars = p.raw.map((r) => ({ l: r[0], h: Math.round(r[1] / p.max * 139), tip: r[2] }));
 const periods = ['semaine', 'mois', 'trimestre'].map((k) => ({
 name: P[k].name, selected: k === key,
-bg: k === key ? '#2E6BE6' : 'transparent',
-color: k === key ? '#FFFFFF' : '#5D677D',
+bg: k === key ? '#FFFFFF' : 'transparent',
+color: k === key ? '#521DC8' : '#FFFFFF',
 pick: () => this.setState({ period: k })
 }));
 const colors = ['#EBF1FF', '#B2C9F6', '#7DA3F0', '#2E6BE6', '#0A3B9D'];

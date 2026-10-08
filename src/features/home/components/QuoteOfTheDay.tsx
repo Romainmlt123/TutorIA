@@ -4,14 +4,14 @@ import { Text } from '@/components/Text';
 import type { Quote } from '@/data/types';
 import { theme } from '@/theme';
 
-/** Citation du jour sous la salutation : italique 14 px, auteur en 12 px. */
+/** Citation du jour sous la salutation, dans le bandeau : italique 15/22 en blanc, auteur en 12 Bold. */
 export function QuoteOfTheDay({ quote }: { quote: Quote }) {
   return (
     <View style={styles.figure}>
-      <Text variant="bodySm" italic color="textSecondary">
+      <Text variant="lead" italic color="textOnColor">
         « {quote.text} »
       </Text>
-      <Text variant="caption" color="textSecondary">
+      <Text variant="caption" weight="bold" color="textOnColor">
         — {quote.author}
       </Text>
     </View>
@@ -19,5 +19,5 @@ export function QuoteOfTheDay({ quote }: { quote: Quote }) {
 }
 
 const styles = StyleSheet.create({
-  figure: { gap: theme.space[1], marginTop: -theme.space[2], marginBottom: theme.space[2] },
+  figure: { gap: theme.space[1], maxWidth: 300 },
 });

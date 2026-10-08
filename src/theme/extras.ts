@@ -41,7 +41,7 @@ export function selectionRing(ink: string): string {
 }
 
 /** Opacités des icônes en filigrane sur les cartes colorées. */
-export const watermarkOpacity = { subject: 0.16, streak: 0.22, level: 0.12 } as const;
+export const watermarkOpacity = { subject: 0.16, streak: 0.22, level: 0.12, goal: 0.14 } as const;
 
 /** Opacités du blanc sur la carte « Évolution de ta maîtrise » (04-Stats). */
 export const chartOnColorOpacity = {
@@ -79,3 +79,6 @@ export const chatStarterGradients = {
   review: [palette.green[600], palette.green[800]],
   graph: [palette.cyan[600], palette.cyan[800]],
 } as const;
+
+/** Pilules décoratives du bandeau de marque (v2.5) : blanc à 8 % et à 6 %. */
+export const bandPills = ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.06)'] as const;

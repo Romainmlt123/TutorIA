@@ -33,8 +33,13 @@ export function ChapterRow({
       accessibilityRole="radio"
       accessibilityLabel={`${title}, ${detail}`}
       aria-checked={selected}
-      shadow={theme.shadow.md}
-      style={[styles.row, { borderColor: selected ? subject.ink : theme.colors.surface }]}>
+      // Dans la carte de section (v2.5) : lignes sur le fond `bg`, la ligne choisie en blanc.
+      style={[
+        styles.row,
+        selected
+          ? { backgroundColor: theme.colors.surface, borderColor: subject.ink }
+          : { backgroundColor: theme.colors.bg, borderColor: theme.colors.bg },
+      ]}>
       <View style={[styles.number, { backgroundColor: subject.soft }]}>
         <Text variant="label" weight="bold" color={subject.ink}>
           {String(number).padStart(2, '0')}
@@ -70,7 +75,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.space[4],
     borderRadius: theme.radius['2xl'],
     borderWidth: 2,
-    backgroundColor: theme.colors.surface,
   },
   number: {
     width: 40,

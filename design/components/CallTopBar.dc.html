@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Composant · Barre du haut de l’appel</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,0.7)}
+@keyframes livedot{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</helmet>
+<div style="display: inline-block; vertical-align: top; padding: {{ pad }}px; background: {{ fond }}; border-radius: 24px">
+<div style="width: 350px; height: 44px; display: flex; align-items: center; justify-content: space-between; font-family: Satoshi, system-ui, -apple-system, sans-serif; color: #FFFFFF">
+<a href="{{ ecritHref }}" aria-label="Passer à l'écrit" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px 0 12px; border-radius: 999px; background: rgba(255,255,255,0.16); color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"></path></svg>
+Écrit
+</a>
+<span aria-label="Durée de l'appel {{ timer }}" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 999px; background: rgba(255,255,255,0.16); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums">
+<span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 999px; background: #FFFFFF; animation: livedot 1.6s ease-in-out infinite"></span>{{ timer }}</span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"fond":{"editor":"color","options":["#1750C4","transparent"],"default":"#1750C4"},"timer":{"editor":"text","default":"02:17"},"ecritHref":{"editor":"text","default":"02a-Tuteur-Ecrit.dc.html"},"$preview":{"width":382,"height":76}}'>
+class Component extends DCLogic {
+renderVals() {
+const fond = this.props.fond ?? '#1750C4';
+return {
+fond, pad: fond === 'transparent' ? 0 : 16, timer: this.props.timer ?? '02:17', ecritHref: this.props.ecritHref ?? '02a-Tuteur-Ecrit.dc.html' };
+}
+}
+</script>
+</body>
+</html>
