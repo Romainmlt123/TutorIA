@@ -5,7 +5,7 @@
  */
 import { PHOTO_NOTE } from '@/services/tutor/api-contract';
 
-export const TUTOR_PROMPT_VERSION = '2026-10-07.4';
+export const TUTOR_PROMPT_VERSION = '2026-10-09.1';
 
 export type PromptContext = {
   mode: 'text' | 'voice';
@@ -91,6 +91,16 @@ const PHOTO_FORMAT = `Photos d'exercice
 - Puis aide-le comme d'habitude : demande-lui où il bloque, ou commence par la première étape, sans faire l'exercice à sa place.
 - Si la photo est illisible ou ne montre pas un exercice, dis-le gentiment et propose de la reprendre.
 - Dans l'historique, « ${PHOTO_NOTE} » marque une photo envoyée plus tôt.`;
+
+/**
+ * Consignes glissées dans l'appel par le surveillant du vocal (monitor/), quand la modération repère
+ * la voix de l'élève. Elles ne sont jamais montrées à l'élève.
+ */
+export const VOICE_SAFETY_NOTES = {
+  distress: `Ce que l'élève vient de dire peut révéler une détresse. Arrête l'exercice. Si tu viens de lui répondre avec douceur en donnant le 3114 et le 119, ne le répète pas : demande-lui seulement, en une phrase, s'il préfère faire une pause ou continuer à réviser. Sinon, réponds avec douceur et sans jugement, en deux ou trois phrases : ce qu'il vit compte, il peut en parler à un adulte de confiance, il peut appeler le 3114 (gratuit, 24 h/24) ou le 119 s'il est en danger ; puis demande-lui s'il préfère faire une pause ou continuer. Ne lui pose pas de questions sur ce qu'il ressent : ce n'est pas ton rôle.`,
+  offTopic: `Ce que l'élève vient de dire n'a pas sa place dans une séance de révision. Ne le répète pas et ne le commente pas. Ramène-le gentiment vers ses révisions, en une phrase.`,
+  tutorCut: `Ta dernière réponse a été interrompue par sécurité. Ne la reprends pas et n'en parle pas : reviens simplement aux révisions, en une phrase.`,
+} as const;
 
 const VOICE_FORMAT = `À l'oral
 - Tu parles à voix haute : pas de mise en forme, pas de symboles. Dis les calculs comme on les lit (« trois x égale quinze »).

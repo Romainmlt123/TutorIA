@@ -1,4 +1,4 @@
-import { studyBlock } from '@/services/student/studyRules';
+import { secondsUntilBlock, studyBlock } from '@/services/student/studyRules';
 
 import { requireUser, type AuthenticatedUser } from '../auth';
 import {
@@ -45,6 +45,8 @@ export type TutorAccess =
       visualsEnabled: boolean;
       /** Photos d'exercice autorisées par le parent (réglage caméra, P4). */
       cameraEnabled: boolean;
+      /** Temps avant la prochaine pause fixée par le parent, en secondes (`null` sans limite). */
+      secondsUntilPause: number | null;
     }
   | { ok: false; response: Response };
 
@@ -65,6 +67,7 @@ export async function requireTutorAccess(
 
   let visualsEnabled = false;
   let cameraEnabled = false;
+  let secondsUntilPause: number | null = null;
   if (feature !== 'report') {
     const { data, error } = await admin.rpc('tutor_context', { p_student_id: auth.user.id });
     const context = data?.[0];
@@ -81,17 +84,15 @@ export async function requireTutorAccess(
     ) {
       return { ok: false, response: errorResponse('not_allowed') };
     }
-    const block = studyBlock(
-      {
-        eveningPause: context.evening_pause,
-        dailyLimitEnabled: context.daily_limit_enabled,
-        dailyLimitMinutes: context.daily_limit_minutes,
-        allowedFrom: context.allowed_from.slice(0, 5),
-        allowedUntil: context.allowed_until.slice(0, 5),
-      },
-      context.today_seconds,
-      now,
-    );
+    const rules = {
+      eveningPause: context.evening_pause,
+      dailyLimitEnabled: context.daily_limit_enabled,
+      dailyLimitMinutes: context.daily_limit_minutes,
+      allowedFrom: context.allowed_from.slice(0, 5),
+      allowedUntil: context.allowed_until.slice(0, 5),
+    };
+    const block = studyBlock(rules, context.today_seconds, now);
+    secondsUntilPause = secondsUntilBlock(rules, context.today_seconds, now);
     if (block) return { ok: false, response: errorResponse('paused') };
     visualsEnabled = context.visuals_enabled;
     cameraEnabled = context.camera_enabled;
@@ -113,7 +114,7 @@ export async function requireTutorAccess(
           : 'rate_limited';
     return { ok: false, response: errorResponse(code) };
   }
-  return { ok: true, user: auth.user, visualsEnabled, cameraEnabled };
+  return { ok: true, user: auth.user, visualsEnabled, cameraEnabled, secondsUntilPause };
 }
 
 /** Limite partagée des photos d'exercice, pour une photo jointe à un message écrit (C4). */

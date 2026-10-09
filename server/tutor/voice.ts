@@ -1,18 +1,36 @@
+import {
+  PHOTO_CAPTION,
+  TUTOR_LIMITS,
+  type VoiceStartResponse,
+} from '@/services/tutor/api-contract';
+
 import { requireUser } from '../auth';
-import { parseTopic } from '../guards/limits';
-import { errorResponse, jsonResponse } from '../http';
+import { limiters } from '../guards/rateLimit';
+import { errorResponse, identify, jsonResponse, sha256 } from '../http';
 import { serverLog } from '../log';
 import { getAdminClient, type AdminClient } from '../supabase';
 import { requireTutorAccess } from './access';
 import { levelOfTopic } from './level';
-import { handleRealtimeSession, type RealtimeDeps } from './realtime';
+import { VOICE_SAFETY_NOTES } from './prompt';
+import {
+  hangUpRealtimeCall,
+  openRealtimeCall,
+  readVoiceStart,
+  type RealtimeCall,
+  type RealtimeDeps,
+} from './realtime';
+import { attachVoiceMonitor, type MonitorDeps } from './voiceMonitor';
 
 /** Plafond d'un appel vocal (TUTOR_LIMITS.voiceCallMaxMs), en secondes. */
 const VOICE_MAX_SECONDS = 600;
 /** Au-delà, un appel sans fin déclarée (app fermée brutalement) est compté au plafond. */
 const STALE_AFTER_MS = VOICE_MAX_SECONDS * 1000;
 
-export type VoiceDeps = { admin: () => AdminClient; realtime?: RealtimeDeps };
+export type VoiceDeps = {
+  admin: () => AdminClient;
+  realtime?: RealtimeDeps;
+  monitor?: MonitorDeps;
+};
 
 const defaultDeps: VoiceDeps = { admin: getAdminClient };
 
@@ -38,12 +56,12 @@ async function closeStaleCalls(admin: AdminClient, studentId: string, now: Date)
 }
 
 /**
- * POST /api/tutor/realtime-session, enveloppe de `handleRealtimeSession` :
- * élève autorisé (consentement, vocal activé par le parent, pause du soir, limite du jour),
- * puis début de la séance vocale enregistré quand le jeton est délivré. Une leçon d'Explorer à
- * la voix compte comme une séance, sans étoiles ni validation du niveau.
+ * POST /api/tutor/voice/start : élève autorisé (consentement, vocal activé par le parent, pause du
+ * soir, limite du jour), puis l'appel est créé chez OpenAI par le serveur et le début de la séance
+ * vocale enregistré. Une leçon d'Explorer à la voix compte comme une séance, sans étoiles ni
+ * validation du niveau.
  */
-export async function handleVoiceSessionStart(
+export async function handleVoiceStart(
   request: Request,
   deps: VoiceDeps = defaultDeps,
 ): Promise<Response> {
@@ -57,23 +75,48 @@ export async function handleVoiceSessionStart(
   const access = await requireTutorAccess(request, admin, 'voice');
   if (!access.ok) return access.response;
 
-  let topicBody: unknown;
-  try {
-    topicBody = await request.clone().json();
-  } catch {
-    return errorResponse('bad_request');
-  }
-  const topic = parseTopic(topicBody);
-  if (!topic.ok) return errorResponse(topic.code);
+  const start = await readVoiceStart(request);
+  if (!start) return errorResponse('bad_request');
   // Explorer : à la voix, seulement les leçons. Les appels d'outils de l'API Realtime arrivent sur
   // le téléphone, qui pourrait les falsifier : exercices notés et évaluations restent à l'écrit.
-  const place = levelOfTopic(topic.value);
+  const place = levelOfTopic(start.topic);
   if (place && place.level.type !== 'lecon') return errorResponse('not_allowed');
 
-  const response = await handleRealtimeSession(request, deps.realtime, {
-    visuals: access.visualsEnabled,
-  });
-  if (!response.ok) return response;
+  const { clientId, ip } = identify(request);
+  if (!clientId) return errorResponse('bad_request');
+  if (!limiters.voiceIp.consume(ip) || !limiters.voiceClient.consume(clientId)) {
+    return errorResponse('rate_limited');
+  }
+
+  let call: RealtimeCall;
+  try {
+    call = await openRealtimeCall(start, { visuals: access.visualsEnabled }, deps.realtime);
+  } catch (error) {
+    serverLog.error('realtime.call', error);
+    return errorResponse('upstream');
+  }
+
+  // Pas d'appel sans surveillant : il vérifie les consignes, modère et raccroche à l'heure.
+  const attached = await attachVoiceMonitor(
+    {
+      callId: call.callId,
+      instructionsHash: await sha256(call.instructions),
+      tools: call.tools,
+      maxSeconds: Math.max(1, Math.min(VOICE_MAX_SECONDS, access.secondsUntilPause ?? Infinity)),
+      allowedTexts: [PHOTO_CAPTION],
+      maxPhotos: TUTOR_LIMITS.photosPerCall,
+      notes: VOICE_SAFETY_NOTES,
+    },
+    deps.monitor,
+  );
+  if (!attached) {
+    try {
+      await hangUpRealtimeCall(call.callId, deps.realtime);
+    } catch (error) {
+      serverLog.error('realtime.hangup', error);
+    }
+    return errorResponse('upstream');
+  }
 
   const now = new Date();
   try {
@@ -81,8 +124,8 @@ export async function handleVoiceSessionStart(
     const { error } = await admin.from('study_sessions').insert({
       student_id: access.user.id,
       mode: 'voice',
-      subject_id: topic.value.subjectId,
-      chapter_id: topic.value.chapterId,
+      subject_id: start.topic.subjectId,
+      chapter_id: start.topic.chapterId,
       level_id: place?.level.id ?? null,
       started_at: now.toISOString(),
     });
@@ -91,7 +134,8 @@ export async function handleVoiceSessionStart(
     // L'appel peut commencer : seul le suivi de la séance manquera.
     serverLog.error('voice.session', error);
   }
-  return response;
+  const response: VoiceStartResponse = { sdp: call.sdp };
+  return jsonResponse(response);
 }
 
 /** POST /api/tutor/voice/end : fin de l'appel en cours, durée plafonnée à 10 min. */

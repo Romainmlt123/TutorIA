@@ -89,6 +89,7 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
 | `npm run start:dev`                               | Idem pour le **build de développement** (vocal en direct), via un tunnel                                        |
 | `npm run web`                                     | Version web                                                                                                     |
 | `npm run web:local`                               | Version web branchée sur Supabase local                                                                         |
+| `npm run monitor`                                 | Surveillant du vocal en local (`monitor/`), avec `OPENAI_API_KEY` et `VOICE_MONITOR_TOKEN`                      |
 | `npm run android` / `npm run ios`                 | Émulateur ou simulateur                                                                                         |
 | `npm run tokens`                                  | Régénère `src/theme/tokens.generated.ts` depuis `design/tokens/`                                                |
 | `npm run explorer:models`                         | Régénère les îles, la bande de terre des régions et les monuments avec Blender 5.2 (environ 30 min)             |
@@ -128,15 +129,26 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
   - Le volet de l'onglet Tutor'IA liste les discussions libres de l'élève (pas les niveaux d'Explorer) et permet de les rouvrir ou de les supprimer (`conversationService`).
   - Le serveur vérifie l'élève connecté, le consentement parental et les réglages du parent, puis applique une limite de débit partagée.
   - Il valide la requête, relit l'historique en base, modère l'entrée, appelle OpenAI (`store: false`) et renvoie la réponse en flux NDJSON. La réponse complète est aussi modérée, puis enregistrée.
-- **Vocal** : `POST /api/tutor/realtime-session` délivre un jeton temporaire (60 s) après les mêmes vérifications. L'app se connecte ensuite directement à l'API Realtime d'OpenAI en WebRTC. La configuration de la session (modèle, consignes, voix) est fixée par le serveur. La fin de l'appel est déclarée par `POST /api/tutor/voice/end`.
+- **Vocal** : l'app envoie son offre WebRTC à `POST /api/tutor/voice/start`, qui fait les mêmes vérifications puis crée l'appel chez OpenAI avec la clé du serveur et la configuration de la session (modèle, consignes, voix, outils). L'app ne reçoit que la réponse SDP, sans jeton ; l'audio et le canal de données passent ensuite directement entre le téléphone et l'API Realtime. La fin de l'appel est déclarée par `POST /api/tutor/voice/end`.
+- **Surveillant du vocal** (`monitor/`, petit service Node toujours allumé) : chaque appel créé lui est confié (`POST /watch`, secret partagé `VOICE_MONITOR_TOKEN`). Il se branche sur l'appel (connexion « sideband » de l'API Realtime) et raccroche si les consignes ou les outils changent, si l'app glisse un texte ou un message dans la conversation, si une photo est signalée, à la deuxième phrase du tuteur signalée (la première est coupée), au troisième propos déplacé de l'élève (les deux premiers font recentrer le tuteur), ou à l'heure (10 min, ou la prochaine pause fixée par le parent). La voix de l'élève est transcrite pour lui seul (jamais affichée ni enregistrée) : s'il exprime une détresse, le tuteur lui répond avec douceur (3114, 119) sans raccrocher. Sans surveillant, le serveur raccroche l'appel et le refuse ; seul le développement local s'en passe, avec un avertissement.
+  - En local : `npm run monitor` dans un terminal, puis l'app avec `VOICE_MONITOR_URL=http://127.0.0.1:8787` et le même `VOICE_MONITOR_TOKEN`.
+  - Limite connue : un `response.create` envoyé par une app modifiée, avec ses propres consignes, ne se voit pas dans les événements. La modération de la voix du tuteur et les plafonds de durée en limitent l'effet.
 - **Visuels à la voix** : pendant un appel, le tuteur peut montrer un graphique, un diagramme, une figure ou un tableau. Le téléphone reçoit l'appel d'outil et le fait valider et modérer par `POST /api/tutor/visual-check` avant de le dessiner.
 - **Photo de l'exercice** :
-  - au vocal, `POST /api/tutor/image-check` vérifie la taille et modère la photo avant son envoi dans l'appel ;
+  - au vocal, `POST /api/tutor/image-check` vérifie la taille et modère la photo avant son envoi dans l'appel ; le surveillant la modère aussi dans l'appel ;
   - à l'écrit, la photo (appareil photo ou galerie, réduite sur l'appareil) part avec le message de `POST /api/tutor/chat` (`image`). Elle est refusée si le parent a désactivé la caméra et pendant une évaluation d'Explorer. Elle est modérée, envoyée au modèle, et jamais enregistrée : la mention « 📷 Photo de l'exercice » la remplace dans l'historique.
 - **Signalement** : appui long sur une réponse du tuteur, qui appelle `POST /api/tutor/report`.
 - **Résumés pour les parents** : `POST /api/tutor/session/summary` (notions comprises et à revoir, sortie structurée et modérée) et `POST /api/parents/weekly-report` (à partir des agrégats seulement, sans prénom). Jamais de transcription.
 - **Hors ligne** : si le serveur ne répond pas, un bandeau « Tutor'IA est hors ligne » s'affiche et des questions d'entraînement du chapitre prennent le relais.
 - Le prompt système est versionné dans `server/tutor/prompt.ts`.
+
+### Surveillant du vocal sur Render
+
+Le surveillant (`monitor/`) est le seul service hébergé hors d'EAS : `render.yaml` le décrit (image Docker `monitor/Dockerfile`, région Francfort, vérification par `/health`). Il est sur l'offre gratuite pendant les tests : il se met en veille après 15 min sans visite, et le premier appel après une veille est refusé (réessayer une minute plus tard). Passer à l'offre « starter », toujours allumée, avant que de vrais élèves utilisent le vocal. Il est redéployé depuis `main` quand `monitor/` change.
+
+1. Dans Render : relier le dépôt GitHub, créer le service depuis le blueprint (`render.yaml`), puis saisir `OPENAI_API_KEY` et `VOICE_MONITOR_TOKEN` (`openssl rand -hex 32`).
+2. Dans EAS, environnement `production` : `VOICE_MONITOR_URL` (l'adresse donnée par Render) et `VOICE_MONITOR_TOKEN` (le même secret, en « sensitive »).
+3. Redéployer le serveur, puis l'app (`npm run update:preview`). Sans surveillant, le serveur de production refuse le vocal.
 
 ### Version installée sur téléphone (APK preview)
 
@@ -179,6 +191,7 @@ src/
   lib/            utilitaires transverses (config, session, cache, heure de Paris, journalisation) ;
                   three/ = scènes 3D (chargement des modèles, WebGL, pause hors écran)
 server/           code serveur uniquement : clés OpenAI et Supabase, prompt, garde-fous, comptes
+monitor/          surveillant du vocal (service Node séparé, sans dépendance de l'app), déployé sur Render (render.yaml)
 supabase/         migrations, tests pgTAP, modèles d'e-mails, configuration locale
 scripts/          outillage (tokens, seed, Supabase local)
 tools/explorer-3d/ scripts Blender des îles 3D d'Explorer (modèles, matières, cuisson), sortie dans assets/explorer/models/
