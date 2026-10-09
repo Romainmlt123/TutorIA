@@ -285,13 +285,19 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
 
 Retenues par Romain après l'interface v2.7, sans ordre fixé :
 
-1. **La surveillance du vocal côté serveur**, avant la production (§ 11 du CLAUDE.md) : une connexion « sideband » qui vérifie les `session.updated`, modère la voix du tuteur et raccroche si besoin (petit service Node séparé, EAS Hosting tournant sur des Workers). Piste à évaluer aussi : GPT-Live, où le serveur détient la configuration.
+1. **La surveillance du vocal côté serveur**, en cours sur `feat/surveillance-vocal` (09/10) :
+   - étape 1 faite et validée par Romain : l'appel est créé par le serveur (`/api/tutor/voice/start`), l'app ne reçoit plus de jeton ;
+   - étape 2 faite : le surveillant (`monitor/`) vérifie les consignes et les outils, refuse les textes glissés par l'app, modère les photos et la voix du tuteur, et raccroche à l'heure (10 min, ou la prochaine pause du parent) ;
+   - étape 3 faite : la voix de l'élève transcrite pour le surveillant seulement, pour la modérer (choix de Romain) : détresse → le tuteur donne le 3114 et le 119 sans raccrocher, propos déplacés → il recentre, puis l'appel s'arrête au troisième ; une phrase du tuteur signalée est coupée, l'appel s'arrête à la deuxième ;
+   - étape 4 : déploiement sur Render (région Francfort), secrets, variables EAS.
 2. **La connexion d'un enfant par son code parent** (option B, ci-dessous).
 3. **La reprise d'Explorer** (chantier 2, en pause depuis le 07/10).
 
 ## En attente
 
 Ces idées ne sont pas planifiées. Elles entrent dans le plan sur décision de Romain.
+
+- **Essayer GPT-Live (`gpt-live-1`) avant la production** : un appel de test, puis mesurer la voix en français, la latence, le coût et la conservation des données. Il fermerait la seule faille que le surveillant ne voit pas (un `response.create` d'une app modifiée, avec ses propres consignes), car le serveur y détient la configuration.
 
 - Des vignettes dessinées pour les formes du visage dans l'éditeur, à la place des libellés.
 - L'avatar de l'élève ailleurs dans l'app : accueil, profil, tuteur.
