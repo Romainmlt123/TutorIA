@@ -1,6 +1,7 @@
 import type { VoiceEvent } from '@/features/tutor/logic/voice';
 
 import type { ChatRequest, TutorStreamEvent, TutorTopic } from './api-contract';
+import type { TutorVisual } from './visuals';
 
 /** Session vocale en cours (simulée ou temps réel). */
 export interface VoiceSession {
@@ -14,9 +15,21 @@ export interface VoiceSession {
   stop(): void;
 }
 
+/**
+ * Sous-titre de l'appel (v2.6) : la phrase en cours du tuteur, complétée au fil de sa
+ * transcription. La voix de l'élève n'est jamais transcrite.
+ */
+export type VoiceCaption = { text: string; final: boolean };
+
 export type StartVoiceRequest = {
   topic: TutorTopic;
   onEvent: (event: VoiceEvent) => void;
+  /** Transcription de ce que dit le tuteur, pour les sous-titres. */
+  onCaption?: (caption: VoiceCaption) => void;
+  /** Niveau de la voix du tuteur, de 0 à 1, une dizaine de fois par seconde (logo qui rebondit). */
+  onLevel?: (level: number) => void;
+  /** Visuel montré par le tuteur, validé et modéré par le serveur (2D, 2F). */
+  onVisual?: (visual: TutorVisual) => void;
 };
 
 /**
@@ -25,7 +38,10 @@ export type StartVoiceRequest = {
  */
 export interface TutorService {
   readonly kind: 'live' | 'mock';
-  /** Envoie un message et renvoie la réponse en flux. */
+  /**
+   * Envoie un message et renvoie la réponse en flux. Sans `conversationId`, le message ouvre une
+   * nouvelle discussion, dont l'identifiant arrive dans le flux (`conversation`).
+   */
   sendMessage(request: ChatRequest, signal?: AbortSignal): AsyncIterable<TutorStreamEvent>;
   startVoiceSession(request: StartVoiceRequest): Promise<VoiceSession>;
   /** Signale une réponse inappropriée du tuteur. */

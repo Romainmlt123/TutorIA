@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Tuteur · Vocal avec tableau blanc</title>
+<title>Tuteur · Vocal + tableau blanc</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -14,97 +14,72 @@
 @font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
 @font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
 @font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
-:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
-body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
-a{color:#2E6BE6}a:hover{color:#1750C4}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--primary:#2E6BE6;--primary-soft:#EBF1FF;--accent:#662EE6;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#0A3B9D;color:#FFFFFF}
 button{font-family:inherit}
-a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,0.7)}
 @keyframes halo{0%{transform:scale(0.6);opacity:0.55}100%{transform:scale(2.2);opacity:0}}
-.halo{transform-box:fill-box;transform-origin:center;animation:halo 1.4s ease-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
-.live{animation:blink 1.4s ease-in-out infinite}
-.ink{transition:opacity 0.45s ease}
+.halo{transform-box:fill-box;transform-origin:center;animation:halo 1.6s ease-out infinite}
+@keyframes pen{0%,100%{transform:scale(1)}50%{transform:scale(1.45)}}
+.pen{display:inline-block;flex-shrink:0;width:8px;height:8px;border-radius:999px;background:#2E6BE6;box-shadow:0 0 0 3px rgba(46,107,230,.22);animation:pen 1s ease-in-out infinite;transition:opacity .3s}
+@media (prefers-reduced-motion:reduce){.halo,.pen{animation:none}}
 </style>
 </helmet>
-<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
-
-<header style="position: absolute; top: 56px; left: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 2">
-<dc-import name="../components/ModeToggle" mode="vocal" variante="tableau" hint-size="214px,48px"></dc-import>
-
-<section aria-label="Tableau blanc du tuteur" style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
-<dc-import name="../components/PanelHeader" type="tableau" titre="3x + 5 = 20" kicker="En direct · {{ timer }}" live="{{ yes }}" open="{{ open }}" on-toggle="{{ toggle }}" hint-size="318px,44px"></dc-import>
-
-<sc-if value="{{ open }}" hint-placeholder-val="{{ true }}">
-<svg width="318" height="210" viewBox="0 0 318 210" role="img" aria-label="Tableau blanc écrit en direct par le tuteur : 3x + 5 = 20, on retire 5, 3x = 15, on divise par 3, x = 5 entouré en rouge." style="display: block; border-radius: 16px; font-family: Satoshi, system-ui, sans-serif">
-<defs>
-<pattern id="points" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="1" fill="#CED4E2"></circle></pattern>
-</defs>
-<rect x="0" y="0" width="318" height="210" rx="16" fill="#FBFCFF"></rect>
-<rect x="0" y="0" width="318" height="210" rx="16" fill="url(#points)"></rect>
-<line x1="206" y1="18" x2="206" y2="196" stroke="#CED4E2" stroke-width="1.5" stroke-dasharray="4 5"></line>
-
-<g class="ink" opacity="{{ o1 }}" font-size="26" font-weight="700" fill="#000612">
-<text x="20" y="46">3x</text><text x="62" y="46">+ 5</text><text x="118" y="46">=</text><text x="146" y="46">20</text>
-</g>
-<g class="ink" opacity="{{ o2 }}">
-<g font-size="16" font-weight="700" fill="#2E6BE6"><text x="66" y="72">− 5</text><text x="148" y="72">− 5</text></g>
-<text x="216" y="44" font-size="12" font-weight="700" fill="#1750C4">① On retire 5</text>
-<text x="230" y="60" font-size="12" font-weight="500" fill="#5D677D">des 2 côtés</text>
-</g>
-<g class="ink" opacity="{{ o3 }}">
-<g font-size="26" font-weight="700" fill="#000612"><text x="20" y="116">3x</text><text x="118" y="116">=</text><text x="146" y="116">15</text></g>
-<g font-size="16" font-weight="700" fill="#2E6BE6"><text x="22" y="142">÷ 3</text><text x="148" y="142">÷ 3</text></g>
-<text x="216" y="114" font-size="12" font-weight="700" fill="#1750C4">② On divise</text>
-<text x="230" y="130" font-size="12" font-weight="500" fill="#5D677D">par 3</text>
-<path d="M290 70 C 300 84, 300 94, 290 104" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round"></path>
-<path d="M285 99 L290 105 L296 100" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-</g>
-<g class="ink" opacity="{{ o4 }}">
-<g font-size="30" font-weight="900" fill="#C21A1A"><text x="34" y="186">x</text><text x="118" y="186">=</text><text x="150" y="186">5</text></g>
-<text x="216" y="182" font-size="12" font-weight="700" fill="#C21A1A">③ Solution !</text>
-<path d="M290 138 C 300 152, 300 162, 290 172" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round"></path>
-<path d="M285 167 L290 173 L296 168" fill="none" stroke="#2E6BE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-</g>
-<path d="M22 176 C 20 158, 92 154, 132 156 C 172 158, 190 164, 186 178 C 183 194, 110 200, 70 198 C 36 196, 20 190, 24 172" fill="none" stroke="#E62E2E" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="520" stroke-dashoffset="{{ circleOffset }}" style="transition: stroke-dashoffset 1s ease"></path>
-
-<circle class="halo" cx="{{ pen.x }}" cy="{{ pen.y }}" r="{{ pen.r }}" fill="#2E6BE6"></circle>
-<circle cx="{{ pen.x }}" cy="{{ pen.y }}" r="{{ pen.dot }}" fill="#2E6BE6" stroke="#FFFFFF" stroke-width="2"></circle>
-</svg>
-<div style="display: flex; gap: 8px">
-<sc-for list="{{ chips }}" as="c" hint-placeholder-count="3">
-<span style="height: 28px; padding: 0 10px; display: flex; align-items: center; border-radius: 999px; background: {{ c.bg }}; color: {{ c.color }}; font-size: 12px; font-weight: 700; transition: background 0.3s ease">{{ c.label }}</span>
-</sc-for>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: linear-gradient(170deg, #2E6BE6 0%, #1750C4 42%, #0A3B9D 78%, #03276E 100%); font-family: var(--font-sans); color: #FFFFFF">
+<div style="position: absolute; top: 56px; left: 20px; right: 20px; height: 44px">
+<dc-import name="../components/CallTopBar" fond="transparent" timer="{{ timer }}" ecrit-href="02e-Tuteur-Ecrit-Tableau.dc.html" hint-size="350px,44px"></dc-import>
 </div>
-</sc-if>
+<section aria-label="Tableau blanc du tuteur" style="position: absolute; top: 112px; left: 20px; right: 20px; height: 336px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 12px; background: #EBF2FF; border: 2px solid #B4CEFD; border-radius: 24px; box-shadow: 0 16px 36px rgba(3,39,110,0.35)">
+<div style="display: flex; align-items: center; gap: 10px; height: 44px">
+<span aria-hidden="true" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(160deg, #3F83FB 0%, #004BD0 100%); display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5ZM15 5l4 4"></path></svg></span>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+<span style="font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #023CA3">Tableau · Maths</span>
+<span style="font-size: 16px; line-height: 22px; font-weight: 700; color: #000612; white-space: nowrap">3x + 5 = 20</span>
+</div>
+<button type="button" aria-label="Agrandir le tableau" style="flex-shrink: 0; width: 44px; height: 44px; border: none; border-radius: 14px; background: #FFFFFF; color: #5D677D; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button>
+</div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 10px; background: #FFFFFF; border-radius: 16px">
+<div style="height: 230px; display: flex; flex-direction: column; justify-content: center">
+<div role="img" aria-label="Tableau blanc écrit en direct : 3x + 5 = 20 ; on retire 5 des deux côtés : 3x = 15 ; on divise par 3 : x = 5, entouré." style="position: relative; display: flex; flex-direction: column; gap: 2px">
+<sc-if value="{{ b.empty }}" hint-placeholder-val="{{ false }}"><span style="position: absolute; left: 0; right: 0; top: 64px; text-align: center; font-size: 14px; line-height: 20px; font-weight: 500; color: #5D677D">Le tableau s’écrit pendant que le tuteur parle.</span></sc-if>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 36px; transition: opacity 0.45s; opacity: {{ b.l1 }}">
+<span style="display: flex; align-items: center; gap: 8px"><span style="font-family: 'Latin Modern Math','STIX Two Math','Cambria Math','Times New Roman',serif; font-size: 24px; line-height: 1.25; color: #000612; white-space: nowrap">3<i>x</i> + 5 = 20</span><span class="pen" style="opacity: {{ b.p1 }}"></span></span>
+<span style="flex-shrink: 0; width: 118px; font-size: 12px; line-height: 16px; font-weight: 700; color: #000612">① On retire 5</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; padding-left: 12px; min-height: 24px; color: #2E6BE6; transition: opacity 0.45s; opacity: {{ b.o1 }}"><span style="font-size: 12px; font-weight: 700">↓</span><span style="font-family: 'Latin Modern Math','STIX Two Math','Cambria Math','Times New Roman',serif; font-size: 17px; line-height: 1.2; white-space: nowrap">− 5</span><span class="pen" style="opacity: {{ b.p2 }}"></span></div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 36px; transition: opacity 0.45s; opacity: {{ b.l2 }}">
+<span style="display: flex; align-items: center; gap: 8px"><span style="font-family: 'Latin Modern Math','STIX Two Math','Cambria Math','Times New Roman',serif; font-size: 24px; line-height: 1.25; color: #000612; white-space: nowrap">3<i>x</i> = 15</span><span class="pen" style="opacity: {{ b.p3 }}"></span></span>
+<span style="flex-shrink: 0; width: 118px; font-size: 12px; line-height: 16px; font-weight: 700; color: #000612">② On divise par 3</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; padding-left: 12px; min-height: 24px; color: #2E6BE6; transition: opacity 0.45s; opacity: {{ b.o2 }}"><span style="font-size: 12px; font-weight: 700">↓</span><span style="font-family: 'Latin Modern Math','STIX Two Math','Cambria Math','Times New Roman',serif; font-size: 17px; line-height: 1.2; white-space: nowrap">÷ 3</span><span class="pen" style="opacity: {{ b.p4 }}"></span></div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 36px; transition: opacity 0.45s; margin-top: 4px; opacity: {{ b.l3 }}">
+<span style="display: flex; align-items: center; gap: 8px"><span style="padding: 0 14px; border-radius: 999px; border: 2.5px solid {{ b.ring }}; font-family: 'Latin Modern Math','STIX Two Math','Cambria Math','Times New Roman',serif; font-size: 24px; line-height: 1.25; color: #000612; white-space: nowrap; color: #E62E2E; transition: border-color 0.6s"><i>x</i> = 5</span><span class="pen" style="opacity: {{ b.p5 }}"></span></span>
+<span style="flex-shrink: 0; width: 118px; font-size: 12px; line-height: 16px; font-weight: 700; color: #000612">③ Solution</span>
+</div>
+</div>
+</div>
+</div>
 </section>
-</header>
-
-<button type="button" onClick="{{ interrupt }}" aria-label="{{ stageLabel }}" style="position: absolute; top: {{ stageTop }}px; left: 0; right: 0; bottom: 220px; border: none; background: transparent; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--text); transition: top 0.25s ease">
-<span aria-hidden="true" style="height: {{ stageH }}px; display: flex; align-items: center; justify-content: center; gap: {{ barGap }}px">
-<sc-for list="{{ bars }}" as="bar" hint-placeholder-count="4">
-<span style="display: block; width: {{ bar.w }}px; height: {{ bar.h }}px; border-radius: 999px; background: linear-gradient(180deg, #2E6BE6 0%, #662EE6 100%); transition: height 0.14s ease-out"></span>
-</sc-for>
-</span>
-<span style="display: flex; flex-direction: column; align-items: center; gap: 4px">
-<span aria-live="polite" style="font-size: 18px; line-height: 24px; font-weight: 500; color: var(--text-secondary)">{{ status }}</span>
-<span style="font-size: 14px; line-height: 20px; color: var(--text-secondary)">Touche l'écran pour interrompre</span>
-</span>
-</button>
-
-<div style="position: absolute; left: 20px; right: 20px; bottom: 116px; height: 96px">
-<dc-import name="../components/CallControls" muted="{{ muted }}" cam-on="{{ camOn }}" on-mute="{{ toggleMute }}" on-cam="{{ toggleCam }}" hangup-href="../screens/02e-Tuteur-Ecrit-Tableau.dc.html" hint-size="350px,96px"></dc-import>
+<div style="position: absolute; left: 123px; top: 458px">
+<dc-import name="../components/VoiceAvatar" fond="transparent" size="96" hop="{{ hop }}" tilt="{{ tilt }}" label="{{ avatarLabel }}" on-interrupt="{{ interrupt }}" hint-size="144px,128px"></dc-import>
 </div>
-
-<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
-<dc-import name="../components/BottomNav" espace="eleve" active="tuteur" hint-size="350px,72px"></dc-import>
+<div style="position: absolute; top: 592px; left: 0; right: 0; display: flex; justify-content: center">
+<dc-import name="../components/VoiceStatus" fond="transparent" etat="{{ statusEtat }}" couleur-ecoute="{{ couleurEcoute }}" hint-size="180px,40px"></dc-import>
+</div>
+<sc-if value="{{ showCaptions }}" hint-placeholder-val="{{ true }}">
+<p aria-label="Sous-titres" style="position: absolute; top: 642px; left: 24px; right: 24px; height: 48px; margin: 0; overflow: hidden; text-align: center; font-size: 16px; line-height: 22px; text-wrap: pretty"><sc-for list="{{ words }}" as="w" hint-placeholder-count="10"><span style="color: {{ w.c }}; font-weight: {{ w.fw }}; background: {{ w.bg }}; padding: {{ w.pad }}; border-radius: 6px; transition: color 0.2s, background 0.2s">{{ w.t }}</span><span style="color: {{ w.c2 }}">{{ w.sp }}</span></sc-for></p>
+</sc-if>
+<div style="position: absolute; left: 20px; right: 20px; bottom: 32px">
+<dc-import name="../components/CallDock" fond="transparent" muted="{{ muted }}" captions="{{ showCaptions }}" cam-on="{{ camOn }}" on-mute="{{ toggleMute }}" on-captions="{{ toggleCaptions }}" on-cam="{{ toggleCam }}" hangup-href="02e-Tuteur-Ecrit-Tableau.dc.html" hint-size="350px,112px"></dc-import>
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"etat":{"editor":"enum","options":["auto","parle","ecoute","repos"],"default":"auto"},"$preview":{"width":390,"height":844}}'>
+<script type="text/x-dc" data-dc-script data-props='{"etat":{"editor":"enum","options":["auto","parle","ecoute"],"default":"auto"},"couleurEcoute":{"editor":"enum","options":["rouge","orange"],"default":"rouge"},"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
 constructor(props) {
 super(props);
-this.state = { tick: 0, muted: false, cam: false, open: true, interruptAt: -1000 };
+this.state = { tick: 0, offset: 12.0, muted: false, cam: false, captions: true };
+this.SEGS = [{"who": "user", "text": "Tu peux me montrer comment résoudre 3x + 5 = 20 ?", "dur": 4}, {"who": "ai", "text": "On l’écrit au tableau. D’abord, on retire 5 des deux côtés.", "dur": 6.5}, {"who": "user", "text": "Ça donne 3x = 15.", "dur": 3}, {"who": "ai", "text": "Bravo ! Ensuite, on divise par 3 des deux côtés.", "dur": 5.5}, {"who": "user", "text": "Donc x = 5 !", "dur": 2.5}, {"who": "ai", "text": "Exactement, x = 5. J’entoure le résultat.", "dur": 5}];
 }
 componentDidMount() {
 this.timer = setInterval(() => this.setState({ tick: this.state.tick + 1 }), 100);
@@ -112,94 +87,71 @@ this.timer = setInterval(() => this.setState({ tick: this.state.tick + 1 }), 100
 componentWillUnmount() {
 clearInterval(this.timer);
 }
-mode() {
+pos() {
 const etat = this.props.etat ?? 'auto';
-const tick = this.state.tick;
-let m;
-if (etat === 'parle') m = 'ai';
-else if (etat === 'ecoute') m = 'user';
-else if (etat === 'repos') m = 'idle';
-else if (tick - this.state.interruptAt < 50) m = 'user';
-else m = (tick % 120) < 70 ? 'ai' : 'user';
-if (m === 'user' && this.state.muted) m = 'muted';
-return m;
+if (etat === 'parle') return { i: 3, p: 0.7 + 0.0001 * (this.state.tick % 2) };
+if (etat === 'ecoute') return { i: 2, p: 0.6 };
+const total = this.SEGS.reduce((s, x) => s + x.dur, 0);
+let t = (this.state.tick * 0.1 + this.state.offset) % total;
+for (let i = 0; i < this.SEGS.length; i++) {
+if (t < this.SEGS[i].dur) return { i, p: t / this.SEGS[i].dur };
+t -= this.SEGS[i].dur;
+}
+return { i: 0, p: 0 };
 }
 renderVals() {
-const tick = this.state.tick;
-const t = tick * 0.1;
-const m = this.mode();
-const open = this.state.open;
-const auto = (this.props.etat ?? 'auto') === 'auto';
-let step = 4;
-if (m === 'ai') step = auto ? Math.min(4, 1 + Math.floor((tick % 120) / 15)) : 1 + Math.floor(tick / 15) % 4;
-const writing = m === 'ai' && step <= 4 && ((tick % 120) < 60 || !auto);
-const penPos = [null, { x: 192, y: 38 }, { x: 186, y: 66 }, { x: 186, y: 108 }, { x: 188, y: 176 }];
-const p = penPos[step];
-const pen = writing ? { x: p.x, y: p.y, r: 7, dot: 4 } : { x: p.x, y: p.y, r: 0, dot: 0 };
-const w = open ? 28 : 40;
-const max = open ? 72 : 150;
-const bars = [0, 1, 2, 3].map((i) => {
-let h = w;
-if (m === 'ai') {
-const env = 0.55 + 0.45 * Math.sin(t * 1.3 + i * 0.4);
-const wave = 0.5 + 0.5 * (0.6 * Math.sin(t * 7.1 + i * 1.7) + 0.4 * Math.sin(t * 3.3 + i * 2.9));
-const pause = Math.sin(t * 0.8) > 0.92 ? 0.15 : 1;
-h = w + max * wave * env * pause;
-} else if (m === 'user') {
-const wave = 0.5 + 0.5 * Math.sin(t * 3.2 + i * 1.3);
-const env = 0.6 + 0.4 * Math.sin(t * 0.9 + i);
-h = w + max * 0.4 * wave * env;
-}
-return { h: Math.round(h), w };
-});
-const chipDefs = [['① Retirer 5', 2], ['② Diviser par 3', 3], ['③ x = 5', 4]];
-const chips = chipDefs.map(([label, s], j) => {
-const current = step === s || (step === 1 && j === 0);
-const isLast = j === 2;
-if (current && isLast) return { label, bg: '#C21A1A', color: '#FFFFFF' };
-if (current) return { label, bg: '#2E6BE6', color: '#FFFFFF' };
-if (isLast) return { label, bg: '#FFEBEB', color: '#C21A1A' };
-return { label, bg: '#EBF1FF', color: '#1750C4' };
-});
-const labels = { ai: 'Le tuteur écrit au tableau…', user: 'Le tuteur t’écoute…', muted: 'Ton micro est coupé', idle: 'En pause' };
-const secs = 212 + Math.floor(tick / 10);
-const timer = String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0');
+const t = this.state.tick * 0.1;
+const { i, p } = this.pos();
+const seg = this.SEGS[i];
+const isAi = seg.who === 'ai';
 const muted = this.state.muted;
-const cam = this.state.cam;
+const talking = p < 0.86;
+const listeningMuted = !isAi && muted;
+const list = seg.text.split(' ');
+const shown = listeningMuted ? 0 : Math.ceil(Math.min(1, p / 0.86) * list.length);
+// Rebond : niveau de la voix du tuteur (simulé ici), posé à chaque ponctuation.
+const lastWord = list[Math.max(0, shown - 1)] || '';
+const breath = /[.,!?:]$/.test(lastWord) ? 0.25 : 1;
+const lively = (0.5 + 0.5 * Math.sin(t * 2.4)) * (0.6 + 0.4 * Math.sin(t * 0.9));
+const hop = isAi && talking ? ((0.35 + 0.65 * lively) * breath).toFixed(2) : '0';
+const tilt = !isAi && !muted ? '1' : '0';
+const REVEAL = [[1, 0.12], [1, 0.62], [2, 0.35], [3, 0.55], [5, 0.12], [5, 0.55]];
+const seen = REVEAL.map(([s, th]) => i > s || (i === s && p >= th));
+let last = -1; seen.forEach((v, k) => { if (v && k < 5) last = k; });
+const writing = last >= 0 && REVEAL[last][0] === i && p < 0.95;
+const pen = (k) => (writing && last === k ? 1 : 0);
+const b = {
+l1: seen[0] ? 1 : 0, o1: seen[1] ? 1 : 0, l2: seen[2] ? 1 : 0, o2: seen[3] ? 1 : 0, l3: seen[4] ? 1 : 0,
+ring: seen[5] ? '#E62E2E' : 'rgba(230,46,46,0)',
+p1: pen(0), p2: pen(1), p3: pen(2), p4: pen(3), p5: pen(4) || (seen[5] && i === 5 && p < 0.8 ? 1 : 0),
+empty: !seen[0]
+};
+const COL = ['#FFFFFF', 'rgba(255,255,255,0.45)'];
+const words = listeningMuted
+? [{ t: 'Réactive ton micro pour répondre.', c: COL[0], c2: COL[0], fw: 500, bg: 'transparent', pad: '0', sp: '' }]
+: list.map((w, j) => {
+const on = j < shown;
+const tone = /^rouge/.test(w) ? '#E62E2E' : (/^bleue/.test(w) ? '#2E6BE6' : null);
+const core = tone ? w.replace(/[,.]$/, '') : w;
+const c = on ? COL[0] : COL[1];
+return { t: core, sp: w.slice(core.length) + ' ', c: tone && on ? '#FFFFFF' : c, c2: c, fw: /[0-9=÷×]/.test(w) || tone ? 700 : 500, bg: tone && on ? tone : 'transparent', pad: tone ? '0 6px' : '0' };
+});
+const secs = 187 + Math.floor(this.state.tick / 10);
 return {
-yes: true,
-bars,
-barGap: open ? 14 : 20,
-stageH: w + max,
-stageTop: open ? 462 : 200,
-open,
-chevron: open ? 0 : 180,
-toggleLabel: open ? 'Réduire le tableau' : 'Afficher le tableau',
-toggle: () => this.setState({ open: !this.state.open }),
-o1: 1,
-o2: step >= 2 ? 1 : 0,
-o3: step >= 3 ? 1 : 0,
-o4: step >= 4 ? 1 : 0,
-circleOffset: step >= 4 ? 0 : 520,
-pen,
-chips,
-timer,
-status: labels[m],
-stageLabel: m === 'ai' ? 'Interrompre le tuteur' : 'Le tuteur t’écoute',
-muted,
-notMuted: !muted,
-muteLabel: muted ? 'Réactiver le micro' : 'Couper le micro',
-muteCaption: muted ? 'Micro coupé' : 'Micro',
-micColor: muted ? '#FFFFFF' : '#5D677D',
-micBg: muted ? '#000612' : '#FFFFFF',
-camOn: cam,
-camOff: !cam,
-camLabel: cam ? 'Couper la caméra' : 'Activer la caméra',
-camCaption: cam ? 'Caméra activée' : 'Caméra',
-camColor: cam ? '#FFFFFF' : '#5D677D',
-camBg: cam ? '#2E6BE6' : '#FFFFFF',
-interrupt: () => this.setState({ interruptAt: this.state.tick }),
+hop, tilt, words, b, 
+statusEtat: listeningMuted ? 'coupe' : (isAi ? 'explique' : 'ecoute'),
+couleurEcoute: this.props.couleurEcoute ?? 'rouge',
+speaker: isAi ? 'Tutor’IA' : 'Toi',
+avatarLabel: isAi ? 'Interrompre Tutor’IA' : 'Tutor’IA t’écoute',
+timer: String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0'),
+showCaptions: this.state.captions,
+muted, camOn: this.state.cam,
+interrupt: () => {
+if ((this.props.etat ?? 'auto') !== 'auto' || !isAi) return;
+this.setState({ offset: this.state.offset + (1 - p) * seg.dur });
+},
 toggleMute: () => this.setState({ muted: !this.state.muted }),
+toggleCaptions: () => this.setState({ captions: !this.state.captions }),
 toggleCam: () => this.setState({ cam: !this.state.cam })
 };
 }

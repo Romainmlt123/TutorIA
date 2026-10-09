@@ -6,25 +6,34 @@ import { postTutor, TutorHttpError } from './http';
 import { readNdjson } from './ndjson';
 import { startRealtimeVoiceSession } from './realtimeVoice';
 
-const topicKey = (topic: TutorTopic) => `${topic.subjectId}/${topic.chapterId}`;
+/**
+ * Silence maximal pendant une réponse en flux : un tour de niveau enchaîne modération, deux passages
+ * du modèle et enregistrement, plus long qu'une simple réponse, mais jamais muet si longtemps.
+ */
+const STREAM_IDLE_MS = 30_000;
 
 /** Vrai tuteur : toutes les requêtes passent par le serveur intermédiaire (jamais la clé OpenAI). */
 export function createLiveTutorService(): TutorService {
-  // Une conversation par chapitre tant que l'app est ouverte : le serveur en relit l'historique.
-  const conversations = new Map<string, string>();
   return {
     kind: 'live',
     async *sendMessage(
       request: ChatRequest,
       signal?: AbortSignal,
     ): AsyncIterable<TutorStreamEvent> {
-      const key = topicKey(request.topic);
+      // La réponse est abandonnée si le serveur se tait trop longtemps (pas si elle est longue).
+      const idle = new AbortController();
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const watch = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => idle.abort(), STREAM_IDLE_MS);
+      };
       let response: Response;
       try {
+        // La discussion ouverte est connue de l'écran ; le serveur en relit l'historique.
         response = await postTutor(
           '/api/tutor/chat',
-          { ...request, conversationId: conversations.get(key) },
-          signal,
+          request,
+          signal ? AbortSignal.any([signal, idle.signal]) : idle.signal,
         );
       } catch (error) {
         if (error instanceof TutorHttpError) yield { type: 'error', code: error.code };
@@ -35,14 +44,17 @@ export function createLiveTutorService(): TutorService {
         return;
       }
       try {
+        watch();
         for await (const event of readNdjson(response.body)) {
-          if (event.type === 'conversation') conversations.set(key, event.id);
-          else yield event;
+          watch();
+          yield event;
         }
       } catch (error) {
         if (signal?.aborted) return;
         logError('tutor.stream', error);
-        yield { type: 'error', code: 'network' };
+        yield { type: 'error', code: idle.signal.aborted ? 'timeout' : 'network' };
+      } finally {
+        clearTimeout(timer);
       }
     },
     async startVoiceSession(request: StartVoiceRequest) {

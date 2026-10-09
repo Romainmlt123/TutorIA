@@ -26,7 +26,7 @@ export function MasteryHeroCard({ global, period }: Props) {
         labelVariant="h3"
       />
       <View style={styles.text}>
-        <Text variant="section" color="textOnColor" accessibilityRole="header">
+        <Text variant="h3" weight="black" color="textOnColor" accessibilityRole="header">
           {t.global}
         </Text>
         <Pill

@@ -12,11 +12,14 @@ const schema = z.object({
 
 export type ServerEnv = { apiKey: string; textModel: string; vocalModel: string };
 
-/** Modèle de modération : la documentation OpenAI recommande de le passer explicitement. */
-export const MODERATION_MODEL = 'omni-moderation-latest';
-
 /** Voix du tuteur vocal. */
 export const REALTIME_VOICE = 'marin';
+
+/**
+ * Transcription de la voix de l'élève pendant l'appel : lue par le surveillant seulement, pour la
+ * modérer (jamais affichée ni enregistrée).
+ */
+export const REALTIME_TRANSCRIPTION_MODEL = 'gpt-4o-mini-transcribe';
 
 export class ServerConfigError extends Error {}
 
@@ -70,4 +73,28 @@ export function getSupabaseEnv(): SupabaseServerEnv {
   }
   cachedSupabase = parsed.data;
   return cachedSupabase;
+}
+
+/*
+ * Surveillant du vocal (monitor/) : son adresse et le secret partagé qui authentifie le serveur
+ * intermédiaire auprès de lui. Sans adresse, le vocal n'est permis qu'en développement.
+ */
+const voiceMonitorSchema = z.object({
+  url: z.url(),
+  token: z.string().min(32),
+});
+
+export type VoiceMonitorEnv = z.infer<typeof voiceMonitorSchema>;
+
+export function getVoiceMonitorEnv(): VoiceMonitorEnv | null {
+  const url = process.env.VOICE_MONITOR_URL;
+  const token = process.env.VOICE_MONITOR_TOKEN;
+  if (!url && !token) return null;
+  const parsed = voiceMonitorSchema.safeParse({ url, token });
+  if (!parsed.success) {
+    throw new ServerConfigError(
+      'Variables du surveillant du vocal invalides : VOICE_MONITOR_URL et VOICE_MONITOR_TOKEN (32 caractères au moins)',
+    );
+  }
+  return parsed.data;
 }

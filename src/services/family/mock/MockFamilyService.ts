@@ -2,13 +2,15 @@ import { AuthError, type AuthService, type StudentAccount } from '../../auth/Aut
 import { PERSONAS } from '../../auth/mock/MockAuthService';
 import type { FamilyService, LinkedChild, LinkedParent, LinkRequest } from '../FamilyService';
 
-type Link = { parentId: string; studentId: string };
+type Link = { parentId: string; studentId: string; linkedAt: string };
 
 const lea = PERSONAS.lea as StudentAccount;
 
 /** Liens simulés, en mémoire : Claire est reliée à Léa et a validé son compte. */
 export class MockFamilyService implements FamilyService {
-  private links: Link[] = [{ parentId: PERSONAS.claire.id, studentId: lea.id }];
+  private links: Link[] = [
+    { parentId: PERSONAS.claire.id, studentId: lea.id, linkedAt: '2026-09-02T08:00:00.000Z' },
+  ];
   private requests: (LinkRequest & { parentId: string })[] = [];
 
   constructor(private readonly auth: AuthService) {}
@@ -28,7 +30,7 @@ export class MockFamilyService implements FamilyService {
     const me = this.me();
     if (studentId) {
       this.requests = this.requests.filter((request) => request.studentId !== studentId);
-      this.links.push({ parentId: me.id, studentId });
+      this.links.push({ parentId: me.id, studentId, linkedAt: new Date().toISOString() });
     }
     await this.auth.refreshAccount();
   }
@@ -58,15 +60,15 @@ export class MockFamilyService implements FamilyService {
       .map((link) => ({
         id: link.parentId,
         firstName: link.parentId === PERSONAS.claire.id ? PERSONAS.claire.firstName : null,
+        linkedAt: link.linkedAt,
       }));
   }
 
+  /** Comme en base : seul le parent retire un lien (v2.8). */
   async unlink(otherId: string): Promise<void> {
     const me = this.me();
     this.links = this.links.filter(
-      (link) =>
-        !(link.parentId === me.id && link.studentId === otherId) &&
-        !(link.studentId === me.id && link.parentId === otherId),
+      (link) => !(link.parentId === me.id && link.studentId === otherId),
     );
   }
 

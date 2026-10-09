@@ -56,6 +56,71 @@ export type AppTokens = {
     { label: string; background: string; text: string } | Record<string, string>
   >;
   settingTiles: Record<string, string>;
+  screenBand: {
+    eleve: string[];
+    violet: string[];
+    angle: string;
+    radiusBottom: string;
+    overlap: string;
+    titleSize: string;
+    text: string;
+    controlVeil: string;
+    segmentActive: { background: string; textOnViolet: string; textOnEleve: string };
+  };
+  sectionTitle: { fontSize: string; lineHeight: string; fontWeight: number };
+  goal: { gradient: string[]; text: string };
+  profile: {
+    summaryTile: {
+      size: string;
+      radius: string;
+      icon: string;
+      glow: { orange: string; violet: string; blue: string };
+    };
+    level: {
+      gradient: string[];
+      badgeGradient: string[];
+      track: string;
+      height: string;
+      knob: string;
+    };
+    trophy: { size: string; locked: string; lockedRing: string; lockedInk: string };
+    hero: { figure: string[]; halo: string; newsBadge: string };
+  };
+  auth: {
+    background: { eleve: string[]; parents: string[] };
+    angle: string;
+    glows: { top: string; eleve: string; parents: string };
+    sheet: { radius: string; shadow: string; padding: string; enter: string };
+    avatar: { size: string; greetLevel: number; greetFrom: string; greetTo: string };
+    field: { filledBackground: string; filledBorder: string };
+  };
+  voiceCall: {
+    background: string[];
+    angle: string;
+    glass: string;
+    dock: string;
+    status: { speaking: string[]; listening: string[]; listeningOrange: string[]; neutral: string };
+    avatar: {
+      size: string;
+      compactSize: string;
+      hop: string;
+      compactHop: string;
+      cycle: string;
+      squash: number;
+      pauseFactor: number;
+      tilt: string;
+      breath: string;
+    };
+    captions: {
+      spoken: string;
+      upcoming: string;
+      size: string;
+      lineHeight: string;
+      compactSize: string;
+      compactLineHeight: string;
+    };
+    hangup: string;
+  };
 };
 
 export type Gradient = { colors: string[]; locations: number[] };
@@ -70,6 +135,18 @@ export function kebabToCamel(name: string): string {
 export function parsePx(value: string): number {
   const match = /^(-?\d+(?:\.\d+)?)px$/.exec(value.trim());
   if (!match?.[1]) throw new Error(`Valeur en px attendue, reçu « ${value} »`);
+  return Number(match[1]);
+}
+
+export function parseMs(value: string): number {
+  const match = /^(\d+(?:\.\d+)?)ms$/.exec(value.trim());
+  if (!match?.[1]) throw new Error(`Durée en ms attendue, reçu « ${value} »`);
+  return Number(match[1]);
+}
+
+export function parseDeg(value: string): number {
+  const match = /^(-?\d+(?:\.\d+)?)deg$/.exec(value.trim());
+  if (!match?.[1]) throw new Error(`Angle en deg attendu, reçu « ${value} »`);
   return Number(match[1]);
 }
 
@@ -273,6 +350,118 @@ export function buildTokens(design: DesignTokens, app: AppTokens) {
     hero: { gradient: parseGradient(app.hero.gradient, resolve), text: resolve(app.hero.text) },
     statuses,
     settingTiles,
+    screenBand: {
+      student: parseGradient(app.screenBand.eleve, resolve),
+      violet: parseGradient(app.screenBand.violet, resolve),
+      angle: parseDeg(app.screenBand.angle),
+      radiusBottom: parsePx(app.screenBand.radiusBottom),
+      overlap: parsePx(app.screenBand.overlap),
+      titleSize: parsePx(app.screenBand.titleSize),
+      text: resolve(app.screenBand.text),
+      controlVeil: app.screenBand.controlVeil,
+      segmentActive: {
+        background: resolve(app.screenBand.segmentActive.background),
+        textOnViolet: resolve(app.screenBand.segmentActive.textOnViolet),
+        textOnStudent: resolve(app.screenBand.segmentActive.textOnEleve),
+      },
+    },
+    sectionTitle: {
+      fontSize: parsePx(app.sectionTitle.fontSize),
+      lineHeight: parsePx(app.sectionTitle.lineHeight),
+    },
+    goal: { gradient: parseGradient(app.goal.gradient, resolve), text: resolve(app.goal.text) },
+    profile: {
+      summaryTile: {
+        size: parsePx(app.profile.summaryTile.size),
+        radius: parsePx(app.profile.summaryTile.radius),
+        icon: parsePx(app.profile.summaryTile.icon),
+        glow: app.profile.summaryTile.glow,
+      },
+      level: {
+        gradient: parseGradient(app.profile.level.gradient, resolve),
+        badgeGradient: parseGradient(app.profile.level.badgeGradient, resolve),
+        track: resolve(app.profile.level.track),
+        height: parsePx(app.profile.level.height),
+        knob: parsePx(app.profile.level.knob),
+      },
+      trophy: {
+        size: parsePx(app.profile.trophy.size),
+        locked: resolve(app.profile.trophy.locked),
+        lockedRing: resolve(app.profile.trophy.lockedRing),
+        lockedInk: resolve(app.profile.trophy.lockedInk),
+      },
+      hero: {
+        figureWidth: parsePx(app.profile.hero.figure[0] ?? '0px'),
+        figureHeight: parsePx(app.profile.hero.figure[1] ?? '0px'),
+        halo: app.profile.hero.halo,
+        newsBadge: resolve(app.profile.hero.newsBadge),
+      },
+    },
+    auth: (() => {
+      const [top = 0, side = 0, bottom = 0] = app.auth.sheet.padding.split(/\s+/).map(parsePx);
+      return {
+        background: {
+          student: parseGradient(app.auth.background.eleve, resolve),
+          parent: parseGradient(app.auth.background.parents, resolve),
+        },
+        angle: parseDeg(app.auth.angle),
+        glows: {
+          top: app.auth.glows.top,
+          student: app.auth.glows.eleve,
+          parent: app.auth.glows.parents,
+        },
+        sheet: {
+          radius: parsePx(app.auth.sheet.radius),
+          shadow: app.auth.sheet.shadow,
+          paddingTop: top,
+          paddingHorizontal: side,
+          paddingBottom: bottom,
+          enterMs: parseMs(app.auth.sheet.enter),
+        },
+        avatar: {
+          size: parsePx(app.auth.avatar.size),
+          greetLevel: app.auth.avatar.greetLevel,
+          greetFromMs: parseMs(app.auth.avatar.greetFrom),
+          greetToMs: parseMs(app.auth.avatar.greetTo),
+        },
+        field: {
+          filledBackground: resolve(app.auth.field.filledBackground),
+          filledBorder: resolve(app.auth.field.filledBorder),
+        },
+      };
+    })(),
+    voiceCall: {
+      background: parseGradient(app.voiceCall.background, resolve),
+      angle: parseDeg(app.voiceCall.angle),
+      glass: app.voiceCall.glass,
+      dock: app.voiceCall.dock,
+      status: {
+        speaking: parseGradient(app.voiceCall.status.speaking, resolve),
+        listening: parseGradient(app.voiceCall.status.listening, resolve),
+        listeningOrange: parseGradient(app.voiceCall.status.listeningOrange, resolve),
+        neutral: app.voiceCall.status.neutral,
+      },
+      avatar: {
+        size: parsePx(app.voiceCall.avatar.size),
+        compactSize: parsePx(app.voiceCall.avatar.compactSize),
+        hop: parsePx(app.voiceCall.avatar.hop),
+        compactHop: parsePx(app.voiceCall.avatar.compactHop),
+        cycleMs: parseMs(app.voiceCall.avatar.cycle),
+        squash: app.voiceCall.avatar.squash,
+        pauseFactor: app.voiceCall.avatar.pauseFactor,
+        tilt: parseDeg(app.voiceCall.avatar.tilt),
+        breathMs: parseMs(app.voiceCall.avatar.breath),
+      },
+      captions: {
+        spoken: resolve(app.voiceCall.captions.spoken),
+        upcoming: app.voiceCall.captions.upcoming,
+        size: parsePx(app.voiceCall.captions.size),
+        lineHeight: parsePx(app.voiceCall.captions.lineHeight),
+        compactSize: parsePx(app.voiceCall.captions.compactSize),
+        compactLineHeight: parsePx(app.voiceCall.captions.compactLineHeight),
+      },
+      hangup: resolve(app.voiceCall.hangup),
+    },
   };
 }
 

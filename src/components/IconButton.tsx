@@ -14,24 +14,35 @@ export type IconButtonProps = {
   iconSize?: number;
   /** Point violet (`accent`) : nouveauté ou notification. */
   badge?: boolean;
+  /** Posé sur un bandeau de marque (v2.5) : fond blanc translucide, icône blanche, sans ombre. */
+  onBand?: boolean;
 };
 
 export function IconButton({
   icon,
   accessibilityLabel,
   onPress,
-  iconColor = theme.colors.textSecondary,
+  iconColor,
   iconSize = 24,
   badge = false,
+  onBand = false,
 }: IconButtonProps) {
   return (
     <PressableBase
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      shadow={theme.shadow.sm}
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
-      <Icon name={icon} size={iconSize} color={iconColor} />
+      shadow={onBand ? undefined : theme.shadow.sm}
+      style={({ pressed }) => [
+        styles.button,
+        onBand && styles.onBand,
+        pressed && (onBand ? styles.onBandPressed : styles.pressed),
+      ]}>
+      <Icon
+        name={icon}
+        size={iconSize}
+        color={iconColor ?? (onBand ? theme.colors.textOnColor : theme.colors.textSecondary)}
+      />
       {badge ? <View style={styles.badge} /> : null}
     </PressableBase>
   );
@@ -47,6 +58,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pressed: { backgroundColor: theme.colors.bg },
+  onBand: { backgroundColor: theme.screenBand.controlVeil },
+  onBandPressed: { opacity: 0.8 },
   badge: {
     position: 'absolute',
     top: 10,

@@ -13,17 +13,18 @@ type Props = {
   onProfile: () => void;
 };
 
-/** « Salut Léa ! », notifications (point violet = nouveauté) et avatar. */
+/** « Salut Léa ! », notifications (point violet = nouveauté) et avatar, dans le bandeau bleu. */
 export function HomeHeader({ firstName, unreadNotifications, onNotifications, onProfile }: Props) {
   return (
     <View style={styles.header}>
-      <Text variant="h2" weight="black" accessibilityRole="header" style={styles.greeting}>
+      <Text variant="hero" color="textOnColor" accessibilityRole="header" style={styles.greeting}>
         {fr.home.greeting(firstName)}
       </Text>
       <IconButton
         icon="cloche"
         accessibilityLabel={fr.home.notifications(unreadNotifications)}
         badge={unreadNotifications > 0}
+        onBand
         onPress={onNotifications}
       />
       <PressableBase
@@ -44,14 +45,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.space[3],
-    marginBottom: theme.space[1],
   },
   greeting: { flex: 1 },
   avatar: {
     width: theme.space[12],
     height: theme.space[12],
     borderRadius: theme.radius.full,
-    backgroundColor: theme.colors.primarySoft,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },

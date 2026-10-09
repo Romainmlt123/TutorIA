@@ -1,0 +1,17 @@
+<!-- @dsCard group="Explorer" height=292 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+function Demo() {
+  var m = React.useState('ecrit');
+  return h('div', { style: { width: 350, display: 'flex', flexDirection: 'column', gap: 24 } },
+    h(T.LevelProgressHeader, { type: 'lecon', title: 'Lire une abscisse', step: 1, total: 4, city: 'Repère-sur-Mer', mode: m[0], onModeChange: m[1] }),
+    h(T.LevelProgressHeader, { type: 'evaluation', title: 'Évaluation du repère', step: 3, total: 5, mode: 'vocal' }));
+}
+return h(Demo);
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

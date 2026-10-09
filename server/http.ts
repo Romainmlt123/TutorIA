@@ -19,6 +19,7 @@ const STATUS: Record<ErrorCode, number> = {
   name_mismatch: 422,
   same_email: 422,
   rate_limited: 429,
+  daily_limit: 429,
   timeout: 504,
   upstream: 502,
   network: 502,

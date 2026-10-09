@@ -19,7 +19,7 @@ export function ChildProfileCard({ name, line, onEdit }: Props) {
         </Text>
       </View>
       <View style={styles.text}>
-        <Text variant="section" color="textOnColor">
+        <Text variant="h3" weight="black" color="textOnColor">
           {name}
         </Text>
         <Text variant="hint" weight="medium" color="textOnColor">

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Connexion" height=350 -->
+<!-- @dsCard group="Connexion" height=470 -->
 <div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
 <script>
 (function () {
@@ -7,7 +7,9 @@
 return h('div', { style: { width: 350, display: 'flex', flexDirection: 'column', gap: 16 } },
   h(T.TextField, { label: 'E-mail', icon: 'mail', type: 'email', defaultValue: 'lea.martin@exemple.fr' }),
   h(T.TextField, { label: 'Mot de passe', icon: 'lock', type: 'password', placeholder: 'Ton mot de passe' }),
-  h(T.TextField, { label: 'Code parent', icon: 'key', badge: 'Facultatif', inputMode: 'numeric', maxLength: 6, placeholder: 'Ex. 482913', hint: 'Pour relier ton compte à celui de ton parent.' }));
+  h(T.TextField, { label: 'Code parent', icon: 'key', badge: 'Facultatif', inputMode: 'numeric', maxLength: 6, placeholder: 'Ex. 482913', hint: 'Pour relier ton compte à celui de ton parent.' }),
+  h('div', { style: { padding: 16, background: 'var(--surface)', borderRadius: 24, boxShadow: 'var(--shadow-md)' } },
+    h(T.TextField, { label: 'Identifiant ou e-mail', icon: 'user', defaultValue: 'lea.martin', filled: true })));
   }
   ReactDOM.createRoot(document.getElementById("root")).render(h(App));
 })();

@@ -1,4 +1,4 @@
-import { studyBlock } from './studyRules';
+import { secondsUntilBlock, studyBlock } from './studyRules';
 
 const open = {
   eveningPause: false,
@@ -41,5 +41,24 @@ describe('studyBlock', () => {
     const at17h30 = new Date('2026-09-28T15:30:00Z');
     expect(studyBlock(rules, 89 * 60, at17h30)).toBeNull();
     expect(studyBlock(rules, 90 * 60, at17h30)).toBe('daily_limit');
+  });
+});
+
+describe('secondsUntilBlock', () => {
+  it('has no bound without parental rules', () => {
+    expect(secondsUntilBlock(open, 0, new Date('2026-09-28T18:00:00Z'))).toBeNull();
+  });
+
+  it('counts down to the evening pause, Paris time', () => {
+    const rules = { ...open, eveningPause: true };
+    // 20:55:30 à Paris (été, UTC+2) : 4 min 30 s avant 21 h.
+    expect(secondsUntilBlock(rules, 0, new Date('2026-09-28T18:55:30Z'))).toBe(270);
+  });
+
+  it('keeps the closest of the window end and the daily time left', () => {
+    const rules = { ...open, dailyLimitEnabled: true, dailyLimitMinutes: 30 };
+    // 18:00 à Paris : 3 h avant 21 h, mais 5 min de temps restant.
+    expect(secondsUntilBlock(rules, 25 * 60, new Date('2026-09-28T16:00:00Z'))).toBe(300);
+    expect(secondsUntilBlock(rules, 40 * 60, new Date('2026-09-28T16:00:00Z'))).toBe(0);
   });
 });

@@ -4,13 +4,14 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { FormMessage } from '@/components/form/FormMessage';
 import { ScreenContainer } from '@/components/ScreenContainer';
+import { SectionCard } from '@/components/SectionCard';
 import { SegmentedControl } from '@/components/SegmentedControl';
-import { Text } from '@/components/Text';
 import type { SubjectId } from '@/data/types';
 import { fr } from '@/i18n/fr';
 import type { ChapterStatus, ProgressPeriod } from '@/services/parents';
 import { theme } from '@/theme';
 
+import { ParentBand } from './components/ParentBand';
 import { MasteryHeroCard } from './components/MasteryHeroCard';
 import { StatusChip } from './components/StatusChip';
 import { SubjectProgressCard } from './components/SubjectProgressCard';
@@ -51,25 +52,23 @@ export function ParentProgressScreen() {
     : [];
 
   return (
-    <ScreenContainer contentStyle={styles.content}>
-      <View style={styles.header}>
-        <Text variant="heading" accessibilityRole="header">
-          {t.title(child?.firstName ?? '')}
-        </Text>
-        <Text variant="bodySm" color="textSecondary">
-          {t.subtitle}
-        </Text>
-      </View>
-      <SegmentedControl
-        options={[
-          { value: 'month', label: t.periods.month },
-          { value: 'quarter', label: t.periods.quarter },
-        ]}
-        value={period}
-        onChange={setPeriod}
-        accessibilityLabel={t.periodLabel}
-        fullWidth
-      />
+    <ScreenContainer
+      contentStyle={styles.content}
+      band={
+        <ParentBand title={t.title(child?.firstName ?? '')} intro={t.subtitle}>
+          <SegmentedControl
+            options={[
+              { value: 'month', label: t.periods.month },
+              { value: 'quarter', label: t.periods.quarter },
+            ]}
+            value={period}
+            onChange={setPeriod}
+            accessibilityLabel={t.periodLabel}
+            fullWidth
+            onBand="violet"
+          />
+        </ParentBand>
+      }>
       {progress.isError ? (
         <View style={styles.section}>
           <FormMessage message={fr.parent.home.loadFailed} />
@@ -84,15 +83,7 @@ export function ParentProgressScreen() {
       ) : (
         <>
           <MasteryHeroCard global={globalMastery(subjects)} period={period} />
-          <View style={styles.section}>
-            <View style={styles.sectionHead}>
-              <Text variant="section" accessibilityRole="header">
-                {t.bySubject}
-              </Text>
-              <Text variant="caption" weight="regular" color="textSecondary">
-                {t.tapHint}
-              </Text>
-            </View>
+          <SectionCard title={t.bySubject} meta={t.tapHint} gap={theme.space[3]}>
             <View
               style={styles.legend}
               accessibilityElementsHidden
@@ -109,7 +100,7 @@ export function ParentProgressScreen() {
                 onToggle={() => setOpen(open === summary.subjectId ? null : summary.subjectId)}
               />
             ))}
-          </View>
+          </SectionCard>
         </>
       )}
     </ScreenContainer>
@@ -117,10 +108,8 @@ export function ParentProgressScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { gap: theme.space[6] },
-  header: { gap: theme.space[1] },
+  content: { gap: theme.space[4] },
   section: { gap: theme.space[3] },
-  sectionHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   legend: {
     flexDirection: 'row',
     flexWrap: 'wrap',

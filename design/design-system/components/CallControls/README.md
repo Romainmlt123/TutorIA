@@ -2,6 +2,8 @@
 
 Commandes d'appel du tuteur vocal : micro, raccrocher (rouge, au centre), caméra.
 
+> Depuis la v2.6, l’appel du tuteur (2B, 2D, 2F) utilise `CallDock` (commandes en verre avec les sous-titres). `CallControls` reste pour la discussion vocale d’Explorer (X4b).
+
 ## Quand l'utiliser
 
 Bas du tuteur vocal, au-dessus de la barre de navigation. La caméra, à droite du bouton raccrocher, sert à montrer un exercice.

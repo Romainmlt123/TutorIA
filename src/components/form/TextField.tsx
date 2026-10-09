@@ -45,6 +45,8 @@ export type TextFieldProps = Pick<
   error?: string;
   /** Code à chiffres : texte espacé. */
   spaced?: boolean;
+  /** Dans une carte ou une feuille blanche (v2.7) : fond `bg`, bordure claire, sans ombre. */
+  filled?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -62,11 +64,15 @@ export function TextField({
   hint,
   error,
   spaced = false,
+  filled = false,
   style,
+  placeholder,
   ...inputProps
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  // Dès que le champ est touché, l'exemple et l'icône s'effacent : le texte part de la gauche.
+  const showIcon = Boolean(icon) && !focused && !value;
   const message = error ?? hint;
 
   return (
@@ -85,11 +91,6 @@ export function TextField({
         ) : null}
       </View>
       <View>
-        {icon ? (
-          <View style={styles.icon}>
-            <Icon name={icon} size={20} color={theme.palette.gray[400]} />
-          </View>
-        ) : null}
         <TextInput
           {...inputProps}
           value={value}
@@ -98,18 +99,26 @@ export function TextField({
           accessibilityHint={message}
           aria-invalid={Boolean(error)}
           secureTextEntry={secure && !revealed}
+          placeholder={focused ? undefined : placeholder}
           placeholderTextColor={theme.colors.textDisabled}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           style={[
             styles.input,
-            icon ? styles.withIcon : null,
+            showIcon ? styles.withIcon : null,
             secure ? styles.withToggle : null,
             spaced ? styles.spaced : null,
+            filled ? styles.filled : null,
             error ? styles.invalid : null,
             focused ? styles.focused : null,
           ]}
         />
+        {/* Dessinée après le champ : sur Android, l'ombre de focus le ferait passer au-dessus. */}
+        {showIcon && icon ? (
+          <View style={styles.icon}>
+            <Icon name={icon} size={20} color={theme.palette.gray[400]} />
+          </View>
+        ) : null}
         {secure ? (
           <PressableBase
             onPress={() => setRevealed((shown) => !shown)}
@@ -144,7 +153,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: theme.space[2],
   },
-  icon: { position: 'absolute', left: theme.space[4], top: theme.space[4], zIndex: 1 },
+  icon: { position: 'absolute', left: theme.space[4], top: theme.space[4], pointerEvents: 'none' },
   input: {
     ...textStyle('body'),
     height: FIELD_HEIGHT,
@@ -161,6 +170,11 @@ const styles = StyleSheet.create({
   withIcon: { paddingLeft: theme.space[12] },
   withToggle: { paddingRight: FIELD_HEIGHT },
   spaced: { letterSpacing: 1.3 },
+  filled: {
+    backgroundColor: theme.auth.field.filledBackground,
+    borderColor: theme.auth.field.filledBorder,
+    boxShadow: 'none',
+  },
   invalid: { borderColor: theme.colors.warning },
   focused: { borderColor: theme.colors.primary, boxShadow: theme.shadow.focus },
   toggle: {

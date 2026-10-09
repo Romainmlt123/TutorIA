@@ -21,13 +21,17 @@ button{font-family:inherit}
 a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
 </style>
 </helmet>
-<div style="position: relative; width: 390px; height: 1760px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
-<main style="display: flex; flex-direction: column; gap: 24px; padding: 56px 20px 0; box-sizing: border-box">
-
-<header style="display: flex; flex-direction: column; gap: 4px">
-<h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 900">Sessions de Léa</h1>
-<p style="margin: 0; font-size: 14px; line-height: 20px; color: var(--text-secondary)">Ce qu'elle a travaillé avec le tuteur, session par session.</p>
+<div style="position: relative; width: 390px; height: 1860px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<section aria-label="Sessions de Léa" style="position: relative; overflow: hidden; padding: 56px 20px 88px; border-radius: 0 0 32px 32px; background: linear-gradient(170deg, #662EE6 0%, #521DC8 55%, #3B0DA2 100%); color: #FFFFFF">
+<span aria-hidden="true" style="position: absolute; top: 20px; right: -48px; width: 136px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.08)"></span>
+<span aria-hidden="true" style="position: absolute; top: 124px; right: 40px; width: 88px; height: 32px; border-radius: 16px; background: rgba(255,255,255,0.06)"></span>
+<header style="position: relative; display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-size: 30px; line-height: 38px; font-weight: 900; color: #FFFFFF">Sessions de Léa</h1>
+<p style="margin: 0; max-width: 300px; font-size: 15px; line-height: 22px; color: #FFFFFF">Ce qu'elle a travaillé avec le tuteur, session par session.</p>
 </header>
+</section>
+
+<main style="position: relative; display: flex; flex-direction: column; gap: 24px; margin-top: -56px; padding: 0 20px; box-sizing: border-box">
 
 <section aria-label="Cette semaine" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 24px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 50%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
 <svg width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: -30px; top: -26px; opacity: 0.12"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L4 20l1-4.3A8.5 8.5 0 1 1 21 11.5z"></path></svg>
@@ -55,10 +59,10 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </div>
 
 <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
-<section style="display: flex; flex-direction: column; gap: 16px">
-<h2 style="margin: 0; font-size: 18px; line-height: 24px; font-weight: 900">{{ g.day }}</h2>
+<section style="display: flex; flex-direction: column; gap: 12px; padding: 16px; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md)">
+<h2 style="margin: 0 0 4px; font-size: 22px; line-height: 30px; font-weight: 900">{{ g.day }}</h2>
 <sc-for list="{{ g.items }}" as="s" hint-placeholder-count="2">
-<article style="display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); overflow: hidden">
+<article style="display: flex; flex-direction: column; background: var(--bg); border-radius: var(--radius-2xl); overflow: hidden">
 <div style="position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: {{ s.grad }}; color: #FFFFFF">
 <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: -16px; top: -16px; opacity: 0.16"><path d="{{ s.icon }}"></path></svg>
 <span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 999px; background: rgba(255,255,255,0.24); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ s.icon }}"></path></svg></span>
@@ -88,7 +92,7 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1760}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1860}}'>
 class Component extends DCLogic {
 constructor(props) {
 super(props);

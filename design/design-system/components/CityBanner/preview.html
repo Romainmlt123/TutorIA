@@ -1,0 +1,13 @@
+<!-- @dsCard group="Explorer" height=80 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+return h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 10 } },
+  h(T.CityBanner, { name: 'Fraction-Ville', status: 'done' }), h(T.CityBanner, { name: 'Repère-sur-Mer', status: 'current' }),
+  h(T.CityBanner, { name: 'Calcul-les-Bains', status: 'consolidate' }), h(T.CityBanner, { name: 'Équation-Port', status: 'locked' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

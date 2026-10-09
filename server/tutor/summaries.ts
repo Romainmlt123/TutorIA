@@ -37,7 +37,14 @@ const SESSION_INSTRUCTIONS = [
   'N’inclus jamais de confidence, d’émotion, de situation personnelle, de prénom, ni de citation de l’élève.',
   'Chaque champ fait moins de 100 caractères, sans point final, au présent, sans pronom genré (ni « il » ni « elle »).',
   '« understood » : ce qui est compris ; « to_review » : ce qui reste à revoir ; null si rien.',
+  'Les messages du tuteur écrivent les formules en LaTeX : toi, n’en écris jamais (ni $, ni commande avec \\), écris les notions en mots.',
 ].join(' ');
+
+/**
+ * Jetons de sortie des résumés : le modèle en consomme une partie pour réfléchir avant d'écrire ;
+ * une limite trop basse coupait le résumé au milieu d'une phrase.
+ */
+const SUMMARY_MAX_TOKENS = 1500;
 
 const WEEK_INSTRUCTIONS = [
   'Tu écris le résumé de la semaine d’un élève pour son parent, en français, au vouvoiement implicite.',
@@ -164,9 +171,10 @@ export async function handleSessionSummary(
         },
       },
       store: false,
-      max_output_tokens: 400,
+      max_output_tokens: SUMMARY_MAX_TOKENS,
       safety_identifier: await sha256(session.student_id),
     });
+    if (response.status === 'incomplete') throw new Error('Résumé coupé par la limite de jetons');
     const parsed = sessionResult.safeParse(JSON.parse(response.output_text));
     if (!parsed.success) throw new Error('Résumé mal formé');
     const { error: updateError } = await admin
@@ -266,8 +274,10 @@ export async function handleWeeklyReport(
       instructions: WEEK_INSTRUCTIONS,
       input: JSON.stringify(facts),
       store: false,
-      max_output_tokens: 300,
+      max_output_tokens: SUMMARY_MAX_TOKENS,
     });
+    // Une réponse coupée (limite de jetons atteinte) n'est jamais gardée : la phrase serait tronquée.
+    if (response.status === 'incomplete') throw new Error('Résumé coupé par la limite de jetons');
     const summary = await safe(client, response.output_text, 600);
     if (!summary) return jsonResponse({ summary: null });
     const saved = await admin

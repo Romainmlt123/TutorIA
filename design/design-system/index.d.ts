@@ -2,6 +2,7 @@
 import * as React from "react";
 
 export type SubjectId = 'maths' | 'francais' | 'histoire-geo' | 'anglais' | 'svt' | 'physique-chimie';
+export type LevelType = 'lecon' | 'exercices' | 'evaluation';
 
 /** Icône au trait fin (grille 24), en currentColor, pour l'interface et les six matières. */
 export interface IconProps {
@@ -155,11 +156,11 @@ export interface GoalStepperProps {
 }
 export declare function GoalStepper(props: GoalStepperProps): React.ReactElement;
 
-/** Barre de navigation flottante en bas de l'écran, 4 onglets, l'actif monte dans une bulle bleue. */
+/** Barre de navigation flottante en bas de l'écran, l'actif monte dans une bulle bleue. Élève : 5 onglets dont Explorer (boussole) ; Parents : 4 onglets. */
 export interface BottomNavProps {
   /** Jeu d'onglets. */
   space?: 'eleve' | 'parents';
-  /** Onglet actif : accueil, tuteur, flashcards, stats ou accueil, progres, sessions, reglages. */
+  /** Onglet actif : accueil, explorer (alias parcours), tuteur, revisions, stats ou accueil, progres, sessions, reglages. */
   active?: string;
   /** Clic sur un onglet. */
   onNavigate?: (id: string) => void;
@@ -307,7 +308,7 @@ export interface ChatInputProps {
 }
 export declare function ChatInput(props: ChatInputProps): React.ReactElement;
 
-/** Quatre barres animées bleu → violet qui suivent la voix du tuteur, avec l'état en dessous. */
+/** Quatre barres animées bleu → violet qui suivent la voix du tuteur (remplacées par VoiceAvatar dans l'appel du tuteur depuis la v2.6). */
 export interface VoiceVisualizerProps {
   /** État de la conversation. */
   state?: 'speaking' | 'listening' | 'idle' | 'muted' | 'writing' | 'explaining';
@@ -322,7 +323,7 @@ export interface VoiceVisualizerProps {
 }
 export declare function VoiceVisualizer(props: VoiceVisualizerProps): React.ReactElement;
 
-/** Commandes d'appel du tuteur vocal : micro, raccrocher (rouge, au centre), caméra. */
+/** Commandes d'appel : micro, raccrocher (rouge, au centre), caméra (discussion vocale d'Explorer ; l'appel du tuteur utilise CallDock depuis la v2.6). */
 export interface CallControlsProps {
   /** Micro coupé. */
   muted?: boolean;
@@ -337,13 +338,16 @@ export interface CallControlsProps {
 }
 export declare function CallControls(props: CallControlsProps): React.ReactElement;
 
-/** En-tête d'un panneau visuel (graphique ou tableau blanc) : surtitre matière, titre, agrandir, replier. */
+/** Sorte de visuel du tuteur : couleurs (violet pour le graphique, azur pour le tableau) et icône. */
+export type VisualKind = 'graph' | 'whiteboard';
+
+/** En-tête d'un visuel : tuile et surtitre dans la couleur du visuel, titre, agrandir, replier. */
 export interface PanelHeaderProps {
-  /** Type de panneau. */
-  kind?: 'graph' | 'whiteboard';
-  /** Matière (couleurs). */
+  /** Sorte de visuel. */
+  kind?: VisualKind;
+  /** Matière (surtitre « Graphique · Maths »). */
   subject?: SubjectId;
-  /** Surtitre (par défaut « Graphique · Maths »). */
+  /** Surtitre. */
   kicker?: string;
   /** Titre. */
   title?: string;
@@ -351,17 +355,21 @@ export interface PanelHeaderProps {
   live?: boolean;
   /** Chevron ouvert / fermé. */
   open?: boolean;
-  /** Replier / déplier. */
+  /** Chevron présent (true par défaut). */
+  collapsible?: boolean;
+  /** Bouton agrandir présent (true par défaut). */
+  expandable?: boolean;
+  /** Replier / déplier : tout le bandeau devient un bouton. */
   onToggle?: () => void;
   /** Plein écran. */
   onExpand?: () => void;
 }
 export declare function PanelHeader(props: PanelHeaderProps): React.ReactElement;
 
-/** Panneau repliable qui accueille un graphique ou un tableau blanc au-dessus du chat. */
+/** Carte d'un visuel, teintée de sa couleur, avec le dessin sur une feuille blanche. */
 export interface VisualPanelProps {
-  /** Type. */
-  kind?: 'graph' | 'whiteboard';
+  /** Sorte de visuel. */
+  kind?: VisualKind;
   /** Matière. */
   subject?: SubjectId;
   /** Surtitre. */
@@ -374,8 +382,14 @@ export interface VisualPanelProps {
   open?: boolean;
   /** Ouvert au départ. */
   defaultOpen?: boolean;
+  /** Repliable (true par défaut ; false dans l'appel vocal). */
+  collapsible?: boolean;
+  /** Bouton agrandir (true par défaut). */
+  expandable?: boolean;
+  /** Ombre forte, pour l'appel vocal sur le dégradé de marque. */
+  elevated?: boolean;
   /** Replier. */
-  onToggle?: () => void;
+  onToggle?: (open: boolean) => void;
   /** Agrandir. */
   onExpand?: () => void;
   /** Contenu (MathGraph, Whiteboard). */
@@ -385,7 +399,7 @@ export interface VisualPanelProps {
 }
 export declare function VisualPanel(props: VisualPanelProps): React.ReactElement;
 
-/** Repère cartésien en SVG : quadrillage, droites y = mx + b, points (avec halo et pointillés de lecture). */
+/** Repère cartésien en SVG : quadrillage, droites, points, légende en pastilles ; `focus` met en avant ce que le tuteur nomme. */
 export interface MathGraphProps {
   /** Matière (couleur des tracés). */
   subject?: SubjectId;
@@ -395,31 +409,126 @@ export interface MathGraphProps {
   yRange?: [number, number];
   /** Pas des graduations y. */
   yStep?: number;
-  /** Droites. */
-  lines?: { m: number; b: number; color?: string; dashed?: boolean; label?: string }[];
-  /** Points. */
-  points?: { x: number; y: number; pulse?: boolean; guide?: boolean; label?: string }[];
+  /** Droites (from / to bornent le tracé). */
+  lines?: { m: number; b: number; color?: string; dashed?: boolean; label?: string; from?: number; to?: number }[];
+  /** Points (étiquette à droite par défaut). */
+  points?: { x: number; y: number; pulse?: boolean; guide?: boolean; key?: boolean; label?: string; labelSide?: 'left' | 'right' }[];
+  /** Droite (index) ou point clé mis en avant. */
+  focus?: number | 'point';
+  /** Pastille de légende du point clé (« Solution »). */
+  pointLegend?: string;
   /** Texte accessible. */
   description?: string;
 }
 export declare function MathGraph(props: MathGraphProps): React.ReactElement;
 
-/** Tableau blanc : étapes de calcul écrites ligne à ligne, opérations en marge, résultat encadré. */
+/** Tableau blanc : calcul ligne à ligne, opérations en bleu, notes numérotées, résultat entouré ; s'écrit en direct en vocal. */
 export interface WhiteboardProps {
   /** Matière. */
   subject?: SubjectId;
-  /** Lignes du calcul. */
+  /** Lignes du calcul ; op = opération qui mène à cette ligne. */
   steps?: { expr: string; op?: string; note?: string }[];
-  /** Résultat encadré. */
+  /** Résultat entouré. */
   result?: string;
-  /** Note sous le résultat. */
+  /** Note du résultat. */
   resultNote?: string;
-  /** Nombre d'étapes déjà écrites (les suivantes apparaissent en fondu) ; tout est visible par défaut. */
+  /** Lignes déjà écrites (le résultat compte pour une) ; tout est visible par défaut. */
   progress?: number;
+  /** Stylo au bout de la dernière ligne écrite. */
+  writing?: boolean;
+  /** Résultat entouré (true par défaut). */
+  circled?: boolean;
   /** Texte accessible. */
   description?: string;
 }
 export declare function Whiteboard(props: WhiteboardProps): React.ReactElement;
+
+/** Barre du haut de l'appel vocal : « Écrit » et chrono. */
+export interface CallTopBarProps {
+  /** Durée affichée, « 02:17 ». */
+  elapsed?: string;
+  /** Point qui clignote (true par défaut). */
+  live?: boolean;
+  /** Passer à l'écrit. */
+  onWritten?: () => void;
+}
+export declare function CallTopBar(props: CallTopBarProps): React.ReactElement;
+
+/** Le logo du tuteur en appel : il rebondit au niveau de sa voix, penche la tête quand il écoute. */
+export interface VoiceAvatarProps {
+  /** Qui a la parole. */
+  state?: 'speaking' | 'listening' | 'idle' | 'muted' | 'connecting';
+  /** Niveau de la voix du tuteur, 0 à 1, lissé (simulé s'il est absent). */
+  level?: number;
+  /** 148 (par défaut) ou 96. */
+  size?: number;
+  /** Libellé accessible. */
+  label?: string;
+  /** Toucher pendant que le tuteur parle : l'interrompre. */
+  onInterrupt?: () => void;
+  /** Appui long (600 ms) : signaler. */
+  onLongPress?: () => void;
+}
+export declare function VoiceAvatar(props: VoiceAvatarProps): React.ReactElement;
+
+/** Pastille d'état de l'appel : verte « Je t'explique… », rouge « Je t'écoute… », neutre sinon. */
+export interface VoiceStatusProps {
+  /** État de l'appel. */
+  state?: 'speaking' | 'listening' | 'muted' | 'connecting' | 'ended' | 'error';
+  /** Couleur de « Je t'écoute… » (rouge par défaut). */
+  listenColor?: 'red' | 'orange';
+  /** Hauteur 40 ou 32 px. */
+  size?: 'md' | 'sm';
+  /** Remplace le libellé. */
+  label?: string;
+}
+export declare function VoiceStatus(props: VoiceStatusProps): React.ReactElement;
+
+/** Sous-titres en direct : mots dits en blanc, suivants à 45 %, couleurs nommées en pastille. */
+export interface LiveCaptionsProps {
+  /** Phrase en cours. */
+  text?: string;
+  /** Mots déjà prononcés (tous par défaut). */
+  spoken?: number;
+  /** Qui parle. */
+  speaker?: 'tutor' | 'student';
+  /** Affiche « Tutor'IA » ou « Toi ». */
+  showSpeaker?: boolean;
+  /** Sur le dégradé (blanc) ou sur fond clair. */
+  surface?: 'brand' | 'light';
+  /** 20/30 (lg) ou 16/22 (md). */
+  size?: 'lg' | 'md';
+  /** Lignes au plus. */
+  maxLines?: number;
+  /** Pastilles de couleur (true par défaut). */
+  colorWords?: boolean;
+  /** Alignement. */
+  align?: 'center' | 'left';
+  /** Texte quand la phrase est vide. */
+  placeholder?: React.ReactNode;
+}
+export declare function LiveCaptions(props: LiveCaptionsProps): React.ReactElement;
+
+/** Commandes de l'appel en verre : micro, sous-titres, caméra, raccrocher. */
+export interface CallDockProps {
+  /** Micro coupé. */
+  muted?: boolean;
+  /** Sous-titres affichés (true par défaut). */
+  captionsOn?: boolean;
+  /** Photo en cours. */
+  cameraOn?: boolean;
+  /** Bouton caméra présent (true par défaut ; false si les parents l'ont désactivée). */
+  cameraVisible?: boolean;
+  /** Micro. */
+  onToggleMute?: () => void;
+  /** Sous-titres. */
+  onToggleCaptions?: () => void;
+  /** Montrer un exercice. */
+  onCamera?: () => void;
+  /** Raccrocher et revenir au chat écrit. */
+  onHangUp?: () => void;
+}
+export declare function CallDock(props: CallDockProps): React.ReactElement;
 
 /** Carte « Révision du jour » : nombre de cartes, durée, série, matières concernées et bouton vert vif. */
 export interface DailyReviewCardProps {
@@ -702,6 +811,72 @@ export interface SettingRowProps {
   divider?: boolean;
 }
 export declare function SettingRow(props: SettingRowProps): React.ReactElement;
+export type ProfileTone = 'orange' | 'violet' | 'blue' | 'green' | 'red' | 'cyan';
+export interface ProfileHeroProps {
+  /** Prénom, en 44 Black. */
+  name?: string;
+  /** Classe (« 4e » donne « Élève de 4e »). */
+  grade?: string;
+  /** Ligne sous la classe (« Depuis septembre »). */
+  since?: string;
+  /** Surtitre (« Mon profil » par défaut). */
+  kicker?: string;
+  /** Image de la figurine (dans l'app : la figurine 3D) ; sans image, l'initiale dans un disque blanc. */
+  avatarSrc?: string;
+  /** Texte alternatif de la figurine. */
+  avatarAlt?: string;
+  /** Nouveautés de la garde-robe : pastille orange sur « Modifier l'avatar ». */
+  newsCount?: number;
+  /** « Modifier l'avatar » (ou « Créer mon avatar » sans figurine). */
+  onEditAvatar?: () => void;
+  /** Retour ; null masque la flèche. */
+  onBack?: (() => void) | null;
+}
+export declare function ProfileHero(props: ProfileHeroProps): React.ReactElement;
+export interface LevelBarProps {
+  /** Niveau atteint. */
+  level?: number;
+  /** XP gagnés dans ce niveau. */
+  xp?: number;
+  /** XP du niveau (seuil du suivant). */
+  xpMax?: number;
+}
+export declare function LevelBar(props: LevelBarProps): React.ReactElement;
+export interface ProfileSummaryProps {
+  /** Trois chiffres : icône, couleur, valeur, légende. */
+  stats?: { icon: string; tone?: ProfileTone; value: string; label: string }[];
+  /** Niveau, XP et seuil : affiche la barre de niveau sous les chiffres. */
+  level?: number;
+  xp?: number;
+  xpMax?: number;
+  /** Libellé accessible de la carte. */
+  label?: string;
+}
+export declare function ProfileSummary(props: ProfileSummaryProps): React.ReactElement;
+export interface TrophyBadgeProps {
+  /** Nom du trophée (deux lignes au plus). */
+  label: string;
+  /** Icône (crown, flame, compass, star, trophy…). */
+  icon?: string;
+  /** Couleur de la médaille. */
+  tone?: ProfileTone;
+  /** Pas encore gagné : grisé avec un cadenas. */
+  locked?: boolean;
+  /** Ouvre le détail du trophée. */
+  onClick?: () => void;
+}
+export declare function TrophyBadge(props: TrophyBadgeProps): React.ReactElement;
+export interface TrophyShelfProps {
+  /** Titre (« Mes trophées »). */
+  title?: string;
+  /** Trophées, les gagnés d'abord. */
+  trophies?: TrophyBadgeProps[];
+  /** Nombre gagné (calculé sinon). */
+  earned?: number;
+  /** Nombre total de trophées. */
+  total?: number;
+}
+export declare function TrophyShelf(props: TrophyShelfProps): React.ReactElement;
 
 /** Grande carte de choix du profil (élève en bleu, parent en violet) sur l'écran de bienvenue. */
 export interface ProfileChoiceCardProps {
@@ -737,6 +912,25 @@ export interface AuthHeroProps {
   subtitle?: string;
 }
 export declare function AuthHero(props: AuthHeroProps): React.ReactElement;
+export interface AuthScreenProps {
+  /** Espace : bleu élève (tutoiement) ou violet parents (vouvoiement). */
+  space?: 'eleve' | 'parents';
+  /** Titre en blanc sous le logo. */
+  title?: string;
+  /** Phrase sous le titre. */
+  subtitle?: string;
+  /** Retour (flèche en verre en haut à gauche) ; null pour la masquer. */
+  onBack?: (() => void) | null;
+  /** Le logo fait un petit rebond à l'arrivée (true par défaut). */
+  greet?: boolean;
+  /** Hauteur minimale de l'écran (844 par défaut). */
+  height?: number;
+  /** Bas de la feuille : « J'ai un code de mon parent », « Créer un compte ». */
+  footer?: React.ReactNode;
+  /** Contenu de la feuille blanche : formulaire, séparateur, boutons Apple / Google. */
+  children?: React.ReactNode;
+}
+export declare function AuthScreen(props: AuthScreenProps): React.ReactElement;
 
 /** Champ de formulaire 52px avec libellé, icône, pastille optionnelle, aide et bouton « afficher » pour les mots de passe. */
 export interface TextFieldProps {
@@ -751,9 +945,11 @@ export interface TextFieldProps {
   /** Valeur initiale. */
   defaultValue?: string;
   /** Saisie. */
-  onChange?: (value: number) => void;
+  onChange?: (value: string) => void;
   /** Exemple. */
   placeholder?: string;
+  /** Champ rempli (fond bg, sans ombre) : dans une carte ou une feuille blanche. */
+  filled?: boolean;
   /** Pastille à droite du libellé. */
   badge?: string;
   /** Aide sous le champ. */
@@ -880,7 +1076,7 @@ export interface SelfAssessmentRowProps {
   /** Niveau initial. */
   defaultValue?: number;
   /** Choix. */
-  onChange?: (level: number) => void;
+  onChange?: (level: { id: string; type: LevelType; title: string }) => void;
   /** Libellés des 4 niveaux. */
   levels?: string[];
 }
@@ -967,5 +1163,264 @@ export interface PlanRowProps {
 }
 export declare function PlanRow(props: PlanRowProps): React.ReactElement;
 
+/** Trois étoiles de réussite (0 à 3), pleines en orange, vides en gris. */
+export interface StarsProps {
+  /** Étoiles obtenues. */
+  value?: 0 | 1 | 2 | 3;
+  /** Taille en px (16 par défaut). */
+  size?: number;
+  /** Version blanche pour fond coloré. */
+  onColor?: boolean;
+  /** Contour blanc (sur la carte). */
+  outline?: boolean;
+  /** Écart entre étoiles. */
+  gap?: number;
+}
+export declare function Stars(props: StarsProps): React.ReactElement;
+
+/** Île flottante en illustration vectorielle simple : rocher facetté, herbe, cascade et motifs de la matière (règle et équerre pour les maths). */
+export interface IslandIllustrationProps {
+  /** Matière de l'île. */
+  subject?: SubjectId;
+  /** Largeur en px (300 par défaut). */
+  size?: number;
+  /** Afficher les motifs de la matière (vrai par défaut). */
+  motifs?: boolean;
+  /** Nom accessible (sinon décoratif). */
+  label?: string;
+  /** Suffixe des id SVG quand plusieurs îles cohabitent. */
+  idSuffix?: string;
+}
+export declare function IslandIllustration(props: IslandIllustrationProps): React.ReactElement;
+
+/** Carrousel des îles-matières : nom de la matière en pastille dégradée, île centrale qui flotte, îles voisines estompées, flèches et points. */
+export interface IslandCarouselProps {
+  /** Ordre des îles (les 6 matières par défaut). */
+  subjects?: SubjectId[];
+  /** Île affichée (contrôlé). */
+  index?: number;
+  /** Île de départ (non contrôlé). */
+  defaultIndex?: number;
+  /** Changement d'île. */
+  onChange?: (index: number, subject: SubjectId) => void;
+}
+export declare function IslandCarousel(props: IslandCarouselProps): React.ReactElement;
+
+/** Carte d'avancement d'une île : villes validées, étoiles, barre aux couleurs de la matière et bouton « Explorer l'île ». */
+export interface IslandProgressCardProps {
+  /** Matière (couleur de la barre). */
+  subject?: SubjectId;
+  /** Villes validées. */
+  done?: number;
+  /** Villes au total. */
+  total?: number;
+  /** Étoiles cumulées. */
+  stars?: number;
+  /** Prochaine étape. */
+  next?: string;
+  /** Libellé du bouton. */
+  actionLabel?: string;
+  /** Clic sur le bouton. */
+  onExplore?: () => void;
+  /** Lien du bouton. */
+  href?: string;
+}
+export declare function IslandProgressCard(props: IslandProgressCardProps): React.ReactElement;
+
+/** En-tête flottant de la carte : retour aux îles, île, ville et région courantes, série et niveau. */
+export interface ExplorerHudProps {
+  /** Couleur du nom de l'île. */
+  subject?: SubjectId;
+  /** Nom de l'île. */
+  island?: string;
+  /** Ville courante (chapitre). */
+  city?: string;
+  /** Région (thème). */
+  region?: string;
+  /** Jours de série. */
+  streak?: number;
+  /** Niveau de l'élève. */
+  level?: number;
+  /** Retour aux îles. */
+  onBack?: () => void;
+  /** Libellé accessible du retour. */
+  backLabel?: string;
+}
+export declare function ExplorerHud(props: ExplorerHudProps): React.ReactElement;
+
+/** Point de niveau sur la carte. Couleur et icône selon le type : leçon verte (livre), exercices bleus (crayon), évaluation rouge (couronne, plus grande, double anneau). États terminé (coche et étoiles), en cours (halo pulsé) et verrouillé (gris, cadenas). */
+export interface LevelNodeProps {
+  /** Type de niveau. */
+  type?: LevelType;
+  /** État. */
+  state?: 'completed' | 'active' | 'locked';
+  /** Étoiles si terminé. */
+  stars?: number;
+  /** Titre (libellé accessible). */
+  title?: string;
+  /** Ouvre la fiche du niveau. */
+  onClick?: () => void;
+}
+export declare function LevelNode(props: LevelNodeProps): React.ReactElement;
+
+/** Avatar de l'élève qui flotte au-dessus du niveau en cours (initiale dans une pastille bleue). */
+export interface MapAvatarProps {
+  /** Initiale de l'élève. */
+  initial?: string;
+}
+export declare function MapAvatar(props: MapAvatarProps): React.ReactElement;
+
+/** Panneau d'une ville (chapitre) : validée en vert, en cours en rouge avec drapeau, à consolider en orange, verrouillée en gris. */
+export interface CityBannerProps {
+  /** Nom de la ville. */
+  name?: string;
+  /** État de la ville. */
+  status?: 'done' | 'current' | 'consolidate' | 'locked';
+}
+export declare function CityBanner(props: CityBannerProps): React.ReactElement;
+
+/** Panonceau de région (thème de la matière) : surtitre « Région N » et nom. */
+export interface RegionSignProps {
+  /** Numéro de région. */
+  index?: number;
+  /** Nom de la région. */
+  name?: string;
+  /** Couleur du surtitre. */
+  color?: string;
+}
+export declare function RegionSign(props: RegionSignProps): React.ReactElement;
+
+/** Carte d'une île façon jeu d'aventure : mer, bande de terre, chemin en vague (orange parcouru, gris à venir), villes, niveaux et avatar. Défile horizontalement. */
+export interface WorldMapProps {
+  /** Niveaux dans l’ordre. */
+  levels?: Array<{ id: string; type: LevelType; state: 'completed' | 'active' | 'locked'; stars?: number; title: string; gapBefore?: number }>;
+  /** Villes et leur premier niveau. */
+  cities?: Array<{ name: string; status: 'done' | 'current' | 'consolidate' | 'locked'; startIndex: number }>;
+  /** Initiale de l'avatar. */
+  initial?: string;
+  /** Hauteur (844 par défaut). */
+  height?: number;
+  /** Axe du chemin. */
+  centerY?: number;
+  /** Amplitude de la vague. */
+  amplitude?: number;
+  /** Écart horizontal entre niveaux. */
+  step?: number;
+  /** Clic sur un niveau. */
+  onSelect?: (level: { id: string; type: LevelType; title: string }) => void;
+  /** Nom accessible de la carte. */
+  label?: string;
+}
+export declare function WorldMap(props: WorldMapProps): React.ReactElement;
+
+/** Étiquette du type de niveau : pastille dégradée avec l'icône et libellé sur fond doux de la même couleur. */
+export interface LevelTypePillProps {
+  /** Type de niveau. */
+  type?: LevelType;
+}
+export declare function LevelTypePill(props: LevelTypePillProps): React.ReactElement;
+
+/** Fiche d'un niveau en feuille du bas : type, titre, lieu, durée, étoiles, objectifs, règle de l'évaluation et lancement du chat à l'écrit ou à la voix (le dernier mode utilisé en premier). */
+export interface LevelSheetProps {
+  /** Type de niveau. */
+  type?: LevelType;
+  /** Titre. */
+  title?: string;
+  /** Île, ville, région. */
+  where?: string;
+  /** Durée estimée. */
+  minutes?: number;
+  /** Meilleur score. */
+  stars?: number;
+  /** Objectifs. */
+  objectives?: string[];
+  /** Règle spéciale (évaluation : pas d'indice). */
+  rule?: string;
+  /** Niveau verrouillé : explication. */
+  lockedMessage?: string;
+  /** Dernier mode utilisé. */
+  lastMode?: 'ecrit' | 'vocal';
+  /** Lance le chat écrit. */
+  onWritten?: () => void;
+  /** Lance le chat vocal. */
+  onVoice?: () => void;
+  /** Ferme la fiche. */
+  onClose?: () => void;
+}
+export declare function LevelSheet(props: LevelSheetProps): React.ReactElement;
+
+/** Fond d'écran du chat d'un niveau aux couleurs de l'île : dégradé doux de la matière, motifs et île miniature en haut à droite. */
+export interface IslandBackdropProps {
+  /** Matière de l'île. */
+  subject?: SubjectId;
+  /** Hauteur (100 % par défaut). */
+  height?: number | string;
+  /** Contenu posé sur le fond. */
+  children?: React.ReactNode;
+}
+export declare function IslandBackdrop(props: IslandBackdropProps): React.ReactElement;
+
+/** En-tête du chat d'un niveau : retour à la carte, type et titre, bascule écrit / vocal et progression en segments de la couleur du type. */
+export interface LevelProgressHeaderProps {
+  /** Type de niveau. */
+  type?: LevelType;
+  /** Titre. */
+  title?: string;
+  /** Étape en cours. */
+  step?: number;
+  /** Nombre d'étapes. */
+  total?: number;
+  /** Ville (ajoutée au libellé). */
+  city?: string;
+  /** Mode actif. */
+  mode?: 'ecrit' | 'vocal';
+  /** Bascule de mode. */
+  onModeChange?: (mode: 'ecrit' | 'vocal') => void;
+  /** Retour à la carte. */
+  onBack?: () => void;
+}
+export declare function LevelProgressHeader(props: LevelProgressHeaderProps): React.ReactElement;
+
+/** Tableau du tuteur en mode vocal : les étapes du calcul s'écrivent au fil de la voix (faites en vert, à venir en gris). */
+export interface VoiceBoardCardProps {
+  /** Surtitre (« Au tableau du tuteur »). */
+  title?: string;
+  /** Lignes du tableau. */
+  lines?: Array<{ expr: string; state?: 'done' | 'todo' }>;
+}
+export declare function VoiceBoardCard(props: VoiceBoardCardProps): React.ReactElement;
+
+/** Carte de bilan d'un niveau : validé sur dégradé vert, à consolider sur dégradé orange, étoiles, message, score et XP. */
+export interface LevelResultCardProps {
+  /** Type de niveau. */
+  type?: LevelType;
+  /** Réussi (vrai par défaut). */
+  validated?: boolean;
+  /** Étoiles obtenues. */
+  stars?: number;
+  /** Titre. */
+  headline?: string;
+  /** Message. */
+  message?: string;
+  /** Score (« 4/5 »). */
+  score?: string;
+  /** XP gagnés. */
+  xp?: number;
+}
+export declare function LevelResultCard(props: LevelResultCardProps): React.ReactElement;
+
+/** Retour du tuteur en fin de niveau : ce qui est réussi (vert) ou ce qui est à revoir (orange). */
+export interface TutorFeedbackProps {
+  /** Réussi ou à revoir. */
+  kind?: 'success' | 'review';
+  /** Surtitre. */
+  title?: string;
+  /** Texte. */
+  children?: React.ReactNode;
+}
+export declare function TutorFeedback(props: TutorFeedbackProps): React.ReactElement;
+
 export declare const SUBJECTS: Record<SubjectId, { name: string; gradient: string; soft: string; ink: string; deep: string; bar: string }>;
+export declare const LEVEL_TYPES: Record<LevelType, { label: string; icon: string; grad: string; solid: string; soft: string; ink: string; ring: string }>;
 export declare const ICONS: Record<string, string>;
+export declare const VISUAL_KINDS: Record<VisualKind, { name: string; gradient: string; soft: string; border: string; ink: string; icon: string; noun: string; label: string }>;

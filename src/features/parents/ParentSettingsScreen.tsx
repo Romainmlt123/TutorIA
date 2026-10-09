@@ -1,12 +1,11 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { DangerButton } from '@/components/DangerButton';
 import { FormMessage } from '@/components/form/FormMessage';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { Text } from '@/components/Text';
 import { authErrorMessage } from '@/features/auth/logic/errors';
 import { fr } from '@/i18n/fr';
 import { formatDuration } from '@/lib/format';
@@ -15,9 +14,10 @@ import { authService } from '@/services/auth';
 import type { ParentalSettings } from '@/services/parents';
 import { theme } from '@/theme';
 
+import { ParentBand } from './components/ParentBand';
 import { ChildProfileCard } from './components/ChildProfileCard';
 import { GoalStepper } from './components/GoalStepper';
-import { SettingRow, SettingsGroup } from './components/SettingRow';
+import { SettingRow, SettingsGroup } from '@/components/SettingRow';
 import { useParentalSettings, useParentNotifications } from './hooks/useParentData';
 import { useSelectedChild } from './hooks/useSelectedChild';
 
@@ -56,15 +56,9 @@ export function ParentSettingsScreen() {
   };
 
   return (
-    <ScreenContainer contentStyle={styles.content}>
-      <View style={styles.header}>
-        <Text variant="heading" accessibilityRole="header">
-          {t.title}
-        </Text>
-        <Text variant="bodySm" color="textSecondary">
-          {t.subtitle}
-        </Text>
-      </View>
+    <ScreenContainer
+      contentStyle={styles.content}
+      band={<ParentBand title={t.title} intro={t.subtitle} />}>
       {child ? <ChildProfileCard name={child.firstName} line={t.childLine(child.grade)} /> : null}
       {child && s ? (
         <>
@@ -203,6 +197,5 @@ export function ParentSettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { gap: theme.space[6] },
-  header: { gap: theme.space[1] },
+  content: { gap: theme.space[4] },
 });

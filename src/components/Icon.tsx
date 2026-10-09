@@ -11,7 +11,7 @@ type Shape =
 /** Jeu d'icônes au contour (grille 24), tracés repris des maquettes (design/screens). */
 const ICONS = {
   accueil: [{ d: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z' }],
-  parcours: [{ d: 'M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5z' }, { d: 'M9 4v13M15 6.5v13' }],
+  boussole: [{ d: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM15.5 8.5l-2 5-5 2 2-5z' }],
   revisions: [{ rect: [8, 3, 12, 15, 2] }, { d: 'M5 7v11a3 3 0 0 0 3 3h8' }],
   stats: [
     { d: 'M3 21h18' },
@@ -28,6 +28,28 @@ const ICONS = {
   'fleche-droite': [{ d: 'M5 12h14M13 6l6 6-6 6' }],
   'chevron-gauche': [{ d: 'M15 5l-7 7 7 7' }],
   croix: [{ d: 'M6 6l12 12M18 6 6 18' }],
+  menu: [{ d: 'M4 7h16M4 12h16M4 17h10' }],
+  couronne: [{ d: 'M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5zM5 19h14' }],
+  carte: [{ d: 'M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14' }],
+  'haut-parleur': [
+    { d: 'M11 5 6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14' },
+  ],
+  'sous-titres': [
+    {
+      d: 'M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM7 15h4M15 15h2M7 11h2M13 11h4',
+    },
+  ],
+  combine: [
+    {
+      d: 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z',
+    },
+  ],
+  points: [{ d: 'M5 12h.01M12 12h.01M19 12h.01' }],
+  'appareil-photo': [
+    { d: 'M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z' },
+    { circle: [12, 13.5, 3.5] },
+  ],
+  image: [{ rect: [3, 4, 18, 16, 2] }, { circle: [9, 10, 2] }, { d: 'M21 16l-5-5-8 9' }],
   envoi: [{ d: 'M12 19V5M6 11l6-6 6 6' }],
   micro: [{ rect: [9, 3, 6, 11, 3] }, { d: 'M5 11a7 7 0 0 0 14 0M12 18v3' }],
   'micro-barre': [{ rect: [9, 3, 6, 11, 3] }, { d: 'M5 11a7 7 0 0 0 14 0M12 18v3M4 4l16 16' }],
@@ -122,6 +144,9 @@ const ICONS = {
     },
   ],
   'bulle-chat': [{ d: 'M4 5h16v11H9l-5 4z' }],
+  crayon: [{ d: 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z' }],
+  triangle: [{ d: 'M12 4 3 20h18z' }],
+  agrandir: [{ d: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7' }],
   graphique: [{ d: 'M4 4v16h16M7 15l4-5 3 3 5-6' }],
   cartes: [
     {
@@ -131,6 +156,10 @@ const ICONS = {
   sortie: [{ d: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3' }],
   telechargement: [{ d: 'M12 3v12M7 10l5 5 5-5M5 19h14' }],
   poubelle: [{ d: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3' }],
+  de: [
+    { rect: [4, 4, 16, 16, 3] },
+    { d: 'M8.5 8.5h.01M15.5 8.5h.01M12 12h.01M8.5 15.5h.01M15.5 15.5h.01' },
+  ],
 } as const satisfies Record<string, readonly Shape[]>;
 
 export type IconName = keyof typeof ICONS;

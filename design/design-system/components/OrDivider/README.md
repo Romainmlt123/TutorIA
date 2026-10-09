@@ -10,7 +10,7 @@ Séparateur « ou » entre le formulaire et les connexions Apple / Google.
 
 | Prop | Type | Rôle |
 | --- | --- | --- |
-| `label` | `string` | « ou » par défaut. |
+| `label` | `string` | « ou » par défaut ; « ou continuer avec » sur les écrans de connexion (v2.7). |
 
 ## Exemple
 

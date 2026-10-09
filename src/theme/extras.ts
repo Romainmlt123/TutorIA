@@ -41,7 +41,7 @@ export function selectionRing(ink: string): string {
 }
 
 /** Opacités des icônes en filigrane sur les cartes colorées. */
-export const watermarkOpacity = { subject: 0.16, streak: 0.22, level: 0.12 } as const;
+export const watermarkOpacity = { subject: 0.16, streak: 0.22, level: 0.12, goal: 0.14 } as const;
 
 /** Opacités du blanc sur la carte « Évolution de ta maîtrise » (04-Stats). */
 export const chartOnColorOpacity = {
@@ -68,3 +68,57 @@ export const ringTrackOnColor = 'rgba(255,255,255,0.22)';
 
 /** Encadré de confidentialité sur la carte « Cette semaine » (P3) : blanc à 14 %. */
 export const privacyVeil = 'rgba(255,255,255,0.14)';
+
+/**
+ * Idées de départ d'une discussion libre (tuteur écrit) : couleurs d'accent de la palette, assez
+ * foncées pour un texte blanc.
+ */
+export const chatStarterGradients = {
+  notion: [palette.violet[500], palette.violet[700]],
+  exercise: [palette.orange[500], palette.orange[700]],
+  review: [palette.green[600], palette.green[800]],
+  graph: [palette.cyan[600], palette.cyan[800]],
+} as const;
+
+/** Pilules décoratives du bandeau de marque (v2.5) : blanc à 8 % et à 6 %. */
+export const bandPills = ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.06)'] as const;
+
+/** Appel vocal plein écran (v2.6) : ombres, halos et voiles relevés sur les maquettes 2B à 2F. */
+export const call = {
+  avatarShadow: '0 12px 28px rgba(3,39,110,0.35)',
+  /** Ombre au sol du logo qui rebondit. */
+  ground: 'rgba(3,39,110,0.35)',
+  /** Halo blanc derrière le logo : deux disques, du plus proche au plus large. */
+  halo: ['rgba(255,255,255,0.14)', 'rgba(255,255,255,0.06)'],
+  hangupShadow: '0 8px 20px rgba(194,26,26,0.35)',
+  visualShadow: '0 16px 36px rgba(3,39,110,0.35)',
+  /** « TUTOR'IA » ou « TOI » au-dessus des sous-titres. */
+  speaker: 'rgba(255,255,255,0.80)',
+  /** Libellés sous les commandes. */
+  label: 'rgba(255,255,255,0.90)',
+  /** Liseré et lueur des pastilles d'état colorées. */
+  statusRing: 'rgba(255,255,255,0.28)',
+  speakingGlow: '0 6px 18px rgba(12,158,66,0.45)',
+  listeningGlow: '0 6px 18px rgba(194,26,26,0.45)',
+} as const;
+
+/** Couleurs officielles du « G » de Google, pour le bouton « Continuer avec Google » (v2.7). */
+export const googleLogo = {
+  blue: '#4285F4',
+  green: '#34A853',
+  yellow: '#FBBC05',
+  red: '#EA4335',
+} as const;
+
+/** Médailles des trophées (profil, v2.8) : une teinte de la palette par famille. */
+export const trophyGradients = {
+  orange: [palette.orange[400], palette.orange[600], palette.orange[700]],
+  blue: [palette.blue[400], palette.blue[600], palette.blue[700]],
+  green: [palette.green[600], palette.green[700], palette.green[800]],
+  red: [palette.red[400], palette.red[600], palette.red[700]],
+  violet: [palette.violet[400], palette.violet[600], palette.violet[700]],
+  cyan: [palette.cyan[600], palette.cyan[700], palette.cyan[800]],
+} as const;
+
+/** Liseré blanc des médailles gagnées et des tuiles du résumé (profil, v2.8). */
+export const medalRing = 'rgba(255,255,255,0.35)';

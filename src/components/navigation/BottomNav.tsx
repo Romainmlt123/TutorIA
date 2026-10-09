@@ -16,7 +16,7 @@ export type NavTab = { name: string; label: string; icon: IconName | 'logo' };
 /** Onglets de l'espace élève, dans l'ordre de la barre. `logo` : l'onglet Tutor'IA. */
 export const STUDENT_TABS: readonly NavTab[] = [
   { name: 'index', label: fr.nav.home, icon: 'accueil' },
-  { name: 'parcours', label: fr.nav.path, icon: 'parcours' },
+  { name: 'explorer', label: fr.nav.explorer, icon: 'boussole' },
   { name: 'tuteur', label: fr.nav.tutor, icon: 'logo' },
   { name: 'revisions', label: fr.nav.reviews, icon: 'revisions' },
   { name: 'stats', label: fr.nav.stats, icon: 'stats' },
@@ -97,8 +97,12 @@ export function BottomNav({
 }: Props) {
   const { bottom } = useBottomNavLayout();
   const keyboardVisible = useKeyboardVisible();
-  const activeName = state.routes[state.index]?.name;
-  if (keyboardVisible || !tabs.some((tab) => tab.name === activeName)) return null;
+  const active = state.routes[state.index];
+  const activeName = active?.name;
+  // L'appel vocal (v2.6) est plein écran : la barre se masque pendant l'appel.
+  const nested = active?.state;
+  const inCall = nested?.routes[nested.index ?? 0]?.name === 'vocal';
+  if (keyboardVisible || inCall || !tabs.some((tab) => tab.name === activeName)) return null;
 
   return (
     <View

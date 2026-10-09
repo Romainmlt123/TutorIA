@@ -40,3 +40,23 @@ export function studyBlock(
   }
   return null;
 }
+
+/**
+ * Temps avant la prochaine pause, en secondes (`null` sans limite) : la pause du soir, la fin de la
+ * plage autorisée ou le temps maximum du jour, le plus proche. Le surveillant du vocal raccroche là.
+ */
+export function secondsUntilBlock(
+  rules: Rules,
+  todaySeconds: number,
+  now = new Date(),
+): number | null {
+  const { hour, minute } = parisTime(now);
+  const elapsed = (hour * 60 + minute) * 60 + now.getUTCSeconds();
+  const bounds: number[] = [];
+  if (rules.eveningPause) bounds.push(EVENING_PAUSE_START * 60 - elapsed);
+  if (rules.dailyLimitEnabled) {
+    bounds.push(minutesOf(rules.allowedUntil) * 60 - elapsed);
+    bounds.push(rules.dailyLimitMinutes * 60 - todaySeconds);
+  }
+  return bounds.length ? Math.max(0, Math.min(...bounds)) : null;
+}

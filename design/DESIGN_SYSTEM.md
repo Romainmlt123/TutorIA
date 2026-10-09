@@ -1,6 +1,6 @@
 # Tutor'IA
 
-Tutor'IA est un compagnon de révision par IA pour tous les élèves, du primaire au lycée, en passant par le collège. L'application est pensée d'abord pour le mobile (iOS et Android) et existe aussi en version web. L'élève apprend à son rythme en dialoguant avec un tuteur, par écrit ou à la voix, et voit sa progression sous la forme d'un parcours gamifié par niveaux. Un **espace Parents** permet aux familles de suivre les progrès de leurs enfants.
+Tutor'IA est un compagnon de révision par IA pour tous les élèves, du primaire au lycée, en passant par le collège. L'application est pensée d'abord pour le mobile (iOS et Android) et existe aussi en version web. L'élève apprend à son rythme en dialoguant avec un tuteur, par écrit ou à la voix, et voit sa progression sur une carte d'aventure gamifiée (l'onglet **Explorer**). Un **espace Parents** permet aux familles de suivre les progrès de leurs enfants.
 
 Ce système sert à concevoir tout ce qui porte la marque : écrans de l'app, pages web, présentations, visuels. Tutor'IA doit trouver le juste milieu entre le sérieux et l'accessible. Un parent doit y voir un outil fiable, un élève de CM1 doit s'y retrouver sans aide, et un lycéen ne doit pas le trouver enfantin. En cas de doute, la question à se poser : est-ce que ça marche pour ces trois personnes à la fois ?
 
@@ -12,7 +12,7 @@ Ce système sert à concevoir tout ce qui porte la marque : écrans de l'app, pa
 
 ## Deux publics : élèves et parents
 
-- **Côté élève** : le ton complice, la gamification (parcours, séries, badges, XP) et le tutoiement décrits ci-dessous.
+- **Côté élève** : le ton complice, la gamification (carte Explorer, séries, étoiles, badges, XP) et le tutoiement décrits ci-dessous.
 - **Côté parents** : le même univers visuel que côté élève (Satoshi, `brand`, arrondis, couleurs des matières, chiffres clés sur fond coloré), aussi aéré et coloré. Pas de gamification (ni série, ni XP, ni badges) : on montre des informations claires, temps passé, notions travaillées, progrès, points à revoir. Le ton reste chaleureux mais factuel, et s'adresse aux parents en les vouvoyant.
 - **Adapter au niveau scolaire** : en primaire, des mots simples, des phrases très courtes et davantage d'encouragements. Au lycée, un ton plus direct, qui traite l'élève en adulte. Les règles visuelles restent les mêmes pour tous.
 
@@ -51,7 +51,7 @@ Le logo est une bulle de discussion avec un clin d'œil, coiffée d'un mortier d
 ## Icônes et images
 
 - **Icônes** : style contour, trait fin et minimaliste, en gris neutre (`gray-400` à `gray-500`) au repos. Un onglet actif ou une action clé passe en `brand`, en version pleine ou dans une pastille ronde.
-- **Illustrations** : vectorielles, en 2D douce. La carte du parcours utilise un univers en tuiles isométriques ou semi-plates, façon jeu d'aventure rétro modernisé.
+- **Illustrations** : vectorielles, en 2D douce. L'onglet Explorer montre des îles flottantes (une par matière) et une carte façon jeu d'aventure : mer, bande de terre, chemin en vague, villes et niveaux. Formes simples, sans texture ni 3D.
 - **À exclure** : photos de stock d'élèves en classe, visuels 3D criards, néons futuristes, personnages trop enfantins qui rebuteraient les collégiens et les lycéens.
 
 ## Espacements
@@ -100,7 +100,7 @@ On construit les écrans avec ces rôles, pas directement avec les nuances : `va
 | Erreur | `error` / `error-strong` | `red-500` / `red-600` | Bugs et erreurs système |
 
 - **Chaque couleur d'état a trois niveaux.** Le niveau de base (`success`, `warning`, `error`) sert aux icônes, bordures et jauges. `-strong` sert au texte et aux boutons pleins avec texte blanc. `-soft` (nuance 100) sert aux fonds de bandeaux et de cartes.
-- **Pourquoi pas le vert 500 ou l'orange 500 ?** Ces nuances vives sont trop claires pour être lues sur le fond : `green-500` n'atteint que 1.6:1 sur `bg`. Elles restent disponibles pour la gamification (badges, XP, carte du parcours), toujours avec un texte foncé par-dessus.
+- **Pourquoi pas le vert 500 ou l'orange 500 ?** Ces nuances vives sont trop claires pour être lues sur le fond : `green-500` n'atteint que 1.6:1 sur `bg`. Elles restent disponibles pour la gamification (badges, XP, carte Explorer), toujours avec un texte foncé par-dessus.
 - **Les autres teintes** (`cyan`, `azure` et les nuances de `violet` autres que `accent`) sont des couleurs d'accentuation libres, surtout pour la partie jeu, les illustrations et les graphiques.
 
 ## Couleurs
@@ -137,30 +137,60 @@ Ces choix ont été validés sur les maquettes de l'application et priment sur l
 1. **Texte blanc sur l'orange vif** (`orange-500`), uniquement sur les encadrés de jeu (série, carte « À retravailler », alerte Parents), en gras.
 2. **Titres en Black (900)** sur les écrans et les cartes en couleur, avec trois exceptions en Bold ou Medium : « Révision du jour » (700), la carte « Reprendre » de l'accueil (500) et les titres de sujet du tuteur (700).
 3. **Espace Parents coloré** comme l'espace élève (dégradés, chiffres sur fond coloré, 24px entre les blocs), sans gamification.
-4. **La barre de navigation reste visible en mode vocal**, et la caméra se place à droite du bouton raccrocher.
+4. **L'appel vocal est plein écran**, sur le dégradé de marque et sans barre de navigation : on en sort par « Écrit » ou « Raccrocher » (validé le 7 octobre 2026 ; avant, la barre restait visible).
 5. **Flashcards en QCM** : quatre réponses en grille 2×2, sans boutons d'auto-évaluation ; le bouton « C'est parti » est en violet vif.
 6. **Pas de date sur l'accueil** : une citation courte en italique discret la remplace sous le bonjour.
+7. **Rouge pour « Je t'écoute… »** dans l'appel vocal : il signale l'écoute, comme un voyant d'enregistrement, jamais une erreur (orange possible).
+8. **Violet et azur pour les visuels du tuteur** : le graphique est violet, le tableau azur (tuile, surtitre, carte teintée), pour les distinguer de la carte du chapitre ; le dessin reste sur une feuille blanche, le tableau sans grille de points.
 
 ## Connexion, inscription et onboarding
 
 - **Deux couleurs, deux espaces.** Tout ce qui concerne l'élève est en bleu (`primary`, dégradé des cartes Français) et le tutoie ; tout ce qui concerne les parents est en violet (`accent`, dégradé Physique-Chimie) et les vouvoie. L'écran de bienvenue les présente côte à côte, sans autre texte que « Je suis élève » et « Je suis parent ».
-- **L'élève est autonome.** Il peut créer son compte et se connecter seul. Le code parent (6 chiffres, valable 24 h) est un champ **facultatif** qui relie les deux comptes ; il peut aussi être ajouté plus tard. Si l'élève indique avoir moins de 15 ans, on demande l'e-mail d'un parent pour valider le compte.
-- **Formulaire d'abord, Apple et Google ensuite.** Les champs e-mail et mot de passe viennent en premier, puis le séparateur « ou » et les boutons Apple / Google. Dans l'app, ces boutons sont les boutons officiels des SDK.
+- **L'élève est autonome.** Il peut créer son compte et se connecter seul. Le code parent (6 chiffres, valable 24 h) relie les deux comptes ; depuis la v2.7, ce n'est plus un champ de la connexion mais un lien « J'ai un code de mon parent » sous le formulaire, qui ouvre sa saisie. Il peut aussi être ajouté plus tard. Si l'élève indique avoir moins de 15 ans, on demande l'e-mail d'un parent pour valider le compte.
+- **Connexion plein écran (v2.7).** Les connexions élève (L2) et parent (L3) reprennent l'univers de l'appel vocal : le dégradé de l'espace couvre tout l'écran, le logo du tuteur, dans son disque blanc, fait un petit rebond pour dire bonjour, et le formulaire est dans une feuille blanche qui monte du bas (`AuthScreen`). Les champs y sont remplis (`TextField` `filled`), comme tout ce qui est rangé dans une carte blanche. L'écran de bienvenue (L1) ne change pas.
+- **Formulaire d'abord, Apple et Google ensuite.** Les champs e-mail et mot de passe viennent en premier, puis le séparateur « ou continuer avec » et les boutons Apple / Google, empilés en pleine largeur. Dans l'app, ces boutons sont les boutons officiels des SDK.
 - **Onboarding en quatre étapes, toutes passables** : classe, auto-évaluation par matière (« Galère », « Bof », « Ça va », « À l'aise », jamais présentée comme une note), objectifs et temps par jour, façon d'apprendre et moment de révision. Il se termine sur un plan personnalisé qui commence par la matière la moins à l'aise.
+
+## Profil de l'élève
+
+- **On y arrive en touchant son rond sur l'accueil.** Il reprend le bandeau de marque bleu (`ProfileHero`) : le prénom en grand, la classe, et la figurine de l'élève à droite, avec le bouton blanc « Modifier l'avatar » (pastille orange quand la garde-robe a des nouveautés).
+- **Un résumé qui donne envie** (`ProfileSummary`) : trois chiffres centrés sous leur icône en dégradé (série, étoiles, temps de la semaine), puis la barre de niveau (`LevelBar`). Puis les trophées (`TrophyShelf`, médailles qui défilent, les gagnées d'abord).
+- **Le reste en cartes** : Ma famille (parents reliés, « Retirer », phrase de transparence « Jamais tes conversations », « Relier un autre parent » en violet), Préférences et Compte et données (`SettingRow`).
+- **Deux boutons à part, en bas** : « Se déconnecter » en bleu doux (`Button` `soft`) puis « Supprimer mon compte » en rouge doux (`Button` `danger`). Le rouge reste réservé à la seule action qui efface.
+
+## Explorer
+
+- **Une île = une matière.** L'onglet Explorer (boussole dans la barre du bas, ex-« Parcours ») s'ouvre sur un carrousel d'îles flottantes. Chaque île est découpée en **régions** (thèmes du programme), puis en **villes** (chapitres), puis en **niveaux**.
+- **Trois types de niveaux, trois couleurs, trois icônes.** Leçon en vert avec un livre, exercices en bleu avec un crayon, évaluation en rouge avec une couronne. L'évaluation ferme chaque ville : son point est plus grand et entouré d'un double anneau. La couleur n'est jamais le seul repère, l'icône et le libellé l'accompagnent.
+- **États d'un niveau** : terminé (coche et 0 à 3 étoiles), en cours (halo pulsé et avatar de l'élève au-dessus) et verrouillé (gris avec cadenas). Le chemin est orange jusqu'au niveau en cours, gris ensuite.
+- **Chaque point lance un chat, sans quitter Explorer.** La fiche du niveau propose « À l'écrit » ou « À la voix » (le dernier mode utilisé en premier). La discussion prend le fond de l'île (`IslandBackdrop`) et affiche la progression du niveau ; elle ne renvoie jamais vers l'onglet Tutor'IA.
+- **Le tuteur change de comportement selon le type.** Leçon : il explique, montre des exemples et vérifie la compréhension. Exercices : il laisse chercher et donne des indices progressifs. Évaluation : il est exigeant, ne donne ni indice ni correction pendant l'épreuve et corrige seulement dans le bilan.
+- **Bilan de fin de niveau** : carte verte « Bien joué ! » ou orange « Presque ! », étoiles, score et XP, puis ce qui est réussi et ce qui est à revoir. Une évaluation ratée met la ville « à consolider » (orange) au lieu de la bloquer.
+
+## Appel vocal
+
+- **Un vrai écran d'appel.** Le tuteur vocal occupe tout l'écran sur le dégradé de marque (`blue-500` → `blue-800`, à 170°), tout en blanc, sans barre de navigation. En haut, « Écrit » et le chrono (`CallTopBar`) ; en bas, les commandes en verre (`CallDock`).
+- **Le tuteur a un visage.** Son logo, dans un disque blanc (`VoiceAvatar`), rebondit quand il parle, au niveau de sa voix, et se pose à chaque pause ; quand c'est à l'élève, il s'arrête et penche la tête. Toucher le logo interrompt le tuteur. Pas de barres ni d'ondes.
+- **Une pastille dit qui a la parole** (`VoiceStatus`) : verte « Je t'explique… », rouge « Je t'écoute… », neutre pour le micro coupé, la connexion ou la fin d'appel.
+- **Sous-titres en direct** (`LiveCaptions`), activés par défaut : les mots s'allument au fil de la voix ; une couleur nommée par le tuteur s'affiche dans une pastille de sa couleur.
+- **Avec un graphique ou un tableau blanc**, le visuel prend la moitié haute dans sa carte teintée (`VisualPanel` `elevated`), le logo passe à 96 px dessous. La voix et le visuel avancent ensemble : la courbe nommée s'épaissit (`MathGraph` `focus`), le tableau s'écrit ligne à ligne avec un stylo (`Whiteboard` `progress` et `writing`), puis le résultat s'entoure.
 
 ## Composants
 
-Les 64 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
+Les 92 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
 
 - **Fondations** : `Icon`, `Logo`, `StatusChip`, `ProgressRing`, `Quote`.
 - **Actions** : `Button`, `IconButton`, `SegmentedControl`, `Switch`, `GoalStepper`.
-- **Navigation** : `BottomNav` (élève et Parents), `ModeToggle` (écrit / vocal), `ChildSwitcher`.
+- **Navigation** : `BottomNav` (élève avec Explorer, et Parents), `ModeToggle` (écrit / vocal), `ChildSwitcher`.
 - **Élève** : `SubjectCard`, `StreakCard`, `LevelCard`, `ResumeCard`, `GoalCard`.
-- **Tuteur** : `TopicCard`, `ChatBubble`, `TipCard`, `ChatInput`, `VoiceVisualizer`, `CallControls`, `PanelHeader`, `VisualPanel`, `MathGraph`, `Whiteboard`.
+- **Tuteur** : `TopicCard`, `ChatBubble`, `TipCard`, `ChatInput`, `PanelHeader`, `VisualPanel`, `MathGraph`, `Whiteboard`, et pour la discussion vocale d'Explorer `VoiceVisualizer` et `CallControls`.
+- **Appel vocal** : `CallTopBar`, `VoiceAvatar`, `VoiceStatus`, `LiveCaptions`, `CallDock`.
 - **Flashcards** : `DailyReviewCard`, `ChapterRow`, `SessionProgress`, `AnswerOption`, `QuizCard`, `TallyChips`.
 - **Stats** : `KpiCard`, `BarChart`, `LineChart`, `Heatmap`, `SubjectProgressRow`, `InsightList`.
 - **Parents** : `HeroCard`, `AlertCard`, `AdviceCard`, `SubjectProgressCard`, `SessionSummaryCard`, `SettingRow`.
-- **Connexion** : `ProfileChoiceCard`, `SubjectCluster`, `AuthHero`, `TextField`, `PasswordRules`, `Checkbox`, `OrDivider`, `AuthProviderButtons`, `ParentCodeCard`, `StepList`.
+- **Profil** : `ProfileHero`, `ProfileSummary`, `LevelBar`, `TrophyShelf`, `TrophyBadge`
+- **Connexion** : `ProfileChoiceCard`, `SubjectCluster`, `AuthScreen`, `AuthHero`, `TextField`, `PasswordRules`, `Checkbox`, `OrDivider`, `AuthProviderButtons`, `ParentCodeCard`, `StepList`.
 - **Onboarding** : `StepHeader`, `GradePicker`, `SelfAssessmentRow`, `GoalTile`, `DurationPicker`, `ChoiceRow`, `ToggleChip`, `PlanRow`.
+- **Explorer** : `IslandIllustration`, `IslandCarousel`, `IslandProgressCard`, `ExplorerHud`, `WorldMap`, `LevelNode`, `MapAvatar`, `CityBanner`, `RegionSign`, `Stars`, `LevelTypePill`, `LevelSheet`, `IslandBackdrop`, `LevelProgressHeader`, `VoiceBoardCard`, `LevelResultCard`, `TutorFeedback`.
 
-Les matières s'identifient partout par le même identifiant : `maths`, `francais`, `histoire-geo`, `anglais`, `svt`, `physique-chimie`. `TutorIA.SUBJECTS` donne pour chacune son nom, son dégradé et ses nuances.
+Les matières s'identifient partout par le même identifiant : `maths`, `francais`, `histoire-geo`, `anglais`, `svt`, `physique-chimie`. `TutorIA.SUBJECTS` donne pour chacune son nom, son dégradé et ses nuances. Les types de niveau s'identifient par `lecon`, `exercices` et `evaluation` ; `TutorIA.LEVEL_TYPES` donne leur libellé, leur icône et leurs couleurs.

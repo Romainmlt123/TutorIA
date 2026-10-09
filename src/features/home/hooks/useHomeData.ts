@@ -5,13 +5,13 @@ import type { StudentProfile, Subject, SubjectId } from '@/data/types';
 import { fr } from '@/i18n/fr';
 import { useStudentAccount } from '@/lib/session/SessionProvider';
 import { useStudentChapters, useStudentOverview } from '@/lib/session/useStudentOverview';
+import { levelOf } from '@/lib/xpLevel';
 import { subjectTheme } from '@/theme';
 
 import {
   currentLesson,
   DAILY_SESSIONS_TARGET,
   LESSONS_PER_CHAPTER,
-  levelOf,
   quoteOfTheDay,
   subjectMastery,
 } from '../logic/home';

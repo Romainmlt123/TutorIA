@@ -72,10 +72,10 @@ export function SessionSummaryCard({ session }: { session: ParentSession }) {
 }
 
 const styles = StyleSheet.create({
+  // Dans la carte de section (v2.5) : un bloc sur le fond `bg`, sans ombre.
   card: {
-    borderRadius: theme.radius['3xl'],
-    backgroundColor: theme.colors.surface,
-    boxShadow: theme.shadow.md,
+    borderRadius: theme.radius['2xl'],
+    backgroundColor: theme.colors.bg,
     overflow: 'hidden',
   },
   header: {

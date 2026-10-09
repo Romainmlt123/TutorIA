@@ -1,14 +1,19 @@
 import { layout } from './layout';
 import {
+  auth,
   colors,
   game,
+  goal,
   gradientAngle,
   hero,
   kpi,
   navigation,
   onColor,
   palette,
+  profile,
   radius,
+  screenBand,
+  sectionTitle,
   settingTiles,
   shadow,
   space,
@@ -16,6 +21,7 @@ import {
   subjects,
   typeScale,
   voice,
+  voiceCall,
 } from './tokens.generated';
 import { spaces } from './spaces';
 
@@ -42,6 +48,16 @@ export const theme = {
   statuses,
   settingTiles,
   spaces,
+  /** v2.5 : bandeau de marque, titres de section dans leur carte, objectif du jour. */
+  screenBand,
+  sectionTitle,
+  goal,
+  /** v2.6 : appel vocal plein écran. */
+  voiceCall,
+  /** v2.7 : connexion plein écran (L2, L3). */
+  auth,
+  /** v2.8 : profil de l'élève. */
+  profile,
 } as const;
 
 export type Theme = typeof theme;
@@ -54,7 +70,13 @@ export type Gradient = {
   readonly locations: readonly number[];
 };
 
-export { fontFamily, fontFamilyFor, fontSources, type FontWeightName } from './fonts';
+export {
+  fontFamily,
+  fontFamilyFor,
+  fontSources,
+  gameFontFamily,
+  type FontWeightName,
+} from './fonts';
 export { angleToPoints } from './gradients';
 export * as extras from './extras';
 export { subjectTheme, type SubjectTheme } from './subjects';

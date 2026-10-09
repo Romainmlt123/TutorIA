@@ -7,7 +7,10 @@ import { authService } from '@/services/auth';
 
 import type { ErrorResponse, TutorErrorCode } from '../api-contract';
 
-/** Délai maximal d'une requête vers le serveur intermédiaire. */
+/**
+ * Délai maximal avant le début de la réponse du serveur intermédiaire. Une réponse en flux, elle,
+ * n'est pas bornée ici : c'est l'appelant qui surveille ses silences.
+ */
 export const REQUEST_TIMEOUT_MS = 25_000;
 
 export class TutorHttpError extends Error {
@@ -24,6 +27,7 @@ const KNOWN_CODES: readonly TutorErrorCode[] = [
   'paused',
   'too_long',
   'rate_limited',
+  'daily_limit',
   'flagged',
   'distress',
   'timeout',
@@ -41,14 +45,18 @@ async function errorCodeOf(response: Response): Promise<TutorErrorCode> {
   return response.status === 429 ? 'rate_limited' : 'upstream';
 }
 
-/** POST JSON vers une route du tuteur, avec le jeton de l'élève connecté et un délai maximal. */
+/**
+ * POST JSON vers une route du tuteur, avec le jeton de l'élève connecté. Le délai maximal ne court
+ * que jusqu'au début de la réponse : une réponse longue, reçue en flux, n'est pas coupée.
+ */
 export async function postTutor(
   path: string,
   body: unknown,
   signal?: AbortSignal,
 ): Promise<Response> {
-  const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
-  const combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
+  const timeout = new AbortController();
+  const timer = setTimeout(() => timeout.abort(), REQUEST_TIMEOUT_MS);
+  const combined = signal ? AbortSignal.any([signal, timeout.signal]) : timeout.signal;
   let response: Response;
   try {
     const token = await authService.getAccessToken();
@@ -65,7 +73,9 @@ export async function postTutor(
   } catch (error) {
     if (signal?.aborted) throw error;
     logError('tutor.http', error);
-    throw new TutorHttpError(timeout.aborted ? 'timeout' : 'network');
+    throw new TutorHttpError(timeout.signal.aborted ? 'timeout' : 'network');
+  } finally {
+    clearTimeout(timer);
   }
   if (!response.ok) throw new TutorHttpError(await errorCodeOf(response));
   return response;

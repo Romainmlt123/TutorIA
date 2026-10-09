@@ -1,0 +1,14 @@
+<!-- @dsCard group="Appel vocal" height=330 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+var m = React.useState(false), c = React.useState(true), v = React.useState(false);
+return h('div', { style: { background: 'linear-gradient(170deg, var(--blue-500) 0%, var(--blue-600) 42%, var(--blue-700) 78%, var(--blue-800) 100%)', borderRadius: 24, padding: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 } }, h('div', { style: { width: 350, display: 'flex', flexDirection: 'column', gap: 12 } },
+  h(T.CallDock, { muted: m[0], captionsOn: c[0], cameraOn: v[0], onToggleMute: function () { m[1](!m[0]); }, onToggleCaptions: function () { c[1](!c[0]); }, onCamera: function () { v[1](!v[0]); } }),
+  h(T.CallDock, { muted: true, captionsOn: false, cameraVisible: false })));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

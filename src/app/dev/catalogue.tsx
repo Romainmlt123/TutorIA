@@ -1,4 +1,5 @@
-import { Redirect } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,9 +13,19 @@ import { SegmentedControl } from '@/components/SegmentedControl';
 import { StreakBadge } from '@/components/StreakBadge';
 import { SubjectCard } from '@/components/subject/SubjectCard';
 import { Text } from '@/components/Text';
+import { islandOf } from '@/features/explorer/content';
+import { VisualPanel } from '@/features/tutor/components/visual/VisualPanel';
+import { explorerKeys } from '@/features/explorer/hooks/useExplorer';
+import { currentLevel, islandPath } from '@/features/explorer/logic/progression';
 import { fr } from '@/i18n/fr';
 import { logError } from '@/lib/logger';
+import { showNotice } from '@/lib/notice';
+import { WARDROBE } from '@/features/avatar/logic/wardrobe';
+import { useStudentAccount } from '@/lib/session/SessionProvider';
 import { authService, mockAuthService } from '@/services/auth';
+import { avatarService } from '@/services/avatar';
+import { mockExplorerService } from '@/services/explorer';
+import { MOCK_VISUALS } from '@/services/tutor/mock/visualScripts';
 import type { PersonaId } from '@/services/auth/mock/MockAuthService';
 import { theme, type ColorRole, type TypeVariant } from '@/theme';
 import { fontWeights } from '@/theme/fonts';
@@ -28,6 +39,7 @@ const shadows = Object.keys(theme.shadow) as (keyof typeof theme.shadow)[];
 export default function Catalogue() {
   const insets = useSafeAreaInsets();
   const [segment, setSegment] = useState<'a' | 'b'>('a');
+  const router = useRouter();
   if (!__DEV__) return <Redirect href="/" />;
 
   return (
@@ -45,6 +57,10 @@ export default function Catalogue() {
       </Text>
 
       <PersonaSwitcher />
+      <Button label={t.avatarLab} variant="soft" onPress={() => router.push('/dev/avatars')} />
+      <ExplorerDemo />
+      <WardrobeDemo />
+      <VisualsDemo />
 
       <Section title={t.components}>
         <Button label="Reprendre" icon="fleche-droite" highlight />
@@ -184,6 +200,111 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+/**
+ * Garde-robe de l'avatar (développement, tout compte) : débloque tous les objets sur cet appareil
+ * pour les essayer, ou remet la garde-robe à zéro (les objets se regagnent d'après la progression).
+ */
+/** Les quatre visuels du tuteur, tels que le tuteur simulé les dessine. */
+function VisualsDemo() {
+  return (
+    <Section title={t.visuals}>
+      {Object.values(MOCK_VISUALS).map((visual) => (
+        <VisualPanel
+          key={visual.kind}
+          visual={visual}
+          subjectId="maths"
+          open
+          onToggle={() => undefined}
+          onExpand={() => undefined}
+        />
+      ))}
+    </Section>
+  );
+}
+
+function WardrobeDemo() {
+  const queryClient = useQueryClient();
+  const accountId = useStudentAccount()?.id;
+  if (!accountId) return null;
+  const write = (owned: readonly string[]) =>
+    avatarService
+      .saveWardrobe(accountId, { owned, announced: [] })
+      .then(() => queryClient.invalidateQueries({ queryKey: ['avatar', 'wardrobe', accountId] }))
+      .catch((error: unknown) => logError('dev.wardrobe', error));
+  return (
+    <Section title={t.wardrobe.title}>
+      <Button
+        label={t.wardrobe.unlockAll}
+        variant="soft"
+        onPress={() => {
+          void write(WARDROBE.map((item) => item.id)).then(() => showNotice(t.wardrobe.unlocked));
+        }}
+      />
+      <Button label={t.wardrobe.reset} variant="soft" onPress={() => void write([])} />
+    </Section>
+  );
+}
+
+/**
+ * Progression simulée d'Explorer (mode simulé seulement) : terminer le niveau du pion fait avancer
+ * l'avatar sur la carte, en attendant que les niveaux se jouent (étapes X3 à X5).
+ */
+function ExplorerDemo() {
+  const queryClient = useQueryClient();
+  if (!mockExplorerService) return null;
+  const service = mockExplorerService;
+  const refresh = () =>
+    queryClient
+      .invalidateQueries({ queryKey: explorerKeys.records })
+      .catch((error: unknown) => logError('dev.explorer', error));
+  const finishPawnLevel = async () => {
+    const island = islandOf('maths');
+    if (!island) return;
+    const records = new Map((await service.levelRecords()).map((r) => [r.levelId, r]));
+    const pawn = currentLevel(islandPath(island, records), records);
+    if (!pawn) return;
+    service.finishLevel(pawn.level.id);
+    showNotice(t.explorer.finished(pawn.level.title));
+    await refresh();
+  };
+  const finishPawnRegion = async () => {
+    const island = islandOf('maths');
+    if (!island) return;
+    const records = new Map((await service.levelRecords()).map((r) => [r.levelId, r]));
+    const pawn = currentLevel(islandPath(island, records), records);
+    if (!pawn) return;
+    service.finishLevels(pawn.region.cities.flatMap((c) => c.levels.map((l) => l.id)));
+    showNotice(t.explorer.finishedRegion(pawn.region.name));
+    await refresh();
+  };
+  return (
+    <Section title={t.explorer.title}>
+      <Button
+        label={t.explorer.finishPawn}
+        variant="soft"
+        onPress={() => {
+          finishPawnLevel().catch((error: unknown) => logError('dev.explorer', error));
+        }}
+      />
+      <Button
+        label={t.explorer.finishRegion}
+        variant="soft"
+        onPress={() => {
+          finishPawnRegion().catch((error: unknown) => logError('dev.explorer', error));
+        }}
+      />
+      <Button
+        label={t.explorer.reset}
+        variant="soft"
+        onPress={() => {
+          service.reset();
+          void refresh();
+        }}
+      />
+    </Section>
+  );
+}
 
 const PERSONAS: readonly { id: PersonaId; label: string }[] = [
   { id: 'lea', label: t.personas.lea },

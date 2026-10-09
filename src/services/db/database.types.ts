@@ -3,6 +3,38 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      avatars: {
+        Row: {
+          announced: string[];
+          look: Json | null;
+          owned: string[];
+          student_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          announced?: string[];
+          look?: Json | null;
+          owned?: string[];
+          student_id?: string;
+          updated_at?: string;
+        };
+        Update: {
+          announced?: string[];
+          look?: Json | null;
+          owned?: string[];
+          student_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'avatars_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: true;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       chapter_progress: {
         Row: {
           chapter_id: string;
@@ -74,6 +106,7 @@ export type Database = {
           last_message_at: string;
           session_id: string;
           student_id: string;
+          title: string | null;
         };
         Insert: {
           created_at?: string;
@@ -81,6 +114,7 @@ export type Database = {
           last_message_at?: string;
           session_id: string;
           student_id: string;
+          title?: string | null;
         };
         Update: {
           created_at?: string;
@@ -88,6 +122,7 @@ export type Database = {
           last_message_at?: string;
           session_id?: string;
           student_id?: string;
+          title?: string | null;
         };
         Relationships: [
           {
@@ -223,6 +258,106 @@ export type Database = {
           },
         ];
       };
+      level_attempts: {
+        Row: {
+          answers: NonNullable<Json>;
+          finished: boolean;
+          level_id: string;
+          passed: boolean | null;
+          recorded_at: string | null;
+          score: number | null;
+          session_id: string;
+          stars: number | null;
+          steps_done: number;
+          student_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          answers?: NonNullable<Json>;
+          finished?: boolean;
+          level_id: string;
+          passed?: boolean | null;
+          recorded_at?: string | null;
+          score?: number | null;
+          session_id: string;
+          stars?: number | null;
+          steps_done?: number;
+          student_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          answers?: NonNullable<Json>;
+          finished?: boolean;
+          level_id?: string;
+          passed?: boolean | null;
+          recorded_at?: string | null;
+          score?: number | null;
+          session_id?: string;
+          stars?: number | null;
+          steps_done?: number;
+          student_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'level_attempts_session_fkey';
+            columns: ['session_id', 'student_id'];
+            isOneToOne: false;
+            referencedRelation: 'study_sessions';
+            referencedColumns: ['id', 'student_id'];
+          },
+        ];
+      };
+      level_progress: {
+        Row: {
+          attempts: number;
+          best_score: number;
+          chapter_id: string;
+          first_finished_at: string;
+          last_played_at: string;
+          level_id: string;
+          level_type: Database['public']['Enums']['level_type'];
+          passed: boolean;
+          stars: number;
+          student_id: string;
+          subject_id: Database['public']['Enums']['subject_id'];
+        };
+        Insert: {
+          attempts?: number;
+          best_score: number;
+          chapter_id: string;
+          first_finished_at?: string;
+          last_played_at?: string;
+          level_id: string;
+          level_type: Database['public']['Enums']['level_type'];
+          passed: boolean;
+          stars: number;
+          student_id: string;
+          subject_id: Database['public']['Enums']['subject_id'];
+        };
+        Update: {
+          attempts?: number;
+          best_score?: number;
+          chapter_id?: string;
+          first_finished_at?: string;
+          last_played_at?: string;
+          level_id?: string;
+          level_type?: Database['public']['Enums']['level_type'];
+          passed?: boolean;
+          stars?: number;
+          student_id?: string;
+          subject_id?: Database['public']['Enums']['subject_id'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'level_progress_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       link_codes: {
         Row: {
           child_first_name: string;
@@ -315,6 +450,7 @@ export type Database = {
           id: string;
           role: Database['public']['Enums']['message_role'];
           student_id: string;
+          visual: Json | null;
         };
         Insert: {
           content: string;
@@ -323,6 +459,7 @@ export type Database = {
           id?: string;
           role: Database['public']['Enums']['message_role'];
           student_id: string;
+          visual?: Json | null;
         };
         Update: {
           content?: string;
@@ -331,6 +468,7 @@ export type Database = {
           id?: string;
           role?: Database['public']['Enums']['message_role'];
           student_id?: string;
+          visual?: Json | null;
         };
         Relationships: [
           {
@@ -673,6 +811,7 @@ export type Database = {
           duration_seconds: number;
           ended_at: string | null;
           id: string;
+          level_id: string | null;
           mode: Database['public']['Enums']['session_mode'];
           outcome: Database['public']['Enums']['session_outcome'] | null;
           started_at: string;
@@ -690,6 +829,7 @@ export type Database = {
           duration_seconds?: number;
           ended_at?: string | null;
           id?: string;
+          level_id?: string | null;
           mode: Database['public']['Enums']['session_mode'];
           outcome?: Database['public']['Enums']['session_outcome'] | null;
           started_at?: string;
@@ -707,6 +847,7 @@ export type Database = {
           duration_seconds?: number;
           ended_at?: string | null;
           id?: string;
+          level_id?: string | null;
           mode?: Database['public']['Enums']['session_mode'];
           outcome?: Database['public']['Enums']['session_outcome'] | null;
           started_at?: string;
@@ -827,6 +968,20 @@ export type Database = {
           role: Database['public']['Enums']['user_role'];
         }[];
       };
+      finish_level: {
+        Args: {
+          p_chapter_id: string;
+          p_level_id: string;
+          p_level_type: Database['public']['Enums']['level_type'];
+          p_passed: boolean;
+          p_score: number;
+          p_session_id: string;
+          p_stars: number;
+          p_student_id: string;
+          p_subject_id: Database['public']['Enums']['subject_id'];
+        };
+        Returns: number;
+      };
       redeem_link_code: {
         Args: { p_code_hmac: string; p_student_id: string };
         Returns: {
@@ -864,6 +1019,7 @@ export type Database = {
         | 'get_ahead'
         | 'homework_faster';
       learning_mode: 'written' | 'voice' | 'visual' | 'quiz';
+      level_type: 'lecon' | 'exercices' | 'evaluation';
       link_origin: 'link_code' | 'request';
       message_role: 'student' | 'tutor';
       session_mode: 'written' | 'voice' | 'flashcards';
@@ -996,6 +1152,7 @@ export const Constants = {
         'homework_faster',
       ],
       learning_mode: ['written', 'voice', 'visual', 'quiz'],
+      level_type: ['lecon', 'exercices', 'evaluation'],
       link_origin: ['link_code', 'request'],
       message_role: ['student', 'tutor'],
       session_mode: ['written', 'voice', 'flashcards'],

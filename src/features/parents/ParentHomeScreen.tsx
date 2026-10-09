@@ -4,17 +4,17 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { FormMessage } from '@/components/form/FormMessage';
 import { IconButton } from '@/components/IconButton';
-import { Pill } from '@/components/Pill';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { Text } from '@/components/Text';
 import { chapterTitle } from '@/data/curriculum';
 import { fr } from '@/i18n/fr';
-import { formatDuration, formatDurationDelta } from '@/lib/format';
+import { formatDuration } from '@/lib/format';
 import { addDays, parisDay } from '@/lib/parisTime';
 import { useParentAccount } from '@/lib/session/SessionProvider';
 import type { LinkedChild } from '@/services/family';
 import { subjectTheme, theme } from '@/theme';
 
+import { ParentBand } from './components/ParentBand';
 import { AdviceCard } from './components/AdviceCard';
 import { AlertCard } from './components/AlertCard';
 import { ChildSwitcher } from './components/ChildSwitcher';
@@ -74,6 +74,10 @@ function ChildWeek({ child }: { child: LinkedChild }) {
     advice.kind === 'explain'
       ? t.advice.explain(chapterTitle(advice.chapterId))
       : t.advice[advice.kind];
+  const questions =
+    advice.kind === 'explain'
+      ? t.questions.explain(chapterTitle(advice.chapterId))
+      : t.questions[advice.kind];
   const peak = peakWindowStart(data.sessionHours);
   const note = [
     peak === null ? null : t.chartPeak(child.firstName, peak, peak + 2),
@@ -90,18 +94,12 @@ function ChildWeek({ child }: { child: LinkedChild }) {
           icon="horloge"
           value={formatDuration(totals.minutes)}
           label={t.studyTime}
-          delta={totals.deltaMinutes !== 0 ? formatDurationDelta(totals.deltaMinutes) : undefined}
           gradient={theme.subjects.anglais.gradient}
         />
         <ParentKpiCard
           icon="calendrier"
           value={`${totals.activeDays} / 7`}
           label={t.activeDays}
-          delta={
-            totals.deltaActiveDays !== 0
-              ? `${totals.deltaActiveDays > 0 ? '+' : '−'}${Math.abs(totals.deltaActiveDays)}`
-              : undefined
-          }
           gradient={theme.subjects['histoire-geo'].gradient}
         />
         <ParentKpiCard
@@ -122,7 +120,7 @@ function ChildWeek({ child }: { child: LinkedChild }) {
           onDetail={() => router.push('/parents/progres')}
         />
       ) : null}
-      <AdviceCard text={adviceText} />
+      <AdviceCard text={adviceText} questions={questions} />
       <StudyTimeChart days={data.days} goalMinutes={dailyGoalMinutes(goalHours)} note={note} />
     </>
   );
@@ -137,45 +135,42 @@ export function ParentHomeScreen() {
   const addChild = () => router.push('/parents/enfant');
 
   return (
-    <ScreenContainer contentStyle={styles.content}>
-      <View style={styles.top}>
-        {child ? (
-          <ChildSwitcher
-            childList={children}
-            selected={child}
-            onSelect={select}
-            onAddChild={addChild}
-          />
-        ) : (
-          <View />
-        )}
-        <View style={styles.topRight}>
-          <Pill
-            label={t.spaceBadge}
-            backgroundColor={theme.colors.primary}
-            color={theme.colors.textOnColor}
-            size="md"
-            style={styles.badge}
-          />
-          <IconButton
-            icon="cloche"
-            accessibilityLabel={t.notifications}
-            onPress={() =>
-              router.push({ pathname: '/bientot', params: { sujet: 'notifications' } })
-            }
-          />
-        </View>
-      </View>
-      <View style={styles.header}>
-        <Text variant="heading" accessibilityRole="header">
-          {parent?.firstName ? t.greeting(parent.firstName) : t.greetingNoName}
-        </Text>
-        {child ? (
-          <Text variant="bodySm" color="textSecondary">
-            {t.weekIntro(child.firstName, weekRangeLabel(addDays(parisDay(new Date()), -6)))}
-          </Text>
-        ) : null}
-      </View>
+    <ScreenContainer
+      contentStyle={styles.content}
+      band={
+        <ParentBand
+          title={parent?.firstName ? t.greeting(parent.firstName) : t.greetingNoName}
+          intro={
+            child
+              ? t.weekIntro(child.firstName, weekRangeLabel(addDays(parisDay(new Date()), -6)))
+              : undefined
+          }
+          top={
+            <View style={styles.top}>
+              {child ? (
+                <ChildSwitcher
+                  childList={children}
+                  selected={child}
+                  onSelect={select}
+                  onAddChild={addChild}
+                />
+              ) : (
+                <View />
+              )}
+              <View style={styles.topRight}>
+                <IconButton
+                  icon="cloche"
+                  onBand
+                  accessibilityLabel={t.notifications}
+                  onPress={() =>
+                    router.push({ pathname: '/bientot', params: { sujet: 'notifications' } })
+                  }
+                />
+              </View>
+            </View>
+          }
+        />
+      }>
       {(requests.data ?? []).map((request) => (
         <LinkRequestCard key={request.studentId} request={request} />
       ))}
@@ -209,11 +204,9 @@ export function ParentHomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { gap: theme.space[6] },
+  content: { gap: theme.space[4] },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   topRight: { flexDirection: 'row', alignItems: 'center', gap: theme.space[2] },
-  badge: { alignSelf: 'center' },
-  header: { gap: theme.space[1], marginTop: -4 },
   kpis: { flexDirection: 'row', gap: theme.space[3] },
   section: { gap: theme.space[3] },
   loader: { marginTop: theme.space[8] },

@@ -75,4 +75,38 @@ describe('générateur de tokens', () => {
     expect(tokens.settingTiles.voice).toEqual(tokens.subjects.francais?.gradient);
     expect(tokens.settingTiles.alerts?.colors).toEqual(['#e6992e', '#e6992e']);
   });
+
+  it('exporte le bandeau de marque, les titres de section, l’objectif et l’appel vocal (v2.5, v2.6)', () => {
+    const tokens = buildTokens(design, app);
+    expect(tokens.screenBand.student).toEqual({
+      colors: ['#2e6be6', '#1750c4', '#0a3b9d'],
+      locations: [0, 0.55, 1],
+    });
+    expect(tokens.screenBand).toMatchObject({ angle: 170, radiusBottom: 32, overlap: 56 });
+    expect(tokens.screenBand.segmentActive.textOnViolet).toBe(tokens.palette.violet?.['600']);
+    expect(tokens.sectionTitle).toEqual({ fontSize: 22, lineHeight: 30 });
+    expect(tokens.goal.gradient.colors).toEqual(['#662ee6', '#2e6be6']);
+    expect(tokens.voiceCall.avatar).toMatchObject({ size: 148, cycleMs: 420, tilt: -8 });
+    expect(tokens.voiceCall.hangup).toBe(tokens.palette.red?.['500']);
+  });
+
+  it('exporte la connexion plein écran (v2.7)', () => {
+    const { auth } = buildTokens(design, app);
+    expect(auth.background.parent.colors[0]).toBe('#8558ea');
+    expect(auth.sheet).toMatchObject({
+      radius: 32,
+      paddingTop: 24,
+      paddingHorizontal: 20,
+      enterMs: 550,
+    });
+    expect(auth.avatar).toMatchObject({ size: 96, greetFromMs: 350, greetToMs: 2100 });
+    expect(auth.field.filledBackground).toBe(buildTokens(design, app).palette.gray?.['100']);
+  });
+
+  it('exporte le profil de l’élève (v2.8)', () => {
+    const { profile, palette } = buildTokens(design, app);
+    expect(profile.trophy).toMatchObject({ size: 64, lockedInk: palette.gray?.['300'] });
+    expect(profile.level).toMatchObject({ height: 12, knob: 18, track: palette.blue?.['100'] });
+    expect(profile.hero).toMatchObject({ figureWidth: 168, figureHeight: 282 });
+  });
 });

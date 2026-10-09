@@ -1,48 +1,49 @@
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/Button';
+import { AuthProviderButtons, OrDivider } from '@/components/form/AuthProviderButtons';
 import { FormMessage } from '@/components/form/FormMessage';
 import { TextField } from '@/components/form/TextField';
-import { ScreenContainer } from '@/components/ScreenContainer';
+import { Icon } from '@/components/Icon';
+import { PressableBase } from '@/components/PressableBase';
 import { Text } from '@/components/Text';
 import { TextLink } from '@/components/TextLink';
 import { fr } from '@/i18n/fr';
 import { logError } from '@/lib/logger';
 import { showNotice } from '@/lib/notice';
 import { AuthError, authService } from '@/services/auth';
-import { isLinkCodeFormat, normalizeLinkCode } from '@/services/auth/api-contract';
 import { theme } from '@/theme';
 
-import { AuthHero } from './components/AuthHero';
-import { AuthTopBar } from './components/AuthTopBar';
+import { AuthScreen } from './components/AuthScreen';
 import { authErrorMessage } from './logic/errors';
+import { getPendingLinkCode, setPendingLinkCode } from './logic/pendingLinkCode';
 import { setPendingSignUp } from './logic/pendingSignUp';
 import { isValidEmail, normalizeEmail } from './logic/validation';
 
 const t = fr.studentAuth.signIn;
 const errors = fr.studentAuth.errors;
 
-/** L2 · Connexion élève, avec le code parent facultatif. */
+/** L2 · Connexion élève plein écran (v2.7) ; le code parent se saisit à part, puis est relié ici. */
 export function StudentSignInScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [code, setCode] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string>();
-  const [codeError, setCodeError] = useState<string>();
   const [busy, setBusy] = useState(false);
+  // Code gardé par « J'ai un code de mon parent », relu au retour sur cet écran.
+  const [code, setCode] = useState(getPendingLinkCode());
+  useFocusEffect(useCallback(() => setCode(getPendingLinkCode()), []));
+
+  const soon = () => router.push({ pathname: '/bientot', params: { sujet: 'comptes' } });
 
   const submit = async () => {
-    const normalizedCode = normalizeLinkCode(code);
     const badEmail = !isValidEmail(email);
-    const badCode = normalizedCode !== '' && !isLinkCodeFormat(normalizedCode);
     setEmailError(badEmail ? errors.invalid_email : undefined);
-    setCodeError(badCode ? errors.invalid_code : undefined);
     setMessage(!password ? errors.invalid_credentials : null);
-    if (badEmail || badCode || !password) return;
+    if (badEmail || !password) return;
 
     setBusy(true);
     try {
@@ -61,9 +62,10 @@ export function StudentSignInScreen() {
       return;
     }
     // Connecté : l'espace élève s'ouvre. Le code parent est relié ensuite, sans bloquer.
-    if (normalizedCode) {
+    if (code) {
+      setPendingLinkCode(null);
       authService
-        .redeemLinkCode(normalizedCode)
+        .redeemLinkCode(code)
         .then(() => showNotice(fr.parentLink.linked))
         .catch((error: unknown) =>
           showNotice(`${t.linkFailed} ${authErrorMessage(error, 'student')}`),
@@ -71,10 +73,38 @@ export function StudentSignInScreen() {
     }
   };
 
+  const removeCode = () => {
+    setPendingLinkCode(null);
+    setCode(null);
+  };
+
   return (
-    <ScreenContainer withNav={false} contentStyle={styles.content}>
-      <AuthTopBar onBack={() => router.back()} />
-      <AuthHero tone="student" kicker={t.kicker} title={t.title} subtitle={t.subtitle} />
+    <AuthScreen
+      tone="student"
+      title={t.title}
+      subtitle={t.subtitle}
+      onBack={() => router.back()}
+      footer={
+        <>
+          <PressableBase
+            onPress={() => router.push('/connexion/code-parent')}
+            accessibilityRole="link"
+            style={styles.codeLink}>
+            <Icon name="cle" size={18} color={theme.colors.primary} />
+            <Text variant="lead" weight="bold" color="primary">
+              {fr.studentAuth.linkCode.open}
+            </Text>
+          </PressableBase>
+          <Text variant="lead" color="textSecondary" align="center">
+            {t.noAccount}
+            <TextLink
+              variant="lead"
+              label={t.createAccount}
+              onPress={() => router.push('/inscription/eleve')}
+            />
+          </Text>
+        </>
+      }>
       <View accessibilityLabel={t.formLabel} style={styles.form}>
         <TextField
           label={fr.form.email}
@@ -86,6 +116,7 @@ export function StudentSignInScreen() {
           keyboardType="email-address"
           autoCapitalize="none"
           textContentType="username"
+          filled
           error={emailError}
         />
         <TextField
@@ -97,6 +128,7 @@ export function StudentSignInScreen() {
           placeholder={t.passwordPlaceholder}
           autoComplete="current-password"
           textContentType="password"
+          filled
           onSubmitEditing={submit}
         />
         <TextLink
@@ -105,20 +137,15 @@ export function StudentSignInScreen() {
           onPress={() => router.push({ pathname: '/mot-de-passe', params: { espace: 'eleve' } })}
           style={styles.forgot}
         />
-        <TextField
-          label={t.parentCode}
-          badge={fr.form.optional}
-          value={code}
-          onChangeText={(value) => setCode(normalizeLinkCode(value))}
-          icon="cle"
-          placeholder={t.parentCodePlaceholder}
-          keyboardType="number-pad"
-          inputMode="numeric"
-          maxLength={6}
-          spaced
-          hint={t.parentCodeHint}
-          error={codeError}
-        />
+        {code ? (
+          <View style={styles.kept}>
+            <Icon name="coche" size={18} color={theme.colors.success} />
+            <Text variant="bodySm" color="textSecondary" style={styles.keptText}>
+              {fr.studentAuth.linkCode.kept(code)}
+            </Text>
+            <TextLink variant="label" label={fr.studentAuth.linkCode.remove} onPress={removeCode} />
+          </View>
+        ) : null}
         <FormMessage message={message} />
         <Button
           label={t.submit}
@@ -129,21 +156,29 @@ export function StudentSignInScreen() {
           highlight
         />
       </View>
-      <Text variant="lead" color="textSecondary" align="center" style={styles.footer}>
-        {t.noAccount}
-        <TextLink
-          variant="lead"
-          label={t.createAccount}
-          onPress={() => router.push('/inscription/eleve')}
-        />
-      </Text>
-    </ScreenContainer>
+      <OrDivider label={fr.form.orContinue} />
+      <AuthProviderButtons onApple={soon} onGoogle={soon} />
+    </AuthScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { flexGrow: 1, gap: theme.space[6] },
   form: { gap: theme.space[4] },
   forgot: { alignSelf: 'flex-end' },
-  footer: { marginTop: 'auto' },
+  codeLink: {
+    minHeight: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.space[2],
+  },
+  kept: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.space[2],
+    paddingVertical: theme.space[2],
+    paddingHorizontal: theme.space[3],
+    borderRadius: theme.radius['2xl'],
+    backgroundColor: theme.colors.successSoft,
+  },
+  keptText: { flex: 1 },
 });

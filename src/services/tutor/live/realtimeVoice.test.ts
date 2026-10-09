@@ -4,7 +4,7 @@ import { startRealtimeVoiceSession } from './realtimeVoice';
 
 type Listener = (event: { data: unknown }) => void;
 
-const mockSent: { type: string; item?: { content: { type: string }[] } }[] = [];
+const mockSent: { type: string; item?: { type?: string; content: { type: string }[] } }[] = [];
 const mockListeners: Record<string, Listener[]> = {};
 const mockTrack = { enabled: true, stop: jest.fn() };
 
@@ -37,16 +37,23 @@ jest.mock('./webrtc', () => ({
 }));
 
 jest.mock('./http', () => ({
-  TutorHttpError: class extends Error {},
-  postTutor: jest.fn(async () => ({
-    json: async () => ({ clientSecret: 'ek_test', expiresAt: 0 }),
+  TutorHttpError: class extends Error {
+    code: string;
+    constructor(mockCode: string) {
+      super(mockCode);
+      this.code = mockCode;
+    }
+  },
+  postTutor: jest.fn(async (path: string) => ({
+    json: async () =>
+      path === '/api/tutor/visual-check'
+        ? { visual: { kind: 'board', title: '3x + 5 = 20', description: 'Résolution', steps: [] } }
+        : { sdp: 'réponse' },
   })),
 }));
 
-jest.mock('expo/fetch', () => ({ fetch: async () => ({ ok: true, text: async () => 'réponse' }) }));
-
-const server = (type: string) =>
-  mockListeners.message?.forEach((l) => l({ data: JSON.stringify({ type }) }));
+const server = (type: string, fields: object = {}) =>
+  mockListeners.message?.forEach((l) => l({ data: JSON.stringify({ type, ...fields }) }));
 const types = () => mockSent.map((e) => e.type);
 
 describe('session vocale temps réel', () => {
@@ -67,6 +74,15 @@ describe('session vocale temps réel', () => {
     mockListeners.open?.forEach((l) => l({ data: null }));
     return session;
   }
+
+  it('envoie l’offre WebRTC au serveur, qui crée l’appel', async () => {
+    const { postTutor } = jest.requireMock<{ postTutor: jest.Mock }>('./http');
+    await start();
+    expect(postTutor).toHaveBeenCalledWith('/api/tutor/voice/start', {
+      topic: { subjectId: 'maths', chapterId: 'maths-equations' },
+      sdp: 'offre',
+    });
+  });
 
   it('fait parler le tuteur à l’ouverture et traduit les événements d’OpenAI', async () => {
     await start();
@@ -108,5 +124,56 @@ describe('session vocale temps réel', () => {
     session.holdMicrophone(false);
     expect(mockTrack.enabled).toBe(false);
     expect(events).toEqual(['connected', 'muteChanged']);
+  });
+
+  it('transmet les sous-titres du tuteur au fil de sa transcription', async () => {
+    const captions: string[] = [];
+    await startRealtimeVoiceSession({
+      topic: { subjectId: 'maths' },
+      onEvent: () => undefined,
+      onCaption: (c) => captions.push(`${c.final ? 'fin' : '…'}:${c.text}`),
+    });
+    mockListeners.open?.forEach((l) => l({ data: null }));
+    server('response.created');
+    server('response.output_audio_transcript.delta', { delta: 'On retire ' });
+    server('response.output_audio_transcript.delta', { delta: '5.' });
+    server('response.output_audio_transcript.done', { transcript: 'On retire 5.' });
+    expect(captions).toEqual(['…:On retire ', '…:On retire 5.', 'fin:On retire 5.']);
+  });
+
+  it('fait valider le visuel demandé par le tuteur, le montre, puis le laisse l’expliquer', async () => {
+    const onVisual = jest.fn();
+    await startRealtimeVoiceSession({
+      topic: { subjectId: 'maths' },
+      onEvent: () => undefined,
+      onVisual,
+    });
+    mockListeners.open?.forEach((l) => l({ data: null }));
+    server('response.function_call_arguments.done', {
+      name: 'write_board',
+      arguments: '{}',
+      call_id: 'appel-1',
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(onVisual).toHaveBeenCalledWith(expect.objectContaining({ kind: 'board' }));
+    const output = mockSent.find((e) => e.type === 'conversation.item.create');
+    expect(output?.item).toMatchObject({ type: 'function_call_output', call_id: 'appel-1' });
+    expect(types().at(-1)).toBe('response.create');
+  });
+
+  it('clôt la séance quand la réponse du serveur se perd, mais pas après un refus', async () => {
+    const http = jest.requireMock<{
+      postTutor: jest.Mock;
+      TutorHttpError: new (code: string) => Error;
+    }>('./http');
+    http.postTutor.mockClear();
+    http.postTutor.mockRejectedValueOnce(new http.TutorHttpError('timeout'));
+    await expect(start()).rejects.toMatchObject({ code: 'upstream' });
+    expect(http.postTutor).toHaveBeenLastCalledWith('/api/tutor/voice/end', {});
+
+    http.postTutor.mockClear();
+    http.postTutor.mockRejectedValueOnce(new http.TutorHttpError('rate_limited'));
+    await expect(start()).rejects.toMatchObject({ code: 'rate_limited' });
+    expect(http.postTutor).not.toHaveBeenCalledWith('/api/tutor/voice/end', {});
   });
 });

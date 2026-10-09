@@ -16,6 +16,11 @@ export type SegmentedControlProps<T extends string> = {
   accessibilityLabel: string;
   /** Colonnes égales sur toute la largeur (Stats). */
   fullWidth?: boolean;
+  /**
+   * Posé sur un bandeau de marque (v2.5) : piste blanche translucide, segment choisi blanc avec le
+   * texte de la couleur du bandeau, les autres en blanc.
+   */
+  onBand?: 'student' | 'violet';
 };
 
 export function SegmentedControl<T extends string>({
@@ -24,15 +29,30 @@ export function SegmentedControl<T extends string>({
   onChange,
   accessibilityLabel,
   fullWidth = false,
+  onBand,
 }: SegmentedControlProps<T>) {
+  const bandInk =
+    onBand === 'violet'
+      ? theme.screenBand.segmentActive.textOnViolet
+      : theme.screenBand.segmentActive.textOnStudent;
   return (
     <View
       accessibilityRole="tablist"
       accessibilityLabel={accessibilityLabel}
-      style={[styles.container, fullWidth ? styles.fullWidth : styles.compact]}>
+      style={[
+        styles.container,
+        onBand && styles.containerOnBand,
+        fullWidth ? styles.fullWidth : styles.compact,
+      ]}>
       {options.map((option) => {
         const selected = option.value === value;
-        const color = selected ? theme.colors.textOnColor : theme.colors.textSecondary;
+        const color = onBand
+          ? selected
+            ? bandInk
+            : theme.colors.textOnColor
+          : selected
+            ? theme.colors.textOnColor
+            : theme.colors.textSecondary;
         return (
           <PressableBase
             key={option.value}
@@ -40,7 +60,11 @@ export function SegmentedControl<T extends string>({
             accessibilityRole="tab"
             aria-selected={selected}
             hitSlop={theme.space[1]}
-            style={[styles.segment, fullWidth && styles.segmentFull, selected && styles.selected]}>
+            style={[
+              styles.segment,
+              fullWidth && styles.segmentFull,
+              selected && (onBand ? styles.selectedOnBand : styles.selected),
+            ]}>
             {option.icon ? <Icon name={option.icon} size={18} color={color} /> : null}
             <Text variant="label" color={color} numberOfLines={1} maxFontSizeMultiplier={1.4}>
               {option.label}
@@ -76,4 +100,6 @@ const styles = StyleSheet.create({
   },
   segmentFull: { flex: 1, paddingHorizontal: theme.space[2] },
   selected: { backgroundColor: theme.colors.primary },
+  containerOnBand: { backgroundColor: theme.screenBand.controlVeil, boxShadow: 'none' },
+  selectedOnBand: { backgroundColor: theme.screenBand.segmentActive.background },
 });

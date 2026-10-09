@@ -6,12 +6,14 @@ import { GradientSurface } from '../GradientSurface';
 import { Icon } from '../Icon';
 
 type Props = {
-  subjectId: SubjectId;
-  /** 48 (Reprendre), 40 (Sujet de la discussion), 36 (pastilles de la révision du jour). */
-  size: 36 | 40 | 48;
+  /** Sans matière (discussion libre « Toutes les matières ») : tuile bleue de l'élève, bulle. */
+  subjectId?: SubjectId;
+  /** 48 (Reprendre), 40 (Sujet de la discussion), 36 (pastilles de la révision du jour), 24 (appel vocal). */
+  size: 24 | 36 | 40 | 48;
 };
 
 const SHAPES = {
+  24: { radius: 7, icon: 14, stroke: 2 },
   48: { radius: theme.radius['2xl'], icon: 24, stroke: 1.75 },
   40: { radius: 12, icon: 22, stroke: 1.75 },
   36: { radius: theme.radius.full, icon: 16, stroke: 2 },
@@ -19,16 +21,16 @@ const SHAPES = {
 
 /** Tuile de matière en dégradé avec son icône blanche. */
 export function SubjectTile({ subjectId, size }: Props) {
-  const subject = subjectTheme(subjectId);
+  const subject = subjectId ? subjectTheme(subjectId) : undefined;
   const shape = SHAPES[size];
   const tile = (
     <GradientSurface
-      gradient={subject.tile}
+      gradient={subject?.tile ?? theme.spaces.student.gradient}
       radius={shape.radius}
       style={{ width: size, height: size }}
       contentStyle={styles.center}>
       <Icon
-        name={subject.icon}
+        name={subject?.icon ?? 'bulle-chat'}
         size={shape.icon}
         color={theme.colors.textOnColor}
         strokeWidth={shape.stroke}

@@ -21,25 +21,29 @@ button{font-family:inherit}
 a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
 </style>
 </helmet>
-<div style="position: relative; width: 390px; height: 1620px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
-<main style="display: flex; flex-direction: column; gap: 24px; padding: 56px 20px 0; box-sizing: border-box">
-
-<header style="display: flex; flex-direction: column; gap: 4px">
-<h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 900">Réglages</h1>
-<p style="margin: 0; font-size: 14px; line-height: 20px; color: var(--text-secondary)">Adaptez Tutor'IA aux habitudes de votre famille.</p>
+<div style="position: relative; width: 390px; height: 1820px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<section aria-label="Réglages" style="position: relative; overflow: hidden; padding: 56px 20px 88px; border-radius: 0 0 32px 32px; background: linear-gradient(170deg, #662EE6 0%, #521DC8 55%, #3B0DA2 100%); color: #FFFFFF">
+<span aria-hidden="true" style="position: absolute; top: 20px; right: -48px; width: 136px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.08)"></span>
+<span aria-hidden="true" style="position: absolute; top: 124px; right: 40px; width: 88px; height: 32px; border-radius: 16px; background: rgba(255,255,255,0.06)"></span>
+<header style="position: relative; display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-size: 30px; line-height: 38px; font-weight: 900; color: #FFFFFF">Réglages</h1>
+<p style="margin: 0; font-size: 15px; line-height: 22px; color: #FFFFFF">Adaptez Tutor'IA aux habitudes de votre famille.</p>
 </header>
+</section>
+
+<main style="position: relative; display: flex; flex-direction: column; gap: 24px; margin-top: -56px; padding: 0 20px; box-sizing: border-box">
 
 <section aria-label="Profil de l'enfant" style="position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px; padding: 20px; background: linear-gradient(160deg, #2E6BE6 0%, #1750C4 50%, #3B0DA2 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
 <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: -26px; bottom: -34px; opacity: 0.12"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"></path></svg>
 <span style="flex-shrink: 0; width: 56px; height: 56px; border-radius: 999px; background: #FFFFFF; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900">L</span>
-<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 18px; line-height: 24px; font-weight: 900">Léa Martin</span><span style="font-size: 13px; line-height: 18px; font-weight: 500; opacity: 0.9">Classe de 4e · 6 matières suivies</span></span>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 22px; line-height: 30px; font-weight: 900">Léa Martin</span><span style="font-size: 13px; line-height: 18px; font-weight: 500; opacity: 0.9">Classe de 4e · 6 matières suivies</span></span>
 <a href="#" style="position: relative; height: 44px; padding: 0 14px; display: flex; align-items: center; border-radius: 14px; background: rgba(255,255,255,0.24); color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none">Modifier</a>
 </section>
 
 <section aria-label="Objectif hebdomadaire" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 20px; background: linear-gradient(160deg, #1BC85B 0%, #0C9E42 45%, #03702B 100%); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); color: #FFFFFF">
 <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.2" aria-hidden="true" style="position: absolute; right: -28px; top: -30px; opacity: 0.14"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>
 <div style="display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.9">Objectif hebdomadaire</span>
+<span style="font-size: 22px; line-height: 30px; font-weight: 900">Objectif hebdomadaire</span>
 <span style="font-size: 14px; line-height: 20px; font-weight: 500">Fixé avec Léa · soit {{ perDay }} min par jour</span>
 </div>
 <div style="display: flex; align-items: center; justify-content: space-between">
@@ -50,9 +54,9 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </section>
 
 <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
-<section style="display: flex; flex-direction: column; gap: 12px">
-<h2 style="margin: 0; font-size: 18px; line-height: 24px; font-weight: 900">{{ sec.title }}</h2>
-<div style="display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); padding: 6px 0">
+<section style="display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); padding: 20px 0 6px">
+<h2 style="margin: 0 20px 6px; font-size: 22px; line-height: 30px; font-weight: 900">{{ sec.title }}</h2>
+<div style="display: flex; flex-direction: column">
 <sc-for list="{{ sec.rows }}" as="r" hint-placeholder-count="3">
 <div style="display: flex; align-items: center; gap: 14px; padding: 12px 20px; min-height: 72px; box-sizing: border-box; border-top: {{ r.divider }}">
 <span style="flex-shrink: 0; width: 44px; height: 44px; border-radius: 14px; background: {{ r.tile }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ r.icon }}"></path></svg></span>
@@ -67,8 +71,8 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </sc-for>
 
 <section style="display: flex; flex-direction: column; gap: 12px">
-<h2 style="margin: 0; font-size: 18px; line-height: 24px; font-weight: 900">Compte</h2>
-<div style="display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); padding: 6px 0">
+<div style="display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-3xl); box-shadow: var(--shadow-md); padding: 20px 0 6px">
+<h2 style="margin: 0 20px 6px; font-size: 22px; line-height: 30px; font-weight: 900">Compte</h2>
 <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 20px; min-height: 72px; box-sizing: border-box; text-decoration: none; color: var(--text)">
 <span style="flex-shrink: 0; width: 44px; height: 44px; border-radius: 14px; background: #E6992E; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z"></path></svg></span>
 <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 22px; font-weight: 700">Abonnement</span><span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">Formule Famille · renouvellement le 12 octobre</span></span>
@@ -95,7 +99,7 @@ a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1620}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1820}}'>
 class Component extends DCLogic {
 constructor(props) {
 super(props);

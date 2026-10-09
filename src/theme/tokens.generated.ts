@@ -568,5 +568,306 @@ export const settingTiles = {
       0,
       1
     ]
+  },
+  "reminder": {
+    "colors": [
+      "#e6992e",
+      "#e6992e"
+    ],
+    "locations": [
+      0,
+      1
+    ]
+  },
+  "captions": {
+    "colors": [
+      "#4d81ea",
+      "#1750c4",
+      "#0a3b9d"
+    ],
+    "locations": [
+      0,
+      0.6,
+      1
+    ]
+  },
+  "sounds": {
+    "colors": [
+      "#1bc85b",
+      "#0c9e42",
+      "#03702b"
+    ],
+    "locations": [
+      0,
+      0.45,
+      1
+    ]
+  },
+  "download": {
+    "colors": [
+      "#17a5be",
+      "#09879d",
+      "#026273"
+    ],
+    "locations": [
+      0,
+      0.45,
+      1
+    ]
+  },
+  "privacy": {
+    "colors": [
+      "#8558ea",
+      "#521dc8",
+      "#3b0da2"
+    ],
+    "locations": [
+      0,
+      0.6,
+      1
+    ]
   }
+} as const;
+
+export const screenBand = {
+  "student": {
+    "colors": [
+      "#2e6be6",
+      "#1750c4",
+      "#0a3b9d"
+    ],
+    "locations": [
+      0,
+      0.55,
+      1
+    ]
+  },
+  "violet": {
+    "colors": [
+      "#662ee6",
+      "#521dc8",
+      "#3b0da2"
+    ],
+    "locations": [
+      0,
+      0.55,
+      1
+    ]
+  },
+  "angle": 170,
+  "radiusBottom": 32,
+  "overlap": 56,
+  "titleSize": 30,
+  "text": "#ffffff",
+  "controlVeil": "rgba(255,255,255,0.16)",
+  "segmentActive": {
+    "background": "#ffffff",
+    "textOnViolet": "#521dc8",
+    "textOnStudent": "#1750c4"
+  }
+} as const;
+
+export const sectionTitle = {
+  "fontSize": 22,
+  "lineHeight": 30
+} as const;
+
+export const goal = {
+  "gradient": {
+    "colors": [
+      "#662ee6",
+      "#2e6be6"
+    ],
+    "locations": [
+      0,
+      1
+    ]
+  },
+  "text": "#ffffff"
+} as const;
+
+export const profile = {
+  "summaryTile": {
+    "size": 48,
+    "radius": 16,
+    "icon": 24,
+    "glow": {
+      "orange": "rgba(208,136,37,0.35)",
+      "violet": "rgba(82,29,200,0.30)",
+      "blue": "rgba(23,80,196,0.30)"
+    }
+  },
+  "level": {
+    "gradient": {
+      "colors": [
+        "#2e6be6",
+        "#662ee6"
+      ],
+      "locations": [
+        0,
+        1
+      ]
+    },
+    "badgeGradient": {
+      "colors": [
+        "#662ee6",
+        "#2e6be6"
+      ],
+      "locations": [
+        0,
+        1
+      ]
+    },
+    "track": "#ebf1ff",
+    "height": 12,
+    "knob": 18
+  },
+  "trophy": {
+    "size": 64,
+    "locked": "#eef1f6",
+    "lockedRing": "#dce2ec",
+    "lockedInk": "#9da6b9"
+  },
+  "hero": {
+    "figureWidth": 168,
+    "figureHeight": 282,
+    "halo": "rgba(255,255,255,0.22)",
+    "newsBadge": "#d08825"
+  }
+} as const;
+
+export const auth = {
+  "background": {
+    "student": {
+      "colors": [
+        "#2e6be6",
+        "#1750c4",
+        "#0a3b9d",
+        "#03276e"
+      ],
+      "locations": [
+        0,
+        0.42,
+        0.78,
+        1
+      ]
+    },
+    "parent": {
+      "colors": [
+        "#8558ea",
+        "#521dc8",
+        "#3b0da2",
+        "#210267"
+      ],
+      "locations": [
+        0,
+        0.42,
+        0.78,
+        1
+      ]
+    }
+  },
+  "angle": 170,
+  "glows": {
+    "top": "rgba(255,255,255,0.16)",
+    "student": "rgba(126,170,255,0.20)",
+    "parent": "rgba(190,160,255,0.22)"
+  },
+  "sheet": {
+    "radius": 32,
+    "shadow": "0 -12px 32px rgba(3,39,110,0.25)",
+    "paddingTop": 24,
+    "paddingHorizontal": 20,
+    "paddingBottom": 32,
+    "enterMs": 550
+  },
+  "avatar": {
+    "size": 96,
+    "greetLevel": 0.45,
+    "greetFromMs": 350,
+    "greetToMs": 2100
+  },
+  "field": {
+    "filledBackground": "#f5f8ff",
+    "filledBorder": "#e1e6f0"
+  }
+} as const;
+
+export const voiceCall = {
+  "background": {
+    "colors": [
+      "#2e6be6",
+      "#1750c4",
+      "#0a3b9d",
+      "#03276e"
+    ],
+    "locations": [
+      0,
+      0.42,
+      0.78,
+      1
+    ]
+  },
+  "angle": 170,
+  "glass": "rgba(255,255,255,0.16)",
+  "dock": "rgba(255,255,255,0.10)",
+  "status": {
+    "speaking": {
+      "colors": [
+        "#1bc85b",
+        "#0c9e42",
+        "#03702b"
+      ],
+      "locations": [
+        0,
+        0.45,
+        1
+      ]
+    },
+    "listening": {
+      "colors": [
+        "#e95555",
+        "#c21a1a",
+        "#980b0b"
+      ],
+      "locations": [
+        0,
+        0.6,
+        1
+      ]
+    },
+    "listeningOrange": {
+      "colors": [
+        "#e9a951",
+        "#d08825",
+        "#a3640d"
+      ],
+      "locations": [
+        0,
+        0.5,
+        1
+      ]
+    },
+    "neutral": "rgba(255,255,255,0.16)"
+  },
+  "avatar": {
+    "size": 148,
+    "compactSize": 96,
+    "hop": 18,
+    "compactHop": 14,
+    "cycleMs": 420,
+    "squash": 0.06,
+    "pauseFactor": 0.25,
+    "tilt": -8,
+    "breathMs": 3200
+  },
+  "captions": {
+    "spoken": "#ffffff",
+    "upcoming": "rgba(255,255,255,0.45)",
+    "size": 20,
+    "lineHeight": 30,
+    "compactSize": 16,
+    "compactLineHeight": 22
+  },
+  "hangup": "#e62e2e"
 } as const;
