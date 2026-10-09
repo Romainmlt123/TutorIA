@@ -1,0 +1,26 @@
+# Render (blueprint) : le surveillant du vocal, seul service hébergé hors d'EAS.
+# Les secrets ne sont jamais ici : ils se saisissent dans le tableau de bord de Render (sync: false).
+services:
+  - type: web
+    name: tutoria-voice-monitor
+    runtime: docker
+    # Union européenne, comme le projet Supabase (RGPD).
+    region: frankfurt
+    # Offre payante : toujours allumée (l'offre gratuite se met en veille et couperait le vocal).
+    plan: starter
+    dockerfilePath: ./monitor/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    # Déployé depuis main, seulement quand le surveillant change.
+    branch: main
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - monitor/**
+        - server/guards/moderationRules.ts
+        - render.yaml
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: VOICE_MONITOR_TOKEN
+        sync: false

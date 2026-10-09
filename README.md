@@ -142,6 +142,14 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
 - **Hors ligne** : si le serveur ne répond pas, un bandeau « Tutor'IA est hors ligne » s'affiche et des questions d'entraînement du chapitre prennent le relais.
 - Le prompt système est versionné dans `server/tutor/prompt.ts`.
 
+### Surveillant du vocal sur Render
+
+Le surveillant (`monitor/`) est le seul service hébergé hors d'EAS : `render.yaml` le décrit (image Docker `monitor/Dockerfile`, région Francfort, offre toujours allumée, vérification par `/health`). Il est redéployé depuis `main` quand `monitor/` change.
+
+1. Dans Render : relier le dépôt GitHub, créer le service depuis le blueprint (`render.yaml`), puis saisir `OPENAI_API_KEY` et `VOICE_MONITOR_TOKEN` (`openssl rand -hex 32`).
+2. Dans EAS, environnement `production` : `VOICE_MONITOR_URL` (l'adresse donnée par Render) et `VOICE_MONITOR_TOKEN` (le même secret, en « sensitive »).
+3. Redéployer le serveur, puis l'app (`npm run update:preview`). Sans surveillant, le serveur de production refuse le vocal.
+
 ### Version installée sur téléphone (APK preview)
 
 - L'APK « preview » vise le serveur en ligne (`https://tutoria.expo.app`) et Supabase en ligne : le PC n'a pas besoin d'être allumé.
@@ -183,7 +191,7 @@ src/
   lib/            utilitaires transverses (config, session, cache, heure de Paris, journalisation) ;
                   three/ = scènes 3D (chargement des modèles, WebGL, pause hors écran)
 server/           code serveur uniquement : clés OpenAI et Supabase, prompt, garde-fous, comptes
-monitor/          surveillant du vocal (service Node séparé, sans dépendance de l'app)
+monitor/          surveillant du vocal (service Node séparé, sans dépendance de l'app), déployé sur Render (render.yaml)
 supabase/         migrations, tests pgTAP, modèles d'e-mails, configuration locale
 scripts/          outillage (tokens, seed, Supabase local)
 tools/explorer-3d/ scripts Blender des îles 3D d'Explorer (modèles, matières, cuisson), sortie dans assets/explorer/models/

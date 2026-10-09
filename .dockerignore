@@ -1,0 +1,7 @@
+# Contexte Docker (racine du dépôt) : seule image construite, celle du surveillant du vocal (monitor/Dockerfile).
+**
+!monitor/package.json
+!monitor/package-lock.json
+!monitor/main.ts
+!monitor/callMonitor.ts
+!server/guards/moderationRules.ts

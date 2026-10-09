@@ -119,6 +119,10 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - APK autonome : profil `preview` (canal `preview`, serveur `https://tutoria.expo.app`). Les variables de l'app viennent de l'environnement EAS `preview`, celles du serveur de l'environnement `production`.
   - Mise à jour du JavaScript sans nouvel APK : `npm run update:preview -- --message "…"` (EAS Update, `runtimeVersion` par empreinte). Un module natif ajouté impose un nouveau build.
   - Serveur : `npx expo export --platform web` puis `npx eas-cli@latest deploy --prod --environment production`.
+- Surveillant du vocal sur Render (`render.yaml`, image `monitor/Dockerfile`, région Francfort, déployé depuis `main` quand `monitor/` change) :
+  - secrets saisis dans Render, jamais dans le dépôt : `OPENAI_API_KEY` et `VOICE_MONITOR_TOKEN` ; le même `VOICE_MONITOR_TOKEN` et l'adresse du service (`VOICE_MONITOR_URL`) vont dans l'environnement EAS `production`, en « sensitive » pour le secret ;
+  - ordre de mise en ligne : le surveillant d'abord (sa page `/health` répond), puis les variables EAS, puis le serveur, puis `npm run update:preview` ; sans surveillant, le serveur de production refuse le vocal ;
+  - `monitor/package.json` ne déclare que `openai` et `zod`, aux mêmes versions que l'app (son propre `package-lock.json`).
 
 ## 10. Conventions du dépôt
 - **Structure :**
