@@ -6,8 +6,10 @@ services:
     runtime: docker
     # Union européenne, comme le projet Supabase (RGPD).
     region: frankfurt
-    # Offre payante : toujours allumée (l'offre gratuite se met en veille et couperait le vocal).
-    plan: starter
+    # Offre gratuite pendant les tests (choix de Romain, 09/10) : veille après 15 min sans visite et
+    # réveil en une minute environ, donc le premier appel après une veille est refusé. Passer à
+    # « starter » (toujours allumée) avant que de vrais élèves utilisent le vocal.
+    plan: free
     dockerfilePath: ./monitor/Dockerfile
     dockerContext: .
     healthCheckPath: /health

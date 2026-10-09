@@ -120,6 +120,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - Mise à jour du JavaScript sans nouvel APK : `npm run update:preview -- --message "…"` (EAS Update, `runtimeVersion` par empreinte). Un module natif ajouté impose un nouveau build.
   - Serveur : `npx expo export --platform web` puis `npx eas-cli@latest deploy --prod --environment production`.
 - Surveillant du vocal sur Render (`render.yaml`, image `monitor/Dockerfile`, région Francfort, déployé depuis `main` quand `monitor/` change) :
+  - offre gratuite pendant les tests (veille après 15 min, premier appel refusé au réveil) : passer à « starter » avant la production ;
   - secrets saisis dans Render, jamais dans le dépôt : `OPENAI_API_KEY` et `VOICE_MONITOR_TOKEN` ; le même `VOICE_MONITOR_TOKEN` et l'adresse du service (`VOICE_MONITOR_URL`) vont dans l'environnement EAS `production`, en « sensitive » pour le secret ;
   - ordre de mise en ligne : le surveillant d'abord (sa page `/health` répond), puis les variables EAS, puis le serveur, puis `npm run update:preview` ; sans surveillant, le serveur de production refuse le vocal ;
   - `monitor/package.json` ne déclare que `openai` et `zod`, aux mêmes versions que l'app (son propre `package-lock.json`).
@@ -248,3 +249,4 @@ Chaque choix doit rester compatible avec une publication sur les stores :
    - Sur EAS, `OPENAI_API_KEY`, `SUPABASE_SECRET_KEY` et `LINK_CODE_PEPPER` doivent être des variables « sensitive ». Changer `LINK_CODE_PEPPER` invalide les codes de liaison en cours.
    - Renseigner `EXPO_PUBLIC_API_BASE_URL` (ou l'`origin` d'Expo Router) pour les builds natifs de production.
    - Ne pas laisser un tunnel de développement ouvert sans surveillance : les routes API y sont publiques.
+   - Passer le surveillant du vocal sur l'offre « starter » de Render (toujours allumée) : l'offre gratuite se met en veille et refuse le premier appel au réveil.

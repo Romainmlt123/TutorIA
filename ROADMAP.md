@@ -289,7 +289,7 @@ Retenues par Romain après l'interface v2.7, sans ordre fixé :
    - étape 1 faite et validée par Romain : l'appel est créé par le serveur (`/api/tutor/voice/start`), l'app ne reçoit plus de jeton ;
    - étape 2 faite : le surveillant (`monitor/`) vérifie les consignes et les outils, refuse les textes glissés par l'app, modère les photos et la voix du tuteur, et raccroche à l'heure (10 min, ou la prochaine pause du parent) ;
    - étape 3 faite : la voix de l'élève transcrite pour le surveillant seulement, pour la modérer (choix de Romain) : détresse → le tuteur donne le 3114 et le 119 sans raccrocher, propos déplacés → il recentre, puis l'appel s'arrête au troisième ; une phrase du tuteur signalée est coupée, l'appel s'arrête à la deuxième ;
-   - étape 4 : déploiement sur Render (région Francfort), secrets, variables EAS.
+   - étape 4 : déploiement sur Render (région Francfort, offre gratuite pendant les tests, « starter » avant la production), secrets, variables EAS.
 2. **La connexion d'un enfant par son code parent** (option B, ci-dessous).
 3. **La reprise d'Explorer** (chantier 2, en pause depuis le 07/10).
 

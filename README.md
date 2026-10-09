@@ -144,7 +144,7 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
 
 ### Surveillant du vocal sur Render
 
-Le surveillant (`monitor/`) est le seul service hébergé hors d'EAS : `render.yaml` le décrit (image Docker `monitor/Dockerfile`, région Francfort, offre toujours allumée, vérification par `/health`). Il est redéployé depuis `main` quand `monitor/` change.
+Le surveillant (`monitor/`) est le seul service hébergé hors d'EAS : `render.yaml` le décrit (image Docker `monitor/Dockerfile`, région Francfort, vérification par `/health`). Il est sur l'offre gratuite pendant les tests : il se met en veille après 15 min sans visite, et le premier appel après une veille est refusé (réessayer une minute plus tard). Passer à l'offre « starter », toujours allumée, avant que de vrais élèves utilisent le vocal. Il est redéployé depuis `main` quand `monitor/` change.
 
 1. Dans Render : relier le dépôt GitHub, créer le service depuis le blueprint (`render.yaml`), puis saisir `OPENAI_API_KEY` et `VOICE_MONITOR_TOKEN` (`openssl rand -hex 32`).
 2. Dans EAS, environnement `production` : `VOICE_MONITOR_URL` (l'adresse donnée par Render) et `VOICE_MONITOR_TOKEN` (le même secret, en « sensitive »).
