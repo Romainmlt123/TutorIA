@@ -47,9 +47,9 @@ module.exports = defineConfig([
         },
         {
           selector:
-            "MemberExpression[object.object.name='process'][object.property.name='env'][property.name=/^(OPENAI_|SUPABASE_SECRET_KEY|LINK_CODE_PEPPER|SEED_)/]",
+            "MemberExpression[object.object.name='process'][object.property.name='env'][property.name=/^(OPENAI_|SUPABASE_SECRET_KEY|LINK_CODE_PEPPER|SEED_|VOICE_MONITOR_)/]",
           message:
-            'Secrets réservés au serveur (server/env.ts) : OPENAI_*, SUPABASE_SECRET_KEY, LINK_CODE_PEPPER, SEED_*.',
+            'Secrets réservés au serveur (server/env.ts) : OPENAI_*, SUPABASE_SECRET_KEY, LINK_CODE_PEPPER, SEED_*, VOICE_MONITOR_*.',
         },
       ],
     },

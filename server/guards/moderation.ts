@@ -1,20 +1,8 @@
 import type OpenAI from 'openai';
 
-import { MODERATION_MODEL } from '../env';
+import { MODERATION_MODEL, verdictOf, type Verdict } from './moderationRules';
 
-export type Verdict = 'ok' | 'flagged' | 'distress';
-
-type ModerationResult = { flagged: boolean; categories: object };
-
-const DISTRESS_CATEGORIES = ['self-harm', 'self-harm/intent', 'self-harm/instructions'];
-
-/** Détresse (automutilation) : message d'aide ; autre contenu signalé : on revient aux révisions. */
-export function verdictOf(result: ModerationResult | undefined): Verdict {
-  if (!result) return 'ok';
-  const categories = result.categories as Record<string, boolean | undefined>;
-  if (DISTRESS_CATEGORIES.some((name) => categories[name])) return 'distress';
-  return result.flagged ? 'flagged' : 'ok';
-}
+export { verdictOf, type Verdict };
 
 type Moderator = Pick<OpenAI, 'moderations'>;
 

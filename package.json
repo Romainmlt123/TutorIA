@@ -30,6 +30,7 @@
     "db:types": "supabase gen types typescript --local --schema public > src/services/db/database.types.ts && prettier --write src/services/db/database.types.ts",
     "db:seed": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env scripts/seed.ts",
     "web:local": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/local-supabase.ts",
+    "monitor": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env monitor/main.ts",
     "update:preview": "npx eas-cli@latest update --channel preview --environment preview"
   },
   "dependencies": {

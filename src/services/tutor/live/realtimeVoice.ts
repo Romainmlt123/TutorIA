@@ -1,19 +1,15 @@
-import { fetch } from 'expo/fetch';
-
 import { logError } from '@/lib/logger';
 
 import {
   PHOTO_CAPTION,
-  type RealtimeSessionResponse,
   type VisualCheckResponse,
+  type VoiceStartRequest,
+  type VoiceStartResponse,
 } from '../api-contract';
 import type { StartVoiceRequest, VoiceSession } from '../TutorService';
 import { postTutor, TutorHttpError } from './http';
 import { getRtcAdapter } from './webrtc';
 import type { RtcDataChannel } from './webrtc.types';
-
-/** Échange SDP avec l'API Realtime, authentifié par le jeton temporaire (jamais la clé). */
-const REALTIME_CALLS_URL = 'https://api.openai.com/v1/realtime/calls';
 
 export type VoiceErrorCode =
   'unavailable' | 'microphone' | 'rate_limited' | 'daily_limit' | 'network' | 'upstream';
@@ -46,8 +42,9 @@ function isPermissionDenial(error: unknown): boolean {
 }
 
 /**
- * Démarre un appel vocal temps réel : micro → jeton temporaire (serveur) → WebRTC direct avec OpenAI.
- * Les événements du canal de données pilotent le visualiseur.
+ * Démarre un appel vocal temps réel : micro → offre WebRTC envoyée au serveur, qui crée l'appel chez
+ * OpenAI et le surveille → audio et canal de données en direct avec OpenAI. Les événements du canal
+ * de données pilotent le visualiseur.
  */
 export async function startRealtimeVoiceSession({
   topic,
@@ -68,21 +65,6 @@ export async function startRealtimeVoiceSession({
     throw new VoiceSessionError('microphone');
   }
   const stopMicrophone = () => microphone.getTracks().forEach((track) => track.stop());
-
-  let secret: RealtimeSessionResponse;
-  try {
-    const response = await postTutor('/api/tutor/realtime-session', { topic });
-    secret = (await response.json()) as RealtimeSessionResponse;
-  } catch (error) {
-    stopMicrophone();
-    if (
-      error instanceof TutorHttpError &&
-      (error.code === 'rate_limited' || error.code === 'daily_limit')
-    ) {
-      throw new VoiceSessionError(error.code);
-    }
-    throw new VoiceSessionError(error instanceof TutorHttpError ? 'upstream' : 'network');
-  }
 
   const peer = rtc.createPeerConnection();
   const stopAudio = rtc.playRemoteAudio(peer);
@@ -228,19 +210,28 @@ export async function startRealtimeVoiceSession({
   try {
     const offer = await peer.createOffer();
     await peer.setLocalDescription(offer);
-    const answer = await fetch(REALTIME_CALLS_URL, {
-      method: 'POST',
-      body: offer.sdp ?? '',
-      headers: {
-        Authorization: `Bearer ${secret.clientSecret}`,
-        'Content-Type': 'application/sdp',
-      },
-    });
-    if (!answer.ok) throw new Error(`Réponse SDP ${answer.status}`);
-    await peer.setRemoteDescription({ type: 'answer', sdp: await answer.text() });
+    const body: VoiceStartRequest = { topic, sdp: offer.sdp ?? '' };
+    const response = await postTutor('/api/tutor/voice/start', body);
+    const { sdp } = (await response.json()) as VoiceStartResponse;
+    await peer.setRemoteDescription({ type: 'answer', sdp });
   } catch (error) {
-    logError('voice.connect', error);
     cleanup();
+    // Réponse perdue (délai dépassé, réseau) ou connexion ratée après la réponse : le serveur a pu
+    // ouvrir la séance, qui serait sinon comptée 10 min. On la clôt.
+    const maybeOpened =
+      !(error instanceof TutorHttpError) || error.code === 'timeout' || error.code === 'network';
+    if (maybeOpened) {
+      postTutor('/api/tutor/voice/end', {}).catch((endError: unknown) =>
+        logError('voice.end', endError),
+      );
+    }
+    if (error instanceof TutorHttpError) {
+      if (error.code === 'rate_limited' || error.code === 'daily_limit') {
+        throw new VoiceSessionError(error.code);
+      }
+      throw new VoiceSessionError('upstream');
+    }
+    logError('voice.connect', error);
     throw new VoiceSessionError('network');
   }
 

@@ -90,8 +90,12 @@ export type TutorStreamEvent =
 
 export type ErrorResponse = { error: TutorErrorCode };
 
-export type RealtimeSessionRequest = { topic: TutorTopic };
-export type RealtimeSessionResponse = { clientSecret: string; expiresAt: number };
+/**
+ * Début d'un appel vocal : l'offre WebRTC du téléphone. Le serveur crée l'appel chez OpenAI (clé et
+ * consignes restent sur le serveur) et répond par la réponse SDP.
+ */
+export type VoiceStartRequest = { topic: TutorTopic; sdp: string };
+export type VoiceStartResponse = { sdp: string };
 
 /** Visuel demandé par le tuteur pendant un appel vocal : l'appel d'outil tel que reçu (2D, 2F). */
 export type VisualCheckRequest = { name: string; arguments: string };
@@ -112,4 +116,6 @@ export const TUTOR_LIMITS = {
   imageMaxBytes: 200_000,
   photosPerCall: 3,
   voiceCallMaxMs: 10 * 60 * 1000,
+  /** Offre WebRTC (SDP) envoyée au début d'un appel : quelques kilo-octets en pratique. */
+  sdpMaxChars: 20_000,
 } as const;
