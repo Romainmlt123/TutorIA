@@ -6,7 +6,11 @@ import { Icon, type IconName } from './Icon';
 import { PressableBase } from './PressableBase';
 import { Text } from './Text';
 
-export type ButtonVariant = 'primary' | 'vivid' | 'soft' | 'small' | 'white';
+/**
+ * `waiting` : action pas encore possible, en gris lisible (pas estompé) qui dit ce qu'on attend.
+ * `glass` : bouton en verre posé sur un dégradé (bilan des flashcards).
+ */
+export type ButtonVariant = 'primary' | 'vivid' | 'soft' | 'small' | 'white' | 'waiting' | 'glass';
 
 export type ButtonProps = {
   label: string;
@@ -39,6 +43,18 @@ const VARIANTS = {
   soft: { bg: c.primarySoft, hover: p.blue[200], pressed: p.blue[200], fg: c.primary },
   small: { bg: c.primary, hover: c.primaryHover, pressed: c.primaryPressed, fg: c.textOnColor },
   white: { bg: c.surface, hover: c.bg, pressed: c.bg, fg: c.primary },
+  waiting: {
+    bg: extras.waitingButton,
+    hover: extras.waitingButton,
+    pressed: extras.waitingButton,
+    fg: c.textSecondary,
+  },
+  glass: {
+    bg: theme.screenBand.controlVeil,
+    hover: theme.onColor.veil,
+    pressed: theme.onColor.veil,
+    fg: c.textOnColor,
+  },
 } as const;
 
 /** Violet doux (profil : « Relier un autre parent », v2.8). */
@@ -101,8 +117,9 @@ export function Button({
         styles.base,
         size === 'lg' && styles.large,
         variant === 'small' && styles.small,
+        variant === 'glass' && styles.glass,
         { backgroundColor: pressed ? colors.pressed : hovered ? colors.hover : colors.bg },
-        disabled && styles.disabled,
+        disabled && variant !== 'waiting' && styles.disabled,
         style,
       ]}>
       <View style={styles.content}>
@@ -132,6 +149,7 @@ const styles = StyleSheet.create({
   },
   large: { height: 52 },
   small: { paddingHorizontal: theme.space[4] },
+  glass: { borderWidth: 1, borderColor: theme.onColor.track },
   content: { flexDirection: 'row', alignItems: 'center', gap: theme.space[2] },
   disabled: { opacity: 0.4 },
 });

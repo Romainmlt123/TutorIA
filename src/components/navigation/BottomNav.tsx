@@ -99,10 +99,11 @@ export function BottomNav({
   const keyboardVisible = useKeyboardVisible();
   const active = state.routes[state.index];
   const activeName = active?.name;
-  // L'appel vocal (v2.6) est plein écran : la barre se masque pendant l'appel.
+  // L'appel vocal (v2.6) et la session de flashcards (v2.12) sont plein écran : la barre s'y masque.
   const nested = active?.state;
-  const inCall = nested?.routes[nested.index ?? 0]?.name === 'vocal';
-  if (keyboardVisible || inCall || !tabs.some((tab) => tab.name === activeName)) return null;
+  const nestedName = nested?.routes[nested.index ?? 0]?.name;
+  const fullScreen = nestedName === 'vocal' || nestedName === 'session';
+  if (keyboardVisible || fullScreen || !tabs.some((tab) => tab.name === activeName)) return null;
 
   return (
     <View
