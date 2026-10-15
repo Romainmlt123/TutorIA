@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { ScreenBand } from '@/components/ScreenBand';
+import { BAND_PILLS, ScreenBand } from '@/components/ScreenBand';
 import { Text } from '@/components/Text';
 import { theme } from '@/theme';
 
@@ -12,12 +12,14 @@ type Props = {
   top?: ReactNode;
   /** Sous le texte (P2 : sélecteur de période). */
   children?: ReactNode;
+  /** Place des pilules décoratives, celle de la maquette de l'écran. */
+  pills?: keyof typeof BAND_PILLS;
 };
 
 /** En-tête des écrans Parents (v2.5) : bandeau violet de marque, titre et phrase en blanc. */
-export function ParentBand({ title, intro, top, children }: Props) {
+export function ParentBand({ title, intro, top, children, pills }: Props) {
   return (
-    <ScreenBand tone="violet" accessibilityLabel={title}>
+    <ScreenBand tone="violet" pills={pills} accessibilityLabel={title}>
       <View style={styles.stack}>
         {top}
         <View style={styles.texts}>

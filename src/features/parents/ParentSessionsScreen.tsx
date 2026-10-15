@@ -35,7 +35,7 @@ export function ParentSessionsScreen() {
   return (
     <ScreenContainer
       contentStyle={styles.content}
-      band={<ParentBand title={t.title(name)} intro={t.subtitle(name)} />}>
+      band={<ParentBand title={t.title(name)} intro={t.subtitle(name)} pills="parentsLow" />}>
       {sessions.isError ? (
         <View style={styles.group}>
           <FormMessage message={fr.parent.home.loadFailed} />

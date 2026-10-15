@@ -12,9 +12,8 @@ import { fr } from '@/i18n/fr';
 import { theme } from '@/theme';
 
 import { GoalCard } from './components/GoalCard';
-import { HomeHeader } from './components/HomeHeader';
+import { HOME_BAND_GAP, HomeHeader } from './components/HomeHeader';
 import { LevelCard } from './components/LevelCard';
-import { QuoteOfTheDay } from './components/QuoteOfTheDay';
 import { ResumeCard } from './components/ResumeCard';
 import { StreakCard } from './components/StreakCard';
 import { useHomeData } from './hooks/useHomeData';
@@ -25,7 +24,7 @@ const HOME_OVERLAP = 64;
 /** 01 · Accueil (design/screens/01-Accueil.dc.html), bandeau de marque bleu (v2.5). */
 export function HomeScreen() {
   const router = useRouter();
-  const { student, quote, subjects, resume } = useHomeData();
+  const { student, subjects, resume } = useHomeData();
   // La figurine se charge pendant que l'élève lit l'Accueil (profil, carte d'Explorer).
   usePreloadAvatar();
 
@@ -34,7 +33,12 @@ export function HomeScreen() {
       contentStyle={styles.content}
       bandOverlap={HOME_OVERLAP}
       band={
-        <ScreenBand tone="student" overlap={HOME_OVERLAP} accessibilityLabel={fr.home.welcome}>
+        <ScreenBand
+          tone="student"
+          overlap={HOME_OVERLAP}
+          pills="home"
+          topGap={HOME_BAND_GAP}
+          accessibilityLabel={fr.home.welcome}>
           <HomeHeader
             firstName={student.firstName}
             unreadNotifications={student.unreadNotifications}
@@ -43,7 +47,6 @@ export function HomeScreen() {
             }
             onProfile={() => router.push('/profil')}
           />
-          {quote ? <QuoteOfTheDay quote={quote} /> : null}
         </ScreenBand>
       }>
       <View accessibilityLabel={fr.home.gameSection} style={styles.gameRow}>

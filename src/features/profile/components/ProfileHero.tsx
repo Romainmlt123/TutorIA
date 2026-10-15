@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
+import Svg, { Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 
 import { GameText } from '@/components/game/GameText';
 import { WoodButton } from '@/components/game/WoodButton';
@@ -45,6 +46,44 @@ type Props = {
   onAvatar: () => void;
 };
 
+/** Lueur en dégradé radial, qui s'efface vers ses bords (halo, ombre au sol), comme la maquette. */
+function Glow({
+  id,
+  width,
+  height,
+  color,
+  fade,
+  style,
+}: {
+  id: string;
+  width: number;
+  height: number;
+  color: string;
+  /** Distance au centre (0 à 1) où la lueur a disparu. */
+  fade: number;
+  style: StyleProp<ViewStyle>;
+}) {
+  return (
+    <View aria-hidden pointerEvents="none" style={style}>
+      <Svg width={width} height={height}>
+        <Defs>
+          <RadialGradient id={id} cx="50%" cy="50%" rx="50%" ry="50%">
+            <Stop offset={0} stopColor={color} />
+            <Stop offset={fade} stopColor={color} stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
+        <Ellipse
+          cx={width / 2}
+          cy={height / 2}
+          rx={width / 2}
+          ry={height / 2}
+          fill={`url(#${id})`}
+        />
+      </Svg>
+    </View>
+  );
+}
+
 /** La figurine en pied, qui salue à l'arrivée sur l'écran puis attend ; l'initiale sans avatar. */
 function Figure({
   look,
@@ -77,8 +116,22 @@ function Figure({
       accessibilityRole="image"
       accessibilityLabel={t.avatarLabel(firstName)}
       style={styles.figure}>
-      <View aria-hidden style={styles.halo} />
-      <View aria-hidden style={styles.ground} />
+      <Glow
+        id="profile-halo"
+        width={250}
+        height={250}
+        color={H.halo}
+        fade={0.68}
+        style={styles.halo}
+      />
+      <Glow
+        id="profile-ground"
+        width={130}
+        height={18}
+        color={extras.call.profileGround}
+        fade={0.7}
+        style={styles.ground}
+      />
       {loading ? null : look && canUseWebGL() ? (
         <SceneBoundary key={sceneKey} scope="profile.avatar" fallback={initial}>
           <AvatarPreview
@@ -104,7 +157,7 @@ function Figure({
 export function ProfileHero(props: Props) {
   const { firstName, grade, sinceMonth, look, lookLoading, news, onBack, onAvatar } = props;
   return (
-    <ScreenBand tone="student" overlap={PROFILE_OVERLAP} accessibilityLabel={t.kicker}>
+    <ScreenBand tone="student" overlap={PROFILE_OVERLAP} pills="none" accessibilityLabel={t.kicker}>
       <Figure look={look} loading={lookLoading} firstName={firstName} />
       <View style={styles.back}>
         <IconButton
@@ -200,23 +253,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  halo: {
-    position: 'absolute',
-    width: 250,
-    height: 250,
-    top: 20,
-    borderRadius: theme.radius.full,
-    backgroundColor: H.halo,
-    opacity: 0.6,
-  },
-  ground: {
-    position: 'absolute',
-    bottom: -4,
-    width: 130,
-    height: 18,
-    borderRadius: theme.radius.full,
-    backgroundColor: extras.call.ground,
-  },
+  halo: { position: 'absolute', top: 20 },
+  ground: { position: 'absolute', bottom: -4 },
   initial: {
     width: 120,
     height: 120,

@@ -55,12 +55,14 @@ export function StatsScreen() {
             icon="horloge"
             label={fr.stats.studyTime}
             background={theme.kpi.time}
+            lifted="blue"
             {...stats.kpis.time}
           />
           <KpiCard
             icon="cible"
             label={fr.stats.sessions}
             background={theme.kpi.sessions}
+            lifted="cyan"
             {...stats.kpis.sessions}
           />
         </View>

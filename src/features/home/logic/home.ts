@@ -1,12 +1,3 @@
-import type { Quote } from '@/data/types';
-
-/** Citation du jour : une par jour de l'année, en boucle. */
-export function quoteOfTheDay(quotes: readonly Quote[], date: Date): Quote | undefined {
-  const startOfYear = new Date(date.getFullYear(), 0, 1);
-  const dayOfYear = Math.floor((date.getTime() - startOfYear.getTime()) / 86_400_000);
-  return quotes[dayOfYear % quotes.length];
-}
-
 /** Part de l'objectif du jour réalisée, de 0 à 1. */
 export function goalProgress(done: number, target: number): number {
   return target > 0 ? Math.min(1, done / target) : 0;

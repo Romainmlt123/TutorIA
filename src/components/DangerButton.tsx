@@ -2,16 +2,22 @@ import { StyleSheet } from 'react-native';
 
 import { theme } from '@/theme';
 
+import { Icon } from './Icon';
+
 import { PressableBase } from './PressableBase';
 import { Text } from './Text';
 
-/** « Supprimer le compte » : fond `red-100`, texte `red-600`, séparé du reste (exigence des stores). */
+/**
+ * « Supprimer le compte » : fond `red-100`, texte `red-600` et corbeille, séparé du reste (exigence
+ * des stores).
+ */
 export function DangerButton({ label, onPress }: { label: string; onPress: () => void }) {
   return (
     <PressableBase
       onPress={onPress}
       accessibilityRole="button"
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
+      <Icon name="poubelle" size={20} color={theme.palette.red[600]} />
       <Text variant="label" weight="bold" color={theme.palette.red[600]}>
         {label}
       </Text>
@@ -24,6 +30,8 @@ const styles = StyleSheet.create({
     height: theme.space[12],
     borderRadius: theme.radius['2xl'],
     backgroundColor: theme.palette.red[100],
+    flexDirection: 'row',
+    gap: theme.space[2],
     alignItems: 'center',
     justifyContent: 'center',
   },

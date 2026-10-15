@@ -4,22 +4,28 @@ import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { GradientSurface } from '@/components/GradientSurface';
 import type { IconName } from '@/components/Icon';
 import { Watermark } from '@/components/Watermark';
-import { theme } from '@/theme';
+import { liftShadow, theme } from '@/theme';
 
 type Props = {
-  icon: IconName;
+  /** Icône en filigrane ; sans icône, pas de filigrane (P2). */
+  icon?: IconName;
   children: ReactNode;
   contentStyle?: StyleProp<ViewStyle>;
 };
 
-/** Carte héros de l'espace Parents : dégradé `hero` (bleu → violet), texte blanc, filigrane. */
+/**
+ * Carte héros de l'espace Parents : dégradé `hero` (bleu → violet), texte blanc, filigrane. C'est la
+ * première carte, posée à cheval sur le bandeau violet : elle prend l'ombre portée violette (v2.17).
+ */
 export function HeroCard({ icon, children, contentStyle }: Props) {
   return (
     <GradientSurface
       gradient={theme.hero.gradient}
-      shadow={theme.shadow.md}
+      shadow={liftShadow('hero', true)}
       contentStyle={[styles.content, contentStyle]}>
-      <Watermark icon={icon} size={140} offset={-32} placement="top" opacity={0.12} />
+      {icon ? (
+        <Watermark icon={icon} size={140} offset={-32} placement="top" opacity={0.12} />
+      ) : null}
       {children}
     </GradientSurface>
   );

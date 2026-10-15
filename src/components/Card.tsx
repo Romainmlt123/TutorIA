@@ -9,6 +9,8 @@ type Props = {
   padding?: number;
   radius?: '2xl' | '3xl';
   elevation?: 'sm' | 'md' | 'lg' | 'none';
+  /** Ombre précise, à la place de `elevation` (ombre portée sur le bandeau : `liftShadow`). */
+  shadow?: string;
   /** Rogne le contenu (décor, liseré) : l'ombre passe alors par un conteneur extérieur. */
   clip?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -26,11 +28,12 @@ export function Card({
   radius = '2xl',
   elevation = 'md',
   clip = false,
+  shadow,
   style,
   accessibilityLabel,
 }: Props) {
   const borderRadius = theme.radius[radius];
-  const boxShadow = elevation === 'none' ? undefined : theme.shadow[elevation];
+  const boxShadow = shadow ?? (elevation === 'none' ? undefined : theme.shadow[elevation]);
   if (!clip) {
     return (
       <View

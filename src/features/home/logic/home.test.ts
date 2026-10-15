@@ -1,17 +1,6 @@
-import { quotes } from '@/data/mock/quotes';
-
-import { currentLesson, goalProgress, quoteOfTheDay, subjectMastery } from './home';
+import { currentLesson, goalProgress, subjectMastery } from './home';
 
 describe('accueil', () => {
-  it('change de citation chaque jour et boucle sur la liste', () => {
-    const first = quoteOfTheDay(quotes, new Date(2026, 0, 1));
-    const second = quoteOfTheDay(quotes, new Date(2026, 0, 2));
-    const week = quoteOfTheDay(quotes, new Date(2026, 0, 8));
-    expect(first).toEqual(quotes[0]);
-    expect(second).toEqual(quotes[1]);
-    expect(week).toEqual(first);
-  });
-
   it('calcule la part de l’objectif du jour', () => {
     expect(goalProgress(2, 3)).toBeCloseTo(2 / 3);
     expect(goalProgress(4, 3)).toBe(1);

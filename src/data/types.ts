@@ -87,8 +87,6 @@ export type StudentProfile = {
   };
 };
 
-export type Quote = { text: string; author: string };
-
 export type PeriodKey = 'week' | 'month' | 'quarter';
 
 export type Comparable = { current: number; previous: number };

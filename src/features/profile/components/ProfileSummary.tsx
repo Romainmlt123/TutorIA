@@ -13,7 +13,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { Text } from '@/components/Text';
 import { fr } from '@/i18n/fr';
 import { formatDuration } from '@/lib/format';
-import { extras, theme, type Gradient } from '@/theme';
+import { extras, liftShadow, theme, type Gradient } from '@/theme';
 
 const T = fr.profile.summary;
 const P = theme.profile;
@@ -151,7 +151,13 @@ export function ProfileSummary({ streak, stars, weekMinutes, level, xp, max }: P
     },
   ];
   return (
-    <Card radius="3xl" padding={theme.space[5]} style={styles.card} accessibilityLabel={T.label}>
+    <Card
+      radius="3xl"
+      padding={theme.space[5]}
+      // Posé à cheval sur le bandeau (v2.17).
+      shadow={liftShadow('white')}
+      style={styles.card}
+      accessibilityLabel={T.label}>
       <View style={styles.stats}>
         {stats.map((stat, i) => (
           <SummaryStat key={stat.icon} {...stat} divided={i === 1} />

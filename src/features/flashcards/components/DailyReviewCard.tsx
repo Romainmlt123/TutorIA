@@ -6,7 +6,7 @@ import { StreakBadge } from '@/components/StreakBadge';
 import { SubjectTile } from '@/components/subject/SubjectTile';
 import { Text } from '@/components/Text';
 import { fr } from '@/i18n/fr';
-import { theme, type SubjectId } from '@/theme';
+import { liftShadow, theme, type SubjectId } from '@/theme';
 
 type Props = {
   cardCount: number;
@@ -27,6 +27,8 @@ export function DailyReviewCard({ cardCount, minutes, streakDays, subjects, onSt
       padding={theme.space[6]}
       radius="3xl"
       clip
+      // Posée à cheval sur le bandeau (v2.17).
+      shadow={liftShadow('white')}
       style={styles.card}
       accessibilityLabel={fr.flashcards.dailyReview}>
       <View style={styles.decor} />
