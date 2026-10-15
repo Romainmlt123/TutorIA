@@ -62,7 +62,7 @@ export type TutorErrorCode =
   | 'paused'
   | 'too_long'
   | 'rate_limited'
-  /** Limite du jour atteinte (5 appels vocaux par jour) : le message dit « demain ». */
+  /** Limite du jour atteinte (nombre d'appels vocaux par jour) : le message dit « demain ». */
   | 'daily_limit'
   | 'flagged'
   | 'distress'

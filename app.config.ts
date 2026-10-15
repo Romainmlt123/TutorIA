@@ -70,7 +70,7 @@ const config: ExpoConfig = {
     ],
   ],
   // Projet EAS (builds, mises à jour) : compte romainmlt.
-  owner: 'romainmlt',
+  owner: 'romainmlts-team',
   extra: {
     eas: { projectId: EAS_PROJECT_ID },
   },
