@@ -54,11 +54,13 @@ export const limiters = {
     { windowMs: DAY, max: 150 },
   ]),
   chatIp: sharedLimiter('chatIp', [{ windowMs: 10 * MINUTE, max: 60 }]),
+  // Relevées pendant les tests, comme celles de server/tutor/access.ts (avant : 1 par minute,
+  // 5 par jour, 20 par adresse IP) : à redescendre avant la production.
   voiceClient: sharedLimiter('voiceClient', [
-    { windowMs: MINUTE, max: 1 },
-    { windowMs: DAY, max: 5 },
+    { windowMs: MINUTE, max: 3 },
+    { windowMs: DAY, max: 40 },
   ]),
-  voiceIp: sharedLimiter('voiceIp', [{ windowMs: DAY, max: 20 }]),
+  voiceIp: sharedLimiter('voiceIp', [{ windowMs: DAY, max: 100 }]),
   imageClient: sharedLimiter('imageClient', [
     { windowMs: 10 * MINUTE, max: 3 },
     { windowMs: DAY, max: 10 },
