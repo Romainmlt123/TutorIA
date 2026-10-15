@@ -2,7 +2,7 @@
 
 Commandes d'appel du tuteur vocal : micro, raccrocher (rouge, au centre), caméra.
 
-> Depuis la v2.6, l’appel du tuteur (2B, 2D, 2F) utilise `CallDock` (commandes en verre avec les sous-titres). `CallControls` reste pour la discussion vocale d’Explorer (X4b).
+> Plus utilisé dans les maquettes depuis la v2.13 : l’appel du tuteur (2B, 2D, 2F) utilise `CallDock`, la leçon à la voix d’Explorer (X4b) `WoodCallDock`. Gardé pour l’existant du code.
 
 ## Quand l'utiliser
 

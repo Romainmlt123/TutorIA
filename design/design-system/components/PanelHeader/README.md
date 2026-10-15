@@ -1,16 +1,16 @@
 # PanelHeader
 
-En-tête d’un visuel du tuteur : tuile et surtitre dans la couleur du visuel (violet pour le graphique, azur pour le tableau), titre, agrandir, replier.
+En-tête d'un visuel du tuteur : tuile et surtitre dans la couleur du visuel (violet pour le graphique, azur pour le tableau), titre, agrandir, replier. Boutons blancs de 48 px (v2.12, comme l'app).
 
 ## Quand l'utiliser
 
-Via `VisualPanel`, ou seul quand le panneau est replié. Tout le bandeau ouvre ou replie le panneau quand `onToggle` est fourni ; le chevron n’est qu’un repère.
+Via `VisualPanel`, ou seul quand le panneau est replié. Tout le bandeau ouvre ou replie le panneau quand `onToggle` est fourni ; le chevron n'est qu'un repère.
 
 ## Props
 
 | Prop | Type | Rôle |
 | --- | --- | --- |
-| `kind` | `'graph' | 'whiteboard'` | Sorte de visuel (couleurs, icône). |
+| `kind` | `'graph' \| 'whiteboard'` | Sorte de visuel (couleurs, icône). |
 | `subject` | `string` | Matière, pour le surtitre « Graphique · Maths ». |
 | `kicker` | `string` | Surtitre. |
 | `title` | `string` | Titre. |

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tuteur · Nouvelle discussion</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button,input{font-family:inherit}
+input::placeholder{color:#798398}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@keyframes halo{0%{transform:scale(0.6);opacity:0.55}100%{transform:scale(2.2);opacity:0}}
+.halo{transform-box:fill-box;transform-origin:center;animation:halo 1.6s ease-out infinite}
+.tia-scroll{scrollbar-width:none}.tia-scroll::-webkit-scrollbar{display:none}
+@keyframes tiaDrawer{from{transform:translateX(-100%)}to{transform:none}}
+.tia-drawer{animation:tiaDrawer .22s ease-out both}
+@keyframes tiaUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.tia-up{animation:tiaUp .25s ease-out both}
+@media (prefers-reduced-motion:reduce){.halo,.tia-drawer,.tia-up{animation:none}}
+.tia-chat>*{flex-shrink:0}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<header style="position: absolute; top: 56px; left: 20px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 2">
+<div style="display: flex; align-items: center; justify-content: space-between"><a href="02h-Tuteur-Tes-Discussions.dc.html" aria-label="Ouvrir tes discussions" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 16px; background: #FFFFFF; box-shadow: var(--shadow-sm); color: #5D677D; display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></a><dc-import name="../components/ModeToggle" mode="ecrit" variante="simple" hint-size="214px,48px"></dc-import><a href="02g-Tuteur-Nouvelle-Discussion.dc.html" aria-label="Nouvelle discussion" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 16px; background: #FFFFFF; box-shadow: var(--shadow-sm); color: #5D677D; display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></a></div>
+<dc-import name="../components/TopicCard" matiere="toutes" titre="Discussion libre" badge="" hint-size="350px,64px"></dc-import>
+</header>
+<section aria-label="Conversation avec le tuteur" class="tia-chat" style="position: absolute; top: 192px; left: 20px; right: 20px; bottom: 216px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; transition: top 0.25s ease">
+<div style="align-self: flex-start; display: flex; align-items: flex-end; gap: 8px">
+<img src="../../assets/logo/Logo_tutoria_fond_bleu.png" alt="Tutor'IA" width="32" height="32" style="flex-shrink: 0; display: block; width: 32px; height: 32px; border-radius: 999px; box-shadow: var(--shadow-sm)">
+<div style="max-width: 256px; padding: 12px 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm); font-size: 16px; line-height: 24px">Salut ! Pose-moi ta question, ou raconte-moi l’exercice qui te bloque : on le fait ensemble, pas à pas.</div>
+</div>
+</section>
+<nav aria-label="Idées pour commencer" class="tia-scroll" style="position: absolute; left: 0; right: 0; bottom: 160px; display: flex; gap: 8px; padding: 4px 20px; overflow-x: auto"><a href="#" style="flex-shrink: 0; height: 40px; padding: 0 16px; border-radius: 999px; background: linear-gradient(90deg, #662EE6 0%, #3B0DA2 100%); box-shadow: var(--shadow-sm); color: #FFFFFF; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"></path></svg>Explique-moi une notion</a><a href="02i-Tuteur-Photo-Choix.dc.html" style="flex-shrink: 0; height: 40px; padding: 0 16px; border-radius: 999px; background: linear-gradient(90deg, #E6992E 0%, #A3640D 100%); box-shadow: var(--shadow-sm); color: #FFFFFF; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5ZM15 5l4 4"></path></svg>Aide-moi sur un exercice</a><a href="#" style="flex-shrink: 0; height: 40px; padding: 0 16px; border-radius: 999px; background: linear-gradient(90deg, #1BC85B 0%, #03702B 100%); box-shadow: var(--shadow-sm); color: #FFFFFF; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h10a2 2 0 0 1 2 2v12M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"></path></svg>Fais-moi réviser</a><a href="02c-Tuteur-Ecrit-Graphique.dc.html" style="flex-shrink: 0; height: 40px; padding: 0 16px; border-radius: 999px; background: linear-gradient(90deg, #17A5BE 0%, #026273 100%); box-shadow: var(--shadow-sm); color: #FFFFFF; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16M7 15l4-4 3 3 5-6"></path></svg>Montre-moi un graphique</a></nav>
+<form aria-label="Répondre au tuteur" style="position: absolute; left: 20px; right: 20px; bottom: 108px; display: flex; flex-direction: column; gap: 4px; margin: 0">
+<div style="display: flex; align-items: center; gap: 8px"><a href="02i-Tuteur-Photo-Choix.dc.html" aria-label="Envoyer la photo d’un exercice" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 999px; background: #FFFFFF; box-shadow: var(--shadow-sm); color: var(--primary); display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path></svg></a><label for="reponse" class="sr-only">Ta réponse</label><input id="reponse" type="text" placeholder="Pose ta question…" style="flex-grow: 1; min-width: 0; height: 48px; padding: 0 16px; box-sizing: border-box; border: 1px solid var(--border); border-radius: var(--radius-2xl); background: var(--surface); box-shadow: var(--shadow-sm); font-size: 16px; color: var(--text)"><a href="#" aria-label="Envoyer" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 999px; background: var(--primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"></path></svg></a></div>
+</form>
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="eleve" active="tuteur" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

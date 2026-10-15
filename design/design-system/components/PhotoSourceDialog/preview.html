@@ -1,0 +1,11 @@
+<!-- @dsCard group="Tuteur" height=332 -->
+<div id="root" data-theme="light" style="padding:24px;background:rgba(0,6,18,0.40);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { width: 350 } }, h(T.PhotoSourceDialog, { onChoose: function () {}, onCancel: function () {} }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

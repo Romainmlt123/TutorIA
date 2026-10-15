@@ -42,3 +42,23 @@
 @keyframes tiaSheet{from{opacity:0;transform:translateY(48px)}to{opacity:1;transform:none}}
 .tia-sheet{animation:tiaSheet .55s cubic-bezier(.2,.8,.3,1) both}
 @media (prefers-reduced-motion:reduce){.tia-sheet{animation:none}}
+
+/* Objectif du jour (v2.10) : le dégradé violet → bleu glisse d’un bout à l’autre de la carte (6 s, aller-retour). */
+@keyframes tiaGoal{from{background-position:0% 0%}to{background-position:100% 0%}}
+.tia-goal{animation:tiaGoal 6s cubic-bezier(.37,0,.63,1) infinite alternate}
+@media (prefers-reduced-motion:reduce){.tia-goal{animation:none}}
+
+/* Cases de code (v2.11) : le curseur clignote dans la case en cours. */
+@keyframes tiaCaret{0%,49%{opacity:1}50%,100%{opacity:0}}
+.tia-caret{animation:tiaCaret 1s steps(1) infinite}
+@media (prefers-reduced-motion:reduce){.tia-caret{animation:none}}
+
+/* Rangées qui défilent sur le côté (idées de départ, volet des discussions, v2.12) : sans barre de défilement. */
+.tia-scroll{scrollbar-width:none}
+.tia-scroll::-webkit-scrollbar{display:none}
+
+/* Explorer · leçon (v2.13) : craie de l’ardoise, nuages du ciel. */
+.tia-chalk{display:inline-block;flex-shrink:0;width:8px;height:8px;border-radius:999px;background:#F4F1E6;box-shadow:0 0 0 3px rgba(244,241,230,.18);animation:tia-pen 1s ease-in-out infinite}
+@keyframes tiaCloud{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
+.tia-cloud{animation:tiaCloud 14s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.tia-chalk,.tia-cloud{animation:none}}

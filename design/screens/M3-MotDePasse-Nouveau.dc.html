@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Nouveau mot de passe</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button,input{font-family:inherit}
+input::placeholder{color:#798398}
+input:focus{outline:none;border-color:#2E6BE6;box-shadow:var(--shadow-focus)}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+@keyframes tiaRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.tia-rise{animation:tiaRise .55s cubic-bezier(.2,.7,.3,1) both}
+@keyframes tiaSheet{from{opacity:0;transform:translateY(48px)}to{opacity:1;transform:none}}
+.tia-sheet{animation:tiaSheet .55s cubic-bezier(.2,.8,.3,1) both}
+.vio input:focus{border-color:#662EE6;box-shadow:0 0 0 3px rgba(102,46,230,0.30)}
+.vio a{color:#521DC8}
+@media (prefers-reduced-motion:reduce){.tia-rise,.tia-sheet{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: linear-gradient(170deg, #2E6BE6 0%, #1750C4 42%, #0A3B9D 78%, #03276E 100%); font-family: var(--font-sans); color: #000612; display: flex; flex-direction: column">
+<span aria-hidden="true" style="position: absolute; left: -120px; top: -80px; width: 420px; height: 420px; border-radius: 999px; background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 65%)"></span><span aria-hidden="true" style="position: absolute; right: -160px; bottom: 120px; width: 380px; height: 380px; border-radius: 999px; background: radial-gradient(circle, rgba(126,170,255,0.20) 0%, rgba(126,170,255,0) 65%)"></span><header style="position: relative; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 56px 20px 18px; color: #FFFFFF; text-align: center"><div style="align-self: stretch; display: flex; min-height: 44px"><a href="M2-MotDePasse-Code.dc.html" aria-label="Retour" style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 999px; background: rgba(255,255,255,0.16); color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a></div><div style="margin-top: -34px"><dc-import name="../components/VoiceAvatar" fond="transparent" size="96" hop="{{ hop }}" tilt="0" label="Tutor’IA" hint-size="144px,128px"></dc-import></div><h1 style="margin: 4px 0 0; max-width: 330px; font-size: 28px; line-height: 34px; font-weight: 900; text-wrap: balance">Nouveau mot de passe</h1><p style="margin: 4px 0 0; max-width: 320px; font-size: 15px; line-height: 22px; font-weight: 500; color: rgba(255,255,255,0.85); text-wrap: balance">Dernière étape : choisis un mot de passe que tu retiendras.</p></header><main class="tia-sheet" style="position: relative; flex-grow: 1; display: flex; flex-direction: column; gap: 16px; padding: 24px 20px 32px; background: #FFFFFF; border-radius: 32px 32px 0 0; box-shadow: 0 -12px 32px rgba(3,39,110,0.25); color: #000612"><form aria-label="Nouveau mot de passe" style="display: flex; flex-direction: column; gap: 16px; margin: 0"><label style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 14px; line-height: 20px; font-weight: 700">Nouveau mot de passe</span><span style="position: relative; display: block"><span style="position: absolute; left: 16px; top: 16px; color: #798398; display: flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v10H6zM8.5 11V7.5a3.5 3.5 0 0 1 7 0V11"></path></svg></span><input type="{{ pwType }}" value="{{ pw }}" onChange="{{ setPw }}" placeholder="Choisis un mot de passe" autocomplete="new-password" style="width: 100%; height: 52px; padding: 0 16px 0 48px; box-sizing: border-box; border: 1px solid #E1E6F0; border-radius: 16px; background: #F5F8FF; font-size: 16px; color: #000612; padding-right: 52px"><button type="button" onClick="{{ togglePw }}" aria-label="{{ pwLabel }}" style="position: absolute; right: 6px; top: 6px; width: 40px; height: 40px; border: none; border-radius: 12px; background: transparent; color: #798398; display: flex; align-items: center; justify-content: center; cursor: pointer"><sc-if value="{{ show }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.9 8.3 2 12 2 12s3.6 7 10 7c1.9 0 3.6-.6 5-1.5M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg></sc-if><sc-if value="{{ hide }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"></path></svg></sc-if></button></span></label><div aria-label="Règles du mot de passe" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: -6px"><sc-for list="{{ rules }}" as="r" hint-placeholder-count="3"><span style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 6px; border-radius: 999px; background: {{ r.bg }}; color: {{ r.color }}; font-size: 12px; line-height: 16px; font-weight: 700"><span style="width: 16px; height: 16px; border-radius: 999px; background: {{ r.dot }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>{{ r.label }}</span></sc-for></div><label style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 14px; line-height: 20px; font-weight: 700">Confirme le mot de passe</span><span style="position: relative; display: block"><span style="position: absolute; left: 16px; top: 16px; color: #798398; display: flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v10H6zM8.5 11V7.5a3.5 3.5 0 0 1 7 0V11"></path></svg></span><input type="{{ pw2Type }}" value="{{ pw2 }}" onChange="{{ setPw2 }}" placeholder="Tape-le une deuxième fois" autocomplete="new-password" style="width: 100%; height: 52px; padding: 0 16px 0 48px; box-sizing: border-box; border: 1px solid #E1E6F0; border-radius: 16px; background: #F5F8FF; font-size: 16px; color: #000612; padding-right: 52px"><button type="button" onClick="{{ togglePw2 }}" aria-label="{{ pw2Label }}" style="position: absolute; right: 6px; top: 6px; width: 40px; height: 40px; border: none; border-radius: 12px; background: transparent; color: #798398; display: flex; align-items: center; justify-content: center; cursor: pointer"><sc-if value="{{ show2 }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.9 8.3 2 12 2 12s3.6 7 10 7c1.9 0 3.6-.6 5-1.5M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg></sc-if><sc-if value="{{ hide2 }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"></path></svg></sc-if></button></span></label><div aria-live="polite" style="display: flex; margin-top: -6px"><span style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 6px; border-radius: 999px; background: {{ matchBg }}; color: {{ matchColor }}; font-size: 12px; line-height: 16px; font-weight: 700"><span style="width: 16px; height: 16px; border-radius: 999px; background: {{ matchDot }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>{{ matchLabel }}</span></div><a href="01-Accueil.dc.html" style="width: 100%; height: 52px; box-sizing: border-box; flex-shrink: 0; border-radius: 16px; background: #2E6BE6; box-shadow: var(--shadow-brand); color: #FFFFFF; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">Enregistrer<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></form></main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { show: false, pw: 'Soleil2026', cgu: true, news: true, ok: true, hop: 0, pw2: 'Soleil2026', show2: false }; }
+renderVals() {
+const s = this.state;
+const pw = s.pw || '';
+const rules = [['8 caractères', pw.length >= 8], ['Un chiffre', /\d/.test(pw)], ['Une majuscule', /[A-Z]/.test(pw)]]
+.map(([label, ok]) => ({ label, color: ok ? '#03702B' : '#5D677D', bg: ok ? '#EBFFF2' : '#EEF1F6', dot: ok ? '#0C9E42' : '#B7BFCD' }));
+const bd = (on) => on ? '2px solid #2E6BE6' : '2px solid #CED4E2';
+const bx = (on) => on ? '#2E6BE6' : '#FFFFFF';
+const pw2 = s.pw2 || '';
+const same = pw.length > 0 && pw2 === pw;
+const extra = { pw2, pw2Type: s.show2 ? 'text' : 'password', show2: s.show2, hide2: !s.show2,
+pw2Label: s.show2 ? 'Masquer la confirmation' : 'Afficher la confirmation',
+togglePw2: () => this.setState({ show2: !s.show2 }), setPw2: (e) => this.setState({ pw2: e.target.value }),
+matchLabel: same ? 'Les deux sont identiques' : 'Pas encore identiques',
+matchColor: same ? '#03702B' : '#5D677D', matchBg: same ? '#EBFFF2' : '#EEF1F6', matchDot: same ? '#0C9E42' : '#B7BFCD' };
+return {
+pw, pwType: s.show ? 'text' : 'password', show: s.show, hide: !s.show,
+pwLabel: s.show ? 'Masquer le mot de passe' : 'Afficher le mot de passe',
+togglePw: () => this.setState({ show: !s.show }),
+setPw: (e) => this.setState({ pw: e.target.value }),
+rules,
+ck_cgu: s.cgu, bd_cgu: bd(s.cgu), bx_cgu: bx(s.cgu), tg_cgu: () => this.setState({ cgu: !s.cgu }),
+ck_news: s.news, bd_news: bd(s.news), bx_news: bx(s.news), tg_news: () => this.setState({ news: !s.news }),
+ck_ok: s.ok, bd_ok: bd(s.ok), bx_ok: bx(s.ok), tg_ok: () => this.setState({ ok: !s.ok }),
+...extra,
+hop: s.hop
+};
+}
+}
+</script>
+</body>
+</html>

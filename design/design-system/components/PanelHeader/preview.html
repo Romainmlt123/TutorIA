@@ -4,9 +4,9 @@
 (function () {
   var h = React.createElement, T = window.TutorIA;
   function App() {
-return h('div', { style: { width: 318, display: 'flex', flexDirection: 'column', gap: 16 } },
+    return h('div', { style: { width: 330, display: 'flex', flexDirection: 'column', gap: 16 } },
   h(T.PanelHeader, { kind: 'graph', subject: 'maths', title: 'y = 2x + 1', open: true }),
-  h(T.PanelHeader, { kind: 'whiteboard', subject: 'maths', title: 'Résoudre 3x + 5 = 20', live: true, open: false }));
+  h(T.PanelHeader, { kind: 'whiteboard', subject: 'maths', title: '3x + 5 = 20', live: true, open: false }));
   }
   ReactDOM.createRoot(document.getElementById("root")).render(h(App));
 })();

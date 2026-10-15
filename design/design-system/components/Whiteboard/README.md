@@ -6,6 +6,8 @@ Tableau blanc : le calcul ligne à ligne en écriture mathématique, l’opérat
 
 Dans un `VisualPanel`, à l’écrit ou en vocal. En vocal, il s’écrit pendant que le tuteur parle : `progress` augmente, `writing` place le stylo bleu au bout de la dernière ligne, puis le résultat s’entoure.
 
+`chalk` (v2.13) : couleurs de craie pour l’ardoise d’Explorer (`SlateBoard`).
+
 ## Props
 
 | Prop | Type | Rôle |
@@ -18,6 +20,7 @@ Dans un `VisualPanel`, à l’écrit ou en vocal. En vocal, il s’écrit pendan
 | `writing` | `boolean` | Stylo au bout de la dernière ligne écrite. |
 | `circled` | `boolean` | Résultat entouré (true par défaut). |
 | `description` | `string` | Texte accessible. |
+| `chalk` | `boolean` | Craie sur ardoise (texte crème, opérations bleu craie, résultat corail). |
 
 ## Exemple
 

@@ -19,6 +19,7 @@ Haut de l'écran Flashcards.
 | `actionLabel` | `string` | « C'est parti ». |
 | `onStart` | `function` | Action. |
 | `href` | `string` | Lien. |
+| `lifted` | `boolean \| 'parents'` | Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). `'parents'` sur le bandeau violet. |
 
 ## Exemple
 

@@ -1,0 +1,14 @@
+<!-- @dsCard group="Connexion" height=120 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { width: 350 } }, h(function Demo() {
+  var s = React.useState(true);
+  return h(T.SwitchField, { label: 'J’ai moins de 15 ans', hint: 'Un parent devra valider ton compte', checked: s[0], onChange: s[1] });
+}));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

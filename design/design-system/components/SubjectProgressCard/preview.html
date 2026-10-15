@@ -1,12 +1,15 @@
-<!-- @dsCard group="Parents" height=532 -->
+<!-- @dsCard group="Parents" height=640 -->
 <div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
 <script>
 (function () {
   var h = React.createElement, T = window.TutorIA;
   function App() {
-return h('div', { style: { width: 342 } }, h(T.SubjectProgressCard, { subject: 'maths', value: 68, delta: 8, defaultOpen: true, chapters: [
-  { title: 'Nombres relatifs', meta: 'Maîtrisé', status: 'acquired' }, { title: 'Équations du 1er degré', meta: '3 séances', status: 'inProgress' },
-  { title: 'Théorème de Pythagore', meta: '2 erreurs', status: 'toConsolidate' }, { title: 'Proportionnalité', status: 'notStarted' }] }));
+    return h('div', { style: { width: 350, display: 'flex', flexDirection: 'column', gap: 16, padding: 16, boxSizing: 'border-box', background: 'var(--surface)', borderRadius: 24, boxShadow: 'var(--shadow-md)' } },
+  h(T.SubjectProgressCard, { subject: 'maths', value: 72, delta: 12, defaultOpen: true, chapters: [
+    { title: 'Calcul littéral', meta: '88 % · 6 sessions', status: 'acquired' }, { title: 'Équations du 1er degré', meta: '82 % · 5 sessions', status: 'acquired' },
+    { title: 'Théorème de Pythagore', meta: '61 % · 3 sessions', status: 'inProgress' }, { title: 'Puissances', meta: '48 % · 2 sessions', status: 'toConsolidate' }] }),
+  h(T.SubjectProgressCard, { subject: 'anglais', value: 81, delta: 6, chapters: [
+    { title: 'Le prétérit simple', status: 'acquired' }, { title: 'Les comparatifs', status: 'acquired' }, { title: 'Vocabulaire : le voyage', status: 'inProgress' }, { title: 'Le present perfect', status: 'notStarted' }] }));
   }
   ReactDOM.createRoot(document.getElementById("root")).render(h(App));
 })();

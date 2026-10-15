@@ -1,10 +1,14 @@
-<!-- @dsCard group="Élève" height=182 -->
-<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<!-- @dsCard group="Élève" height=250 -->
+<div id="root" data-theme="light" style="padding:0;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
 <script>
 (function () {
   var h = React.createElement, T = window.TutorIA;
   function App() {
-return h('div', { style: { width: 342 } }, h(T.StreakCard, { days: 12, caption: 'Plus que 4 jours pour battre ton record' }));
+return h('div', { style: { position: 'relative', padding: '0 24px 32px' } },
+  h('div', { 'aria-hidden': 'true', style: { position: 'absolute', left: 0, right: 0, top: 0, height: 110, borderRadius: '0 0 32px 32px', background: 'linear-gradient(170deg, var(--blue-500) 0%, var(--blue-600) 55%, var(--blue-700) 100%)' } }),
+  h('div', { style: { position: 'relative', paddingTop: 48, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, maxWidth: 360 } },
+    h(T.StreakCard, { days: 12, caption: 'de série, continue !', lifted: true }),
+    h(T.LevelCard, { level: 7, xp: 340, xpMax: 500, lifted: true })));
   }
   ReactDOM.createRoot(document.getElementById("root")).render(h(App));
 })();

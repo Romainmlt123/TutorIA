@@ -1,5 +1,7 @@
 # TutorFeedback
 
+> Remplacé par `LevelResultPanel` (ce que tu as travaillé, ou la leçon à revoir, sur un parchemin) depuis la v2.14.
+
 Retour du tuteur en fin de niveau : ce qui est réussi (vert) ou ce qui est à revoir (orange).
 
 ## Quand l'utiliser

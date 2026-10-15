@@ -1,10 +1,20 @@
-<!-- @dsCard group="Tuteur" height=96 -->
+<!-- @dsCard group="Tuteur" height=320 -->
 <div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
 <script>
 (function () {
   var h = React.createElement, T = window.TutorIA;
+  function Photo(w, hgt, r) { var s = Math.max(w / 216, hgt / 162);
+    return h('div', { role: 'img', 'aria-label': 'Photo de ton exercice', style: { position: 'relative', overflow: 'hidden', width: w, height: hgt, flexShrink: 0, borderRadius: r } },
+      h('div', { style: { position: 'absolute', left: (w - 216 * s) / 2, top: (hgt - 162 * s) / 2, width: 216, height: 162, transform: 'scale(' + s + ')', transformOrigin: '0 0', background: 'linear-gradient(150deg, #CFC5B5 0%, #B3A792 100%)' } },
+        h('div', { style: { position: 'absolute', left: 14, top: 8, width: 196, height: 152, transform: 'rotate(-3.5deg)', backgroundColor: '#FCFBF6', backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0, transparent 15px, #C9D8F2 15px, #C9D8F2 16px)', boxShadow: '0 3px 8px rgba(0,0,0,0.25)', padding: '10px 12px 0 24px', boxSizing: 'border-box', fontFamily: "'Times New Roman', serif", color: '#1C263B', fontSize: 11, lineHeight: '16px' } },
+          h('div', { style: { fontSize: 12, fontWeight: 700 } }, 'Exercice 4'), h('div', { style: { fontSize: 10 } }, 'Résoudre les équations :'),
+          h('div', null, 'a) 3', h('i', null, 'x'), ' + 5 = 20'), h('div', null, 'b) 2', h('i', null, 'x'), ' − 7 = 9'), h('div', null, 'c) 5', h('i', null, 'x'), ' + 1 = 3', h('i', null, 'x'), ' + 9'))));
+  }
   function App() {
-return h('div', { style: { width: 350 } }, h(T.ChatInput, {}));
+    return h('div', { style: { width: 350, display: 'flex', flexDirection: 'column', gap: 20 } },
+      h(T.ChatInput, { onCamera: function () {} }),
+      h(T.ChatInput, { onCamera: function () {}, defaultValue: 'Je bloque sur le b)', attachment: { thumb: Photo(56, 56, 16), onRemove: function () {} } }),
+      h('div', { style: { padding: '12px 10px 10px', borderRadius: 16, border: '3px solid #16244F', background: '#EBF1FF' } }, h(T.ChatInput, { game: true, onCamera: function () {} })));
   }
   ReactDOM.createRoot(document.getElementById("root")).render(h(App));
 })();

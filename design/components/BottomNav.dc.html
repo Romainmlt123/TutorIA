@@ -47,16 +47,16 @@ settings: 'M4 7h10M18 7h2M4 17h2M10 17h10M18 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM10 1
 const espace = this.props.espace ?? 'eleve';
 const active = (this.props.active ?? 'accueil') === 'parcours' ? 'explorer' : (this.props.active ?? 'accueil');
 const defs = espace === 'parents' ? [
-{ id: 'accueil', label: 'Accueil', href: '../screens/P1-Parents-Accueil.dc.html', icon: I.home },
-{ id: 'progres', label: 'Progrès', href: '../screens/P2-Parents-Progres.dc.html', icon: I.trend },
-{ id: 'sessions', label: 'Sessions', href: '../screens/P3-Parents-Sessions.dc.html', icon: I.sessions },
-{ id: 'reglages', label: 'Réglages', href: '../screens/P4-Parents-Reglages.dc.html', icon: I.settings }
+{ id: 'accueil', label: 'Accueil', href: 'P1-Parents-Accueil.dc.html', icon: I.home },
+{ id: 'progres', label: 'Progrès', href: 'P2-Parents-Progres.dc.html', icon: I.trend },
+{ id: 'sessions', label: 'Sessions', href: 'P3-Parents-Sessions.dc.html', icon: I.sessions },
+{ id: 'reglages', label: 'Réglages', href: 'P4-Parents-Reglages.dc.html', icon: I.settings }
 ] : [
-{ id: 'accueil', label: 'Accueil', href: '../screens/01-Accueil.dc.html', icon: I.home },
-{ id: 'explorer', label: 'Explorer', href: '../screens/X1-Explorer-Iles.dc.html', icon: I.compass },
-{ id: 'tuteur', label: 'Tutor\'IA', href: '../screens/02a-Tuteur-Ecrit.dc.html', logo: true },
-{ id: 'revisions', label: 'Révisions', href: '../screens/03a-Flashcards-Choix.dc.html', icon: I.cards },
-{ id: 'stats', label: 'Stats', href: '../screens/04-Stats.dc.html', icon: I.stats }
+{ id: 'accueil', label: 'Accueil', href: '01-Accueil.dc.html', icon: I.home },
+{ id: 'explorer', label: 'Explorer', href: 'X1-Explorer-Iles.dc.html', icon: I.compass },
+{ id: 'tuteur', label: 'Tutor\'IA', href: '02g-Tuteur-Nouvelle-Discussion.dc.html', logo: true },
+{ id: 'revisions', label: 'Révisions', href: '03a-Flashcards-Choix.dc.html', icon: I.cards },
+{ id: 'stats', label: 'Stats', href: '04-Stats.dc.html', icon: I.stats }
 ];
 const tabs = defs.map((d) => {
 const on = d.id === active;

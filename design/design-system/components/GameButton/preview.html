@@ -1,0 +1,15 @@
+<!-- @dsCard group="Jeu" height=230 -->
+<div id="root" data-theme="light" style="padding:24px;background:linear-gradient(180deg, #2F6FD0 0%, #5F9CE8 55%, #8FC0F2 100%);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 18 } },
+  h('div', { style: { display: 'flex', gap: 14, alignItems: 'flex-end' } },
+    h(T.GameButton, { tone: 'yellow', size: 48, icon: 'chevronLeft', ariaLabel: 'Retour' }), h(T.GameButton, { tone: 'blue', icon: 'mic', ariaLabel: 'Micro' }),
+    h(T.GameButton, { tone: 'white', size: 44, icon: 'camera', ariaLabel: 'Photo' }), h(T.GameButton, { tone: 'red', size: 64, icon: 'hangup', ariaLabel: 'Raccrocher', iconStyle: { transform: 'rotate(135deg)' } })),
+  h('div', { style: { width: 220 } }, h(T.GameButton, { tone: 'green', label: 'C’est parti\u00a0!', round: false, width: '100%', size: 48 })));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

@@ -1,5 +1,7 @@
 # IslandBackdrop
 
+> Remplacé par `LevelBackdrop` (le ciel d’Explorer) depuis la v2.13.
+
 Fond d'écran du chat d'un niveau aux couleurs de l'île : dégradé doux de la matière, motifs et île miniature en haut à droite.
 
 ## Quand l'utiliser

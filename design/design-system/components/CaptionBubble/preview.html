@@ -1,0 +1,11 @@
+<!-- @dsCard group="Explorer" height=170 -->
+<div id="root" data-theme="light" style="padding:24px;background:linear-gradient(180deg, #2F6FD0 0%, #5F9CE8 55%, #8FC0F2 100%);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { width: 350, paddingTop: 16 } }, h(T.CaptionBubble, { text: 'Bravo\u00a0! On écrit 3x = 15. Et maintenant, comment tu isoles x\u00a0?', spoken: 8 }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

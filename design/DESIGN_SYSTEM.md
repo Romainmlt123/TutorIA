@@ -67,10 +67,11 @@ Tous les espacements sont des multiples de 4px : `space-1` (4), `space-2` (8), `
 
 Les ombres sont douces, diffuses et teintées de `gray-800` pour s'accorder au fond bleuté.
 
-- **Trois niveaux de hauteur, pas plus** : `shadow-sm` pour ce qui est posé (puces, champs), `shadow-md` pour les cartes (par défaut), `shadow-lg` pour ce qui flotte (barre de navigation, feuilles du bas, modales).
+- **Quatre niveaux de hauteur, pas plus** : `shadow-sm` pour ce qui est posé (puces, champs), `shadow-md` pour les cartes (par défaut), `shadow-lift` pour la rangée posée à cheval sur le bandeau de marque, `shadow-lg` pour ce qui flotte (barre de navigation, feuilles du bas, modales). Ce qui est dans le bandeau reste à plat.
+- **`shadow-lift`, l'ombre portée** (v2.17) : seules les sections à cheval sur le bandeau la prennent (la série et le niveau de l'Accueil, « Révision du jour », la première rangée des Stats, le résumé du Profil, la première carte de P1 à P4). Posées sur deux fonds, le bleu et le fond clair, elles se lisent comme un seul objet qui flotte. L'ombre descend sous la carte et prend sa couleur : orange sous la série, bleu nuit sous le niveau et les cartes blanches, violet dans l'espace Parents (`shadow-lift-parents`, `TutorIA.liftShadow`, prop `lifted` des composants). Les cartes posées entièrement sur le fond clair gardent `shadow-md` : si tout flotte, plus rien ne ressort.
 - **`shadow-brand`**, l'ombre bleue, met en avant un seul élément par écran : le bouton « Commencer », le prochain niveau sur la carte.
 - **`shadow-focus`** entoure tout élément interactif sélectionné au clavier.
-- Pas d'ombres dures, noires ou décalées, ni d'ombre sur le logo.
+- Pas d'ombres dures, noires ou décalées sans flou, ni d'ombre sur le logo.
 
 ## Typographie
 
@@ -142,30 +143,41 @@ Ces choix ont été validés sur les maquettes de l'application et priment sur l
 6. **Pas de date sur l'accueil** : une citation courte en italique discret la remplace sous le bonjour.
 7. **Rouge pour « Je t'écoute… »** dans l'appel vocal : il signale l'écoute, comme un voyant d'enregistrement, jamais une erreur (orange possible).
 8. **Violet et azur pour les visuels du tuteur** : le graphique est violet, le tableau azur (tuile, surtitre, carte teintée), pour les distinguer de la carte du chapitre ; le dessin reste sur une feuille blanche, le tableau sans grille de points.
+9. **Objectif du jour en violet → bleu** (`GoalCard`) : le dégradé de la marque glisse lentement d'un bout à l'autre de la carte ; le vert, trop proche de la carte Histoire-Géo juste en dessous, est abandonné.
+10. **Le chat libre en couleurs** (v2.12) : la carte du sujet du tuteur prend le dégradé de sa matière (`TopicCard`), bleu de l'élève pour « Toutes les matières », au lieu d'une carte blanche ; une discussion libre encore vide propose quatre idées de départ en dégradés d'accent (`ChatStarters`).
+11. **Le bilan des flashcards en violet → bleu** (`SessionComplete`, v2.12) : comme l'objectif du jour, il quitte le vert d'Histoire-Géo pour le dégradé de la marque.
+12. **Jaune pour « Pas de connexion »** (`OfflineNotice`, v2.19.1, demande de Romain) : `#FFD43B`, hors des 8 teintes de la palette, texte `orange-900`. C'est le seul jaune de l'app : il signale une coupure réseau, jamais une erreur de l'élève.
 
 ## Connexion, inscription et onboarding
 
 - **Deux couleurs, deux espaces.** Tout ce qui concerne l'élève est en bleu (`primary`, dégradé des cartes Français) et le tutoie ; tout ce qui concerne les parents est en violet (`accent`, dégradé Physique-Chimie) et les vouvoie. L'écran de bienvenue les présente côte à côte, sans autre texte que « Je suis élève » et « Je suis parent ».
-- **L'élève est autonome.** Il peut créer son compte et se connecter seul. Le code parent (6 chiffres, valable 24 h) relie les deux comptes ; depuis la v2.7, ce n'est plus un champ de la connexion mais un lien « J'ai un code de mon parent » sous le formulaire, qui ouvre sa saisie. Il peut aussi être ajouté plus tard. Si l'élève indique avoir moins de 15 ans, on demande l'e-mail d'un parent pour valider le compte.
-- **Connexion plein écran (v2.7).** Les connexions élève (L2) et parent (L3) reprennent l'univers de l'appel vocal : le dégradé de l'espace couvre tout l'écran, le logo du tuteur, dans son disque blanc, fait un petit rebond pour dire bonjour, et le formulaire est dans une feuille blanche qui monte du bas (`AuthScreen`). Les champs y sont remplis (`TextField` `filled`), comme tout ce qui est rangé dans une carte blanche. L'écran de bienvenue (L1) ne change pas.
+- **L'élève est autonome.** Il peut créer son compte et se connecter seul. Le code parent (6 chiffres, valable 24 h) relie les deux comptes ; depuis la v2.7, ce n'est plus un champ de la connexion mais un lien « J'ai un code de mon parent » sous le formulaire, qui ouvre sa saisie (L7) : le code est gardé (bandeau vert sur la connexion) puis relié dès la connexion. Il peut aussi être ajouté plus tard (« Relier mon compte à un parent », par code ou par e-mail). Si l'élève indique avoir moins de 15 ans, on demande l'e-mail d'un parent pour valider le compte ; en attendant, le tuteur est en attente (`ConsentPendingCard`) et les flashcards restent ouvertes.
+- **Connexion plein écran (v2.7), tout le compte en v2.11.** Les écrans de compte reprennent l'univers de l'appel vocal : le dégradé de l'espace couvre tout l'écran, le logo du tuteur, dans son disque blanc, fait un petit rebond pour dire bonjour, et le formulaire est dans une feuille blanche qui monte du bas (`AuthScreen`). Les champs y sont remplis (`TextField` `filled`), comme tout ce qui est rangé dans une carte blanche. Depuis la v2.11, c'est vrai de la connexion, de l'inscription élève et parent, du mot de passe oublié, de la vérification de l'e-mail et de l'accord parental. L'écran de bienvenue (L1) ne change pas.
+- **Un code se tape dans des cases** (`CodeInput`, v2.11) : six cases en deux groupes de trois, le curseur clignote dans la case en cours, le code reçu par e-mail se propose au-dessus du clavier. Le bouton qui valide vient juste dessous, jamais au bas de l'écran.
+- **Un nouveau mot de passe se tape deux fois** (v2.11, demandé par Romain) : règles en pastilles (`PasswordRules` `pills`), puis « Confirme le mot de passe » et la pastille `PasswordMatch` (« Les deux sont identiques »). Une règle pas encore suivie est grise, jamais rouge.
 - **Formulaire d'abord, Apple et Google ensuite.** Les champs e-mail et mot de passe viennent en premier, puis le séparateur « ou continuer avec » et les boutons Apple / Google, empilés en pleine largeur. Dans l'app, ces boutons sont les boutons officiels des SDK.
 - **Onboarding en quatre étapes, toutes passables** : classe, auto-évaluation par matière (« Galère », « Bof », « Ça va », « À l'aise », jamais présentée comme une note), objectifs et temps par jour, façon d'apprendre et moment de révision. Il se termine sur un plan personnalisé qui commence par la matière la moins à l'aise.
 
 ## Profil de l'élève
 
-- **On y arrive en touchant son rond sur l'accueil.** Il reprend le bandeau de marque bleu (`ProfileHero`) : le prénom en grand, la classe, et la figurine de l'élève à droite, avec le bouton blanc « Modifier l'avatar » (pastille orange quand la garde-robe a des nouveautés).
-- **Un résumé qui donne envie** (`ProfileSummary`) : trois chiffres centrés sous leur icône en dégradé (série, étoiles, temps de la semaine), puis la barre de niveau (`LevelBar`). Puis les trophées (`TrophyShelf`, médailles qui défilent, les gagnées d'abord).
-- **Le reste en cartes** : Ma famille (parents reliés, « Retirer », phrase de transparence « Jamais tes conversations », « Relier un autre parent » en violet), Préférences et Compte et données (`SettingRow`).
-- **Deux boutons à part, en bas** : « Se déconnecter » en bleu doux (`Button` `soft`) puis « Supprimer mon compte » en rouge doux (`Button` `danger`). Le rouge reste réservé à la seule action qui efface.
+- **On y arrive en touchant son rond sur l'accueil.** Il reprend le bandeau de marque bleu (`ProfileHero`) : le prénom en grand, la classe, et la figurine de l'élève à droite, avec le bouton de bois « Modifier l'avatar » (pastille orange quand la garde-robe a des nouveautés).
+- **Un résumé qui donne envie** (`ProfileSummary`) : trois chiffres centrés sous leur icône en dégradé (série, étoiles, temps de la semaine), puis la barre de niveau (`LevelBar`). Puis les trophées dans une armoire de bois (`TrophyShelf`, médailles dorées sur une étagère, les gagnées d'abord, la prochaine sous cadenas).
+- **Le reste en cartes** : Ma famille (parents reliés, « Lien depuis le 2 septembre », sans « Retirer » : ce n'est pas à l'élève de défaire le lien ; phrase de transparence « Jamais tes conversations », « Relier un autre parent » en violet), Préférences et Compte et données (`SettingRow`).
+- **Deux boutons à part, en bas** : « Se déconnecter » en bleu doux (`Button` `soft`) puis « Supprimer mon compte » en rouge doux (`Button` `danger`). Le rouge reste réservé à la seule action qui efface ; il ouvre la confirmation (`ConfirmDialog`, v2.16). Seule exception : « Refuser » une demande de liaison, côté parent (v2.18).
+- **Le côté jeu garde son style partout** (v2.10) : ce qui relève du jeu (l'avatar, les trophées) reprend le HUD d'Explorer même hors de l'onglet, avec le bois (`WoodButton`, `WoodFrame`) et la police Lilita One (`GameText`, `--font-game`). Le reste du profil garde les cartes blanches de la marque.
 
 ## Explorer
 
 - **Une île = une matière.** L'onglet Explorer (boussole dans la barre du bas, ex-« Parcours ») s'ouvre sur un carrousel d'îles flottantes. Chaque île est découpée en **régions** (thèmes du programme), puis en **villes** (chapitres), puis en **niveaux**.
 - **Trois types de niveaux, trois couleurs, trois icônes.** Leçon en vert avec un livre, exercices en bleu avec un crayon, évaluation en rouge avec une couronne. L'évaluation ferme chaque ville : son point est plus grand et entouré d'un double anneau. La couleur n'est jamais le seul repère, l'icône et le libellé l'accompagnent.
 - **États d'un niveau** : terminé (coche et 0 à 3 étoiles), en cours (halo pulsé et avatar de l'élève au-dessus) et verrouillé (gris avec cadenas). Le chemin est orange jusqu'au niveau en cours, gris ensuite.
-- **Chaque point lance un chat, sans quitter Explorer.** La fiche du niveau propose « À l'écrit » ou « À la voix » (le dernier mode utilisé en premier). La discussion prend le fond de l'île (`IslandBackdrop`) et affiche la progression du niveau ; elle ne renvoie jamais vers l'onglet Tutor'IA.
+- **Chaque point lance un chat, sans quitter Explorer.** La fiche du niveau propose « À l'écrit » ou « À la voix » (le dernier mode utilisé en premier). La leçon se déroule dans le HUD de jeu (v2.13) : le ciel d'Explorer (`LevelBackdrop`), l'en-tête du niveau en Lilita One avec sa progression (`LevelHeader`) et le tableau du tuteur en ardoise dans un cadre de bois (`SlateBoard`) ; elle ne renvoie jamais vers l'onglet Tutor'IA.
+- **À l'écrit (X4a)**, la discussion garde les bulles de l'onglet Tutor'IA dans un cadre clair cerné de bleu nuit, avec la saisie en bas (`ChatInput` `game`) ; l'ardoise, épinglée au-dessus, se replie ; chaque étape réussie s'affiche en bandeau vert de jeu (`LevelStepCard`).
+- **À la voix (X4b)**, le logo du tuteur flotte sur le ciel et rebondit (`VoiceAvatar`), sa pastille d'état est cernée de bleu nuit (`VoiceStatus` `hud`), les sous-titres sont dans une bulle de dialogue (`CaptionBubble`) et les commandes sur une planche de bois (`WoodCallDock`). À l'oral rien n'est jugé : ni progression ni étoiles, et raccrocher ramène à la carte.
 - **Le tuteur change de comportement selon le type.** Leçon : il explique, montre des exemples et vérifie la compréhension. Exercices : il laisse chercher et donne des indices progressifs. Évaluation : il est exigeant, ne donne ni indice ni correction pendant l'épreuve et corrige seulement dans le bilan.
-- **Bilan de fin de niveau** : carte verte « Bien joué ! » ou orange « Presque ! », étoiles, score et XP, puis ce qui est réussi et ce qui est à revoir. Une évaluation ratée met la ville « à consolider » (orange) au lieu de la bloquer.
+- **Quitter une partie commencée (X4c)** demande d'abord, sur un panneau de bois (`WoodDialog`) : la progression du niveau n'est pas gardée, une évaluation est à recommencer. « Continuer » (vert) est l'action conseillée.
+- **Bilan de fin de niveau (X5a, X5b, v2.14)** : un panneau de bois posé sur la leçon (`LevelResultPanel`), avec le ruban « type · verdict », « Bien joué, Léa ! » ou « Presque, Léa ! », trois étoiles (or ou bois creusé), le score et l'XP gagnée, puis ce que tu as travaillé, ou la leçon à revoir avec « Retour à la carte » et « Revoir la notion ». Une évaluation sous 70 % met la ville « à consolider » au lieu de la bloquer.
+- **La scène est en 3D dans l'app** (l'île, la carte, l'eau, les nuages et l'avatar qui marche) : pour le carrousel des îles, la carte et la fiche d'un niveau (X1 à X3b), le code fait foi ; les maquettes plates du canevas datent d'avant le HUD de jeu.
 
 ## Appel vocal
 
@@ -175,22 +187,62 @@ Ces choix ont été validés sur les maquettes de l'application et priment sur l
 - **Sous-titres en direct** (`LiveCaptions`), activés par défaut : les mots s'allument au fil de la voix ; une couleur nommée par le tuteur s'affiche dans une pastille de sa couleur.
 - **Avec un graphique ou un tableau blanc**, le visuel prend la moitié haute dans sa carte teintée (`VisualPanel` `elevated`), le logo passe à 96 px dessous. La voix et le visuel avancent ensemble : la courbe nommée s'épaissit (`MathGraph` `focus`), le tableau s'écrit ligne à ligne avec un stylo (`Whiteboard` `progress` et `writing`), puis le résultat s'entoure.
 
+## Tuteur et révisions
+
+- **L'onglet Tutor'IA ouvre une discussion libre neuve** (v2.12) : « Toutes les matières », un mot d'accueil du tuteur, les quatre idées de départ et « Pose ta question… ». En tête, ☰ ouvre le volet « Tes discussions » (`ConversationDrawer`, rangé par jour) et + en commence une nouvelle ; au milieu, la bascule Écrit / Vocal.
+- **La photo d'un exercice** : le bouton photo de la saisie (`ChatInput`) ouvre le choix appareil ou galerie (`PhotoSourceDialog`), la photo se pose en aperçu dans la saisie, puis part dans la bulle de l'élève (`ChatBubble` `image`). Le bouton n'apparaît pas si un parent a coupé la caméra, hors connexion ni pendant une évaluation. Quand le tuteur reconnaît la matière, la carte du sujet prend sa couleur.
+- **Une session de flashcards se fait sans barre de navigation**, comme l'appel vocal. Avant la réponse, le bouton dit « Choisis une réponse » en gris (jamais un bouton estompé) ; après, il passe en violet « Carte suivante » (`NextCardButton`). Le retour porte une pastille : coche sur vert, flèche sur orange. Jamais de rouge.
+- **Le bilan d'une session** (`SessionComplete`) montre les compteurs, les XP gagnés et l'objectif du jour, puis « Recommencer » et « Choisir un autre chapitre ».
+
+## Règles des parents, côté élève
+
+- **Une pause est un message bienveillant, jamais une punition** (v2.15). Le soir après 21 h, hors de la plage horaire ou quand le temps du jour est atteint (réglages de P4), le tuteur, les flashcards et les niveaux d'Explorer attendent ; les stats, le profil et la carte restent ouverts. L'écran (`StudyPauseScreen`) reprend C1 : fond de marque, le logo du tuteur avec un badge (lune, horloge, trophée), le titre et le texte sur le bleu, un bouton blanc « Revenir à l'accueil ». Le temps du jour atteint félicite d'abord dans une carte verte, puis propose aussi « Voir mes progrès ».
+- **Dans Explorer**, la pause reste dans le jeu : panneau de bois (`WoodDialog`) sur un ciel de nuit (`LevelBackdrop` `night`) et « Revenir à la carte ».
+- **Appels du jour faits** : pastille « Appels du jour terminés » (`VoiceStatus` `limit`), le message en clair, un seul bouton blanc « Continuer à l'écrit ».
+- **Vocal ou caméra coupés par un parent** : « Vocal » reste visible, grisé avec un cadenas (`ModeToggle` `voiceLocked`) ; le toucher explique pourquoi. Le bouton photo reste masqué.
+- **Compte à valider** (moins de 15 ans) : sur l'Accueil et le Profil, la carte violette « Un parent doit valider ton compte » et « Relier un parent ».
+
+## Données et confidentialité
+
+- **Dire ce qui est partagé, en listes** (v2.16). La page Confidentialité de l'élève (ligne « Confidentialité » du Profil) range les mêmes textes en cartes (`PrivacyCard`) : une coche verte pour ce que voient les parents (temps de travail, progrès par matière, un court résumé), un cadenas pour ce qui reste privé (« Jamais tes conversations avec le tuteur »), la durée de conservation en pastilles (« 6 mois, puis effacés », « Jamais enregistrées »). « Tes droits » porte les actions : « Télécharger mes données », « Supprimer mon compte ».
+- **Les écrans parents restent violets**, même pour les données : bandeau violet comme les Réglages (P4), ce que Tutor'IA garde en pastilles violettes cochées, boutons violets doux (`Button` `vividSoft`). L'enfant a sa carte (`ChildDataCard`) : son accord, « Retirer le lien », et la suppression à part, sous un trait, avec son explication.
+- **Supprimer, c'est toujours le choix sûr d'abord** (`ConfirmDialog`) : une corbeille, ce qui sera effacé, « Garder mon compte » en bouton principal, la suppression en second, en rouge doux, et « Télécharger mes données d'abord ».
+- **Supprimer le compte d'un enfant demande une case** : « Je comprends que c'est définitif. » active le bouton rouge plein (`Button` `dangerSolid`) ; c'est le seul rouge plein de l'app.
+
+## Famille
+
+- **Ajouter un enfant reste dans l'espace Parents** (v2.18) : bandeau violet et « Ajouter un enfant » (pas « Étape 2 sur 2 », qui ne vaut qu'à l'inscription). Le prénom (`TextField` `filled`) et la classe (`GradePicker` `filled`, ton parents, groupée Primaire, Collège, Lycée) tiennent dans une carte posée sur le bandeau (`shadow-lift-parents`), puis un rappel des enfants déjà reliés (« Déjà dans votre famille : Léa, 4e ») et « Créer le profil de Tom ».
+- **Le titre dit ce qui vient de se passer** : « Le profil de Tom est prêt ». Puis la carte du profil avec « Modifier », le code à partager (`ParentCodeCard`), ce que l'enfant fait sur son téléphone (`StepList` `plain`, « J'ai un code de mon parent ») et « Terminé », qui revient aux Réglages.
+- **Modifier un profil, c'est le même formulaire** prérempli, sous « Modifier le profil de Léa », avec « Enregistrer ».
+- **Choisir l'enfant affiché dans une feuille du bas** (`ChildPickerSheet`) : la classe et le temps de la semaine de chacun, l'enfant affiché en violet, « Ajouter un enfant » en pointillés.
+- **La demande de liaison** (`LinkRequestCard`) garde la carte violet doux de l'app ; seul « Refuser » passe en rouge doux (`Button` `danger`) pour ne pas se confondre avec « Accepter ». C'est la seule exception à la règle « le rouge est réservé à ce qui efface ».
+
+## Premiers jours et hors connexion
+
+- **Le premier jour, l'Accueil invite au lieu de compter** (v2.19) : « Ta série commence aujourd'hui » (`StreakCard` à 0 jour), la carte « Ta première séance » (`ResumeCard` `first` : la leçon, « 10 min », « D'après ton parcours », « Commencer »), « Une séance pour lancer ta journée » (`GoalCard` à 0) et « À découvrir » sous chaque matière (`SubjectCard` `fresh`). Pas de 0 %, ni de « Reprendre » sur une leçon jamais ouverte.
+- **Les Stats du premier jour et la semaine sans séance d'un parent gardent l'écran de l'app** (décision de Romain).
+- **Espace Parents sans enfant** : « Bienvenue dans l'espace Parents », la carte posée sur le bandeau (`AddChildCard` : trois étapes, « Ajouter un enfant ») et ce que le parent verra chaque semaine (`FeatureList`, avec « Jamais ses conversations avec le tuteur »).
+- **Hors ligne, juste un message** (`OfflineNotice`) : jaune, dans la conversation, sous la question de l'élève qui n'est pas partie : « Pas de connexion », « Vérifie ton Wi-Fi ou tes données mobiles. » et un bouton rond pour réessayer. Pas d'entraînement de remplacement : la discussion reste, la question attend.
+- **Pas de réseau au premier lancement** (`OfflineScreen`) : l'écran de marque de la pause, le tuteur avec un badge sans réseau, « Réessayer » en blanc, une aide et « Changer de compte » en lien. Texte neutre, ni « tu » ni « vous ».
+- **« Bientôt disponible » dans une feuille du bas** (`ComingSoonSheet`), sur l'écran d'où l'on vient : la pastille « Bientôt », ce qui arrive vraiment (une ligne par sujet) et un bouton pour continuer.
+
 ## Composants
 
-Les 92 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
+Les 128 composants de l'app sont dans `components/` et exposés par `window.TutorIA` (React 18). Chacun a sa fiche (README et aperçu en direct) ; les props sont typées dans `components/index.d.ts`.
 
 - **Fondations** : `Icon`, `Logo`, `StatusChip`, `ProgressRing`, `Quote`.
 - **Actions** : `Button`, `IconButton`, `SegmentedControl`, `Switch`, `GoalStepper`.
 - **Navigation** : `BottomNav` (élève avec Explorer, et Parents), `ModeToggle` (écrit / vocal), `ChildSwitcher`.
 - **Élève** : `SubjectCard`, `StreakCard`, `LevelCard`, `ResumeCard`, `GoalCard`.
-- **Tuteur** : `TopicCard`, `ChatBubble`, `TipCard`, `ChatInput`, `PanelHeader`, `VisualPanel`, `MathGraph`, `Whiteboard`, et pour la discussion vocale d'Explorer `VoiceVisualizer` et `CallControls`.
+- **Tuteur** : `TopicCard`, `ChatBubble`, `TipCard`, `ChatInput`, `ChatStarters`, `VisualChip`, `ConversationDrawer`, `PhotoSourceDialog`, `PanelHeader`, `VisualPanel`, `MathGraph`, `Whiteboard`, `OfflineNotice`, et pour l'existant du code `VoiceVisualizer` et `CallControls`.
 - **Appel vocal** : `CallTopBar`, `VoiceAvatar`, `VoiceStatus`, `LiveCaptions`, `CallDock`.
-- **Flashcards** : `DailyReviewCard`, `ChapterRow`, `SessionProgress`, `AnswerOption`, `QuizCard`, `TallyChips`.
+- **Flashcards** : `DailyReviewCard`, `ChapterRow`, `SessionProgress`, `AnswerOption`, `QuizCard`, `NextCardButton`, `TallyChips`, `SessionComplete`.
 - **Stats** : `KpiCard`, `BarChart`, `LineChart`, `Heatmap`, `SubjectProgressRow`, `InsightList`.
-- **Parents** : `HeroCard`, `AlertCard`, `AdviceCard`, `SubjectProgressCard`, `SessionSummaryCard`, `SettingRow`.
-- **Profil** : `ProfileHero`, `ProfileSummary`, `LevelBar`, `TrophyShelf`, `TrophyBadge`
-- **Connexion** : `ProfileChoiceCard`, `SubjectCluster`, `AuthScreen`, `AuthHero`, `TextField`, `PasswordRules`, `Checkbox`, `OrDivider`, `AuthProviderButtons`, `ParentCodeCard`, `StepList`.
+- **Parents** : `HeroCard`, `AlertCard`, `AdviceCard`, `SubjectProgressCard`, `SessionSummaryCard`, `SettingRow`, `ChildDataCard`, `ChildPickerSheet`, `LinkRequestCard`, `AddChildCard`, `FeatureList`.
+- **Profil** : `ProfileHero`, `ProfileSummary`, `LevelBar`, `TrophyShelf`, `TrophyBadge`.
+- **Jeu** : `GameText`, `GameButton`, `WoodButton`, `WoodFrame`, `Parchment`, `WoodDialog` (le bois, les boutons en relief et la police Lilita One du HUD d'Explorer).
+- **Connexion et compte** : `ProfileChoiceCard`, `SubjectCluster`, `AuthScreen`, `AuthHero`, `TextField`, `PasswordRules`, `PasswordMatch`, `CodeInput`, `SwitchField`, `Checkbox`, `OrDivider`, `AuthProviderButtons`, `HelpCard`, `InlineNotice`, `ConsentPendingCard`, `StudyPauseScreen`, `OfflineScreen`, `ComingSoonSheet`, `ConfirmDialog`, `PrivacyCard`, `ParentCodeCard`, `StepList`.
 - **Onboarding** : `StepHeader`, `GradePicker`, `SelfAssessmentRow`, `GoalTile`, `DurationPicker`, `ChoiceRow`, `ToggleChip`, `PlanRow`.
-- **Explorer** : `IslandIllustration`, `IslandCarousel`, `IslandProgressCard`, `ExplorerHud`, `WorldMap`, `LevelNode`, `MapAvatar`, `CityBanner`, `RegionSign`, `Stars`, `LevelTypePill`, `LevelSheet`, `IslandBackdrop`, `LevelProgressHeader`, `VoiceBoardCard`, `LevelResultCard`, `TutorFeedback`.
+- **Explorer** : `IslandIllustration`, `IslandCarousel`, `IslandProgressCard`, `ExplorerHud`, `WorldMap`, `LevelNode`, `MapAvatar`, `CityBanner`, `RegionSign`, `Stars`, `LevelTypePill`, `LevelSheet`, `LevelBackdrop`, `LevelHeader`, `SlateBoard`, `LevelStepCard`, `CaptionBubble`, `WoodCallDock`, `LevelResultPanel`, et les anciens `IslandBackdrop`, `LevelProgressHeader`, `VoiceBoardCard`, `LevelResultCard`, `TutorFeedback`.
 
 Les matières s'identifient partout par le même identifiant : `maths`, `francais`, `histoire-geo`, `anglais`, `svt`, `physique-chimie`. `TutorIA.SUBJECTS` donne pour chacune son nom, son dégradé et ses nuances. Les types de niveau s'identifient par `lecon`, `exercices` et `evaluation` ; `TutorIA.LEVEL_TYPES` donne leur libellé, leur icône et leurs couleurs.

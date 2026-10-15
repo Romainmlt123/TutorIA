@@ -101,7 +101,14 @@ design/
     ├── F2-Code-Enfant.dc.html             ← le profil est prêt, son code
     ├── F5-Modifier-Enfant.dc.html         ← modifier le profil d’un enfant (« Modifier » de P4)
     ├── F3-Choisir-Enfant.dc.html          ← choisir l’enfant affiché (pastille de P1)
-    └── F4-Demande-Liaison.dc.html         ← demande de liaison d’un enfant (P1)
+    ├── F4-Demande-Liaison.dc.html         ← demande de liaison d’un enfant (P1)
+    ├── J1-Accueil-Premier-Jour.dc.html    ← premiers jours (v2.19) : l’Accueil avant la première séance
+    ├── J2-Stats-Premier-Jour.dc.html      ← les Stats avant la première séance (comme l’app)
+    ├── J3-Parents-Sans-Enfant.dc.html     ← l’espace Parents sans enfant relié
+    ├── J4-Parents-Semaine-Vide.dc.html    ← l’espace Parents, semaine sans séance (comme l’app)
+    ├── H1-Tuteur-Hors-Ligne.dc.html       ← hors connexion : le tuteur sans réseau
+    ├── H2-Pas-De-Connexion.dc.html        ← pas de réseau au premier lancement
+    └── B1-Bientot.dc.html                 ← « Bientôt disponible » (réglage de Flashcards)
 ```
 
 ## Historique des mises à jour
@@ -238,6 +245,18 @@ design/
   - Parcours : « Ajouter un enfant » de P4 et de F3 mènent à F1 ; la pastille de P1 ouvre F3 ; « Modifier » de P4 ouvre F5.
   - Design system (123 composants) : nouveaux `ChildPickerSheet` et `LinkRequestCard`. Copié dans `design-system/` et `DESIGN_SYSTEM.md`.
   - Ce que l'app doit changer : « À changer dans le code (v2.18) », section « Famille ».
+- **v2.19** (15 octobre 2026)
+  - **Premiers jours et hors connexion** (J1 à J4, H1, H2, B1), même méthode qu'en v2.16. Romain a retenu les propositions pour J1, J3, H2 et B1, gardé l'app pour J2 et J4, et voulu pour H1 juste un message violet « Pas de connexion ».
+  - J1, Accueil du premier jour : « Ta série commence aujourd’hui », « Ta première séance » (10 min, d’après ton parcours, « Commencer ») au lieu de « Reprendre » à 0 %, « Une séance pour lancer ta journée », « À découvrir » sous chaque matière.
+  - J3, espace Parents sans enfant : « Bienvenue dans l’espace Parents. », la carte « Ajoutez votre enfant » posée sur le bandeau avec trois étapes, puis ce que le parent verra chaque semaine.
+  - H1, tuteur hors ligne : un message violet « Pas de connexion » et un bouton rond pour réessayer ; plus de bandeau orange ni d'entraînement hors ligne. La question de l'élève attend.
+  - H2, pas de réseau au premier lancement : l'écran de marque de la pause, le tuteur avec un badge sans réseau, « Réessayer » en blanc et « Changer de compte » en lien.
+  - B1, « Bientôt disponible » : une feuille du bas qui dit ce qui arrive, au lieu d'une page plein écran au texte unique. Le réglage de Flashcards (3A) y mène.
+  - Design system (128 composants) : nouveaux `OfflineNotice`, `OfflineScreen`, `ComingSoonSheet`, `AddChildCard`, `FeatureList` ; `StreakCard` à 0 jour, `ResumeCard` `first`, `SubjectCard` `fresh`, pastille de `GoalCard` à 0 ; icônes `wifiOff`, `refresh`, `sparkle`. Copié dans `design-system/` et `DESIGN_SYSTEM.md`.
+  - Ce que l'app doit changer : « À changer dans le code (v2.19) », section « Premiers jours et hors connexion ».
+- **v2.19.1** (15 octobre 2026)
+  - H1, demande de Romain : le message « Pas de connexion » passe du violet au **jaune** (`#FFD43B`, texte `orange-900`, bouton blanc) et entre **dans la conversation**, juste sous la question de l'élève qui n'est pas partie, au lieu d'un bandeau en haut de l'écran. Plus lisible, et on voit quel message attend.
+  - Design system : `OfflineNotice` en jaune ; écart validé n° 12 (seul jaune de l'app, hors palette). « À changer dans le code (v2.19) » mis à jour pour `OfflineBanner`.
 
 Les logos et les polices ne sont pas dupliqués : les écrans pointent vers `../../assets/logo/` et `../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/`.
 
@@ -314,7 +333,7 @@ Depuis la v2.6, l'appel vocal (2B, 2D, 2F) est plein écran, sans barre de navig
 - Comportement détaillé : « Appel vocal : ce que l'écran doit faire », plus bas.
 
 ### 3A · Flashcards · Choix — `03a-Flashcards-Choix.dc.html`
-- **Bandeau de marque bleu** : titre « Flashcards » (30 px Black, blanc) + bouton réglages en blanc translucide.
+- **Bandeau de marque bleu** : titre « Flashcards » (30 px Black, blanc) + bouton réglages en blanc translucide, qui ouvre « Bientôt disponible » (B1, v2.19).
 - Carte « Révision du jour », qui déborde de 56 px sur le bandeau : 30 cartes à revoir, badge de série orange, pastilles des matières concernées, bouton **C'est parti** en violet vif (`violet-500`, ombre violette).
 - Carte « Choisis ta matière » (titre 22 px Black) : grille 2 × 3 de cartes colorées sélectionnables, en `radius-2xl` (sélection = anneau blanc de 3 px puis anneau de 3 px à la couleur de la matière + coche).
 - Carte « Chapitres · {matière} » (titre 22 px Black, « 529 cartes en tout » à droite) : liste de chapitres numérotés (numéro sur le fond doux de la matière), cartes et durée, bouton radio. Les lignes sont sur fond `bg` ; la ligne choisie passe en blanc, avec un bord de 2 px à la couleur de la matière.
@@ -769,6 +788,59 @@ Validée par Romain le 15 octobre (v2.18). Ajouter, modifier et choisir un enfan
 - **`ChildSwitcher`** (F3) : la `Modal` s'ouvre en feuille du bas (`animationType="slide"`, contenu en bas) au lieu d'une carte en haut (`paddingTop` 120). Titre « Vos enfants » (`fr.parent.home.chooseChild`), bouton « Fermer » (`closeChooser`). Chaque enfant : `ChildAvatar` de 44, prénom, et la ligne « Classe de {classe} · {temps} cette semaine » (le temps de la semaine de chaque enfant est à charger ; sans lui, la classe seule). L'enfant affiché en violet (`accent` et `violet[100]`, rond coché) au lieu de la coche bleue. « Ajouter un enfant » en pointillés `violet[200]`, avec `fr.parent.settings.addChild.hint` dessous.
 - **`ChildSetupScreen`**, hors inscription (`!freshSignUp`, F1 et F2) : `ParentBand` (comme `ParentSettingsScreen`) au lieu de `StepHeader` ; titre « Ajouter un enfant », puis, une fois créé, « Le profil de {prénom} est prêt » (déjà demandé en v2.11). Le formulaire dans une carte posée sur le bandeau (`shadow.liftParents`), `GradePicker` comme à l'inscription, puis la ligne « Déjà dans votre famille : {prénoms et classes} ». Le bouton final devient « Terminé » (`router.back()`). Nouveaux textes : `fr.parent.child.addTitle` « Ajouter un enfant », `family` « Déjà dans votre famille : … », `done` « Terminé ». Les étapes et `shareMessage` : voir v2.11.
 - **Modifier un enfant** (F5) : `ParentSettingsScreen` passe `onEdit` à `ChildProfileCard` (le bouton existe mais n'est pas branché), qui ouvre `/parents/enfant?id={id}`. `ChildSetupScreen` en mode modification : prérempli, titre « Modifier le profil de {prénom} » (`fr.parent.child.editTitle`), bouton « Enregistrer » (`save`), sans la ligne de la famille ni le code. Il faut une fonction du service famille pour mettre à jour le prénom et la classe.
+
+## Premiers jours et hors connexion (J1 à J4, H1, H2, B1)
+
+Validé par Romain le 15 octobre (v2.19). Ce que l'élève et le parent voient avant toute activité, sans réseau, ou devant une fonction pas encore prête. Même méthode qu'en v2.16 : chaque écran reproduit à l'identique du code, critiqué, puis redessiné. Romain a retenu les propositions pour J1, J3, H2 et B1 ; il garde l'app pour J2 et J4 ; pour H1, juste un message, en jaune dans la conversation (v2.19.1). Règle : un écran vide parle de ce qui commence, jamais d'un retard.
+
+### J1 · Accueil, premier jour — `J1-Accueil-Premier-Jour.dc.html`
+- L'Accueil (1) d'un compte tout neuf. L'app y disait « 0 jour de série, continue ! », proposait de « Reprendre » une leçon jamais commencée, à 0 %, et montrait six matières à 0 % : un retard alors que tout commence.
+- Série : « Ta série » et « commence aujourd’hui » (`StreakCard` à 0). Niveau 1, 0 / 500 XP, sans changement.
+- « Ta première séance » à la place de « Reprendre » (`ResumeCard` `first`) : surtitre bleu, la première leçon du parcours (« Équations du 1er degré », « Maths · Leçon 1 sur 5 »), deux pastilles `blue-100` / `blue-600` (horloge « 10 min », étincelles « D’après ton parcours ») au lieu de la barre à 0 %, et « Commencer ».
+- Objectif du jour à 0/3 : la pastille dit « Une séance pour lancer ta journée ».
+- Tes matières : « À découvrir » sous le nom (12/16 Bold), sans pourcentage ni barre (`SubjectCard` `fresh`).
+
+### J2 · Stats, premier jour — `J2-Stats-Premier-Jour.dc.html`
+- L'écran de l'app, gardé tel quel (choix de Romain).
+
+### J3 · Espace Parents sans enfant — `J3-Parents-Sans-Enfant.dc.html`
+- P1 quand aucun enfant n'est relié. Bandeau violet : « Bonjour Claire », puis « Bienvenue dans l’espace Parents. ».
+- `AddChildCard` posée sur le bandeau (`shadow-lift-parents`) : tuile famille violette de 48 px, « Ajoutez votre enfant » 22/30 Black, trois étapes numérotées (son profil, son code de connexion, ses progrès chaque semaine) et « Ajouter un enfant » en violet → F1.
+- `FeatureList` « Chaque semaine, vous verrez » : le résumé rédigé par Tutor’IA, le temps d’étude et les progrès par matière, un conseil pour l’encourager. En bas, avec un cadenas : « Jamais ses conversations avec le tuteur. ».
+
+### J4 · Espace Parents, semaine sans séance — `J4-Parents-Semaine-Vide.dc.html`
+- L'écran de l'app, gardé tel quel (choix de Romain).
+
+### H1 · Tuteur hors ligne — `H1-Tuteur-Hors-Ligne.dc.html`
+- Décision de Romain : juste un message. Le bandeau orange (« Tutor’IA est hors ligne », « En attendant, entraîne-toi avec ces questions. ») et l'entraînement hors ligne disparaissent.
+- `OfflineNotice` **dans la conversation**, juste sous la question de l'élève qui n'est pas partie, sur toute la largeur (v2.19.1, demande de Romain : plus lisible que le violet en haut de l'écran). Carte jaune `#FFD43B` (`radius-2xl`, padding 12 / 12 / 12 / 14, ombre `0 6px 16px rgba(163,100,13,0.22)`), texte `orange-900` : rond de 36 px blanc à 45 % avec le Wi-Fi barré, « Pas de connexion » 15/20 Bold, « Vérifie ton Wi-Fi ou tes données mobiles. » 13/18 Medium, et un bouton rond blanc de 40 px (flèche circulaire `orange-900`) pour réessayer.
+- La discussion reste à l'écran et la question de l'élève (« Je divise par 3 ? ») attend. Le bouton photo reste masqué hors connexion.
+
+### H2 · Pas de connexion au premier lancement — `H2-Pas-De-Connexion.dc.html`
+- Élève ou parent, compte illisible sans réseau. L'écran prend la forme de la pause (R1) : fond bleu de marque, le tuteur de 148 px avec un badge blanc Wi-Fi barré (`orange-700`).
+- « Pas de connexion pour le moment », « Tutor’IA a besoin d’Internet pour ouvrir le compte la première fois. » : les textes de l'app, neutres (ni « tu » ni « vous »).
+- « Réessayer » en bouton blanc, l'aide « Wi-Fi ou données mobiles : on réessaie tout seul. », puis « Changer de compte » en lien souligné au lieu d'un deuxième grand bouton.
+
+### B1 · « Bientôt disponible » — `B1-Bientot.dc.html`
+- Ici depuis le réglage de Flashcards (3A). Au lieu d'une page plein écran au même texte pour tous les sujets, une feuille du bas (`ComingSoonSheet`) sur l'écran d'où l'on vient, voile `rgba(0,6,18,0.40)`.
+- Poignée, tuile bleue de 56 px avec l'icône du sujet, pastille « Bientôt » (`orange-100` / `orange-700`), « Réglages des révisions » 20/26 Black, bouton rond de 44 px pour fermer.
+- Ce qui arrive, une ligne par point (horloge sur `blue-100`) : « Choisir le nombre de cartes par séance », « Garder ou retirer une matière », « Changer l’heure de ton rappel ». Puis « Continuer mes révisions », qui ferme la feuille.
+- Les notifications et l'abonnement auront leurs propres écrans (prochains lots).
+
+### À changer dans le code (v2.19)
+- **Accueil, premier jour** (`src/features/home/`, J1), tant que l'élève n'a fait aucune séance :
+  - `StreakCard` : à 0, « Ta série » et « commence aujourd’hui » au lieu de `streakDays(0)` et `streakCaption`.
+  - `ResumeCard` : un mode premier jour — surtitre « Ta première séance », pas de barre « Progression du chapitre », deux pastilles (« {n} min », « D’après ton parcours ») et le bouton « Commencer ». La leçon est la première du parcours (O5).
+  - `GoalCard` : `fr.home.goalRemaining` dit « Une séance pour lancer ta journée » quand aucune séance n'est faite.
+  - `SubjectCard` (`mode="progress"`) : une matière jamais ouverte affiche « À découvrir » sous le nom, sans pourcentage ni barre.
+- **P1 sans enfant** (`ParentHomeScreen`, J3) : `ParentBand` montre « Bienvenue dans l’espace Parents. » sous « Bonjour Claire ». Le bloc `noChild` devient une carte posée sur le bandeau (`shadow.liftParents`) : tuile famille, `noChild.title`, `StepList` avec trois étapes (nouveau `noChild.steps`) et `noChild.cta` ; `noChild.body` n'est plus affiché. Dessous, une carte « Chaque semaine, vous verrez » : trois lignes avec icône et « Jamais ses conversations avec le tuteur. ».
+- **Tuteur hors ligne** (H1) :
+  - `OfflineBanner` (v2.19.1) : fond jaune `#FFD43B` au lieu de `warningSoft` (à ajouter au thème, par exemple `palette.yellow.offline`), texte `warningStrong` → `palette.orange[900]`, rond Wi-Fi barré blanc à 45 %, et un bouton rond blanc de 40 px (flèche circulaire `orange[900]`, `accessibilityLabel` « Réessayer ») au lieu de `Button` `small`. `fr.tutor.offlineTitle` devient « Pas de connexion », `offlineBody` « Vérifie ton Wi-Fi ou tes données mobiles. ».
+  - `WrittenTutorScreen` : le message n'est plus au-dessus de la liste (`styles.banner`) mais dans la conversation, après le dernier message : `ListFooterComponent` de la `FlatList` quand `offline` est vrai, pleine largeur.
+  - `useTutorChat` : supprimer l'entraînement hors ligne (`askPractice`, `practiceIndex`, `nextPractice`, `checkPracticeAnswer`, `services/tutor/mock/practice.ts`). Sur une erreur réseau sans réponse reçue, retirer la bulle vide, garder le message de l'élève et passer `offline` à vrai, même sans cartes d'entraînement. `retry` renvoie la dernière question de l'élève au lieu de seulement remettre `offline` à faux.
+- **Pas de connexion au lancement** (`UnavailableScreen`, H2) : la mise en page de `StudyPauseScreen` (fond bleu de marque, logo du tuteur avec un badge Wi-Fi barré), « Réessayer » en bouton blanc, nouvelle aide `fr.unavailable.hint` « Wi-Fi ou données mobiles : on réessaie tout seul. », et `signOut` en lien. Le projet n'a pas de bibliothèque réseau : ajouter `expo-network` pour rappeler `authService.refreshAccount()` quand le réseau revient (et au retour au premier plan, avec `AppState`) ; sans cela, retirer « on réessaie tout seul » de l'aide.
+- **« Bientôt disponible »** (`ComingSoonModal`, B1) : `Stack.Screen name="bientot"` passe de `presentation: 'modal'` à `'transparentModal'`, et l'écran devient une feuille du bas sur un voile (poignée, tuile du sujet, pastille « Bientôt », titre, bouton fermer). `TOPICS` gagne une liste `items` par sujet, ce qui arrive vraiment ; pour `reglages`, les trois lignes de B1. Le bouton dit où l'on revient (« Continuer mes révisions » pour `reglages`) au lieu de « Fermer ». Les sujets `comptes` et `conditions` gardent leur texte neutre.
+- **J2 et J4** : rien à changer.
 
 ## Barre de navigation (tous les écrans)
 

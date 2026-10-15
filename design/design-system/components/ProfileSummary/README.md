@@ -14,6 +14,7 @@ Première carte du profil, qui déborde sur le bandeau. Chiffres de Léa : séri
 | `level` | `number` | Niveau atteint (affiche la barre). |
 | `xp` | `number` | XP dans ce niveau. |
 | `xpMax` | `number` | Seuil du niveau suivant. |
+| `lifted` | `boolean \| 'parents'` | Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). `'parents'` sur le bandeau violet. |
 
 ## Exemple
 
