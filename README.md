@@ -155,7 +155,7 @@ Le surveillant (`monitor/`) est le seul service hébergé hors d'EAS : `render.y
 - L'APK « preview » vise le serveur en ligne (`https://tutoria.expo.app`) et Supabase en ligne : le PC n'a pas besoin d'être allumé.
 - Nouvel APK : `EAS_NO_VCS=1 npx eas-cli@latest build --profile preview --platform android` (tant que le dépôt n'a aucun commit). Il s'installe par-dessus l'ancien.
 - Changement du code de l'app seulement : `npm run update:preview -- --message "…"` publie une mise à jour, téléchargée au lancement suivant, sans nouvel APK.
-- Changement du serveur (routes API, prompt) : `npx expo export --platform web` puis `npx eas-cli@latest deploy --prod --environment production`.
+- Changement du serveur (routes API, prompt) : `npx expo export --platform web` puis `npx eas-cli@latest deploy --prod --environment production --no-source-maps` (avec les cartes de source, l'envoi est trop long et EAS le refuse : « Token has expired »). Sans `--prod`, le déploiement reçoit une adresse de test à part, sans toucher à la production.
 - Un module natif ajouté change l'empreinte (`runtimeVersion` « fingerprint ») : il faut alors un nouvel APK, les mises à jour ne s'y appliquent pas.
 
 ### Vocal en direct sur téléphone
@@ -167,7 +167,7 @@ Expo Go ne contient pas WebRTC : dans Expo Go, le vocal devient un appel d'entra
    - Dans le terminal, repère l'adresse `exp://xxxx.exp.direct` et ouvre-la dans Chrome sur le téléphone en remplaçant `exp://` par `https://`.
    - Autorise le micro quand le navigateur le demande.
 2. **Avec l'app installée (build de développement).**
-   - Projet EAS : `@romainmlt/tutoria`, déjà lié (identifiant dans `app.config.ts`).
+   - Projet EAS : `@romainmlts-team/tutoria`, déjà lié (identifiant dans `app.config.ts`).
    - Nouveau build : `npm run build:dev` (après `npx eas-cli@latest login`). Il n'en faut un que si un module natif est ajouté ; le code JavaScript se recharge sans build. `expo-notifications`, `expo-sharing` et `expo-file-system` en demandent un nouveau.
    - Tant que le dépôt git n'a aucun commit, préfixer par `EAS_NO_VCS=1`. `.easignore` exclut alors `.env` et les fichiers générés.
    - Installe l'APK obtenu sur le téléphone, puis, à chaque session de travail : `npm run start:dev`, et ouvre le projet avec cette app, et non avec Expo Go.
