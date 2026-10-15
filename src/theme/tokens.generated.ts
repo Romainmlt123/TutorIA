@@ -145,6 +145,8 @@ export const shadow = {
   "sm": "0 1px 2px rgba(9,17,34,0.06)",
   "md": "0 4px 16px rgba(9,17,34,0.06)",
   "lg": "0 12px 32px rgba(9,17,34,0.10)",
+  "lift": "0 18px 32px -10px rgba(3,39,110,0.30), 0 4px 12px rgba(3,39,110,0.16)",
+  "liftParents": "0 18px 32px -10px rgba(59,13,162,0.30), 0 4px 12px rgba(59,13,162,0.16)",
   "brand": "0 8px 20px rgba(46,107,230,0.25)",
   "focus": "0 0 0 3px rgba(46,107,230,0.35)"
 } as const;
