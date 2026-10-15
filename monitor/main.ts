@@ -159,9 +159,10 @@ function watchCall(watch: Watch): Promise<void> {
       clearTimeout(timer);
       resolve();
     });
-    socket.addEventListener('error', () => {
+    // Un refus d'OpenAI ferme la connexion avant son ouverture : son code dit pourquoi.
+    socket.addEventListener('close', ({ code, reason }) => {
       clearTimeout(timer);
-      reject(new Error('Connexion à l’appel impossible'));
+      reject(new Error(`Connexion à l’appel refusée (${code}${reason ? ` ${reason}` : ''})`));
     });
   });
 }

@@ -112,13 +112,13 @@ Chaque choix doit rester compatible avec une publication sur les stores :
   - ouvrir l'adresse du tunnel en `https://` dans le navigateur du téléphone ;
   - installer un build de développement EAS (`npx eas-cli@latest build --profile development --platform android`), puis lancer `npm run start:dev`.
 - Builds EAS :
-  - Projet `@romainmlt/tutoria`, déjà lié (`extra.eas.projectId` dans `app.config.ts`).
+  - Projet `@romainmlts-team/tutoria`, déjà lié (`extra.eas.projectId` dans `app.config.ts`).
   - Profils `development`, `preview` et `production` dans `eas.json` ; le numéro de build est géré par EAS (`autoIncrement`).
   - Build de développement Android : `npm run build:dev`.
   - Sans commit git, préfixer par `EAS_NO_VCS=1`. `.easignore` exclut toujours `.env`.
   - APK autonome : profil `preview` (canal `preview`, serveur `https://tutoria.expo.app`). Les variables de l'app viennent de l'environnement EAS `preview`, celles du serveur de l'environnement `production`.
   - Mise à jour du JavaScript sans nouvel APK : `npm run update:preview -- --message "…"` (EAS Update, `runtimeVersion` par empreinte). Un module natif ajouté impose un nouveau build.
-  - Serveur : `npx expo export --platform web` puis `npx eas-cli@latest deploy --prod --environment production`.
+  - Serveur : `npx expo export --platform web` puis `npx eas-cli@latest deploy --prod --environment production --no-source-maps` (avec les cartes de source, l'envoi est trop long et EAS le refuse : « Token has expired »). Sans `--prod`, le déploiement reçoit une adresse de test à part, sans toucher à la production.
 - Surveillant du vocal sur Render (`render.yaml`, image `monitor/Dockerfile`, région Francfort, déployé depuis `main` quand `monitor/` change) :
   - offre gratuite pendant les tests (veille après 15 min, premier appel refusé au réveil) : passer à « starter » avant la production ;
   - secrets saisis dans Render, jamais dans le dépôt : `OPENAI_API_KEY` et `VOICE_MONITOR_TOKEN` ; le même `VOICE_MONITOR_TOKEN` et l'adresse du service (`VOICE_MONITOR_URL`) vont dans l'environnement EAS `production`, en « sensitive » pour le secret ;
@@ -221,7 +221,7 @@ Chaque choix doit rester compatible avec une publication sur les stores :
 
 ## 11. Points de vigilance avant publication
 1. **Vocal :** avec l'API Realtime, le client peut modifier les consignes de sa session (`session.update`), et un appel peut durer 60 min. Les visuels demandés par le tuteur sont validés et modérés par le serveur (`/api/tutor/visual-check`), et le surveillant modère la voix du tuteur et raccroche à 10 min.
-   - Le surveillant (`monitor/`) vérifie les consignes, modère la voix du tuteur et les photos, et raccroche ; il reste à le déployer (Render, région Francfort) avec ses secrets.
+   - Le surveillant (`monitor/`) vérifie les consignes, modère la voix du tuteur et les photos, et raccroche ; il est déployé sur Render (Francfort). La clé OpenAI de Render doit appartenir au même projet OpenAI que celle du serveur : sinon, le surveillant ne peut pas se brancher sur l'appel.
    - Limite : un `response.create` d'une app modifiée, avec ses propres consignes, ne se voit pas. À évaluer avant la production : GPT-Live, où le serveur détient la configuration.
    - `react-native-webrtc` n'est pas officiellement testé sur la nouvelle architecture : à valider sur un build de développement. Sur iOS, vérifier aussi que le son sort par le haut-parleur.
 2. **Limite de débit et authentification :**
@@ -250,3 +250,5 @@ Chaque choix doit rester compatible avec une publication sur les stores :
    - Renseigner `EXPO_PUBLIC_API_BASE_URL` (ou l'`origin` d'Expo Router) pour les builds natifs de production.
    - Ne pas laisser un tunnel de développement ouvert sans surveillance : les routes API y sont publiques.
    - Passer le surveillant du vocal sur l'offre « starter » de Render (toujours allumée) : l'offre gratuite se met en veille et refuse le premier appel au réveil.
+   - Redescendre les quotas du vocal, relevés pour les tests (14/10) : 3 appels par minute et 40 par jour par élève (`server/tutor/access.ts`) et par installation (`server/guards/rateLimit.ts`), 100 par jour par adresse IP. Avant : 1 par minute, 5 par jour, 20 par adresse IP.
+   - EAS Hosting : l'offre gratuite d'Expo limite une requête à 10 appels sortants (Supabase, OpenAI), et l'écrit en fait une vingtaine. Le projet est sur le compte d'équipe `romainmlts-team`, en offre Starter (10 000 appels sortants).

@@ -21,9 +21,11 @@ const LIMITS: Record<TutorFeature, readonly { max: number; windowSeconds: number
     { max: 20, windowSeconds: 10 * MINUTE },
     { max: 150, windowSeconds: DAY },
   ],
+  // Relevées pendant les tests (avant : 1 par minute, 5 par jour) : à redescendre avant la
+  // production (CLAUDE.md, § 11).
   voice: [
-    { max: 1, windowSeconds: MINUTE },
-    { max: 5, windowSeconds: DAY },
+    { max: 3, windowSeconds: MINUTE },
+    { max: 40, windowSeconds: DAY },
   ],
   image: [
     { max: 3, windowSeconds: 10 * MINUTE },
