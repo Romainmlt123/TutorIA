@@ -14,12 +14,14 @@ type Props = {
   children?: ReactNode;
   /** Place des pilules décoratives, celle de la maquette de l'écran. */
   pills?: keyof typeof BAND_PILLS;
+  /** Ce que la première carte recouvre en bas du bandeau (56 px par défaut ; 48 sur D3). */
+  overlap?: number;
 };
 
 /** En-tête des écrans Parents (v2.5) : bandeau violet de marque, titre et phrase en blanc. */
-export function ParentBand({ title, intro, top, children, pills }: Props) {
+export function ParentBand({ title, intro, top, children, pills, overlap }: Props) {
   return (
-    <ScreenBand tone="violet" pills={pills} accessibilityLabel={title}>
+    <ScreenBand tone="violet" pills={pills} overlap={overlap} accessibilityLabel={title}>
       <View style={styles.stack}>
         {top}
         <View style={styles.texts}>

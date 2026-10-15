@@ -796,7 +796,8 @@ export const fr = {
     deleteBody:
       'Tout sera effacé : tes séances, ta progression et tes flashcards. On ne pourra pas revenir en arrière.',
     deleteConfirm: 'Supprimer définitivement',
-    cancel: 'Annuler',
+    keep: 'Garder mon compte',
+    exportFirst: 'Télécharger mes données d’abord',
     avatarEdit: 'Modifier l’avatar',
     avatarCreate: 'Créer mon avatar',
     /** Profil de l'élève (v2.8, 05-Profil). */
@@ -878,14 +879,24 @@ export const fr = {
       title: 'Confidentialité',
       lead: 'Ce que Tutor’IA garde, ce que voient tes parents, et ce que tu peux faire.',
       parentsTitle: 'Ce que voient tes parents',
-      parentsBody:
-        'Ton temps de travail, tes progrès par matière et un court résumé de chaque session. Jamais tes conversations avec le tuteur, ni tes messages, ni tes photos.',
+      parentsSee: [
+        'Ton temps de travail',
+        'Tes progrès par matière',
+        'Un court résumé de chaque session',
+      ],
+      parentsNever: [
+        'Jamais tes conversations avec le tuteur',
+        'Jamais tes messages ni tes photos',
+      ],
       tutorTitle: 'Ce que garde le tuteur',
-      tutorBody:
-        'Tes messages sont gardés 6 mois pour que tu retrouves tes discussions, puis effacés. Tes photos d’exercice et ta voix ne sont jamais enregistrées.',
+      tutorKeeps: [
+        { label: 'Tes messages', keep: '6 mois, puis effacés' },
+        { label: 'Tes photos d’exercice', keep: 'Jamais enregistrées' },
+        { label: 'Ta voix', keep: 'Jamais enregistrée' },
+      ],
       rightsTitle: 'Tes droits',
       rightsBody:
-        'Tu peux télécharger toutes tes données, et supprimer ton compte à tout moment depuis ce profil. Tout est alors effacé.',
+        'Tu peux télécharger toutes tes données et supprimer ton compte à tout moment. Tout est alors effacé.',
     },
   },
   avatar: {
@@ -1292,30 +1303,37 @@ export const fr = {
       deleteBody:
         'Votre compte parent et ses données seront supprimés définitivement. Les comptes de vos enfants restent actifs.',
       deleteConfirm: 'Supprimer définitivement',
-      cancel: 'Annuler',
+      keep: 'Garder mon compte',
       saveFailed: 'Le réglage n’a pas été enregistré. Merci de réessayer.',
     },
     data: {
       title: 'Données personnelles',
-      subtitle:
-        'Tutor’IA collecte le minimum : prénom, classe, séances et progression. Aucune date de naissance, aucune adresse.',
+      subtitle: 'Consultez, exportez ou effacez les données de votre famille.',
+      keptTitle: 'Ce que nous gardons',
+      kept: ['Prénom', 'Classe', 'Séances', 'Progression'],
+      keptNote:
+        'Aucune date de naissance, aucune adresse. Les conversations avec le tuteur ne vous sont jamais transmises.',
       mine: 'Vos données',
+      mineBody: 'Un fichier avec les données de votre compte parent.',
       exportMine: 'Exporter mes données',
       exported: 'Vos données sont prêtes.',
       child: (name: string) => `Données de ${name}`,
-      childBody: (name: string) =>
-        `${name} peut exporter ses données depuis son profil. Ses conversations avec le tuteur ne vous sont jamais transmises.`,
-      consentGiven: (name: string) => `Vous avez validé le compte de ${name}.`,
+      grade: (grade: string) => `Classe de ${grade}`,
+      childBody: (name: string) => `${name} peut exporter ses données depuis son profil.`,
+      consentGiven: 'Accord donné',
       unlink: (name: string) => `Retirer le lien avec ${name}`,
       unlinkBody: (name: string) =>
         `Vous ne verrez plus les progrès de ${name}. Son compte reste actif.`,
-      deleteChild: (name: string) => `Retirer mon accord et supprimer le compte de ${name}`,
+      keepLink: 'Garder le lien',
+      deleteChild: (name: string) => `Supprimer le compte de ${name}`,
+      deleteChildHint:
+        'Vous retirez votre accord : son compte et toutes ses données sont supprimés, définitivement.',
       deleteChildTitle: (name: string) => `Supprimer le compte de ${name} ?`,
       deleteChildBody: (name: string) =>
         `Le compte de ${name} et toutes ses données (séances, progression, flashcards) seront supprimés définitivement.`,
-      confirm: 'Confirmer',
-      confirmAgain: 'Oui, supprimer définitivement',
-      cancel: 'Annuler',
+      deleteChildAck: 'Je comprends que c’est définitif.',
+      keepChild: 'Garder le compte',
+      deleteConfirm: 'Supprimer définitivement',
     },
     validation: {
       title: 'Validez le compte de votre enfant',

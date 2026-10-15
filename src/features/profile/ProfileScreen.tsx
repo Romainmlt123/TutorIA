@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -12,19 +11,15 @@ import { ScreenContainer } from '@/components/ScreenContainer';
 import { SettingRow, SettingsGroup } from '@/components/SettingRow';
 import { Text } from '@/components/Text';
 import { ConsentBanner } from '@/features/access/ConsentBanner';
-import { authErrorMessage } from '@/features/auth/logic/errors';
 import { useAvatarLook } from '@/features/avatar/hooks/useAvatarLook';
 import { useWardrobe } from '@/features/avatar/hooks/useWardrobe';
 import { requestReminderPermission } from '@/features/onboarding/logic/reminder';
 import { useCaptionsPreference } from '@/features/tutor/hooks/useCaptionsPreference';
 import { fr } from '@/i18n/fr';
-import { deliverJsonFile } from '@/lib/exportFile';
 import { logError } from '@/lib/logger';
-import { showNotice } from '@/lib/notice';
 import { monthIndex, parisDay } from '@/lib/parisTime';
 import { useDevicePreference } from '@/lib/useDevicePreference';
 import { authService } from '@/services/auth';
-import { avatarService } from '@/services/avatar';
 import { familyService } from '@/services/family';
 import { onboardingService } from '@/services/onboarding';
 import { theme } from '@/theme';
@@ -33,6 +28,7 @@ import { FamilyCard } from './components/FamilyCard';
 import { PROFILE_OVERLAP, ProfileHero } from './components/ProfileHero';
 import { ProfileSummary } from './components/ProfileSummary';
 import { TrophyShelf } from './components/TrophyShelf';
+import { useAccountActions } from './hooks/useAccountActions';
 import { useProfileData } from './hooks/useProfileData';
 
 const t = fr.profile;
@@ -58,9 +54,8 @@ export function ProfileScreen() {
   const answers = useQuery({ queryKey: onboardingKey, queryFn: () => onboardingService.load() });
   const { captionsOn, setCaptionsOn } = useCaptionsPreference();
   const [sounds, setSounds] = useDevicePreference(SOUNDS_KEY, false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const account = useAccountActions();
+  const { message, setMessage } = account;
 
   const since = student?.createdAt
     ? (fr.dates.months[monthIndex(parisDay(new Date(student.createdAt)))] ?? null)
@@ -80,34 +75,6 @@ export function ProfileScreen() {
       logError('profile.reminder', error);
       queryClient.setQueryData(onboardingKey, current);
       setMessage(t.preferences.saveFailed);
-    }
-  };
-
-  const exportData = async () => {
-    setMessage(null);
-    try {
-      const file = await authService.exportData();
-      await deliverJsonFile(file.fileName, file.json);
-      showNotice(t.exported);
-    } catch (error) {
-      setMessage(authErrorMessage(error, 'student'));
-    }
-  };
-
-  const deleteAccount = async () => {
-    setBusy(true);
-    setMessage(null);
-    const accountId = student?.id;
-    try {
-      await authService.deleteAccount();
-      // L'avatar gardé sur l'appareil part avec le compte.
-      if (accountId) {
-        avatarService.forget(accountId).catch((error: unknown) => logError('avatar.forget', error));
-      }
-    } catch (error) {
-      setBusy(false);
-      setConfirmDelete(false);
-      setMessage(authErrorMessage(error, 'student'));
     }
   };
 
@@ -176,7 +143,7 @@ export function ProfileScreen() {
           hint={t.account.exportHint}
           icon="telechargement"
           tile="download"
-          onPress={() => void exportData()}
+          onPress={() => void account.exportData()}
         />
         <SettingRow
           label={t.account.privacy}
@@ -197,20 +164,21 @@ export function ProfileScreen() {
           variant="soft"
           leadingIcon="sortie"
         />
-        <DangerButton label={t.delete} onPress={() => setConfirmDelete(true)} />
+        <DangerButton label={t.delete} onPress={account.askDelete} />
       </View>
       <Text variant="caption" color="textDisabled" align="center">
         {t.version(Constants.expoConfig?.version ?? '')}
       </Text>
       <ConfirmDialog
-        visible={confirmDelete}
+        visible={account.confirmDelete}
         title={t.deleteTitle}
         body={t.deleteBody}
         confirmLabel={t.deleteConfirm}
-        cancelLabel={t.cancel}
-        busy={busy}
-        onConfirm={() => void deleteAccount()}
-        onCancel={() => setConfirmDelete(false)}
+        keepLabel={t.keep}
+        extra={{ label: t.exportFirst, onPress: () => void account.exportData() }}
+        busy={account.busy}
+        onConfirm={() => void account.deleteAccount()}
+        onCancel={account.cancelDelete}
       />
     </ScreenContainer>
   );
