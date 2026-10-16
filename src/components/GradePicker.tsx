@@ -13,24 +13,31 @@ type Props = {
   value: Grade | null;
   onChange: (grade: Grade) => void;
   tone?: SpaceTone;
-  /** `grouped` : Primaire, Collège, Lycée (O1). `grid` : 4 colonnes violettes (L5). */
-  layout?: 'grouped' | 'grid';
+  /**
+   * `grouped` : Primaire, Collège, Lycée (O1). `grid` : 4 colonnes violettes (L5).
+   * `columns` : les mêmes groupes sur 5 colonnes, cases sur le fond `bg` (F1, F5).
+   */
+  layout?: Layout;
 };
+
+type Layout = 'grouped' | 'grid' | 'columns';
 
 type ChipProps = {
   grade: Grade;
   selected: boolean;
   onPress: () => void;
   tone: SpaceTone;
-  layout: 'grouped' | 'grid';
+  layout: Layout;
 };
 
 function GradeChip({ grade, selected, onPress, tone, layout }: ChipProps) {
   const space = theme.spaces[tone];
-  const grid = layout === 'grid';
+  // Les cases pleines (sans dégradé) : la grille de L5 et les colonnes de F1.
+  const grid = layout !== 'grouped';
+  const columns = layout === 'columns';
   const label = (
     <Text
-      variant={grid ? 'lead' : 'body'}
+      variant={grid && !columns ? 'lead' : 'body'}
       weight="bold"
       color={selected ? 'textOnColor' : 'text'}
       maxFontSizeMultiplier={1.3}>
@@ -43,8 +50,20 @@ function GradeChip({ grade, selected, onPress, tone, layout }: ChipProps) {
       role="radio"
       aria-checked={selected}
       accessibilityLabel={grade}
-      shadow={selected ? (grid ? extras.parentChipShadow : space.shadow) : theme.shadow.sm}
-      style={[grid ? styles.gridChip : styles.chip, !selected && styles.idle]}>
+      shadow={
+        selected
+          ? grid
+            ? extras.parentChipShadow
+            : space.shadow
+          : columns
+            ? undefined
+            : theme.shadow.sm
+      }
+      style={[
+        grid ? styles.gridChip : styles.chip,
+        columns && styles.columnChip,
+        !selected && (columns ? styles.idleFilled : styles.idle),
+      ]}>
       {selected && !grid ? (
         <GradientSurface
           gradient={space.gradient}
@@ -86,16 +105,17 @@ export function GradePicker({ value, onChange, tone = 'student', layout = 'group
           <Text variant="overline" color="textSecondary">
             {fr.form.gradeGroups[group.id]}
           </Text>
-          <View style={styles.wrap}>
+          <View style={layout === 'columns' ? styles.columns : styles.wrap}>
             {group.grades.map((grade) => (
-              <GradeChip
-                key={grade}
-                grade={grade}
-                selected={grade === value}
-                onPress={() => onChange(grade)}
-                tone={tone}
-                layout="grouped"
-              />
+              <View key={grade} style={layout === 'columns' ? styles.column : null}>
+                <GradeChip
+                  grade={grade}
+                  selected={grade === value}
+                  onPress={() => onChange(grade)}
+                  tone={tone}
+                  layout={layout}
+                />
+              </View>
             ))}
           </View>
         </View>
@@ -125,6 +145,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: theme.space[4],
+  },
+  columns: { flexDirection: 'row', marginHorizontal: -4 },
+  column: { width: '20%', paddingHorizontal: theme.space[1] },
+  columnChip: { borderRadius: 14 },
+  idleFilled: {
+    borderWidth: 1,
+    borderColor: theme.auth.field.filledBorder,
+    backgroundColor: theme.colors.bg,
   },
   grid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -4, rowGap: theme.space[2] },
   gridCell: { width: '25%', paddingHorizontal: theme.space[1] },

@@ -60,7 +60,19 @@ export function ParentSettingsScreen() {
     <ScreenContainer
       contentStyle={styles.content}
       band={<ParentBand title={t.title} intro={t.subtitle} pills="parentsLow" />}>
-      {child ? <ChildProfileCard name={child.firstName} line={t.childLine(child.grade)} /> : null}
+      {child ? (
+        <ChildProfileCard
+          name={child.firstName}
+          line={t.childLine(child.grade)}
+          // Même droit qu'en base (`update_child_profile`) : le parent qui a validé le compte
+          // d'un enfant de moins de 15 ans.
+          onEdit={
+            child.consentGivenByMe && child.under15
+              ? () => router.push({ pathname: '/parents/enfant', params: { id: child.id } })
+              : undefined
+          }
+        />
+      ) : null}
       {child && s ? (
         <>
           <GoalStepper

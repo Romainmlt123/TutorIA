@@ -1,3 +1,6 @@
+import type { Grade } from '@/data/types';
+import { addDays, parisDay } from '@/lib/parisTime';
+
 import { callAccountApi } from '../../auth/accountApi';
 import type { AcceptLinkRequestBody, DeleteChildBody } from '../../auth/api-contract';
 import type { AuthService } from '../../auth/AuthService';
@@ -110,5 +113,33 @@ export class SupabaseFamilyService implements FamilyService {
   async deleteChildAccount(studentId: string): Promise<void> {
     const body: DeleteChildBody = { studentId };
     await callAccountApi('/api/account/delete-child', await this.auth.getAccessToken(), { body });
+  }
+
+  async updateChild(studentId: string, firstName: string, grade: Grade): Promise<void> {
+    const { error } = await this.supabase.rpc('update_child_profile', {
+      p_student_id: studentId,
+      p_first_name: firstName,
+      p_grade: grade,
+    });
+    if (error) throw error;
+  }
+
+  async weekSeconds(
+    studentIds: readonly string[],
+    today = new Date(),
+  ): Promise<Record<string, number>> {
+    if (studentIds.length === 0) return {};
+    const end = parisDay(today);
+    // Une seule requête pour tous les enfants ; la RLS ne laisse lire que les enfants reliés.
+    const { data, error } = await this.supabase
+      .from('daily_activity')
+      .select('student_id, seconds')
+      .in('student_id', [...studentIds])
+      .gte('day', addDays(end, -6))
+      .lte('day', end);
+    if (error) throw error;
+    const totals: Record<string, number> = {};
+    for (const row of data) totals[row.student_id] = (totals[row.student_id] ?? 0) + row.seconds;
+    return totals;
   }
 }

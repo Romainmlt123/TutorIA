@@ -27,7 +27,11 @@ export function ChildProfileCard({ name, line, onEdit }: Props) {
         </Text>
       </View>
       {onEdit ? (
-        <PressableBase onPress={onEdit} accessibilityRole="button" style={styles.edit}>
+        <PressableBase
+          onPress={onEdit}
+          accessibilityRole="button"
+          accessibilityLabel={fr.parent.settings.editChild(name)}
+          style={styles.edit}>
           <Text variant="label" weight="bold" color="textOnColor">
             {fr.parent.settings.edit}
           </Text>
@@ -54,7 +58,7 @@ const styles = StyleSheet.create({
   },
   text: { flex: 1, gap: 2 },
   edit: {
-    height: 44,
+    minHeight: 48,
     paddingHorizontal: theme.space[4],
     borderRadius: 14,
     backgroundColor: theme.onColor.veil,
