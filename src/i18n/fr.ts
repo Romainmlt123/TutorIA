@@ -1096,26 +1096,36 @@ export const fr = {
     },
     child: {
       title: 'Ajoutez votre enfant',
+      addTitle: 'Ajouter un enfant',
+      editTitle: (name: string) => `Modifier le profil de ${name}`,
+      readyTitle: (name: string) => `Le profil de ${name} est prêt`,
+      readySubtitle: 'Donnez-lui ce code pour relier son compte au vôtre.',
       subtitle: 'Tutor’IA adapte ses explications à sa classe.',
       formLabel: 'Profil de l’enfant',
+      formTitle: 'Son profil',
       firstName: 'Prénom de votre enfant',
       firstNamePlaceholder: 'Son prénom',
       create: (name: string) => (name ? `Créer le profil de ${name}` : 'Créer le profil'),
       created: (grade: string) => `Classe de ${grade} · profil créé`,
       edit: 'Modifier',
+      save: 'Enregistrer',
+      saved: (name: string) => `Le profil de ${name} est à jour.`,
+      family: 'Déjà dans votre famille :',
+      familyGrade: (grade: string) => `, ${grade}`,
       codeTitle: (name: string) => `Code de connexion de ${name}`,
       codeLabel: (code: string) => `Code de connexion : ${code.split('').join(' ')}`,
       validity: 'Valable 24 h',
       share: 'Partager le code',
       shareMessage: (name: string, code: string) =>
-        `${name}, voici ton code parent Tutor’IA : ${code}. Saisis-le dans le champ « Code parent » de l’app. Il est valable 24 h.`,
+        `${name}, voici ton code parent Tutor’IA : ${code}. Dans l’app, touche « J’ai un code de mon parent » et saisis-le. Il est valable 24 h.`,
       stepsTitle: (name: string) => `Sur le téléphone de ${name}`,
-      steps: [
+      steps: (name: string) => [
         'Installez Tutor’IA et ouvrez l’app.',
-        'Choisissez « Je suis élève » et connectez-vous.',
-        'Saisissez ce code dans le champ « Code parent ».',
+        `${name} crée son compte élève, ou se connecte s’il en a déjà un.`,
+        'Il touche « J’ai un code de mon parent » et saisit ce code.',
       ],
       dashboard: 'Accéder au tableau de bord',
+      done: 'Terminé',
     },
     home: {
       greeting: (name: string) => `Bonjour ${name}`,
@@ -1123,8 +1133,12 @@ export const fr = {
       weekIntro: (child: string, range: string) => `Voici la semaine de ${child}, ${range}.`,
       notifications: 'Notifications',
       switchChild: (name: string) => `Changer d’enfant, enfant affiché : ${name}`,
-      chooseChild: 'Choisir un enfant',
+      chooseChild: 'Vos enfants',
       closeChooser: 'Fermer le choix de l’enfant',
+      childLine: (grade: string | null, week: string | null) =>
+        [grade ? `Classe de ${grade}` : null, week ? `${week} cette semaine` : null]
+          .filter(Boolean)
+          .join(' · '),
       summaryTitle: 'Résumé de la semaine',
       summaryBy: (date: string) => `Rédigé par Tutor’IA · ${date}`,
       summaryComputed: 'Calculé à partir des séances de la semaine',
@@ -1261,6 +1275,7 @@ export const fr = {
       childLine: (grade: string | null) =>
         grade ? `Classe de ${grade} · 6 matières suivies` : '6 matières suivies',
       edit: 'Modifier',
+      editChild: (name: string) => `Modifier le profil de ${name}`,
       goal: {
         title: 'Objectif hebdomadaire',
         hint: (child: string, perDay: number) => `Fixé avec ${child} · soit ${perDay} min par jour`,

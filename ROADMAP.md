@@ -16,26 +16,29 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 
 ## Où on en est — 7 octobre 2026
 
-| Chantier      | Étape                                                                         | Statut      | Branche                      |
-| ------------- | ----------------------------------------------------------------------------- | ----------- | ---------------------------- |
-| Explorer      | X1 · les îles                                                                 | ✅ validé   | `feat/explorer-3d`           |
-| Explorer      | X2a · les régions de l'île                                                    | ✅ validé   | `feat/explorer-3d`           |
-| Explorer      | X2b · la carte d'une région (art de la région Nombres)                        | ✅ validé   | `feat/explorer-3d`           |
-| Avatar        | Figurine, visage et atelier `/dev/avatars`                                    | ✅ validé   | `feat/avatar`                |
-| Avatar        | A1 · l'éditeur « Crée ton avatar »                                            | ✅ validé   | `feat/avatar`                |
-| Avatar        | A2 · l'avatar sur la carte                                                    | ✅ validé   | `feat/avatar`                |
-| Avatar        | **A3 · la garde-robe**                                                        | ✅ validé   | `feat/avatar`                |
-| Avatar        | A4 · l'avatar dans Supabase                                                   | ✅ validé   | `feat/avatar-en-base`        |
-| Explorer      | **X3 à X5b · fiche, discussion et bilan d'un niveau**                         | ✅ validé   | `feat/avatar`                |
-| Explorer      | La suite (art des régions, contenu, allègement…)                              | ⏸️ en pause |                              |
-| Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`         |
-| Tuteur visuel | **V4 · les visuels à la voix**                                                | ✅ validé   | `feat/appel-vocal`           |
-| Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`            |
-| Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice`        |
-| Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6`        |
-| Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`           |
-| Interface     | **v2.7 · la connexion plein écran (L2, L3)**                                  | ✅ validé   | `feat/connexion-plein-ecran` |
-| Interface     | **v2.8 · le profil de l'élève**                                               | ✅ validé   | `feat/profil-eleve`          |
+| Chantier      | Étape                                                                         | Statut      | Branche                           |
+| ------------- | ----------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| Explorer      | X1 · les îles                                                                 | ✅ validé   | `feat/explorer-3d`                |
+| Explorer      | X2a · les régions de l'île                                                    | ✅ validé   | `feat/explorer-3d`                |
+| Explorer      | X2b · la carte d'une région (art de la région Nombres)                        | ✅ validé   | `feat/explorer-3d`                |
+| Avatar        | Figurine, visage et atelier `/dev/avatars`                                    | ✅ validé   | `feat/avatar`                     |
+| Avatar        | A1 · l'éditeur « Crée ton avatar »                                            | ✅ validé   | `feat/avatar`                     |
+| Avatar        | A2 · l'avatar sur la carte                                                    | ✅ validé   | `feat/avatar`                     |
+| Avatar        | **A3 · la garde-robe**                                                        | ✅ validé   | `feat/avatar`                     |
+| Avatar        | A4 · l'avatar dans Supabase                                                   | ✅ validé   | `feat/avatar-en-base`             |
+| Explorer      | **X3 à X5b · fiche, discussion et bilan d'un niveau**                         | ✅ validé   | `feat/avatar`                     |
+| Explorer      | La suite (art des régions, contenu, allègement…)                              | ⏸️ en pause |                                   |
+| Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`              |
+| Tuteur visuel | **V4 · les visuels à la voix**                                                | ✅ validé   | `feat/appel-vocal`                |
+| Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`                 |
+| Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice`             |
+| Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6`             |
+| Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`                |
+| Interface     | **v2.7 · la connexion plein écran (L2, L3)**                                  | ✅ validé   | `feat/connexion-plein-ecran`      |
+| Interface     | **v2.8 · le profil de l'élève**                                               | ✅ validé   | `feat/profil-eleve`               |
+| Interface     | **v2.12 et v2.17 · bandeaux, en-tête de l'Accueil, séance de flashcards**     | ✅ validé   | `feat/bandeau-et-flashcards`      |
+| Interface     | **v2.16 · données et confidentialité (D1 à D4)**                              | ✅ validé   | `feat/donnees-et-confidentialite` |
+| Interface     | **v2.18 · la famille (F1, F2, F3, F5)**                                       | ✅ validé   | `feat/famille`                    |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -280,6 +283,12 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - Plan du profil validé par Romain : les 24 trophées (calculés dans l'app, gardés pour toujours), « Sons et vibrations » gardé sans effet pour y penser plus tard, l'interrupteur du rappel de révision, et plus de « Retirer » un parent pour l'élève (ce n'est pas à lui de choisir).
   - La v2.8 est validée par Romain sur le Pixel. Retour intégré : la figurine 3D du profil arrivait lentement ; l'apparence et le modèle (1,6 Mo) sont maintenant chargés dès l'Accueil, et le profil n'affiche plus l'initiale avant la figurine.
   - La v2.8 a d'abord été livrée sur `feat/profil-eleve`. La migration `parent_links_parent_only` est appliquée en ligne (version `20261008090000`, par Romain avec `supabase db push`, après son accord).
+
+- **16/10 (v2.18, la famille) :**
+  - Plan validé par Romain : choix d'un enfant en feuille du bas (F3, avec le temps de la semaine), « Ajouter un enfant » sur le bandeau violet (F1, F2) et « Modifier le profil » (F5).
+  - Option 1 retenue : seul le parent qui a validé le compte d'un enfant de moins de 15 ans modifie son prénom et sa classe (fonction `update_child_profile`, migration `20261016063758`, à appliquer en ligne par Romain).
+  - La v2.18 est validée par Romain, et la migration `child_profile_by_parent` est appliquée en ligne (version `20261016063758`, par Romain avec `supabase db push`).
+  - Les notifications (v2.20) viendront dans un lot à part.
 
 ## Prochaines étapes, gardées en tête (08/10)
 

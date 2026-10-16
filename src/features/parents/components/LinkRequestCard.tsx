@@ -32,7 +32,8 @@ export function LinkRequestCard({ request }: { request: LinkRequest }) {
         <Button
           label={t.decline}
           onPress={() => decline.mutate(request.studentId)}
-          variant="soft"
+          // F4 (v2.18) : refuser en rouge doux, accepter reste l'action principale.
+          variant="danger"
           disabled={decline.isPending || accept.isPending}
           style={styles.action}
         />

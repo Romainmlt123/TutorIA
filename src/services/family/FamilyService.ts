@@ -34,4 +34,11 @@ export interface FamilyService {
   unlink(otherId: string): Promise<void>;
   /** Parent qui a validé le compte d'un enfant de moins de 15 ans : retrait de l'accord et suppression. */
   deleteChildAccount(studentId: string): Promise<void>;
+  /**
+   * Parent qui a validé le compte d'un enfant de moins de 15 ans : modifie son prénom et sa classe
+   * (F5, fonction `update_child_profile` de la base, qui vérifie ce droit).
+   */
+  updateChild(studentId: string, firstName: string, grade: Grade): Promise<void>;
+  /** Parent : temps de travail des 7 derniers jours de chaque enfant, en secondes (F3). */
+  weekSeconds(studentIds: readonly string[], today?: Date): Promise<Record<string, number>>;
 }

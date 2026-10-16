@@ -1004,6 +1004,14 @@ export type Database = {
           voice_enabled: boolean;
         }[];
       };
+      update_child_profile: {
+        Args: {
+          p_first_name: string;
+          p_grade: Database['public']['Enums']['grade'];
+          p_student_id: string;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       card_state: 'known' | 'to_review';
