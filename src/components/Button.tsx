@@ -9,8 +9,20 @@ import { Text } from './Text';
 /**
  * `waiting` : action pas encore possible, en gris lisible (pas estompé) qui dit ce qu'on attend.
  * `glass` : bouton en verre posé sur un dégradé (bilan des flashcards).
+ * `vividSoft` : violet doux (espace Parents). `danger` : rouge doux ; `dangerSolid` : rouge plein,
+ * réservé à la suppression confirmée par une case (v2.16).
  */
-export type ButtonVariant = 'primary' | 'vivid' | 'soft' | 'small' | 'white' | 'waiting' | 'glass';
+export type ButtonVariant =
+  | 'primary'
+  | 'vivid'
+  | 'vividSoft'
+  | 'soft'
+  | 'small'
+  | 'white'
+  | 'waiting'
+  | 'glass'
+  | 'danger'
+  | 'dangerSolid';
 
 export type ButtonProps = {
   label: string;
@@ -40,6 +52,7 @@ const { colors: c, palette: p } = theme;
 const VARIANTS = {
   primary: { bg: c.primary, hover: c.primaryHover, pressed: c.primaryPressed, fg: c.textOnColor },
   vivid: { bg: p.violet[500], hover: p.violet[600], pressed: p.violet[700], fg: c.textOnColor },
+  vividSoft: { bg: p.violet[100], hover: p.violet[200], pressed: p.violet[200], fg: p.violet[600] },
   soft: { bg: c.primarySoft, hover: p.blue[200], pressed: p.blue[200], fg: c.primary },
   small: { bg: c.primary, hover: c.primaryHover, pressed: c.primaryPressed, fg: c.textOnColor },
   white: { bg: c.surface, hover: c.bg, pressed: c.bg, fg: c.primary },
@@ -55,6 +68,8 @@ const VARIANTS = {
     pressed: theme.onColor.veil,
     fg: c.textOnColor,
   },
+  danger: { bg: c.errorSoft, hover: p.red[200], pressed: p.red[200], fg: c.errorStrong },
+  dangerSolid: { bg: c.error, hover: c.errorStrong, pressed: c.errorStrong, fg: c.textOnColor },
 } as const;
 
 /** Violet doux (profil : « Relier un autre parent », v2.8). */

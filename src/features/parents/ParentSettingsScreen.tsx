@@ -188,10 +188,11 @@ export function ParentSettingsScreen() {
       </View>
       <ConfirmDialog
         visible={confirmDelete}
+        tone="parent"
         title={t.deleteTitle}
         body={t.deleteBody}
         confirmLabel={t.deleteConfirm}
-        cancelLabel={t.cancel}
+        keepLabel={t.keep}
         busy={deleting}
         onConfirm={() => void deleteAccount()}
         onCancel={() => setConfirmDelete(false)}

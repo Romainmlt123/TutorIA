@@ -5,9 +5,10 @@ import { StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { DangerButton } from '@/components/DangerButton';
 import { FormMessage } from '@/components/form/FormMessage';
+import { Icon } from '@/components/Icon';
 import { IconButton } from '@/components/IconButton';
+import { PrivacyCard } from '@/components/PrivacyCard';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { Text } from '@/components/Text';
 import { authErrorMessage } from '@/features/auth/logic/errors';
@@ -16,20 +17,24 @@ import { deliverJsonFile } from '@/lib/exportFile';
 import { showNotice } from '@/lib/notice';
 import { authService } from '@/services/auth';
 import { familyService, type LinkedChild } from '@/services/family';
-import { theme } from '@/theme';
+import { liftShadow, theme } from '@/theme';
 
+import { ChildDataCard } from './components/ChildDataCard';
+import { ParentBand } from './components/ParentBand';
 import { familyKeys } from './hooks/useFamily';
 import { useSelectedChild } from './hooks/useSelectedChild';
 
 const t = fr.parent.data;
 
-type Pending =
-  | { kind: 'unlink'; child: LinkedChild }
-  | { kind: 'delete'; child: LinkedChild; confirmed: boolean };
+type Pending = { kind: 'unlink' | 'delete'; child: LinkedChild };
+
+/** Les cartes montent de 48 px sur le bandeau violet (D3). */
+const DATA_OVERLAP = 48;
 
 /**
- * Données personnelles (RGPD) : export des données du parent, retrait d'un lien,
- * et, pour le parent qui a validé le compte d'un enfant de moins de 15 ans, suppression de ce compte.
+ * D3 · Données personnelles (RGPD, v2.16) : ce que Tutor'IA garde, l'export des données du parent,
+ * puis une carte par enfant : retrait du lien et, pour le parent qui a validé le compte d'un enfant
+ * de moins de 15 ans, suppression de ce compte (D4, une seule confirmation avec une case).
  */
 export function ParentDataScreen() {
   const router = useRouter();
@@ -52,11 +57,6 @@ export function ParentDataScreen() {
 
   const confirm = async () => {
     if (!pending) return;
-    // Suppression du compte d'un enfant : deux confirmations.
-    if (pending.kind === 'delete' && !pending.confirmed) {
-      setPending({ ...pending, confirmed: true });
-      return;
-    }
     setBusy(true);
     setMessage(null);
     try {
@@ -71,95 +71,120 @@ export function ParentDataScreen() {
     }
   };
 
-  const dialog = pending
-    ? pending.kind === 'unlink'
-      ? {
-          title: t.unlink(pending.child.firstName),
-          body: t.unlinkBody(pending.child.firstName),
-          confirm: t.confirm,
-        }
-      : {
-          title: t.deleteChildTitle(pending.child.firstName),
-          body: t.deleteChildBody(pending.child.firstName),
-          confirm: pending.confirmed ? t.confirmAgain : t.confirm,
-        }
-    : null;
-
+  const name = pending?.child.firstName ?? '';
   return (
-    <ScreenContainer withNav={false} contentStyle={styles.content}>
-      <View style={styles.top}>
-        <IconButton
-          icon="chevron-gauche"
-          iconSize={22}
-          accessibilityLabel={fr.form.back}
-          onPress={() => router.back()}
+    <ScreenContainer
+      withNav={false}
+      contentStyle={styles.content}
+      bandOverlap={DATA_OVERLAP}
+      band={
+        <ParentBand
+          pills="standard"
+          overlap={DATA_OVERLAP}
+          top={
+            <View style={styles.top}>
+              <IconButton
+                icon="chevron-gauche"
+                iconSize={22}
+                onBand
+                accessibilityLabel={fr.form.back}
+                onPress={() => router.back()}
+              />
+            </View>
+          }
+          title={t.title}
+          intro={t.subtitle}
         />
-      </View>
-      <View style={styles.header}>
-        <Text variant="heading" accessibilityRole="header">
-          {t.title}
-        </Text>
-        <Text variant="lead" color="textSecondary">
-          {t.subtitle}
-        </Text>
-      </View>
+      }>
+      <PrivacyCard
+        icon="bouclier"
+        tile="privacy"
+        title={t.keptTitle}
+        shadow={liftShadow('white', true)}>
+        <View style={styles.kept}>
+          {t.kept.map((item) => (
+            <View key={item} style={styles.keptPill}>
+              <Icon name="coche" size={14} color={theme.palette.violet[600]} strokeWidth={2.5} />
+              <Text variant="caption" weight="bold" color={theme.palette.violet[600]}>
+                {item}
+              </Text>
+            </View>
+          ))}
+        </View>
+        <View style={styles.note}>
+          <Icon name="info" size={18} color={theme.colors.textSecondary} strokeWidth={2} />
+          <Text variant="caption" color="textSecondary" style={styles.noteText}>
+            {t.keptNote}
+          </Text>
+        </View>
+      </PrivacyCard>
       <FormMessage message={message} />
-      <View style={styles.card}>
-        <Text variant="section">{t.mine}</Text>
+      <PrivacyCard icon="telechargement" tile="captions" title={t.mine}>
+        <Text variant="bodySm" color="textSecondary">
+          {t.mineBody}
+        </Text>
         <Button
           label={t.exportMine}
-          onPress={() => void exportMine()}
-          variant="soft"
+          variant="vividSoft"
+          weight="bold"
           leadingIcon="telechargement"
+          onPress={() => void exportMine()}
+          style={styles.export}
         />
-      </View>
+      </PrivacyCard>
       {children.map((child) => (
-        <View key={child.id} style={styles.card}>
-          <Text variant="section">{t.child(child.firstName)}</Text>
-          <Text variant="bodySm" color="textSecondary">
-            {t.childBody(child.firstName)}
-          </Text>
-          {child.consentGivenByMe ? (
-            <Text variant="bodySm" weight="medium">
-              {t.consentGiven(child.firstName)}
-            </Text>
-          ) : null}
-          <Button
-            label={t.unlink(child.firstName)}
-            onPress={() => setPending({ kind: 'unlink', child })}
-            variant="soft"
-          />
-          {child.consentGivenByMe && child.under15 ? (
-            <DangerButton
-              label={t.deleteChild(child.firstName)}
-              onPress={() => setPending({ kind: 'delete', child, confirmed: false })}
-            />
-          ) : null}
-        </View>
+        <ChildDataCard
+          key={child.id}
+          child={child}
+          onUnlink={() => setPending({ kind: 'unlink', child })}
+          onDelete={() => setPending({ kind: 'delete', child })}
+        />
       ))}
-      <ConfirmDialog
-        visible={Boolean(dialog)}
-        title={dialog?.title ?? ''}
-        body={dialog?.body ?? ''}
-        confirmLabel={dialog?.confirm ?? ''}
-        cancelLabel={t.cancel}
-        busy={busy}
-        onConfirm={() => void confirm()}
-        onCancel={() => setPending(null)}
-      />
+      {pending?.kind === 'unlink' ? (
+        <ConfirmDialog
+          visible
+          tone="parent"
+          icon="lien-barre"
+          title={t.unlink(name)}
+          body={t.unlinkBody(name)}
+          confirmLabel={t.unlink(name)}
+          keepLabel={t.keepLink}
+          busy={busy}
+          onConfirm={() => void confirm()}
+          onCancel={() => setPending(null)}
+        />
+      ) : (
+        <ConfirmDialog
+          visible={pending?.kind === 'delete'}
+          tone="parent"
+          title={t.deleteChildTitle(name)}
+          body={t.deleteChildBody(name)}
+          confirmLabel={t.deleteConfirm}
+          keepLabel={t.keepChild}
+          ackLabel={t.deleteChildAck}
+          busy={busy}
+          onConfirm={() => void confirm()}
+          onCancel={() => setPending(null)}
+        />
+      )}
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { gap: theme.space[6] },
+  content: { gap: theme.space[4] },
   top: { flexDirection: 'row' },
-  header: { gap: 6 },
-  card: {
-    gap: theme.space[3],
-    padding: theme.space[5],
-    borderRadius: theme.radius['3xl'],
-    backgroundColor: theme.colors.surface,
-    boxShadow: theme.shadow.md,
+  kept: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2] },
+  keptPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    height: 32,
+    paddingHorizontal: theme.space[3],
+    borderRadius: theme.radius.full,
+    backgroundColor: theme.palette.violet[100],
   },
+  note: { flexDirection: 'row', gap: theme.space[2], marginTop: theme.space[2] },
+  noteText: { flex: 1 },
+  export: { marginTop: theme.space[1], marginBottom: theme.space[1] },
 });
