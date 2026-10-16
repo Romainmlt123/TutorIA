@@ -30,7 +30,7 @@ export function ChoiceScreen() {
     <ScreenContainer
       contentStyle={styles.content}
       band={
-        <ScreenBand tone="student" accessibilityLabel={fr.flashcards.title}>
+        <ScreenBand tone="student" pills="flashcards" accessibilityLabel={fr.flashcards.title}>
           <View style={styles.header}>
             <Text
               variant="hero"

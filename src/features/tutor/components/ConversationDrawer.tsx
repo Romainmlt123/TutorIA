@@ -130,7 +130,7 @@ export function ConversationDrawer({
             { width: Math.min(MAX_WIDTH, width * 0.86), paddingBottom: insets.bottom },
           ]}>
           {/* Bandeau de marque bleu (v2.5), sans carte qui déborde dessus. */}
-          <ScreenBand tone="student" overlap={0} accessibilityLabel={T.drawerTitle}>
+          <ScreenBand tone="student" overlap={0} pills="drawer" accessibilityLabel={T.drawerTitle}>
             <View style={styles.header}>
               <Text variant="title" color="textOnColor" accessibilityRole="header">
                 {T.drawerTitle}

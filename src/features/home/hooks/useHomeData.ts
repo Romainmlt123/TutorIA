@@ -1,5 +1,4 @@
 import { chapterById } from '@/data/curriculum';
-import { quotes } from '@/data/mock/quotes';
 import { student as demoStudent } from '@/data/mock/student';
 import type { StudentProfile, Subject, SubjectId } from '@/data/types';
 import { fr } from '@/i18n/fr';
@@ -12,7 +11,6 @@ import {
   currentLesson,
   DAILY_SESSIONS_TARGET,
   LESSONS_PER_CHAPTER,
-  quoteOfTheDay,
   subjectMastery,
 } from '../logic/home';
 
@@ -35,7 +33,7 @@ const DEMO_LESSON_TITLES: Record<string, Record<number, string>> = {
 };
 
 /** Données de l'Accueil : progression lue en base (ou simulée hors ligne). */
-export function useHomeData(today = new Date()) {
+export function useHomeData() {
   const account = useStudentAccount();
   const overview = useStudentOverview();
   const chapters = useStudentChapters();
@@ -76,7 +74,6 @@ export function useHomeData(today = new Date()) {
 
   return {
     student,
-    quote: quoteOfTheDay(quotes, today),
     subjects,
     resume: {
       ...student.resume,

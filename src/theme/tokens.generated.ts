@@ -666,6 +666,42 @@ export const screenBand = {
     "background": "#ffffff",
     "textOnViolet": "#521dc8",
     "textOnStudent": "#1750c4"
+  },
+  "lift": {
+    "contact": {
+      "student": "3,39,110",
+      "parents": "59,13,162"
+    },
+    "tones": {
+      "white": [
+        "3,39,110",
+        0.3
+      ],
+      "whiteParents": [
+        "59,13,162",
+        0.3
+      ],
+      "orange": [
+        "208,136,37",
+        0.65
+      ],
+      "slate": [
+        "9,17,34",
+        0.55
+      ],
+      "blue": [
+        "10,59,157",
+        0.55
+      ],
+      "cyan": [
+        "2,98,115",
+        0.55
+      ],
+      "hero": [
+        "59,13,162",
+        0.5
+      ]
+    }
   }
 } as const;
 

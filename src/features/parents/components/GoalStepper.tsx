@@ -25,7 +25,7 @@ export function GoalStepper({ hours, childName, onChange }: Props) {
       contentStyle={styles.content}>
       <Watermark icon="cible" size={120} offset={-28} placement="top" opacity={0.14} />
       <View style={styles.head}>
-        <Text variant="overline" color="textOnColor">
+        <Text variant="h3" weight="black" color="textOnColor" accessibilityRole="header">
           {t.title}
         </Text>
         <Text variant="label" weight="medium" color="textOnColor">

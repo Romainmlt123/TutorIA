@@ -273,6 +273,7 @@ export const fr = {
       `Bien joué ! ${explanation} Carte rangée dans « Je sais ».`,
     feedbackWrong: (answer: string, explanation: string) =>
       `Pas tout à fait : c’était ${answer}. ${explanation} On la revoit demain.`,
+    waitingAnswer: 'Choisis une réponse',
     next: 'Carte suivante',
     seeResults: 'Voir mon bilan',
     known: (n: number) => `Je sais · ${n}`,
@@ -282,6 +283,11 @@ export const fr = {
       `${known} ${plural(known, 'carte maîtrisée', 'cartes maîtrisées')}, ${review} à revoir demain. Bien joué, on passe à la suite ?`,
     xpGained: (xp: number) => `+${xp} XP`,
     restart: 'Recommencer',
+    otherChapter: 'Choisir un autre chapitre',
+    dailyGoal: (done: number, target: number) =>
+      done >= target
+        ? `Objectif du jour atteint : ${done} ${plural(done, 'session', 'sessions')} sur ${target}`
+        : `Objectif du jour : ${done} ${plural(done, 'session', 'sessions')} sur ${target}`,
   },
   stats: {
     title: 'Tes stats',

@@ -16,7 +16,7 @@ type Props = { global: GlobalMastery; period: ProgressPeriod };
 export function MasteryHeroCard({ global, period }: Props) {
   const t = fr.parent.progress;
   return (
-    <HeroCard icon="cible" contentStyle={styles.content}>
+    <HeroCard contentStyle={styles.content}>
       <ProgressRing
         value={global.mastery / 100}
         label={`${global.mastery} %`}

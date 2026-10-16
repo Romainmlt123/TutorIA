@@ -5,7 +5,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { Pill } from '@/components/Pill';
 import { Text } from '@/components/Text';
 import { Watermark } from '@/components/Watermark';
-import { extras, theme, type Gradient } from '@/theme';
+import { extras, liftShadow, theme, type Gradient, type LiftTone } from '@/theme';
 
 type Props = {
   icon: IconName;
@@ -14,10 +14,13 @@ type Props = {
   caption: string;
   /** Dégradé (temps, sessions, flashcards) ou orange uni (série record). */
   background: Gradient | { solid: string };
+  /** Première rangée, posée à cheval sur le bandeau : ombre portée de la couleur de la carte (v2.17). */
+  lifted?: LiftTone;
 };
 
 /** Chiffre clé en carte colorée, icône en filigrane. */
-export function KpiCard({ icon, label, value, caption, background }: Props) {
+export function KpiCard({ icon, label, value, caption, background, lifted }: Props) {
+  const shadow = lifted ? liftShadow(lifted) : theme.shadow.md;
   const solid = 'solid' in background;
   const content = (
     <>
@@ -49,7 +52,7 @@ export function KpiCard({ icon, label, value, caption, background }: Props) {
   const a11y = `${label} : ${value}, ${caption}`;
   if (solid) {
     return (
-      <View style={styles.shadow}>
+      <View style={[styles.shadow, { boxShadow: shadow }]}>
         <View
           accessible
           accessibilityLabel={a11y}
@@ -63,7 +66,7 @@ export function KpiCard({ icon, label, value, caption, background }: Props) {
     <View accessible accessibilityLabel={a11y} style={styles.fill}>
       <GradientSurface
         gradient={background}
-        shadow={theme.shadow.md}
+        shadow={shadow}
         style={styles.fill}
         contentStyle={styles.content}>
         {content}

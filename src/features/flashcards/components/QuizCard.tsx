@@ -141,6 +141,24 @@ export function QuizCard({ card, subjectId, answered, optionState, feedback, onP
           <View
             accessibilityLiveRegion="polite"
             style={[styles.feedback, { backgroundColor: feedbackColors.bg }]}>
+            {feedback.tone !== 'idle' ? (
+              <View
+                aria-hidden
+                style={[
+                  styles.feedbackBadge,
+                  {
+                    backgroundColor:
+                      feedback.tone === 'right' ? theme.colors.success : theme.colors.warning,
+                  },
+                ]}>
+                <Icon
+                  name={feedback.tone === 'right' ? 'coche' : 'retour'}
+                  size={16}
+                  color={theme.colors.textOnColor}
+                  strokeWidth={2.5}
+                />
+              </View>
+            ) : null}
             <Text variant="label" color={feedbackColors.text} style={styles.feedbackText}>
               {feedback.text}
             </Text>
@@ -187,10 +205,20 @@ const styles = StyleSheet.create({
   feedback: {
     alignSelf: 'stretch',
     minHeight: theme.space[12],
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.space[3],
     paddingVertical: theme.space[3],
     paddingHorizontal: theme.space[4],
     borderRadius: theme.radius['2xl'],
+  },
+  // Pastille du retour (v2.12) : coche sur vert, flèche sur orange, jamais de rouge.
+  feedbackBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: theme.radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   feedbackText: { flexShrink: 1 },
 });

@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import { Button } from '@/components/Button';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { DangerButton } from '@/components/DangerButton';
 import { FormMessage } from '@/components/form/FormMessage';
@@ -58,7 +59,7 @@ export function ParentSettingsScreen() {
   return (
     <ScreenContainer
       contentStyle={styles.content}
-      band={<ParentBand title={t.title} intro={t.subtitle} />}>
+      band={<ParentBand title={t.title} intro={t.subtitle} pills="parentsLow" />}>
       {child ? <ChildProfileCard name={child.firstName} line={t.childLine(child.grade)} /> : null}
       {child && s ? (
         <>
@@ -170,18 +171,21 @@ export function ParentSettingsScreen() {
           divider
           onPress={() => router.push('/parents/enfant')}
         />
-        <SettingRow
+      </SettingsGroup>
+      <FormMessage message={deleteError} />
+      {/* Comme sur le profil de l'élève (v2.10) : deux boutons pleine largeur sous « Compte ». */}
+      <View style={styles.actions}>
+        <Button
           label={t.signOut}
-          icon="sortie"
-          tile="night"
-          divider
+          variant="soft"
+          tone="parent"
+          leadingIcon="sortie"
           onPress={() => {
             authService.signOut().catch((error: unknown) => logError('auth.signOut', error));
           }}
         />
-      </SettingsGroup>
-      <FormMessage message={deleteError} />
-      <DangerButton label={t.deleteAccount} onPress={() => setConfirmDelete(true)} />
+        <DangerButton label={t.deleteAccount} onPress={() => setConfirmDelete(true)} />
+      </View>
       <ConfirmDialog
         visible={confirmDelete}
         title={t.deleteTitle}
@@ -198,4 +202,5 @@ export function ParentSettingsScreen() {
 
 const styles = StyleSheet.create({
   content: { gap: theme.space[4] },
+  actions: { gap: theme.space[3] },
 });

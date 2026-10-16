@@ -4,7 +4,7 @@ import { Icon } from '@/components/Icon';
 import { Text } from '@/components/Text';
 import { Watermark } from '@/components/Watermark';
 import { fr } from '@/i18n/fr';
-import { extras, theme } from '@/theme';
+import { extras, liftShadow, theme } from '@/theme';
 
 /** Carte Série : orange uni (jamais de dégradé), texte blanc, flamme en filigrane. */
 export function StreakCard({ days }: { days: number }) {
@@ -29,7 +29,8 @@ export function StreakCard({ days }: { days: number }) {
 }
 
 const styles = StyleSheet.create({
-  shadow: { flex: 1, borderRadius: theme.radius['3xl'], boxShadow: theme.shadow.md },
+  // Posée à cheval sur le bandeau : ombre orange (v2.17).
+  shadow: { flex: 1, borderRadius: theme.radius['3xl'], boxShadow: liftShadow('orange') },
   card: {
     flex: 1,
     gap: theme.space[3],

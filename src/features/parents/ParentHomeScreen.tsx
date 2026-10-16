@@ -139,6 +139,7 @@ export function ParentHomeScreen() {
       contentStyle={styles.content}
       band={
         <ParentBand
+          pills="parentsHome"
           title={parent?.firstName ? t.greeting(parent.firstName) : t.greetingNoName}
           intro={
             child

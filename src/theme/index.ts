@@ -78,6 +78,7 @@ export {
   type FontWeightName,
 } from './fonts';
 export { angleToPoints } from './gradients';
+export { liftShadow, type LiftTone } from './lift';
 export * as extras from './extras';
 export { subjectTheme, type SubjectTheme } from './subjects';
 export { type SpaceTheme, type SpaceTone } from './spaces';

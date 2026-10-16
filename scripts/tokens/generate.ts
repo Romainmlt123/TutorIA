@@ -67,6 +67,10 @@ export type AppTokens = {
     text: string;
     controlVeil: string;
     segmentActive: { background: string; textOnViolet: string; textOnEleve: string };
+    lift: {
+      contact: { eleve: string; parents: string };
+      tones: Record<string, [string, number]>;
+    };
   };
   sectionTitle: { fontSize: string; lineHeight: string; fontWeight: number };
   goal: { gradient: string[]; text: string };
@@ -371,6 +375,14 @@ export function buildTokens(design: DesignTokens, app: AppTokens) {
         background: resolve(app.screenBand.segmentActive.background),
         textOnViolet: resolve(app.screenBand.segmentActive.textOnViolet),
         textOnStudent: resolve(app.screenBand.segmentActive.textOnEleve),
+      },
+      // Ombre portée de la rangée posée sur le bandeau (v2.17) : composantes RVB et opacité.
+      lift: {
+        contact: {
+          student: app.screenBand.lift.contact.eleve,
+          parents: app.screenBand.lift.contact.parents,
+        },
+        tones: app.screenBand.lift.tones,
       },
     },
     sectionTitle: {

@@ -5,7 +5,7 @@ import { ProgressBar } from '@/components/ProgressBar';
 import { Text } from '@/components/Text';
 import { Watermark } from '@/components/Watermark';
 import { fr } from '@/i18n/fr';
-import { extras, theme } from '@/theme';
+import { extras, liftShadow, theme } from '@/theme';
 
 type Props = { level: number; xp: number; xpForNextLevel: number };
 
@@ -43,7 +43,8 @@ export function LevelCard({ level, xp, xpForNextLevel }: Props) {
 }
 
 const styles = StyleSheet.create({
-  shadow: { flex: 1, borderRadius: theme.radius['3xl'], boxShadow: theme.shadow.md },
+  // Posée à cheval sur le bandeau : ombre ardoise (v2.17).
+  shadow: { flex: 1, borderRadius: theme.radius['3xl'], boxShadow: liftShadow('slate') },
   card: {
     flex: 1,
     gap: theme.space[3],
