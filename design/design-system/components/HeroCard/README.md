@@ -19,6 +19,7 @@ Haut du tableau de bord Parents (résumé de la semaine). Une par écran.
 | `badge` | `string` | Pastille verte de progrès. |
 | `label` | `string` | Libellé accessible. |
 | `children` | `node` | Message. |
+| `lifted` | `boolean \| 'parents'` | Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). `'parents'` sur le bandeau violet. |
 
 ## Exemple
 

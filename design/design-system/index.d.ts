@@ -74,7 +74,7 @@ export declare function Quote(props: QuoteProps): React.ReactElement;
 /** Bouton d'action, 48px de haut, arrondi radius-2xl, en six variantes. */
 export interface ButtonProps {
   /** Style (primary par défaut). */
-  variant?: 'primary' | 'vivid' | 'soft' | 'white' | 'ghost' | 'danger';
+  variant?: 'primary' | 'vivid' | 'soft' | 'white' | 'ghost' | 'danger' | 'vividSoft' | 'dangerSolid';
   /** sm : 40px, texte 14 gras. */
   size?: 'md' | 'sm';
   /** Ombre bleue shadow-brand (un seul par écran). */
@@ -173,6 +173,12 @@ export interface ModeToggleProps {
   mode?: 'ecrit' | 'vocal';
   /** Changement de mode. */
   onChange?: (mode: 'ecrit' | 'vocal') => void;
+  /** Vocal coupé dans les réglages d'un parent (v2.15) : « Vocal » grisé avec un cadenas, l'explication s'affiche au toucher. */
+  voiceLocked?: boolean;
+  /** Texte de l'explication. */
+  lockedHint?: string;
+  /** Affiche l'explication d'emblée (aperçu). */
+  showHint?: boolean;
 }
 export declare function ModeToggle(props: ModeToggleProps): React.ReactElement;
 
@@ -187,6 +193,58 @@ export interface ChildSwitcherProps {
 }
 export declare function ChildSwitcher(props: ChildSwitcherProps): React.ReactElement;
 
+/** Un enfant dans ChildPickerSheet. */
+export interface PickerChild {
+  name: string;
+  /** Classe (4e…) : « Classe de 4e ». */
+  grade?: string;
+  /** Temps de la semaine (« 4 h 40 ») : « · 4 h 40 cette semaine ». */
+  week?: string;
+  /** Ligne complète à la place de la classe et du temps. */
+  meta?: string;
+}
+/** Choisir l'enfant affiché (F3, v2.18) : feuille du bas ouverte par ChildSwitcher. L'enfant affiché en violet, « Ajouter un enfant » en pointillés. */
+export interface ChildPickerSheetProps {
+  childList: PickerChild[];
+  /** Prénom de l'enfant affiché (le premier par défaut). */
+  selected?: string;
+  onSelect?: (child: PickerChild) => void;
+  onClose?: () => void;
+  /** « Vos enfants ». */
+  title?: string;
+  addLabel?: string;
+  /** Sous « Ajouter un enfant » (« Jusqu'à 4 profils avec la formule Famille »). */
+  addHint?: string;
+  onAdd?: () => void;
+  addHref?: string;
+  /** false : la feuille seule, sans le voile. */
+  veil?: boolean;
+  style?: React.CSSProperties;
+}
+export declare function ChildPickerSheet(props: ChildPickerSheetProps): React.ReactElement;
+
+/** Demande de liaison d'un enfant, en tête de P1 (F4, v2.18) : « Refuser » en rouge doux, « Accepter » en violet. */
+export interface LinkRequestCardProps {
+  /** Prénom de l'enfant. */
+  name: string;
+  /** « Tom souhaite relier son compte au vôtre ». */
+  title?: string;
+  /** « En acceptant, vous validez son compte et vous suivez ses progrès. » */
+  body?: string;
+  /** Message d'erreur sous le texte. */
+  error?: string;
+  /** Pendant l'envoi : les deux boutons estompés. */
+  pending?: boolean;
+  acceptLabel?: string;
+  declineLabel?: string;
+  onAccept?: () => void;
+  onDecline?: () => void;
+  acceptHref?: string;
+  declineHref?: string;
+  style?: React.CSSProperties;
+}
+export declare function LinkRequestCard(props: LinkRequestCardProps): React.ReactElement;
+
 /** Carte de matière pleine couleur (dégradé de la matière, texte blanc, picto en filigrane). */
 export interface SubjectCardProps {
   /** Matière. */
@@ -195,6 +253,8 @@ export interface SubjectCardProps {
   progress?: number;
   /** Ligne secondaire (ex. « 24 cartes »). */
   count?: string;
+  /** Matière pas encore commencée (v2.19) : « À découvrir » à la place du pourcentage et de la barre. */
+  fresh?: boolean;
   /** Anneau de sélection + coche. */
   selected?: boolean;
   /** Rend la carte cliquable. */
@@ -204,10 +264,14 @@ export declare function SubjectCard(props: SubjectCardProps): React.ReactElement
 
 /** Série de jours d'affilée, en orange plein (orange-500) avec texte blanc, sur une seule ligne. */
 export interface StreakCardProps {
-  /** Nombre de jours. */
+  /** Nombre de jours. 0 : « Ta série », « commence aujourd’hui » (premier jour, v2.19). */
   days?: number;
   /** Relance (ex. « Plus que 4 jours pour ton record »). */
   caption?: string;
+  /** Texte à la place du nombre de jours. */
+  label?: string;
+  /** Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). 'parents' sur le bandeau violet. */
+  lifted?: boolean | 'parents';
 }
 export declare function StreakCard(props: StreakCardProps): React.ReactElement;
 
@@ -219,6 +283,8 @@ export interface LevelCardProps {
   xp?: number;
   /** XP du prochain niveau. */
   xpMax?: number;
+  /** Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). 'parents' sur le bandeau violet. */
+  lifted?: boolean | 'parents';
 }
 export declare function LevelCard(props: LevelCardProps): React.ReactElement;
 
@@ -232,8 +298,16 @@ export interface ResumeCardProps {
   subtitle?: string;
   /** Avancement en %. */
   progress?: number;
-  /** « Reprendre » par défaut. */
+  /** « Reprendre » par défaut (« Commencer » avec `first`). */
   actionLabel?: string;
+  /** Premier jour (v2.19) : surtitre « Ta première séance », la durée et la raison en pastilles, pas de progression. */
+  first?: boolean;
+  /** Surtitre avec `first`. */
+  kicker?: string;
+  /** Durée annoncée avec `first` (10 min par défaut). */
+  minutes?: number;
+  /** Pastilles avec `first` (icône et texte). */
+  chips?: { icon: string; label: string }[];
   /** Action. */
   onResume?: () => void;
   /** Lien. */
@@ -251,20 +325,22 @@ export interface GoalCardProps {
   title?: string;
   /** Détail. */
   detail?: string;
-  /** Pastille à droite (ex. « +20 XP »). */
-  badge?: string;
+  /** Pastille blanche sous le détail ; par défaut « Une séance pour lancer ta journée » (rien encore fait), « Plus qu’une ! », « Plus que 2 ! » ou « Objectif atteint ! ». `null` la masque. */
+  badge?: string | null;
 }
 export declare function GoalCard(props: GoalCardProps): React.ReactElement;
 
-/** Encadré du sujet en cours en haut du tuteur : pastille matière, notion, badge d'état. */
+/** Carte « Sujet de la discussion » en haut du tuteur, dans le dégradé de sa matière (v2.12) : icône en filigrane, textes blancs, badge blanc. */
 export interface TopicCardProps {
-  /** Matière. */
-  subject?: SubjectId;
-  /** Notion travaillée. */
+  /** Matière ; absente ou « toutes » : discussion libre, en bleu de l'élève. */
+  subject?: SubjectId | 'toutes';
+  /** Remplace le nom de la matière (surtitre). */
+  subjectName?: string;
+  /** Chapitre, ou titre de la discussion libre. */
   title?: string;
-  /** Texte du badge (ex. « En cours », « En direct »). */
+  /** « Leçon 3/5 » à l'écrit, chrono de l'appel au vocal ; rien pour une discussion libre. */
   badge?: string;
-  /** Point clignotant. */
+  /** Point rouge clignotant dans le badge (appel en cours). */
   live?: boolean;
 }
 export declare function TopicCard(props: TopicCardProps): React.ReactElement;
@@ -275,10 +351,63 @@ export interface ChatBubbleProps {
   from?: 'tutor' | 'student';
   /** Affiche l'avatar du tuteur (par défaut pour tutor). */
   avatar?: boolean;
+  /** Photo d'un exercice envoyée par l'élève (adresse ou nœud), au-dessus du texte (v2.12). */
+  image?: string | React.ReactNode;
+  imageAlt?: string;
   /** Contenu. */
   children?: React.ReactNode;
 }
 export declare function ChatBubble(props: ChatBubbleProps): React.ReactElement;
+
+/** Idées de départ d'une discussion libre encore vide : pastilles dégradées (violet, orange, vert, cyan) qui défilent sur le côté, au-dessus de la saisie (v2.12). */
+export interface ChatStartersProps {
+  /** Les quatre idées par défaut : notion, exercice, révision, graphique. */
+  items?: Array<{ id?: string; label: string; message?: string; icon: string; colors: [string, string] }>;
+  /** Un toucher envoie la demande au tuteur. */
+  onPick?: (message: string, id?: string) => void;
+  /** Marge de côté (20). */
+  inset?: number;
+  label?: string;
+}
+export declare function ChatStarters(props: ChatStartersProps): React.ReactElement;
+
+/** Pastille « Voir le graphique » / « Voir le tableau » sous une réponse du tuteur qui avait un visuel (v2.12). */
+export interface VisualChipProps {
+  kind?: VisualKind;
+  label?: string;
+  /** Alignée sur les bulles du tuteur (décalée de 40 px). */
+  inChat?: boolean;
+  onClick?: () => void;
+}
+export declare function VisualChip(props: VisualChipProps): React.ReactElement;
+
+/** Volet « Tes discussions » (☰ du tuteur) : bandeau bleu, « Nouvelle discussion », discussions rangées par jour (v2.12). */
+export interface ConversationDrawerProps {
+  /** « Aujourd'hui », « Hier », « 7 derniers jours »… */
+  groups?: Array<{ label: string; items: Array<{ id?: string; subject?: SubjectId | 'toutes'; title: string; active?: boolean }> }>;
+  onOpen?: (id?: string) => void;
+  onNew?: () => void;
+  onClose?: () => void;
+  title?: string;
+  newLabel?: string;
+  /** Aide en bas ; false pour la masquer. */
+  hint?: string | false;
+  /** 335 par défaut. */
+  width?: number;
+  height?: number | string;
+  /** Marge du haut du bandeau (56, sous la barre d'état). */
+  topInset?: number;
+}
+export declare function ConversationDrawer(props: ConversationDrawerProps): React.ReactElement;
+
+/** Choix de la photo d'un exercice, posé en bas de l'écran : appareil photo, galerie, annuler (v2.12). */
+export interface PhotoSourceDialogProps {
+  onChoose?: (source: 'camera' | 'library') => void;
+  onCancel?: () => void;
+  title?: string;
+  hint?: string;
+}
+export declare function PhotoSourceDialog(props: PhotoSourceDialogProps): React.ReactElement;
 
 /** Encadré « conseil » en violet accent, avec une ampoule. */
 export interface TipCardProps {
@@ -301,10 +430,20 @@ export interface ChatInputProps {
   onChange?: (v: string) => void;
   /** Envoi. */
   onSend?: (v: string) => void;
-  /** « Écris ta réponse… » par défaut. */
+  /** « Écris ta réponse… » par défaut ; « Pose ta question… » dans une discussion libre neuve. */
   placeholder?: string;
   /** Libellé accessible. */
   label?: string;
+  /** Bouton photo à gauche (v2.12) : absent si un parent a coupé la caméra, hors connexion et pendant une évaluation. */
+  onCamera?: () => void;
+  /** Ou un lien. */
+  cameraHref?: string;
+  /** Photo prête à partir : vignette, aide « Cadre seulement l'exercice, sans ton nom. » et croix pour la retirer. */
+  attachment?: { src?: string; alt?: string; thumb?: React.ReactNode; hint?: string; onRemove?: () => void } | null;
+  /** Pendant la réponse du tuteur. */
+  disabled?: boolean;
+  /** Discussion d'un niveau d'Explorer (X4a) : photo en bouton blanc en relief, champ cerné de bleu nuit, envoi en bouton bleu en relief (v2.13). */
+  game?: boolean;
 }
 export declare function ChatInput(props: ChatInputProps): React.ReactElement;
 
@@ -440,6 +579,8 @@ export interface WhiteboardProps {
   circled?: boolean;
   /** Texte accessible. */
   description?: string;
+  /** Craie sur ardoise (SlateBoard) : texte crème, opérations bleu craie, résultat corail (v2.13). */
+  chalk?: boolean;
 }
 export declare function Whiteboard(props: WhiteboardProps): React.ReactElement;
 
@@ -474,13 +615,15 @@ export declare function VoiceAvatar(props: VoiceAvatarProps): React.ReactElement
 /** Pastille d'état de l'appel : verte « Je t'explique… », rouge « Je t'écoute… », neutre sinon. */
 export interface VoiceStatusProps {
   /** État de l'appel. */
-  state?: 'speaking' | 'listening' | 'muted' | 'connecting' | 'ended' | 'error';
+  state?: 'speaking' | 'listening' | 'muted' | 'connecting' | 'ended' | 'error' | 'limit';
   /** Couleur de « Je t'écoute… » (rouge par défaut). */
   listenColor?: 'red' | 'orange';
   /** Hauteur 40 ou 32 px. */
   size?: 'md' | 'sm';
   /** Remplace le libellé. */
   label?: string;
+  /** HUD d'Explorer (X4b) : cernée de bleu nuit, ombre dure, bleu nuit pour les états neutres (v2.13). */
+  hud?: boolean;
 }
 export declare function VoiceStatus(props: VoiceStatusProps): React.ReactElement;
 
@@ -550,6 +693,8 @@ export interface DailyReviewCardProps {
   onStart?: () => void;
   /** Lien. */
   href?: string;
+  /** Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). 'parents' sur le bandeau violet. */
+  lifted?: boolean | 'parents';
 }
 export declare function DailyReviewCard(props: DailyReviewCardProps): React.ReactElement;
 
@@ -630,6 +775,38 @@ export interface TallyChipsProps {
 }
 export declare function TallyChips(props: TallyChipsProps): React.ReactElement;
 
+/** Bouton sous la carte d'une session : gris « Choisis une réponse » (pas estompé) avant la réponse, puis violet « Carte suivante » ou « Voir mon bilan » (v2.12). */
+export interface NextCardButtonProps {
+  answered?: boolean;
+  /** Dernière carte : « Voir mon bilan ». */
+  last?: boolean;
+  onClick?: () => void;
+  label?: string;
+  lastLabel?: string;
+  waitLabel?: string;
+}
+export declare function NextCardButton(props: NextCardButtonProps): React.ReactElement;
+
+/** Bilan d'une session de flashcards dans le dégradé de la marque (violet → bleu) : compteurs, XP, objectif du jour, « Recommencer » et « Choisir un autre chapitre » (v2.12). */
+export interface SessionCompleteProps {
+  known?: number;
+  toReview?: number;
+  /** XP gagnés (sans pastille si 0). */
+  xp?: number;
+  /** Objectif du jour : sessions faites sur le total. */
+  goal?: { done: number; total: number };
+  onRestart?: () => void;
+  onOtherChapter?: () => void;
+  otherHref?: string;
+  title?: string;
+  summary?: string;
+  restartLabel?: string;
+  otherLabel?: string;
+  /** 540 par défaut. */
+  minHeight?: number;
+}
+export declare function SessionComplete(props: SessionCompleteProps): React.ReactElement;
+
 /** Chiffre clé sur dégradé coloré avec picto en filigrane et évolution. */
 export interface KpiCardProps {
   /** Couleur. */
@@ -644,6 +821,10 @@ export interface KpiCardProps {
   delta?: string;
   /** Version réduite. */
   compact?: boolean;
+  /** Icône, valeur et libellé centrés, sans évolution ni filigrane (chiffres clés de P1). */
+  centered?: boolean;
+  /** Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). 'parents' sur le bandeau violet. */
+  lifted?: boolean | 'parents';
 }
 export declare function KpiCard(props: KpiCardProps): React.ReactElement;
 
@@ -726,6 +907,8 @@ export interface HeroCardProps {
   label?: string;
   /** Message. */
   children?: React.ReactNode;
+  /** Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). 'parents' sur le bandeau violet. */
+  lifted?: boolean | 'parents';
 }
 export declare function HeroCard(props: HeroCardProps): React.ReactElement;
 
@@ -748,8 +931,12 @@ export declare function AlertCard(props: AlertCardProps): React.ReactElement;
 export interface AdviceCardProps {
   /** « Comment l'encourager » par défaut. */
   title?: string;
-  /** Texte. */
+  /** Conseil. */
   children?: React.ReactNode;
+  /** Questions à poser à l'enfant, rédigées à l'avance (deux en général). */
+  questions?: string[];
+  /** « Questions à lui poser » par défaut. */
+  questionsTitle?: string;
 }
 export declare function AdviceCard(props: AdviceCardProps): React.ReactElement;
 
@@ -769,6 +956,8 @@ export interface SubjectProgressCardProps {
   defaultOpen?: boolean;
   /** Déplier. */
   onToggle?: () => void;
+  /** Bloc teinté de la matière, sans ombre, dans la carte « Par matière » (par défaut) ; `false` pour une carte blanche autonome. */
+  tinted?: boolean;
 }
 export declare function SubjectProgressCard(props: SubjectProgressCardProps): React.ReactElement;
 
@@ -851,6 +1040,8 @@ export interface ProfileSummaryProps {
   xpMax?: number;
   /** Libellé accessible de la carte. */
   label?: string;
+  /** Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). 'parents' sur le bandeau violet. */
+  lifted?: boolean | 'parents';
 }
 export declare function ProfileSummary(props: ProfileSummaryProps): React.ReactElement;
 export interface TrophyBadgeProps {
@@ -877,6 +1068,109 @@ export interface TrophyShelfProps {
   total?: number;
 }
 export declare function TrophyShelf(props: TrophyShelfProps): React.ReactElement;
+
+/** Texte de jeu (HUD d'Explorer) : Lilita One, blanc cerné de bleu nuit #16244F, ombre portée. */
+export interface GameTextProps {
+  /** Taille en px (17 par défaut). */
+  size?: number;
+  /** Épaisseur du contour (taille / 9, 2 au moins) ; 0 sans contour. */
+  stroke?: number;
+  /** Décalage de l'ombre portée (taille / 8) ; 0 sans ombre. */
+  drop?: number;
+  /** Couleur du texte (blanc). */
+  color?: string;
+  align?: 'left' | 'center' | 'right';
+  /** Balise (span par défaut). */
+  as?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}
+export declare function GameText(props: GameTextProps): React.ReactElement;
+
+/** Bouton de jeu en relief (GameButton du code) : face brillante en dégradé cernée de bleu nuit, rebord de 5 px plus sombre ; la face s'enfonce à l'appui (v2.13). */
+export interface GameButtonProps {
+  /** jaune (retour, actif), vert (valider), bleu, rouge (raccrocher), blanc (photo). */
+  tone?: 'yellow' | 'green' | 'blue' | 'red' | 'white';
+  /** Hauteur de la face (56). */
+  size?: number;
+  icon?: string;
+  label?: string;
+  /** Rond (par défaut) ; false : rectangle à coins de 18 px. */
+  round?: boolean;
+  width?: number | string;
+  pressed?: boolean;
+  expanded?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+  href?: string;
+  ariaLabel?: string;
+  iconStyle?: React.CSSProperties;
+}
+export declare function GameButton(props: GameButtonProps): React.ReactElement;
+
+/** Bouton de bois du côté jeu : planche texturée, cadre sombre, biseau clair, rebord dessous ; s'enfonce à l'appui. */
+export interface WoodButtonProps {
+  /** Libellé en texte de jeu. */
+  label: string;
+  /** Icône après le libellé. */
+  icon?: string;
+  /** Hauteur de la planche (48 par défaut ; le rebord ajoute 5 px). */
+  size?: number;
+  /** Largeur (100 % par défaut). */
+  width?: number | string;
+  /** Pastille orange cernée de bleu nuit en haut à droite (nouveautés). */
+  badge?: number | string | null;
+  /** Libellé accessible complet. */
+  ariaLabel?: string;
+  onClick?: () => void;
+}
+export declare function WoodButton(props: WoodButtonProps): React.ReactElement;
+
+/** Panneau de bois du côté jeu : planches, cadre, clous aux quatre coins, ruban bleu sur le bord haut. */
+export interface WoodFrameProps {
+  /** Texte du ruban (« Mes trophées », « Ta quête ») ; sans ruban s'il est absent. */
+  tab?: string;
+  /** Libellé accessible. */
+  ariaLabel?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}
+export declare function WoodFrame(props: WoodFrameProps): React.ReactElement;
+
+/** Étiquette de parchemin posée sur le bois (Parchment du code) : légende 12/16 en gras, encre brune, papier crème cerné de caramel (v2.14). */
+export interface ParchmentProps {
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}
+export declare function Parchment(props: ParchmentProps): React.ReactElement;
+
+/** Question posée dans un écran de jeu, sur un panneau de bois (WoodDialog du code) : autre choix en jaune, action conseillée en vert ; toucher en dehors vaut l'action conseillée (v2.14). */
+export interface WoodDialogProps {
+  /** « Quitter le niveau ? » */
+  title: string;
+  /** Texte du parchemin. */
+  body?: string;
+  /** Action conseillée, bouton vert (« Continuer »). */
+  primaryLabel?: string;
+  /** Autre choix, bouton jaune (« Quitter »). */
+  secondaryLabel?: string;
+  onPrimary?: () => void;
+  onSecondary?: () => void;
+  primaryHref?: string;
+  secondaryHref?: string;
+  /** false : le panneau seul, sans le voile qui couvre l'écran. */
+  veil?: boolean;
+  /** Ruban sur le bord haut (« Pause du soir »), v2.15. */
+  tab?: string;
+  /** Second parchemin. */
+  note?: string;
+  /** Une seule action (v2.15). */
+  single?: boolean;
+  /** Ton du bouton principal (vert par défaut). */
+  primaryTone?: 'yellow' | 'green' | 'blue';
+  style?: React.CSSProperties;
+}
+export declare function WoodDialog(props: WoodDialogProps): React.ReactElement;
 
 /** Grande carte de choix du profil (élève en bleu, parent en violet) sur l'écran de bienvenue. */
 export interface ProfileChoiceCardProps {
@@ -969,6 +1263,8 @@ export interface PasswordRulesProps {
   rules?: { label: string; ok: boolean }[];
   /** Sur une ligne. */
   inline?: boolean;
+  /** Pastilles vertes ou grises sous le champ (écrans de compte, v2.11). */
+  pills?: boolean;
 }
 export declare function PasswordRules(props: PasswordRulesProps): React.ReactElement;
 
@@ -1028,8 +1324,266 @@ export interface StepListProps {
   tone?: 'eleve' | 'parents';
   /** Étapes. */
   steps?: string[];
+  /** Sans carte, posée dans la feuille blanche (numéros de 28 px, texte 15). */
+  plain?: boolean;
 }
 export declare function StepList(props: StepListProps): React.ReactElement;
+
+/** Six cases pour un code (e-mail, mot de passe oublié, code parent) : 3 + 3, curseur qui clignote dans la case en cours. */
+export interface CodeInputProps {
+  /** Libellé (« Code reçu », « Code parent »). */
+  label?: string;
+  /** Chiffres saisis (contrôlé). */
+  value?: string;
+  defaultValue?: string;
+  /** Saisie (chiffres seulement). */
+  onChange?: (value: string) => void;
+  /** Nombre de cases (6). */
+  length?: number;
+  /** Force l'état « en cours de saisie » (aperçus). */
+  focused?: boolean;
+  /** Bleu élève ou violet parents. */
+  tone?: 'eleve' | 'parents';
+  /** Aide sous les cases (« Il est valable 24 h… »). */
+  hint?: string;
+  /** Icône de l'aide (clock). */
+  hintIcon?: string;
+  /** one-time-code par défaut. */
+  autoComplete?: string;
+  ariaLabel?: string;
+}
+export declare function CodeInput(props: CodeInputProps): React.ReactElement;
+
+/** Pastille sous le champ de confirmation : verte quand les deux mots de passe sont identiques, grise sinon. */
+export interface PasswordMatchProps {
+  /** Mot de passe et confirmation, comparés. */
+  password?: string;
+  confirm?: string;
+  /** Ou l'état déjà calculé. */
+  match?: boolean;
+  /** « Les deux sont identiques ». */
+  okLabel?: string;
+  /** « Pas encore identiques ». */
+  waitLabel?: string;
+}
+export declare function PasswordMatch(props: PasswordMatchProps): React.ReactElement;
+
+/** Ligne remplie avec interrupteur (« J'ai moins de 15 ans »), dans la feuille blanche. */
+export interface SwitchFieldProps {
+  label: string;
+  hint?: string;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+  tone?: 'eleve' | 'parents';
+}
+export declare function SwitchField(props: SwitchFieldProps): React.ReactElement;
+
+/** Carte d'aide douce : pastille blanche avec une icône, titre et phrase (« Où trouver ce code ? »). */
+export interface HelpCardProps {
+  icon?: string;
+  title?: string;
+  /** Bleu élève, violet pour tout ce qui concerne un parent. */
+  tone?: 'eleve' | 'parents';
+  children?: React.ReactNode;
+}
+export declare function HelpCard(props: HelpCardProps): React.ReactElement;
+
+/** Bandeau vert de confirmation dans un formulaire, avec une action en lien (« Code 482 913 gardé… », « Retirer le code »). */
+export interface InlineNoticeProps {
+  icon?: string;
+  actionLabel?: string;
+  onAction?: () => void;
+  children?: React.ReactNode;
+}
+export declare function InlineNotice(props: InlineNoticeProps): React.ReactElement;
+
+/** Carte blanche du tuteur en attente (moins de 15 ans) : demande envoyée, « Relier un parent », délai avant suppression. */
+export interface ConsentPendingCardProps {
+  /** Adresse du parent à qui la demande est partie. */
+  parentEmail?: string;
+  /** Jours avant suppression sans validation (28). */
+  days?: number;
+  title?: string;
+  linkLabel?: string;
+  onLink?: () => void;
+  linkHref?: string;
+}
+/** Pause décidée avec les parents (StudyPauseScreen, R1 à R3, v2.15) : fond de marque, logo du tuteur avec un badge, titre et texte sur le bleu, bouton blanc ; pour le temps du jour, une carte verte qui félicite et « Voir mes progrès ». */
+export interface StudyPauseScreenProps {
+  /** Soir (après 21 h), hors de la plage horaire, temps du jour atteint. */
+  reason?: 'evening' | 'window' | 'daily';
+  /** Plage horaire (« 17 h », « 21 h »). */
+  from?: string;
+  until?: string;
+  /** Temps du jour (« 1 h 30 »). */
+  time?: string;
+  /** Série en cours, en jours. */
+  streak?: number;
+  onHome?: () => void;
+  homeHref?: string;
+  onProgress?: () => void;
+  progressHref?: string;
+  /** Barre de navigation posée en bas. */
+  footer?: React.ReactNode;
+  height?: number | string;
+  style?: React.CSSProperties;
+}
+/** Message hors ligne du tuteur (H1, v2.19.1) : jaune, dans la conversation sous la question de l'élève, avec un bouton rond pour réessayer. */
+export interface OfflineNoticeProps {
+  /** « Pas de connexion ». */
+  title?: string;
+  /** « Vérifie ton Wi-Fi ou tes données mobiles. » */
+  body?: string;
+  onRetry?: () => void;
+  retryHref?: string;
+  retryLabel?: string;
+  style?: React.CSSProperties;
+}
+export declare function OfflineNotice(props: OfflineNoticeProps): React.ReactElement;
+
+/** Pas de réseau au premier lancement (H2, v2.19) : écran de marque, élève ou parent, texte neutre. */
+export interface OfflineScreenProps {
+  title?: string;
+  body?: string;
+  retryLabel?: string;
+  onRetry?: () => void;
+  retryHref?: string;
+  /** Aide sous le bouton ; `null` la masque. */
+  hint?: string | null;
+  /** « Changer de compte » ; `null` le masque. */
+  linkLabel?: string | null;
+  onLink?: () => void;
+  linkHref?: string;
+  height?: number;
+  style?: React.CSSProperties;
+}
+export declare function OfflineScreen(props: OfflineScreenProps): React.ReactElement;
+
+/** « Bientôt disponible » (B1, v2.19) : feuille du bas sur l'écran d'où l'on vient, avec ce qui arrive. */
+export interface ComingSoonSheetProps {
+  title: string;
+  /** Icône de la tuile (sliders par défaut). */
+  icon?: string;
+  /** « Bientôt ». */
+  badge?: string;
+  body?: string;
+  /** Ce qui arrive, une ligne par élément. */
+  items?: string[];
+  /** « Continuer » par défaut. */
+  actionLabel?: string;
+  onAction?: () => void;
+  actionHref?: string;
+  onClose?: () => void;
+  /** false : la feuille seule. */
+  veil?: boolean;
+  style?: React.CSSProperties;
+}
+export declare function ComingSoonSheet(props: ComingSoonSheetProps): React.ReactElement;
+
+/** Espace Parents sans enfant relié (J3, v2.19) : trois étapes et « Ajouter un enfant ». */
+export interface AddChildCardProps {
+  title?: string;
+  steps?: string[];
+  actionLabel?: string;
+  onAdd?: () => void;
+  href?: string;
+  /** false : `shadow-md` au lieu de l'ombre portée violette. */
+  lifted?: boolean;
+  style?: React.CSSProperties;
+}
+export declare function AddChildCard(props: AddChildCardProps): React.ReactElement;
+
+/** Courte liste d'icônes et de phrases, avec une ligne de confiance en bas (J3, v2.19). */
+export interface FeatureListProps {
+  title?: string;
+  items: { icon: string; text: string }[];
+  tone?: 'eleve' | 'parents';
+  note?: string;
+  noteIcon?: string;
+  style?: React.CSSProperties;
+}
+export declare function FeatureList(props: FeatureListProps): React.ReactElement;
+
+export declare function StudyPauseScreen(props: StudyPauseScreenProps): React.ReactElement;
+
+/** Confirmation d'une action qui efface (ConfirmDialog, D2 et D4, v2.16) : corbeille, titre, texte ; le choix sûr en bouton principal, la suppression en second. Avec `ackLabel`, une case à cocher active la suppression (rouge plein). */
+export interface ConfirmDialogProps {
+  title: string;
+  body?: string;
+  /** Icône du badge (corbeille par défaut). */
+  icon?: string;
+  /** Espace : bleu côté élève, violet côté parent. */
+  tone?: 'eleve' | 'parents';
+  /** Choix sûr (« Garder mon compte »). */
+  keepLabel?: string;
+  onKeep?: () => void;
+  keepHref?: string;
+  /** Suppression (« Supprimer définitivement »). */
+  confirmLabel?: string;
+  onConfirm?: () => void;
+  /** Lien au-dessus des boutons (« Télécharger mes données d'abord »). */
+  extraLabel?: string;
+  extraIcon?: string;
+  onExtra?: () => void;
+  extraHref?: string;
+  /** Case à cocher qui active la suppression (« Je comprends que c'est définitif. »). */
+  ackLabel?: string;
+  /** Case cochée d'emblée (aperçu). */
+  acked?: boolean;
+  /** false : la carte seule, sans le voile. */
+  veil?: boolean;
+  style?: React.CSSProperties;
+}
+export declare function ConfirmDialog(props: ConfirmDialogProps): React.ReactElement;
+
+/** Une ligne de PrivacyCard. */
+export interface PrivacyFact {
+  text: string;
+  /** yes : coche verte (partagé) ; no : cadenas bleu (jamais partagé). */
+  kind?: 'yes' | 'no';
+  /** Icône à la place de la coche ou du cadenas. */
+  icon?: string;
+  /** Pastille à droite (« 6 mois, puis effacés »). */
+  chip?: string;
+  chipTone?: 'blue' | 'green' | 'violet';
+}
+/** Carte de confidentialité (PrivacyCard, D1 et D3, v2.16) : pastille d'icône, titre, puis une liste, des pastilles cochées ou un texte, et des actions. */
+export interface PrivacyCardProps {
+  title: string;
+  icon?: string;
+  tone?: 'violet' | 'blue' | 'green' | 'cyan' | 'red' | 'orange';
+  items?: PrivacyFact[];
+  /** Pastilles violettes cochées (« Prénom », « Classe »…). */
+  chips?: string[];
+  /** Ligne d'information grise sous les pastilles. */
+  note?: string;
+  text?: string;
+  /** Actions (boutons) en bas de la carte. */
+  children?: React.ReactNode;
+  style?: React.CSSProperties;
+  /** Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). 'parents' sur le bandeau violet. */
+  lifted?: boolean | 'parents';
+}
+export declare function PrivacyCard(props: PrivacyCardProps): React.ReactElement;
+
+/** L'enfant d'un parent (ChildDataCard, D3, v2.16) : avatar, classe, accord, « Retirer le lien », puis la suppression à part. */
+export interface ChildDataCardProps {
+  /** Prénom de l'enfant. */
+  name?: string;
+  grade?: string;
+  /** false : « Accord en attente ». */
+  consent?: boolean;
+  hint?: string;
+  onUnlink?: () => void;
+  unlinkHref?: string;
+  deleteHint?: string;
+  onDelete?: () => void;
+  deleteHref?: string;
+  style?: React.CSSProperties;
+}
+export declare function ChildDataCard(props: ChildDataCardProps): React.ReactElement;
+
+export declare function ConsentPendingCard(props: ConsentPendingCardProps): React.ReactElement;
 
 /** En-tête des parcours en plusieurs étapes : retour, « Étape n sur N », barre segmentée et lien « Passer ». */
 export interface StepHeaderProps {
@@ -1047,6 +1601,8 @@ export interface StepHeaderProps {
   onSkip?: () => void;
   /** Libellé du lien. */
   skipLabel?: string;
+  /** false : sans flèche de retour, barres de 6 px, en tête de la feuille blanche (inscription parent). */
+  back?: boolean;
 }
 export declare function StepHeader(props: StepHeaderProps): React.ReactElement;
 
@@ -1060,6 +1616,8 @@ export interface GradePickerProps {
   onChange?: (grade: string) => void;
   /** false : grille 4 colonnes. */
   grouped?: boolean;
+  /** Pastilles remplies sur une grille de 5 colonnes par cycle, dans la feuille blanche (L5). */
+  filled?: boolean;
   /** Couleur. */
   tone?: 'eleve' | 'parents';
   /** Libellé accessible. */
@@ -1381,6 +1939,123 @@ export interface LevelProgressHeaderProps {
 }
 export declare function LevelProgressHeader(props: LevelProgressHeaderProps): React.ReactElement;
 
+/** Ciel d'Explorer (#2F6FD0 → #8FC0F2) avec quelques nuages, derrière la leçon d'un niveau (LevelBackdrop du code, v2.13). */
+export interface LevelBackdropProps {
+  height?: number | string;
+  /** [x, y, largeur, opacité] de chaque nuage. */
+  clouds?: Array<[number, number, number, number]>;
+  /** Ciel de nuit avec la lune et des étoiles (pause du soir, v2.15). */
+  night?: boolean;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}
+export declare function LevelBackdrop(props: LevelBackdropProps): React.ReactElement;
+
+/** En-tête de la leçon d'un niveau dans le HUD (LevelHeader du code, v2.13) : retour jaune en relief, pastille du type, titre en Lilita One, progression en segments, ou durée de l'appel à la voix. */
+export interface LevelHeaderProps {
+  type?: LevelType;
+  title?: string;
+  /** Étapes, exercices ou questions terminés. */
+  done?: number;
+  total?: number;
+  city?: string;
+  /** À la voix (X4b) : « À la voix · 02:14 · Ville… » remplace la progression. */
+  callTime?: string;
+  onBack?: () => void;
+  backHref?: string;
+}
+export declare function LevelHeader(props: LevelHeaderProps): React.ReactElement;
+
+/** Le tableau du tuteur en ardoise dans un cadre de bois (v2.13) : ruban « Au tableau », boutons bleus en relief (agrandir, replier), craie. */
+export interface SlateBoardProps {
+  steps?: { expr: string; op?: string; note?: string }[];
+  result?: string;
+  resultNote?: string;
+  progress?: number;
+  writing?: boolean;
+  description?: string;
+  /** Repliable (X4a) : une bande avec la première ligne quand il est replié. */
+  collapsible?: boolean;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onToggle?: (open: boolean) => void;
+  onExpand?: () => void;
+  expandable?: boolean;
+  /** Ligne montrée replié (la première étape par défaut). */
+  title?: string;
+  tab?: string;
+  height?: number | string;
+}
+export declare function SlateBoard(props: SlateBoardProps): React.ReactElement;
+
+/** « Étape n réussie ! » dans la discussion d'une leçon : bandeau vert de jeu cerné de bleu nuit, coche dans un rond blanc, Lilita One (v2.13). */
+export interface LevelStepCardProps {
+  step?: number;
+  text?: string;
+  /** Aligné sur les bulles du tuteur (true). */
+  inChat?: boolean;
+}
+export declare function LevelStepCard(props: LevelStepCardProps): React.ReactElement;
+
+/** Sous-titres du tuteur dans une bulle de dialogue blanche cernée de bleu nuit, ruban « Tutor'IA » (X4b, v2.13). */
+export interface CaptionBubbleProps {
+  text?: string;
+  /** Mots déjà prononcés. */
+  spoken?: number;
+  name?: string;
+  maxLines?: number;
+  colorWords?: boolean;
+  placeholder?: string;
+}
+export declare function CaptionBubble(props: CaptionBubbleProps): React.ReactElement;
+
+/** Commandes de la leçon à la voix sur une planche de bois (X4b, v2.13) : micro, sous-titres, caméra en boutons bleus (jaunes quand ils sont actifs), raccrocher en rouge. */
+export interface WoodCallDockProps {
+  muted?: boolean;
+  captionsOn?: boolean;
+  cameraOn?: boolean;
+  /** false si un parent a coupé la caméra. */
+  cameraVisible?: boolean;
+  onToggleMute?: () => void;
+  onToggleCaptions?: () => void;
+  onCamera?: () => void;
+  onHangUp?: () => void;
+  hangUpHref?: string;
+  style?: React.CSSProperties;
+}
+export declare function WoodCallDock(props: WoodCallDockProps): React.ReactElement;
+
+/** Bilan d'un niveau d'Explorer (LevelResultPanel du code, X5a, X5b) : panneau de bois sur la leçon, ruban « type · verdict », étoiles or ou bois creusé, score, XP et la suite (v2.14). */
+export interface LevelResultPanelProps {
+  type?: LevelType;
+  /** Réussi (vrai par défaut). */
+  passed?: boolean;
+  /** Titre du niveau (« Isoler x »). */
+  levelTitle?: string;
+  firstName?: string;
+  /** 0 à 3. */
+  stars?: number;
+  /** Étapes réussies (leçon) ou bonnes réponses. */
+  correct?: number;
+  total?: number;
+  /** Remplace le score calculé. */
+  score?: string;
+  /** XP gagnée ; rien n'est affiché à 0 (rejouer sans nouvelle étoile). */
+  xp?: number;
+  /** Objectifs du niveau, affichés si réussi (« Ce que tu as travaillé »). */
+  objectives?: string[];
+  /** Titre de la leçon à revoir quand le niveau n'est pas réussi. */
+  review?: string;
+  onContinue?: () => void;
+  onReview?: () => void;
+  continueHref?: string;
+  reviewHref?: string;
+  /** false : le panneau seul, sans le voile. */
+  veil?: boolean;
+  style?: React.CSSProperties;
+}
+export declare function LevelResultPanel(props: LevelResultPanelProps): React.ReactElement;
+
 /** Tableau du tuteur en mode vocal : les étapes du calcul s'écrivent au fil de la voix (faites en vert, à venir en gris). */
 export interface VoiceBoardCardProps {
   /** Surtitre (« Au tableau du tuteur »). */
@@ -1390,7 +2065,7 @@ export interface VoiceBoardCardProps {
 }
 export declare function VoiceBoardCard(props: VoiceBoardCardProps): React.ReactElement;
 
-/** Carte de bilan d'un niveau : validé sur dégradé vert, à consolider sur dégradé orange, étoiles, message, score et XP. */
+/** Ancienne carte de bilan d'un niveau (dégradé vert ou orange). Remplacée par LevelResultPanel depuis la v2.14. */
 export interface LevelResultCardProps {
   /** Type de niveau. */
   type?: LevelType;
@@ -1423,4 +2098,6 @@ export declare function TutorFeedback(props: TutorFeedbackProps): React.ReactEle
 export declare const SUBJECTS: Record<SubjectId, { name: string; gradient: string; soft: string; ink: string; deep: string; bar: string }>;
 export declare const LEVEL_TYPES: Record<LevelType, { label: string; icon: string; grad: string; solid: string; soft: string; ink: string; ring: string }>;
 export declare const ICONS: Record<string, string>;
+/** Ombre portée d'une carte posée à cheval sur le bandeau (v2.17) : `tone` = couleur de la carte (white, orange, slate, blue, hero, cyan, violet, green, red), `parents` = bandeau violet. */
+export declare function liftShadow(tone?: string, parents?: boolean): string;
 export declare const VISUAL_KINDS: Record<VisualKind, { name: string; gradient: string; soft: string; border: string; ink: string; icon: string; noun: string; label: string }>;

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Appels du jour · proposition</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--primary:#2E6BE6;--primary-soft:#EBF1FF;--accent:#662EE6;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#0A3B9D;color:#FFFFFF}
+button{font-family:inherit}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,0.7)}
+@keyframes halo{0%{transform:scale(0.6);opacity:0.55}100%{transform:scale(2.2);opacity:0}}
+.halo{transform-box:fill-box;transform-origin:center;animation:halo 1.6s ease-out infinite}
+@keyframes pen{0%,100%{transform:scale(1)}50%{transform:scale(1.45)}}
+.pen{display:inline-block;flex-shrink:0;width:8px;height:8px;border-radius:999px;background:#2E6BE6;box-shadow:0 0 0 3px rgba(46,107,230,.22);animation:pen 1s ease-in-out infinite;transition:opacity .3s}
+@media (prefers-reduced-motion:reduce){.halo,.pen{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: linear-gradient(170deg, #2E6BE6 0%, #1750C4 42%, #0A3B9D 78%, #03276E 100%); font-family: var(--font-sans); color: #FFFFFF">
+<div style="position: absolute; top: 56px; left: 20px; right: 20px; height: 44px"><a href="02a-Tuteur-Ecrit.dc.html" aria-label="Passer à l’écrit" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px 0 12px; border-radius: 999px; background: rgba(255,255,255,0.16); color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"></path></svg>Écrit</a></div>
+<div style="position: absolute; top: 120px; left: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center"><span style="display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #FFFFFF"><span aria-hidden="true" style="width: 24px; height: 24px; border-radius: 8px; background: linear-gradient(160deg, #E95555 0%, #C21A1A 60%, #980B0B 100%); display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM8 7h8v3H8zM8.5 14h.01M12 14h.01M15.5 14h.01M8.5 17.5h.01M12 17.5h.01M15.5 17.5h.01"></path></svg></span>Maths</span><h1 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 900; color: #FFFFFF">Équations du 1er degré</h1></div>
+<div style="position: absolute; left: 97px; top: 230px"><dc-import name="../components/VoiceAvatar" fond="transparent" size="148" hop="0" tilt="0" label="Tutor’IA" hint-size="196px,184px"></dc-import></div>
+<div style="position: absolute; top: 436px; left: 0; right: 0; display: flex; justify-content: center"><span aria-live="polite" style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px 0 14px; box-sizing: border-box; border-radius: 999px; background: rgba(255,255,255,0.16); color: #FFFFFF; font-size: 15px; font-weight: 700; white-space: nowrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 12l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5zM15 3l6 6M21 3l-6 6"></path></svg>Appels du jour terminés</span></div><div aria-live="polite" style="position: absolute; top: 504px; left: 28px; right: 28px; display: flex; flex-direction: column; gap: 8px; text-align: center"><p style="margin: 0; font-size: 20px; line-height: 30px; font-weight: 700">Tu as fait tes appels du jour.</p><p style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: rgba(255,255,255,0.85)">Le vocal revient demain. On continue à l’écrit ?</p></div>
+<div style="position: absolute; left: 20px; right: 20px; bottom: 40px; display: flex; flex-direction: column; gap: 12px"><a href="02a-Tuteur-Ecrit.dc.html" style="height: 56px; border-radius: 18px; background: #FFFFFF; box-shadow: 0 12px 28px rgba(3,39,110,0.35); color: #1750C4; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"></path></svg>Continuer à l’écrit</a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

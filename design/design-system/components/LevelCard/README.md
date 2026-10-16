@@ -13,6 +13,7 @@ Accueil élève, sous la série.
 | `level` | `number` | Niveau. |
 | `xp` | `number` | XP actuels. |
 | `xpMax` | `number` | XP du prochain niveau. |
+| `lifted` | `boolean \| 'parents'` | Posée à cheval sur le bandeau de marque : ombre portée de sa couleur (v2.17). `'parents'` sur le bandeau violet. |
 
 ## Exemple
 

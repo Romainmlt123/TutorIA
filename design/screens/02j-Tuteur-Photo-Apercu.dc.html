@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tuteur · Photo d’un exercice · aperçu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button,input{font-family:inherit}
+input::placeholder{color:#798398}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@keyframes halo{0%{transform:scale(0.6);opacity:0.55}100%{transform:scale(2.2);opacity:0}}
+.halo{transform-box:fill-box;transform-origin:center;animation:halo 1.6s ease-out infinite}
+.tia-scroll{scrollbar-width:none}.tia-scroll::-webkit-scrollbar{display:none}
+@keyframes tiaDrawer{from{transform:translateX(-100%)}to{transform:none}}
+.tia-drawer{animation:tiaDrawer .22s ease-out both}
+@keyframes tiaUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.tia-up{animation:tiaUp .25s ease-out both}
+@media (prefers-reduced-motion:reduce){.halo,.tia-drawer,.tia-up{animation:none}}
+.tia-chat>*{flex-shrink:0}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--bg); font-family: var(--font-sans); color: var(--text)">
+<header style="position: absolute; top: 56px; left: 20px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 2">
+<div style="display: flex; align-items: center; justify-content: space-between"><a href="02h-Tuteur-Tes-Discussions.dc.html" aria-label="Ouvrir tes discussions" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 16px; background: #FFFFFF; box-shadow: var(--shadow-sm); color: #5D677D; display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></a><dc-import name="../components/ModeToggle" mode="ecrit" variante="simple" hint-size="214px,48px"></dc-import><a href="02g-Tuteur-Nouvelle-Discussion.dc.html" aria-label="Nouvelle discussion" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 16px; background: #FFFFFF; box-shadow: var(--shadow-sm); color: #5D677D; display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></a></div>
+<dc-import name="../components/TopicCard" matiere="toutes" titre="Aide sur un exercice" badge="" hint-size="350px,64px"></dc-import>
+</header>
+<section aria-label="Conversation avec le tuteur" class="tia-chat" style="position: absolute; top: 192px; left: 20px; right: 20px; bottom: 252px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 28px); mask-image: linear-gradient(to bottom, transparent 0, #000 28px); transition: top 0.25s ease">
+<div style="align-self: flex-start; display: flex; align-items: flex-end; gap: 8px">
+<img src="../../assets/logo/Logo_tutoria_fond_bleu.png" alt="Tutor'IA" width="32" height="32" style="flex-shrink: 0; display: block; width: 32px; height: 32px; border-radius: 999px; box-shadow: var(--shadow-sm)">
+<div style="max-width: 256px; padding: 12px 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm); font-size: 16px; line-height: 24px">Salut ! Pose-moi ta question, ou raconte-moi l’exercice qui te bloque : on le fait ensemble, pas à pas.</div>
+</div>
+<div style="align-self: flex-end; max-width: 280px; padding: 12px 16px; background: var(--primary); color: #FFFFFF; border-radius: var(--radius-2xl); font-size: 16px; line-height: 24px">J’ai un exercice de classe qui me bloque. Tu peux m’aider à le faire ?</div>
+<div style="align-self: flex-start; display: flex; align-items: flex-end; gap: 8px">
+<img src="../../assets/logo/Logo_tutoria_fond_bleu.png" alt="Tutor'IA" width="32" height="32" style="flex-shrink: 0; display: block; width: 32px; height: 32px; border-radius: 999px; box-shadow: var(--shadow-sm)">
+<div style="max-width: 256px; padding: 12px 16px; background: var(--surface); border-radius: var(--radius-2xl); box-shadow: var(--shadow-sm); font-size: 16px; line-height: 24px">Bien sûr ! Envoie-moi une photo de ton exercice, ou recopie l’énoncé. Ensuite, on le fait ensemble, pas à pas.</div>
+</div>
+</section>
+<form aria-label="Répondre au tuteur" style="position: absolute; left: 20px; right: 20px; bottom: 108px; display: flex; flex-direction: column; gap: 4px; margin: 0">
+<div style="display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 16px; background: #FFFFFF; box-shadow: var(--shadow-sm)"><div role="img" aria-label="Photo de ton exercice" style="position: relative; overflow: hidden; width: 56px; height: 56px; flex-shrink: 0; border-radius: 16px"><div style="position: absolute; left: -9.3px; top: 0.0px; transform: scale(0.3457); transform-origin: 0 0"><div style="position: relative; width: 216px; height: 162px; background: linear-gradient(150deg, #CFC5B5 0%, #B3A792 100%)"><div style="position: absolute; left: 14px; top: 8px; width: 196px; height: 152px; transform: rotate(-3.5deg); background-color: #FCFBF6; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 15px, #C9D8F2 15px, #C9D8F2 16px); box-shadow: 0 3px 8px rgba(0,0,0,0.25); padding: 10px 12px 0 24px; box-sizing: border-box; font-family: 'Times New Roman', serif; color: #1C263B"><span style="position: absolute; left: 16px; top: 0; bottom: 0; width: 1px; background: #E8A0A0"></span><div style="font-size: 12px; line-height: 16px; font-weight: 700">Exercice 4</div><div style="font-size: 10px; line-height: 16px">Résoudre les équations :</div><div style="font-size: 11px; line-height: 16px">a) 3<i>x</i> + 5 = 20 <span style="margin-left: 6px; font-family: 'Segoe Print', 'Comic Sans MS', cursive; font-size: 10px; color: #5D677D">x = 5</span></div><div style="font-size: 11px; line-height: 16px">b) 2<i>x</i> − 7 = 9</div><div style="font-size: 11px; line-height: 16px">c) 5<i>x</i> + 1 = 3<i>x</i> + 9</div><div style="font-size: 11px; line-height: 16px">d) 4(<i>x</i> − 2) = 12</div></div><div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.12) 100%)"></div></div></div></div><span style="flex-grow: 1; font-size: 12px; line-height: 16px; color: var(--text-secondary)">Cadre seulement l’exercice, sans ton nom.</span><a href="02g-Tuteur-Nouvelle-Discussion.dc.html" aria-label="Retirer la photo" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 999px; color: #5D677D; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a></div><div style="display: flex; align-items: center; gap: 8px"><a href="02i-Tuteur-Photo-Choix.dc.html" aria-label="Envoyer la photo d’un exercice" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 999px; background: #FFFFFF; box-shadow: var(--shadow-sm); color: var(--primary); display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path></svg></a><label for="reponse" class="sr-only">Ta réponse</label><input id="reponse" type="text" value="Je bloque sur le b)" placeholder="Écris ta réponse…" style="flex-grow: 1; min-width: 0; height: 48px; padding: 0 16px; box-sizing: border-box; border: 1px solid var(--border); border-radius: var(--radius-2xl); background: var(--surface); box-shadow: var(--shadow-sm); font-size: 16px; color: var(--text)"><a href="02k-Tuteur-Photo-Envoyee.dc.html" aria-label="Envoyer" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 999px; background: var(--primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"></path></svg></a></div>
+</form>
+<div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5">
+<dc-import name="../components/BottomNav" espace="eleve" active="tuteur" hint-size="350px,72px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

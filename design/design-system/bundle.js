@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"CallTopBar"},{"name":"VoiceAvatar"},{"name":"VoiceStatus"},{"name":"LiveCaptions"},{"name":"CallDock"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"ProfileHero"},{"name":"ProfileSummary"},{"name":"LevelBar"},{"name":"TrophyShelf"},{"name":"TrophyBadge"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"AuthScreen"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"PlanRow"},{"name":"Stars"},{"name":"IslandIllustration"},{"name":"IslandCarousel"},{"name":"IslandProgressCard"},{"name":"ExplorerHud"},{"name":"LevelNode"},{"name":"MapAvatar"},{"name":"CityBanner"},{"name":"RegionSign"},{"name":"WorldMap"},{"name":"LevelTypePill"},{"name":"LevelSheet"},{"name":"IslandBackdrop"},{"name":"LevelProgressHeader"},{"name":"VoiceBoardCard"},{"name":"LevelResultCard"},{"name":"TutorFeedback"}]} */
+/* @ds-bundle: {"format":4,"namespace":"TutorIA","components":[{"name":"Icon"},{"name":"Logo"},{"name":"Button"},{"name":"IconButton"},{"name":"SegmentedControl"},{"name":"ModeToggle"},{"name":"BottomNav"},{"name":"Switch"},{"name":"GoalStepper"},{"name":"StatusChip"},{"name":"ProgressRing"},{"name":"Quote"},{"name":"SubjectCard"},{"name":"StreakCard"},{"name":"LevelCard"},{"name":"ResumeCard"},{"name":"GoalCard"},{"name":"TopicCard"},{"name":"ChatBubble"},{"name":"TipCard"},{"name":"ChatInput"},{"name":"ChatStarters"},{"name":"VisualChip"},{"name":"ConversationDrawer"},{"name":"PhotoSourceDialog"},{"name":"VoiceVisualizer"},{"name":"CallControls"},{"name":"CallTopBar"},{"name":"VoiceAvatar"},{"name":"VoiceStatus"},{"name":"LiveCaptions"},{"name":"CallDock"},{"name":"PanelHeader"},{"name":"VisualPanel"},{"name":"MathGraph"},{"name":"Whiteboard"},{"name":"DailyReviewCard"},{"name":"ChapterRow"},{"name":"SessionProgress"},{"name":"AnswerOption"},{"name":"QuizCard"},{"name":"TallyChips"},{"name":"NextCardButton"},{"name":"SessionComplete"},{"name":"KpiCard"},{"name":"BarChart"},{"name":"LineChart"},{"name":"Heatmap"},{"name":"SubjectProgressRow"},{"name":"InsightList"},{"name":"ChildSwitcher"},{"name":"ChildPickerSheet"},{"name":"LinkRequestCard"},{"name":"HeroCard"},{"name":"AlertCard"},{"name":"AdviceCard"},{"name":"SubjectProgressCard"},{"name":"SessionSummaryCard"},{"name":"SettingRow"},{"name":"ProfileHero"},{"name":"ProfileSummary"},{"name":"LevelBar"},{"name":"TrophyShelf"},{"name":"TrophyBadge"},{"name":"GameText"},{"name":"WoodButton"},{"name":"WoodFrame"},{"name":"GameButton"},{"name":"Parchment"},{"name":"WoodDialog"},{"name":"TextField"},{"name":"PasswordRules"},{"name":"Checkbox"},{"name":"OrDivider"},{"name":"AuthProviderButtons"},{"name":"AuthHero"},{"name":"AuthScreen"},{"name":"ProfileChoiceCard"},{"name":"SubjectCluster"},{"name":"StepHeader"},{"name":"GradePicker"},{"name":"SelfAssessmentRow"},{"name":"GoalTile"},{"name":"DurationPicker"},{"name":"ChoiceRow"},{"name":"ToggleChip"},{"name":"ParentCodeCard"},{"name":"StepList"},{"name":"CodeInput"},{"name":"PasswordMatch"},{"name":"SwitchField"},{"name":"HelpCard"},{"name":"InlineNotice"},{"name":"ConsentPendingCard"},{"name":"StudyPauseScreen"},{"name":"OfflineNotice"},{"name":"OfflineScreen"},{"name":"ComingSoonSheet"},{"name":"AddChildCard"},{"name":"FeatureList"},{"name":"ConfirmDialog"},{"name":"PrivacyCard"},{"name":"ChildDataCard"},{"name":"PlanRow"},{"name":"Stars"},{"name":"IslandIllustration"},{"name":"IslandCarousel"},{"name":"IslandProgressCard"},{"name":"ExplorerHud"},{"name":"LevelNode"},{"name":"MapAvatar"},{"name":"CityBanner"},{"name":"RegionSign"},{"name":"WorldMap"},{"name":"LevelTypePill"},{"name":"LevelSheet"},{"name":"IslandBackdrop"},{"name":"LevelProgressHeader"},{"name":"VoiceBoardCard"},{"name":"LevelResultCard"},{"name":"TutorFeedback"},{"name":"LevelBackdrop"},{"name":"LevelHeader"},{"name":"SlateBoard"},{"name":"LevelStepCard"},{"name":"CaptionBubble"},{"name":"WoodCallDock"},{"name":"LevelResultPanel"}]} */
 (function () {
   'use strict';
   var React = window.React;
@@ -41,6 +41,9 @@
     sessions: 'M21 11.5a8.5 8.5 0 0 1-12.4 7.6L4 20l1-4.3A8.5 8.5 0 1 1 21 11.5zM8.5 10h7M8.5 13.5h4.5',
     chat: 'M21 11.5a8.5 8.5 0 0 1-12.4 7.6L4 20l1-4.3A8.5 8.5 0 1 1 21 11.5zM9 11.5h.01M12.5 11.5h.01M16 11.5h.01',
     sliders: 'M4 7h10M18 7h2M4 17h2M10 17h10M18 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM10 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0z',
+    wifiOff: 'M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M5 12.86a10 10 0 0 1 5.17-2.69M19 12.86a10 10 0 0 0-2-1.52M2 8.82a15 15 0 0 1 4.18-2.64M22 8.82a15 15 0 0 0-11.29-3.76M2 2l20 20',
+    refresh: 'M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7',
+    sparkle: 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z',
     bell: 'M6 16v-5a6 6 0 1 1 12 0v5l2 2H4zM10 21h4',
     arrowRight: 'M5 12h14M13 6l6 6-6 6',
     arrowUp: 'M12 19V5M6 11l6-6 6 6',
@@ -69,8 +72,17 @@
     target: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM17 12a5 5 0 1 1-10 0 5 5 0 0 1 10 0zM12 12h.01',
     calendar: 'M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM4 10h16M9 3v4M15 3v4',
     warning: 'M12 3 2 20h20zM12 10v4M12 17h.01',
+    hourglass: 'M6 3h12M6 21h12M7.5 3v3.5a4.5 4.5 0 0 0 9 0V3M7.5 21v-3.5a4.5 4.5 0 0 1 9 0V21',
+    info: 'M12 11v6M12 7.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z',
+    send: 'M21 3L10 14M21 3l-6.5 18-3.5-7.5L3.5 10z',
+    camera: 'M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+    image: 'M4 4h16v16H4zM4 16l5-5 4 4 3-3 4 4M15 9h.01',
+    menu: 'M4 7h16M4 12h16M4 17h16',
+    redo: 'M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7',
     shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
     moon: 'M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z',
+    phoneOff: 'M3 5a2 2 0 0 1 2-2h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 12l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5zM15 3l6 6M21 3l-6 6',
+    chart: 'M4 4v16h16M7 15l4-4 3 3 5-6',
     mail: 'M4 6h16v12H4zM4 7l8 6 8-6',
     expand: 'M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7',
     graph: 'M4 4v16h16M7 16l4-5 3 3 5-7',
@@ -91,12 +103,14 @@
     share: 'M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5',
     phone: 'M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM11 18h2',
     link: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
+    unlink: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1M4 4l16 16',
     rocket: 'M5 15c-1.5 1.5-2 4-2 6 2 0 4.5-.5 6-2M9 15l-3-3c1-4 4.5-8 12-9-1 7.5-5 11-9 12zM14.5 9.5h.01',
     medal: 'M8 3h8l-2 6h-4zM12 9a6 6 0 1 1 0 12 6 6 0 0 1 0-12zM12 13v4',
+    bubble: 'M4 5h16v11H9l-5 4z',
     book: 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5M8 7h7M8 11h5',
     sun: 'M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4'
   };
-  var FILLED = { flame: true };
+  var FILLED = { flame: true, medal: true };
 
   function Icon(p) {
     var size = p.size || 24;
@@ -156,6 +170,17 @@
   function Card(p) {
     return h(p.as || 'div', assign({}, p.attrs, { style: assign({ position: 'relative', overflow: 'hidden', background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', padding: 20, boxSizing: 'border-box', fontFamily: FONT, color: 'var(--text)' }, p.style) }), p.children);
   }
+  /* Ombre portée des sections posées à cheval sur le bandeau de marque (v2.17) : une ombre de la couleur de la carte,
+     et un contact plus net dessous, bleu nuit (élève) ou violet (parents). Une seule rangée par écran. */
+  var LIFT_TONES = { white: ['3,39,110', 0.30], orange: ['208,136,37', 0.65], slate: ['9,17,34', 0.55], blue: ['10,59,157', 0.55], hero: ['59,13,162', 0.50],
+    cyan: ['2,98,115', 0.55], violet: ['59,13,162', 0.50], green: ['3,112,43', 0.50], red: ['152,11,11', 0.50] };
+  function liftShadow(tone, parents) {
+    var t = LIFT_TONES[tone] || LIFT_TONES.white;
+    var rgb = tone === 'white' && parents ? '59,13,162' : t[0];
+    return '0 18px 32px -10px rgba(' + rgb + ',' + t[1] + '), 0 4px 12px rgba(' + (parents ? '59,13,162' : '3,39,110') + ',0.16)';
+  }
+  function lift(p, tone) { return p.lifted ? { boxShadow: liftShadow(tone, p.lifted === 'parents') } : null; }
+
   function Overline(p) {
     return h('span', { style: assign({ fontSize: 12, lineHeight: '16px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: p.color || 'var(--text-secondary)' }, p.style) }, p.children);
   }
@@ -163,14 +188,14 @@
   /* ---------- Actions ---------- */
   function Button(p) {
     var v = p.variant || 'primary';
-    var bg = { primary: 'var(--primary)', vivid: 'var(--violet-500)', soft: 'var(--primary-soft)', white: '#fff', ghost: 'transparent', danger: 'var(--error-soft)' }[v];
-    var color = { primary: '#fff', vivid: '#fff', soft: 'var(--primary)', white: 'var(--text)', ghost: 'var(--primary)', danger: 'var(--error-strong)' }[v];
+    var bg = { primary: 'var(--primary)', vivid: 'var(--violet-500)', vividSoft: 'var(--violet-100)', soft: 'var(--primary-soft)', white: '#fff', ghost: 'transparent', danger: 'var(--error-soft)', dangerSolid: 'var(--error)' }[v];
+    var color = { primary: '#fff', vivid: '#fff', vividSoft: 'var(--violet-600)', soft: 'var(--primary)', white: 'var(--text)', ghost: 'var(--primary)', danger: 'var(--error-strong)', dangerSolid: '#fff' }[v];
     var shadow = p.brand ? (v === 'vivid' ? '0 8px 20px rgba(102,46,230,0.30)' : 'var(--shadow-brand)') : 'none';
     var small = p.size === 'sm';
     var style = {
       display: p.fullWidth ? 'flex' : 'inline-flex', width: p.fullWidth ? '100%' : undefined, alignItems: 'center', justifyContent: 'center', gap: 8,
       height: 48, padding: small ? '0 16px' : '0 20px', boxSizing: 'border-box', border: 'none', borderRadius: 'var(--radius-2xl)',
-      background: bg, color: color, boxShadow: shadow, fontFamily: FONT, fontSize: small ? 14 : 16, fontWeight: small || v === 'vivid' ? 700 : 500,
+      background: bg, color: color, boxShadow: shadow, fontFamily: FONT, fontSize: small ? 14 : 16, fontWeight: small || v === 'vivid' || v === 'vividSoft' || v === 'dangerSolid' ? 700 : 500,
       textDecoration: 'none', cursor: p.disabled ? 'default' : 'pointer', opacity: p.disabled ? 0.4 : 1
     };
     var kids = [p.icon ? h(Icon, { key: 'i', name: p.icon, size: 20 }) : null, p.children, p.iconRight ? h(Icon, { key: 'r', name: p.iconRight, size: 20, strokeWidth: 2 }) : null];
@@ -201,7 +226,16 @@
   }
 
   function ModeToggle(p) {
-    return h(SegmentedControl, { label: 'Mode de discussion', value: p.mode || 'ecrit', onChange: p.onChange, options: [{ id: 'ecrit', label: 'Écrit', icon: 'keyboard' }, { id: 'vocal', label: 'Vocal', icon: 'mic' }] });
+    if (!p.voiceLocked) return h(SegmentedControl, { label: 'Mode de discussion', value: p.mode || 'ecrit', onChange: p.onChange, options: [{ id: 'ecrit', label: 'Écrit', icon: 'keyboard' }, { id: 'vocal', label: 'Vocal', icon: 'mic' }] });
+    /* Vocal coupé dans les réglages d'un parent (v2.15) : « Vocal » reste visible, grisé avec un cadenas ; le toucher explique pourquoi. */
+    var st = useState(!!p.showHint), open = st[0];
+    var hint = p.lockedHint || 'Le vocal est coupé dans les réglages de tes parents.';
+    return h('div', { style: { position: 'relative', display: 'inline-block', fontFamily: FONT } },
+      h('div', { role: 'group', 'aria-label': 'Mode de discussion', style: { display: 'inline-flex', gap: 4, padding: 4, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-sm)' } },
+        h('button', { type: 'button', 'aria-pressed': true, style: { display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: 'none', borderRadius: 20, background: 'var(--primary)', color: '#fff', fontFamily: FONT, fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap' } }, h(Icon, { name: 'keyboard', size: 18 }), 'Écrit'),
+        h('button', { type: 'button', 'aria-disabled': 'true', 'aria-describedby': 'tia-vocal-coupe', onClick: function () { st[1](!open); }, style: { display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: 'none', borderRadius: 20, background: 'transparent', color: '#A3ABBD', fontFamily: FONT, fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap', cursor: 'default' } }, h(Icon, { name: 'lock', size: 16, strokeWidth: 2 }), 'Vocal')),
+      open ? h('div', { id: 'tia-vocal-coupe', role: 'tooltip', style: { position: 'absolute', top: 56, right: -36, width: 210, zIndex: 6, padding: '10px 12px', borderRadius: 12, background: 'var(--gray-800, #1C263B)', color: '#fff', fontSize: 13, lineHeight: '18px', fontWeight: 500, textAlign: 'left', boxShadow: 'var(--shadow-lg)' } },
+        h('span', { 'aria-hidden': 'true', style: { position: 'absolute', top: -6, right: 78, width: 12, height: 12, background: 'var(--gray-800, #1C263B)', transform: 'rotate(45deg)', borderRadius: 2 } }), hint) : null);
   }
 
   var NAV_TABS = {
@@ -302,11 +336,12 @@
       h(Watermark, { key: 'w', name: p.subject, style: { right: -20, bottom: -20 } }),
       h('span', { key: 't', style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' } },
         h(Veil, { icon: p.subject }),
-        p.progress != null ? h(Pill, { background: VEIL, color: '#fff' }, p.progress + ' %') : null,
+        p.progress != null && !p.fresh ? h(Pill, { background: VEIL, color: '#fff' }, p.progress + ' %') : null,
         sel ? h('span', { 'aria-hidden': 'true', style: { width: 28, height: 28, borderRadius: 999, background: '#fff', color: s.ink, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'check', size: 16, strokeWidth: 2.5 })) : null),
       h('span', { key: 'b', style: { display: 'flex', flexDirection: 'column', gap: 8, width: '100%' } },
         h('span', { style: { fontSize: 18, lineHeight: '24px', fontWeight: 900 } }, s.name),
-        p.progress != null ? h('span', { style: { display: 'block', height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.3)', overflow: 'hidden' } }, h('span', { style: { display: 'block', width: p.progress + '%', height: '100%', borderRadius: 999, background: '#fff' } })) : null,
+        p.progress != null && !p.fresh ? h('span', { style: { display: 'block', height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.3)', overflow: 'hidden' } }, h('span', { style: { display: 'block', width: p.progress + '%', height: '100%', borderRadius: 999, background: '#fff' } })) : null,
+        p.fresh ? h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 700, opacity: 0.9, marginTop: -6 } }, 'À découvrir') : null,
         p.count != null ? h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 500, marginTop: -6 } }, p.count + ' cartes') : null)
     ];
     return h(p.onClick ? 'button' : 'div', {
@@ -316,17 +351,17 @@
   }
 
   function StreakCard(p) {
-    return h(Card, { style: { background: TONES.orange, color: '#fff', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 } },
+    return h(Card, { style: assign({ background: TONES.orange, color: '#fff', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }, lift(p, 'orange')) },
       h(Watermark, { name: 'flame', size: 96, opacity: 0.22, style: { right: -22, bottom: -18 } }),
       h(Veil, { icon: 'flame', background: '#fff', color: 'var(--orange-500)', filled: true }),
       h('span', { style: { display: 'flex', flexDirection: 'column', gap: 2 } },
-        h('span', { style: { fontSize: 24, lineHeight: '32px', fontWeight: 900, whiteSpace: 'nowrap' } }, p.days + ' jours'),
-        h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 700, whiteSpace: 'nowrap' } }, p.caption || 'de série, continue !')));
+        h('span', { style: { fontSize: 24, lineHeight: '32px', fontWeight: 900, whiteSpace: 'nowrap' } }, p.label || (!p.days ? 'Ta série' : p.days + (p.days > 1 ? ' jours' : ' jour'))),
+        h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 700, whiteSpace: 'nowrap' } }, p.caption || (!p.days ? 'commence aujourd’hui' : 'de série, continue !'))));
   }
 
   function LevelCard(p) {
     var pct = Math.round(100 * (p.xp || 0) / (p.xpMax || 1));
-    return h(Card, { style: { background: TONES.slate, color: '#fff', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 } },
+    return h(Card, { style: assign({ background: TONES.slate, color: '#fff', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }, lift(p, 'slate')) },
       h(Watermark, { name: 'star', size: 104, opacity: 0.12, style: { right: -26, bottom: -26 } }),
       h('span', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } },
         h(Veil, { icon: 'star', background: 'var(--green-500)', color: 'var(--green-900)', filled: true }),
@@ -337,42 +372,58 @@
   }
 
   function ResumeCard(p) {
-    var s = subj(p.subject);
+    var s = subj(p.subject), first = !!p.first;
+    var chips = p.chips || [{ icon: 'clock', label: (p.minutes || 10) + ' min' }, { icon: 'sparkle', label: 'D’après ton parcours' }];
     return h(Card, { style: { padding: 24, display: 'flex', flexDirection: 'column', gap: 16 } },
+      first ? h(Overline, { color: 'var(--blue-600)' }, p.kicker || 'Ta première séance') : null,
       h('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
         h('span', { style: { width: 48, height: 48, borderRadius: 'var(--radius-2xl)', background: s.gradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } }, h(Icon, { name: p.subject })),
         h('div', { style: { display: 'flex', flexDirection: 'column', gap: 2 } },
           h('span', { style: { fontSize: 22, lineHeight: '30px', fontWeight: 500 } }, p.title),
           h('span', { style: { fontSize: 14, lineHeight: '20px', color: 'var(--text-secondary)' } }, p.subtitle))),
-      h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8 } },
+      /* Le premier jour : pas de 0 %, mais la durée et pourquoi cette leçon (v2.19). */
+      first ? h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 8 } }, chips.map(function (c, k) {
+        return h(Pill, { key: k, background: 'var(--blue-100)', color: 'var(--blue-600)', height: 30, style: { fontSize: 13, padding: '0 12px 0 10px' } }, h(Icon, { name: c.icon, size: 16, strokeWidth: 2 }), c.label);
+      })) : h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8 } },
         h('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)' } }, h('span', null, 'Progression du chapitre'), h('strong', { style: { color: 'var(--text)' } }, p.progress + ' %')),
         h('div', { style: { height: 8, borderRadius: 999, background: 'var(--primary-soft)', overflow: 'hidden' } }, h('div', { style: { width: p.progress + '%', height: '100%', borderRadius: 999, background: 'var(--primary)' } }))),
-      h(Button, { brand: true, fullWidth: true, iconRight: 'arrowRight', onClick: p.onResume, href: p.href }, p.actionLabel || 'Reprendre'));
+      h(Button, { brand: true, fullWidth: true, iconRight: 'arrowRight', onClick: p.onResume, href: p.href }, p.actionLabel || (first ? 'Commencer' : 'Reprendre')));
   }
 
   function GoalCard(p) {
-    return h(Card, { style: { padding: 16, borderRadius: 'var(--radius-2xl)', display: 'flex', alignItems: 'center', gap: 16 } },
-      h(ProgressRing, { value: p.done / p.total, label: p.done + '/' + p.total }),
-      h('div', { style: { flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 } },
-        h('span', { style: { fontSize: 16, lineHeight: '24px', fontWeight: 700 } }, p.title || 'Objectif du jour'),
-        h('span', { style: { fontSize: 14, lineHeight: '20px', color: 'var(--text-secondary)' } }, p.detail)),
-      p.badge ? h(Pill, { background: 'var(--primary-soft)', color: 'var(--primary)' }, p.badge) : null);
+    var done = p.done || 0, total = p.total || 1, left = total - done;
+    var badge = p.badge !== undefined ? p.badge : (left <= 0 ? 'Objectif atteint !' : done === 0 ? 'Une séance pour lancer ta journée' : left === 1 ? 'Plus qu’une !' : 'Plus que ' + left + ' !');
+    return h('section', { className: 'tia-goal', 'aria-label': p.title || 'Objectif du jour', style: { position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', gap: 16, padding: 20, borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', background: 'linear-gradient(160deg, var(--violet-500) 0%, var(--blue-500) 50%, var(--violet-500) 100%)', backgroundSize: '200% 100%', color: '#fff', fontFamily: FONT } },
+      h(Watermark, { name: 'target', size: 120, opacity: 0.14, style: { right: -28, bottom: -36 } }),
+      h(ProgressRing, { value: done / total, label: done + '/' + total, size: 64, stroke: 7, onColor: true, fontSize: 16 }),
+      h('div', { style: { position: 'relative', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 } },
+        h('span', { style: { fontSize: 22, lineHeight: '30px', fontWeight: 900 } }, p.title || 'Objectif du jour'),
+        p.detail ? h('span', { style: { fontSize: 14, lineHeight: '20px', fontWeight: 500 } }, p.detail) : null,
+        badge ? h(Pill, { background: '#fff', color: 'var(--blue-500)', height: 24, style: { marginTop: 8 } }, badge) : null));
   }
 
+  var FREE_TOPIC = { name: 'Toutes les matières', gradient: 'linear-gradient(160deg, var(--blue-400) 0%, var(--blue-600) 60%, var(--blue-700) 100%)', ink: 'var(--blue-600)', icon: 'bubble' };
+  function topicOf(id) { return !id || id === 'toutes' ? FREE_TOPIC : assign({ icon: id }, subj(id)); }
   function TopicCard(p) {
-    var s = subj(p.subject);
-    return h(Card, { style: { padding: '12px 16px', borderRadius: 'var(--radius-2xl)', display: 'flex', alignItems: 'center', gap: 12, overflow: 'visible' } },
-      h('span', { style: { width: 40, height: 40, borderRadius: 12, background: s.gradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } }, h(Icon, { name: p.subject, size: 22 })),
-      h('span', { style: { flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' } },
-        h(Overline, { color: s.ink }, s.name),
+    var s = topicOf(p.subject);
+    var name = p.subjectName || s.name;
+    return h('div', { role: 'group', 'aria-label': 'Sujet de la discussion : ' + name + (p.title ? ', ' + p.title : ''), style: { position: 'relative', overflow: 'hidden', boxSizing: 'border-box', minHeight: 64, display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: s.gradient, borderRadius: 'var(--radius-2xl)', boxShadow: 'var(--shadow-md)', color: '#fff', fontFamily: FONT } },
+      h(Watermark, { name: s.icon, size: 72, style: { right: -14, bottom: -14 } }),
+      h('span', { style: { position: 'relative', display: 'flex' } }, h(Veil, { icon: s.icon, iconSize: 22 })),
+      h('span', { style: { position: 'relative', flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' } },
+        h(Overline, { color: '#fff' }, name),
         h('span', { style: { fontSize: 16, lineHeight: '24px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, p.title)),
-      p.badge ? h(Pill, { background: s.soft, color: s.deep, height: 24 }, p.live ? h('span', { className: 'tia-blink', 'aria-hidden': 'true', style: { width: 6, height: 6, borderRadius: 999, background: 'var(--red-500)' } }) : null, p.badge) : null);
+      p.badge ? h(Pill, { background: '#fff', color: s.ink, height: 24, style: { position: 'relative', flexShrink: 0 } }, p.live ? h('span', { className: 'tia-blink', 'aria-hidden': 'true', style: { width: 6, height: 6, borderRadius: 999, background: 'var(--red-500)' } }) : null, p.badge) : null);
   }
 
   /* ---------- Tuteur ---------- */
   function ChatBubble(p) {
     var tutor = p.from !== 'student';
     var bubble = h('div', { style: { maxWidth: tutor ? 256 : 280, padding: '12px 16px', background: tutor ? 'var(--surface)' : 'var(--primary)', color: tutor ? 'var(--text)' : '#fff', borderRadius: 'var(--radius-2xl)', boxShadow: tutor ? 'var(--shadow-sm)' : 'none', fontFamily: FONT, fontSize: 16, lineHeight: '24px' } }, p.children);
+    if (!tutor && p.image) return h('div', { style: { display: 'flex', justifyContent: 'flex-end' } },
+      h('div', { style: { width: 232, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 8, padding: '8px 8px 4px', background: 'var(--primary)', color: '#fff', borderRadius: 'var(--radius-2xl)', fontFamily: FONT } },
+        typeof p.image === 'string' ? h('img', { src: p.image, alt: p.imageAlt || 'Photo de ton exercice', width: 216, height: 162, style: { display: 'block', width: 216, height: 162, objectFit: 'cover', borderRadius: 16 } }) : p.image,
+        p.children ? h('div', { style: { padding: '0 8px 8px', fontSize: 16, lineHeight: '24px' } }, p.children) : null));
     if (!tutor) return h('div', { style: { display: 'flex', justifyContent: 'flex-end' } }, bubble);
     return h('div', { style: { display: 'flex', alignItems: 'flex-end', gap: 8 } },
       p.avatar === false ? h('span', { style: { width: 32, flexShrink: 0 } }) : h(Logo, { variant: 'bleu', size: 32, round: true, style: { boxShadow: 'var(--shadow-sm)', flexShrink: 0 } }),
@@ -391,13 +442,90 @@
     var st = useState(p.defaultValue || '');
     var val = p.value != null ? p.value : st[0];
     function change(e) { st[1](e.target.value); if (p.onChange) p.onChange(e.target.value); }
-    function send() { if (p.onSend) p.onSend(val); if (p.value == null) st[1](''); }
-    return h('form', { onSubmit: function (e) { e.preventDefault(); send(); }, style: { display: 'flex', alignItems: 'center', gap: 8, margin: 0, fontFamily: FONT } },
-      h('input', { type: 'text', 'aria-label': p.label || 'Ta réponse', value: val, onChange: change, placeholder: p.placeholder || 'Écris ta réponse…', style: { flexGrow: 1, height: 48, padding: '0 16px', boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 'var(--radius-2xl)', background: 'var(--surface)', boxShadow: 'var(--shadow-sm)', fontFamily: FONT, fontSize: 16, color: 'var(--text)' } }),
-      h('button', { type: 'submit', 'aria-label': 'Envoyer', style: { width: 48, height: 48, flexShrink: 0, border: 'none', borderRadius: 999, background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, h(Icon, { name: 'arrowUp', size: 22, strokeWidth: 2 })));
+    function send() { if (p.onSend) p.onSend(val, p.attachment || null); if (p.value == null) st[1](''); }
+    var round = { width: 48, height: 48, flexShrink: 0, boxSizing: 'border-box', borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' };
+    var camLook = assign({}, round, { border: 'none', background: 'var(--surface)', boxShadow: 'var(--shadow-sm)', color: 'var(--primary)', cursor: 'pointer' });
+    if (p.game) return h(GameChatInput, assign({}, p, { val: val, change: change, send: send }));
+    var camera = p.cameraHref ? h('a', { href: p.cameraHref, 'aria-label': 'Envoyer la photo d’un exercice', style: camLook }, h(Icon, { name: 'camera', size: 22 }))
+      : p.onCamera ? h('button', { type: 'button', onClick: p.onCamera, 'aria-label': 'Envoyer la photo d’un exercice', style: camLook }, h(Icon, { name: 'camera', size: 22 })) : null;
+    var a = p.attachment;
+    var preview = a ? h('div', { style: { display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 16, background: 'var(--surface)', boxShadow: 'var(--shadow-sm)' } },
+      h('span', { style: { width: 56, height: 56, flexShrink: 0, borderRadius: 16, overflow: 'hidden', background: 'var(--gray-100)', color: 'var(--gray-400)', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+        a.src ? h('img', { src: a.src, alt: a.alt || 'Photo de ton exercice', width: 56, height: 56, style: { display: 'block', width: 56, height: 56, objectFit: 'cover' } }) : (a.thumb || h(Icon, { name: 'image', size: 24 }))),
+      h('span', { style: { flexGrow: 1, fontSize: 12, lineHeight: '16px', color: 'var(--text-secondary)' } }, a.hint || 'Cadre seulement l’exercice, sans ton nom.'),
+      h('button', { type: 'button', onClick: a.onRemove, 'aria-label': 'Retirer la photo', style: assign({}, round, { border: 'none', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer' }) }, h(Icon, { name: 'close', size: 20, strokeWidth: 2 }))) : null;
+    return h('form', { onSubmit: function (e) { e.preventDefault(); send(); }, style: { display: 'flex', flexDirection: 'column', gap: 4, margin: 0, fontFamily: FONT } },
+      preview,
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+        camera,
+        h('input', { type: 'text', 'aria-label': p.label || 'Ta réponse', value: val, onChange: change, disabled: p.disabled, placeholder: p.placeholder || 'Écris ta réponse…', style: { flexGrow: 1, minWidth: 0, height: 48, padding: '0 16px', boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 'var(--radius-2xl)', background: 'var(--surface)', boxShadow: 'var(--shadow-sm)', fontFamily: FONT, fontSize: 16, color: 'var(--text)' } }),
+        h('button', { type: 'submit', 'aria-label': 'Envoyer', disabled: p.disabled, style: assign({}, round, { border: 'none', background: 'var(--primary)', color: '#fff', cursor: 'pointer', opacity: p.disabled ? 0.4 : 1 }) }, h(Icon, { name: 'arrowUp', size: 22, strokeWidth: 2 }))));
   }
 
   var VOICE_LABELS = { speaking: 'Le tuteur parle…', listening: 'Le tuteur t’écoute…', muted: 'Ton micro est coupé', idle: 'En pause', writing: 'Le tuteur écrit au tableau…', explaining: 'Le tuteur t’explique le graphique…' };
+  /* ---------- Tuteur (v2.12) : idées de départ, visuels, volet des discussions, photo ---------- */
+  var STARTERS = [
+    { id: 'notion', label: 'Explique-moi une notion', icon: 'bulb', colors: ['#662EE6', '#3B0DA2'] },
+    { id: 'exercise', label: 'Aide-moi sur un exercice', icon: 'pencil', colors: ['#E6992E', '#A3640D'] },
+    { id: 'review', label: 'Fais-moi réviser', icon: 'cards', colors: ['#1BC85B', '#03702B'] },
+    { id: 'graph', label: 'Montre-moi un graphique', icon: 'graph', colors: ['#17A5BE', '#026273'] }
+  ];
+  function ChatStarters(p) {
+    var items = p.items || STARTERS, inset = p.inset != null ? p.inset : 20;
+    return h('nav', { 'aria-label': p.label || 'Idées pour commencer', className: 'tia-scroll', style: { display: 'flex', gap: 8, padding: '4px ' + inset + 'px', overflowX: 'auto', fontFamily: FONT } },
+      items.map(function (it) {
+        return h('button', { key: it.id || it.label, type: 'button', onClick: function () { if (p.onPick) p.onPick(it.message || it.label, it.id); },
+          style: { flexShrink: 0, height: 40, padding: '0 16px', border: 'none', borderRadius: 999, background: 'linear-gradient(90deg, ' + it.colors[0] + ' 0%, ' + it.colors[1] + ' 100%)', boxShadow: 'var(--shadow-sm)', color: '#fff', display: 'flex', alignItems: 'center', gap: 8, fontFamily: FONT, fontSize: 14, fontWeight: 700, whiteSpace: 'nowrap', cursor: 'pointer' } },
+          h(Icon, { name: it.icon, size: 16, strokeWidth: 2 }), it.label);
+      }));
+  }
+
+  function VisualChip(p) {
+    var k = vkind(p.kind);
+    var board = p.kind === 'whiteboard' || p.kind === 'board';
+    return h('button', { type: 'button', onClick: p.onClick, style: { alignSelf: 'flex-start', marginLeft: p.inChat ? 40 : 0, height: 40, padding: '0 16px', border: 'none', borderRadius: 999, background: board ? 'var(--azure-600)' : 'var(--violet-600)', color: '#fff', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: FONT, fontSize: 14, fontWeight: 700, whiteSpace: 'nowrap', cursor: 'pointer' } },
+      h(Icon, { name: k.icon, size: 18, strokeWidth: 2 }), p.label || ('Voir ' + k.noun));
+  }
+
+  function ConversationDrawer(p) {
+    var top = p.topInset != null ? p.topInset : 56;
+    function row(it, i) {
+      var s = topicOf(it.subject);
+      return h('button', { key: it.id || i, type: 'button', 'aria-current': it.active ? 'true' : undefined, onClick: function () { if (p.onOpen) p.onOpen(it.id); },
+        style: { width: '100%', display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, padding: '0 8px', border: 'none', borderRadius: 16, background: it.active ? 'var(--blue-100)' : 'transparent', color: 'var(--text)', textAlign: 'left', fontFamily: FONT, cursor: 'pointer' } },
+        h('span', { 'aria-hidden': 'true', style: { width: 40, height: 40, flexShrink: 0, borderRadius: 12, background: s.gradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: s.icon, size: 20 })),
+        h('span', { style: { flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' } },
+          h('span', { style: { fontSize: 16, lineHeight: '22px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, it.title),
+          h('span', { style: { fontSize: 12, lineHeight: '16px', color: 'var(--text-secondary)' } }, s.name)));
+    }
+    return h('div', { role: 'dialog', 'aria-label': p.title || 'Tes discussions', style: { width: p.width || 335, height: p.height || '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--bg)', borderRadius: '0 24px 24px 0', boxShadow: 'var(--shadow-lg)', fontFamily: FONT, color: 'var(--text)' } },
+      h('header', { style: { position: 'relative', overflow: 'hidden', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16, padding: top + 'px 16px 20px', borderRadius: '0 0 32px 32px', background: 'linear-gradient(170deg, var(--blue-500) 0%, var(--blue-600) 55%, var(--blue-700) 100%)', color: '#fff' } },
+        top >= 48 ? h('span', { 'aria-hidden': 'true', style: { position: 'absolute', top: top - 48, right: -44, width: 136, height: 44, borderRadius: 22, background: 'rgba(255,255,255,0.08)' } }) : null,
+        h('div', { style: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+          h('h2', { style: { margin: 0, fontSize: 28, lineHeight: '34px', fontWeight: 900 } }, p.title || 'Tes discussions'),
+          h('button', { type: 'button', onClick: p.onClose, 'aria-label': 'Fermer', style: { width: 44, height: 44, border: 'none', borderRadius: 999, background: 'rgba(255,255,255,0.16)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, h(Icon, { name: 'close', size: 22, strokeWidth: 2 }))),
+        h('button', { type: 'button', onClick: p.onNew, style: { position: 'relative', height: 48, border: 'none', borderRadius: 16, background: '#fff', color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: FONT, fontSize: 16, fontWeight: 700, cursor: 'pointer' } },
+          h('span', { style: { display: 'flex', color: 'var(--primary)' } }, h(Icon, { name: 'plus', size: 20, strokeWidth: 2.25 })), p.newLabel || 'Nouvelle discussion')),
+      h('div', { className: 'tia-scroll', style: { flexGrow: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', padding: '0 8px' } },
+        (p.groups || []).map(function (g, gi) {
+          return h(React.Fragment, { key: gi },
+            h('h3', { style: { margin: 0, padding: '16px 8px 8px', fontSize: 12, lineHeight: '16px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' } }, g.label),
+            (g.items || []).map(row));
+        }),
+        p.hint === false ? null : h('p', { style: { margin: 'auto 8px 0', padding: '12px 0 28px', fontSize: 12, lineHeight: '16px', color: 'var(--text-secondary)', textAlign: 'center' } }, p.hint || 'Appui long sur une discussion pour la supprimer.')));
+  }
+
+  function PhotoSourceDialog(p) {
+    function choose(s) { if (p.onChoose) p.onChoose(s); }
+    var bold = { fontWeight: 700 };
+    return h('div', { role: 'dialog', 'aria-label': p.title || 'La photo de ton exercice', style: { boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 12, padding: 24, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-lg)', fontFamily: FONT, color: 'var(--text)' } },
+      h('h2', { style: { margin: 0, fontSize: 22, lineHeight: '30px', fontWeight: 900 } }, p.title || 'La photo de ton exercice'),
+      h('p', { style: { margin: '0 0 4px', fontSize: 14, lineHeight: '20px', color: 'var(--text-secondary)' } }, p.hint || 'Cadre seulement l’exercice, sans ton nom.'),
+      h(Button, { fullWidth: true, brand: true, icon: 'camera', onClick: function () { choose('camera'); } }, h('span', { style: bold }, 'Prendre une photo')),
+      h(Button, { fullWidth: true, variant: 'soft', icon: 'image', onClick: function () { choose('library'); } }, h('span', { style: bold }, 'Choisir dans la galerie')),
+      h(Button, { fullWidth: true, variant: 'white', onClick: p.onCancel }, h('span', { style: bold }, 'Annuler')));
+  }
+
   function VoiceVisualizer(p) {
     var tk = useState(0);
     var state = p.state || 'speaking';
@@ -465,7 +593,7 @@
     var open = p.open !== false;
     var collapsible = p.collapsible !== false;
     var btn = function (label, icon, onClick, extra) {
-      return h('button', assign({ type: 'button', 'aria-label': label, onClick: onClick, style: { width: 44, height: 44, flexShrink: 0, border: 'none', borderRadius: 14, background: 'var(--surface)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, extra),
+      return h('button', assign({ type: 'button', 'aria-label': label, onClick: onClick, style: { width: 48, height: 48, flexShrink: 0, border: 'none', borderRadius: 16, background: 'var(--surface)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, extra),
         h(Icon, { name: icon, size: 20, strokeWidth: 2, style: icon === 'chevronUp' ? { transform: 'rotate(' + (open ? 0 : 180) + 'deg)', transition: 'transform 0.25s ease' } : null }));
     };
     var titles = [
@@ -553,15 +681,17 @@
     var total = steps.length + (p.result ? 1 : 0);
     var shown = p.progress != null ? p.progress : total;
     var last = Math.min(shown, total) - 1;
-    var pen = function (i) { return p.writing && i === last ? h('span', { className: 'tia-pen', 'aria-hidden': 'true' }) : null; };
-    var mathStyle = { fontFamily: MATH_FONT, fontSize: 24, lineHeight: 1.25, color: 'var(--text)', whiteSpace: 'nowrap' };
+    var ch = !!p.chalk;
+    var C = ch ? { text: '#F4F1E6', op: '#9CC8FF', note: 'rgba(244,241,230,0.85)', result: '#FF8A7A' } : { text: 'var(--text)', op: 'var(--primary)', note: 'var(--text)', result: 'var(--red-500)' };
+    var pen = function (i) { return p.writing && i === last ? h('span', { className: ch ? 'tia-chalk' : 'tia-pen', 'aria-hidden': 'true' }) : null; };
+    var mathStyle = { fontFamily: MATH_FONT, fontSize: 24, lineHeight: 1.25, color: C.text, whiteSpace: 'nowrap' };
     var n = 0;
-    var note = function (txt, color) { var mark = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'][n++] || '•'; return h('span', { style: { flexShrink: 0, width: 118, fontSize: 12, lineHeight: '16px', fontWeight: 700, color: color || 'var(--text)' } }, mark + ' ' + txt); };
+    var note = function (txt, color) { var mark = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'][n++] || '•'; return h('span', { style: { flexShrink: 0, width: 118, fontSize: 12, lineHeight: '16px', fontWeight: 700, color: color || C.note } }, mark + ' ' + txt); };
     var fade = function (vis) { return { opacity: vis ? 1 : 0, transition: 'opacity 0.45s ease' }; };
     var rows = [];
     steps.forEach(function (st, i) {
       var vis = i < shown;
-      if (st.op && i > 0) rows.push(h('div', { key: 'o' + i, style: assign({ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 12, minHeight: 24, color: 'var(--primary)' }, fade(vis)) },
+      if (st.op && i > 0) rows.push(h('div', { key: 'o' + i, style: assign({ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 12, minHeight: 24, color: C.op }, fade(vis)) },
         h('span', { style: { fontSize: 12, fontWeight: 700 } }, '↓'), h('span', { style: { fontFamily: MATH_FONT, fontSize: 17, whiteSpace: 'nowrap' } }, mathText(st.op))));
       rows.push(h('div', { key: 'r' + i, style: assign({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 36 }, fade(vis)) },
         h('span', { style: { display: 'flex', alignItems: 'center', gap: 8 } }, h('span', { style: mathStyle }, mathText(st.expr)), pen(i)),
@@ -572,10 +702,10 @@
       var ring = rvis && p.circled !== false;
       rows.push(h('div', { key: 'res', style: assign({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 40, marginTop: 4 }, fade(rvis)) },
         h('span', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
-          h('span', { style: assign({}, mathStyle, { padding: '0 14px', borderRadius: 999, border: '2.5px solid ' + (ring ? 'var(--red-500)' : 'transparent'), color: 'var(--red-500)', transition: 'border-color 0.6s ease' }) }, mathText(p.result)), pen(steps.length)),
-        note(p.resultNote || 'Solution', 'var(--red-600)')));
+          h('span', { style: assign({}, mathStyle, { padding: '0 14px', borderRadius: 999, border: '2.5px solid ' + (ring ? C.result : 'transparent'), color: C.result, transition: 'border-color 0.6s ease' }) }, mathText(p.result)), pen(steps.length)),
+        note(p.resultNote || 'Solution', ch ? C.note : 'var(--red-600)')));
     }
-    return h('div', { role: 'img', 'aria-label': p.description || 'Tableau blanc', style: { position: 'relative', display: 'flex', flexDirection: 'column', gap: 2, fontFamily: FONT, color: 'var(--text)' } }, rows);
+    return h('div', { role: 'img', 'aria-label': p.description || 'Tableau blanc', style: { position: 'relative', display: 'flex', flexDirection: 'column', gap: 2, fontFamily: FONT, color: C.text } }, rows);
   }
 
   /* ---------- Appel vocal (v2.6) ---------- */
@@ -627,13 +757,14 @@
     muted: { label: 'Ton micro est coupé', icon: 'micOff', bg: GLASS },
     connecting: { label: 'Connexion…', icon: 'more', bg: GLASS },
     ended: { label: 'Appel terminé', icon: 'hangup', bg: GLASS },
-    error: { label: 'Connexion perdue', icon: 'warning', bg: GLASS }
+    error: { label: 'Connexion perdue', icon: 'warning', bg: GLASS },
+    limit: { label: 'Appels du jour terminés', icon: 'phoneOff', bg: GLASS }
   };
   function VoiceStatus(p) {
     var state = p.state || 'speaking';
     var c = VOICE_PILLS[state === 'listening' && p.listenColor === 'orange' ? 'listeningOrange' : state] || VOICE_PILLS.speaking;
     var sm = p.size === 'sm';
-    return h('span', { 'aria-live': 'polite', style: { display: 'inline-flex', alignItems: 'center', gap: 8, height: sm ? 32 : 40, padding: sm ? '0 14px 0 10px' : '0 18px 0 14px', boxSizing: 'border-box', borderRadius: 999, background: c.bg, boxShadow: c.glow ? '0 6px 18px ' + c.glow + ', inset 0 0 0 1.5px rgba(255,255,255,0.28)' : 'none', color: '#fff', fontFamily: FONT, fontSize: sm ? 13 : 15, fontWeight: 700, whiteSpace: 'nowrap', transition: 'box-shadow 0.3s ease' } },
+    return h('span', { 'aria-live': 'polite', style: { display: 'inline-flex', alignItems: 'center', gap: 8, height: sm ? 32 : 40, padding: sm ? '0 14px 0 10px' : '0 18px 0 14px', boxSizing: 'border-box', borderRadius: 999, background: p.hud && !c.glow ? HUD.ink : c.bg, boxShadow: p.hud ? '0 4px 0 rgba(12,22,60,0.30)' : (c.glow ? '0 6px 18px ' + c.glow + ', inset 0 0 0 1.5px rgba(255,255,255,0.28)' : 'none'), border: p.hud ? '2.5px solid ' + HUD.ink : 'none', color: '#fff', fontFamily: FONT, fontSize: sm ? 13 : 15, fontWeight: 700, whiteSpace: 'nowrap', transition: 'box-shadow 0.3s ease' } },
       h(Icon, { name: c.icon, size: sm ? 16 : 18, strokeWidth: 2, style: c.icon === 'hangup' ? { transform: 'rotate(135deg)' } : null }), p.label || c.label);
   }
 
@@ -678,7 +809,7 @@
   /* ---------- Flashcards ---------- */
   function DailyReviewCard(p) {
     var list = (p.subjects || []).slice(0, 3);
-    return h(Card, { style: { padding: 24, display: 'flex', flexDirection: 'column', gap: 16 } },
+    return h(Card, { style: assign({ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }, lift(p, 'white')) },
       h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: -40, top: -40, width: 140, height: 140, borderRadius: 999, background: 'var(--orange-100)' } }),
       h('div', { style: { position: 'relative', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 } },
         h('div', { style: { display: 'flex', flexDirection: 'column', gap: 4 } },
@@ -732,8 +863,8 @@
     var right = answered && picked === p.answer;
     function pick(i) { if (answered) return; if (p.picked === undefined) st[1](i); if (p.onAnswer) p.onAnswer(i, i === p.answer); }
     var fb = !answered ? { bg: 'var(--bg)', color: 'var(--text-secondary)', text: p.hint || 'Choisis la bonne réponse parmi les 4 propositions.' }
-      : right ? { bg: 'var(--success-soft)', color: 'var(--success-strong)', text: 'Bien joué ! ' + (p.explanation || '') + ' Carte rangée dans « Je sais ».' }
-      : { bg: 'var(--warning-soft)', color: 'var(--warning-strong)', text: 'Pas tout à fait : c’était ' + p.options[p.answer] + '. ' + (p.explanation || '') + ' On la revoit demain.' };
+      : right ? { bg: 'var(--success-soft)', color: 'var(--success-strong)', dot: 'var(--success)', icon: 'check', text: 'Bien joué ! ' + (p.explanation || '') + ' Carte rangée dans « Je sais ».' }
+      : { bg: 'var(--warning-soft)', color: 'var(--warning-strong)', dot: 'var(--warning)', icon: 'redo', text: 'Pas tout à fait : c’était ' + p.options[p.answer] + '. ' + (p.explanation || '') + ' On la revoit demain.' };
     return h('section', { 'aria-label': 'Question', style: { overflow: 'hidden', background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-lg)', fontFamily: FONT, color: 'var(--text)' } },
       h('div', { 'aria-hidden': 'true', style: { height: 8, background: s.gradient } }),
       h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: 24 } },
@@ -744,7 +875,9 @@
             var state = !answered ? 'default' : (i === p.answer ? 'correct' : (i === picked ? 'wrong' : 'dimmed'));
             return h(AnswerOption, { key: i, letter: 'ABCD'.charAt(i), state: state, chosen: i === picked, disabled: answered, onClick: function () { pick(i); } }, o);
           })),
-        h('div', { 'aria-live': 'polite', style: { width: '100%', boxSizing: 'border-box', minHeight: 48, padding: '12px 16px', borderRadius: 'var(--radius-2xl)', background: fb.bg, color: fb.color, fontSize: 14, lineHeight: '20px', fontWeight: 500 } }, fb.text)));
+        h('div', { 'aria-live': 'polite', style: { width: '100%', boxSizing: 'border-box', minHeight: 48, padding: '12px 16px', borderRadius: 'var(--radius-2xl)', background: fb.bg, color: fb.color, display: 'flex', alignItems: 'center', gap: 12, fontSize: 14, lineHeight: '20px', fontWeight: 500 } },
+          fb.icon ? h('span', { 'aria-hidden': 'true', style: { width: 28, height: 28, flexShrink: 0, borderRadius: 999, background: fb.dot, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: fb.icon, size: 16, strokeWidth: 2.75 })) : null,
+          h('span', { style: { flexGrow: 1 } }, fb.text))));
   }
 
   function TallyChips(p) {
@@ -754,9 +887,43 @@
   }
 
   /* ---------- Stats ---------- */
+  /* ---------- Flashcards (v2.12) : bouton de la carte suivante, bilan de la session ---------- */
+  function NextCardButton(p) {
+    var on = !!p.answered;
+    return h('button', { type: 'button', onClick: on ? p.onClick : undefined, disabled: !on, style: { width: '100%', height: 52, border: 'none', borderRadius: 'var(--radius-2xl)', background: on ? 'var(--violet-500)' : '#EEF1F6', color: on ? '#fff' : 'var(--text-secondary)', boxShadow: on ? '0 8px 20px rgba(102,46,230,0.30)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: FONT, fontSize: 16, fontWeight: 700, cursor: on ? 'pointer' : 'default', transition: 'background 0.2s ease' } },
+      on ? (p.last ? (p.lastLabel || 'Voir mon bilan') : (p.label || 'Carte suivante')) : (p.waitLabel || 'Choisis une réponse'),
+      on ? h(Icon, { name: 'arrowRight', size: 20, strokeWidth: 2 }) : null);
+  }
+
+  function SessionComplete(p) {
+    var k = p.known || 0, r = p.toReview || 0, goal = p.goal;
+    function chip(label, color) { return h('span', { style: { height: 28, padding: '0 12px', borderRadius: 999, background: '#fff', color: color, fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 } }, label); }
+    var other = { height: 52, boxSizing: 'border-box', border: '1px solid rgba(255,255,255,0.32)', borderRadius: 'var(--radius-2xl)', background: 'rgba(255,255,255,0.16)', color: '#fff', fontFamily: FONT, fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', cursor: 'pointer' };
+    return h('section', { 'aria-label': 'Bilan de la session', style: { position: 'relative', overflow: 'hidden', minHeight: p.minHeight || 540, padding: '28px 24px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, background: 'linear-gradient(160deg, var(--violet-500) 0%, var(--blue-500) 100%)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-lg)', textAlign: 'center', color: '#fff', fontFamily: FONT } },
+      h(Watermark, { name: 'star', size: 180, opacity: 0.14, style: { right: -40, bottom: -36 } }),
+      h('span', { style: { position: 'relative', width: 72, height: 72, borderRadius: 999, background: VEIL, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'check', size: 36, strokeWidth: 2.25 })),
+      h('h2', { style: { position: 'relative', margin: 0, fontSize: 28, lineHeight: '36px', fontWeight: 900 } }, p.title || 'Session terminée !'),
+      h('p', { style: { position: 'relative', margin: 0, maxWidth: 280, fontSize: 16, lineHeight: '24px', fontWeight: 500 } },
+        p.summary || (k + ' carte' + (k > 1 ? 's' : '') + ' maîtrisée' + (k > 1 ? 's' : '') + ', ' + r + ' à revoir demain. Bien joué, on passe à la suite ?')),
+      h('div', { style: { position: 'relative', display: 'flex', gap: 8 } }, chip('Je sais · ' + k, 'var(--success-strong)'), chip('À revoir · ' + r, 'var(--warning-strong)')),
+      p.xp ? h('span', { style: { position: 'relative', display: 'flex', alignItems: 'center', gap: 6, height: 36, padding: '0 14px', borderRadius: 999, background: VEIL, fontSize: 16, fontWeight: 700 } }, h(Icon, { name: 'star', size: 18, strokeWidth: 2 }), '+' + p.xp + ' XP') : null,
+      goal ? h('span', { style: { position: 'relative', display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, lineHeight: '20px', fontWeight: 700 } }, h(Icon, { name: 'target', size: 18, strokeWidth: 2 }),
+        (goal.done >= goal.total ? 'Objectif du jour atteint : ' : 'Objectif du jour : ') + goal.done + ' session' + (goal.done > 1 ? 's' : '') + ' sur ' + goal.total) : null,
+      h('div', { style: { position: 'relative', alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 } },
+        h('button', { type: 'button', onClick: p.onRestart, style: { height: 52, border: 'none', borderRadius: 'var(--radius-2xl)', background: '#fff', color: 'var(--violet-600)', fontFamily: FONT, fontSize: 16, fontWeight: 700, cursor: 'pointer' } }, p.restartLabel || 'Recommencer'),
+        p.otherHref ? h('a', { href: p.otherHref, style: other }, p.otherLabel || 'Choisir un autre chapitre')
+          : h('button', { type: 'button', onClick: p.onOtherChapter, style: other }, p.otherLabel || 'Choisir un autre chapitre')));
+  }
+
   function KpiCard(p) {
     var tone = p.tone || 'blue';
-    return h(Card, { style: { background: TONES[tone] || TONES.blue, color: '#fff', padding: p.compact ? '16px 12px' : 16, display: 'flex', flexDirection: 'column', gap: 8 } },
+    if (p.centered) {
+      return h(Card, { style: assign({ background: TONES[tone] || TONES.blue, color: '#fff', padding: '16px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center'  }, lift(p, tone)) },
+        p.icon ? h(Veil, { icon: p.icon, size: 32, iconSize: 18, background: tone === 'orange' ? '#fff' : VEIL, color: tone === 'orange' ? 'var(--orange-500)' : '#fff' }) : null,
+        h('span', { style: { fontSize: 22, lineHeight: '28px', fontWeight: 900, whiteSpace: 'nowrap' } }, p.value),
+        h('span', { style: { fontSize: 12, lineHeight: '16px', fontWeight: 500 } }, p.label));
+    }
+    return h(Card, { style: assign({ background: TONES[tone] || TONES.blue, color: '#fff', padding: p.compact ? '16px 12px' : 16, display: 'flex', flexDirection: 'column', gap: 8  }, lift(p, tone)) },
       p.icon ? h(Watermark, { name: p.icon, style: { right: -22, bottom: -22 }, opacity: tone === 'orange' ? 0.22 : 0.16 }) : null,
       h('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
         p.icon ? h(Veil, { icon: p.icon, size: 32, iconSize: 18, background: tone === 'orange' ? '#fff' : VEIL, color: tone === 'orange' ? 'var(--orange-500)' : '#fff' }) : null,
@@ -854,8 +1021,59 @@
       h(Icon, { name: 'chevronDown', size: 18, strokeWidth: 2, color: 'var(--gray-500)' }));
   }
 
+  /* Rond de l'enfant (ChildAvatar du code) : son initiale sur le dégradé bleu. */
+  function kidAvatar(name, size, fs) {
+    return h('span', { 'aria-hidden': 'true', style: { flexShrink: 0, width: size, height: size, borderRadius: 999, background: 'linear-gradient(160deg, var(--blue-400) 0%, var(--blue-600) 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: fs, fontWeight: 900 } }, (name || '?').charAt(0).toUpperCase());
+  }
+
+  /* F3 · Choisir l'enfant affiché (v2.18) : une feuille du bas, à portée de pouce. Chaque enfant avec sa classe et son temps de la semaine,
+     l'enfant affiché en violet, et « Ajouter un enfant » en pointillés. */
+  function ChildPickerSheet(p) {
+    var list = p.childList || [];
+    var sel = p.selected != null ? p.selected : (list[0] && list[0].name);
+    function row(c, i) {
+      var on = c.name === sel;
+      var meta = c.meta || ('Classe de ' + c.grade + (c.week ? ' · ' + c.week + ' cette semaine' : ''));
+      return h('button', { key: i, type: 'button', role: 'radio', 'aria-checked': on, onClick: function () { if (p.onSelect) p.onSelect(c); },
+        style: { display: 'flex', alignItems: 'center', gap: 12, width: '100%', padding: '12px 14px', boxSizing: 'border-box', border: '2px solid ' + (on ? 'var(--accent)' : 'transparent'), borderRadius: 20, background: on ? 'var(--violet-100)' : 'var(--bg)', color: 'var(--text)', textAlign: 'left', fontFamily: FONT, cursor: 'pointer' } },
+        kidAvatar(c.name, 44, 18),
+        h('span', { style: { flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 } },
+          h('span', { style: { fontSize: 17, lineHeight: '22px', fontWeight: 900 } }, c.name),
+          h('span', { style: { fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } }, meta)),
+        on ? h('span', { 'aria-hidden': 'true', style: { width: 26, height: 26, flexShrink: 0, borderRadius: 999, background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'check', size: 16, strokeWidth: 3 }))
+          : h('span', { 'aria-hidden': 'true', style: { width: 26, height: 26, flexShrink: 0, boxSizing: 'border-box', borderRadius: 999, border: '2px solid var(--border)', background: '#fff' } }));
+    }
+    var sheet = h('section', { role: 'dialog', 'aria-modal': 'true', 'aria-label': p.title || 'Vos enfants', style: assign({ display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 20px 32px', background: 'var(--surface)', borderRadius: '32px 32px 0 0', boxShadow: '0 -12px 32px rgba(3,39,110,0.25)', fontFamily: FONT, color: 'var(--text)' }, p.veil === false ? p.style : null) },
+      h('span', { 'aria-hidden': 'true', style: { alignSelf: 'center', width: 40, height: 5, borderRadius: 999, background: 'var(--border)' } }),
+      h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+        h('h2', { style: { margin: 0, fontSize: 22, lineHeight: '30px', fontWeight: 900 } }, p.title || 'Vos enfants'),
+        h('button', { type: 'button', onClick: p.onClose, 'aria-label': 'Fermer', style: { width: 44, height: 44, border: 'none', borderRadius: 999, background: 'var(--bg)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, h(Icon, { name: 'close', size: 20, strokeWidth: 2 }))),
+      h('div', { role: 'radiogroup', 'aria-label': 'Enfant affiché', style: { display: 'flex', flexDirection: 'column', gap: 10 } }, list.map(row)),
+      p.onAdd || p.addHref || p.addHint ? h(p.addHref ? 'a' : 'button', { type: p.addHref ? undefined : 'button', href: p.addHref, onClick: p.onAdd,
+        style: { display: 'flex', alignItems: 'center', gap: 12, width: '100%', padding: '12px 14px', boxSizing: 'border-box', border: '2px dashed var(--violet-200)', borderRadius: 20, background: 'transparent', color: 'var(--violet-600)', textAlign: 'left', textDecoration: 'none', fontFamily: FONT, cursor: 'pointer' } },
+        h('span', { style: { width: 44, height: 44, flexShrink: 0, borderRadius: 999, background: 'var(--violet-100)', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'plus', size: 20, strokeWidth: 2.5 })),
+        h('span', { style: { display: 'flex', flexDirection: 'column', gap: 2 } },
+          h('span', { style: { fontSize: 16, lineHeight: '22px', fontWeight: 700 } }, p.addLabel || 'Ajouter un enfant'),
+          p.addHint ? h('span', { style: { fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } }, p.addHint) : null)) : null);
+    if (p.veil === false) return sheet;
+    return h('div', { style: assign({ position: 'absolute', inset: 0, zIndex: 20, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(0,6,18,0.40)' }, p.style) }, sheet);
+  }
+
+  /* F4 · Demande de liaison d'un enfant, en tête de P1 (v2.18). La carte violet doux de l'app ; « Refuser » en rouge doux,
+     pour qu'on ne le confonde pas avec « Accepter » (décision de Romain). */
+  function LinkRequestCard(p) {
+    return h('section', { 'aria-label': 'Demande de liaison', style: assign({ display: 'flex', flexDirection: 'column', gap: 12, padding: 20, borderRadius: 'var(--radius-3xl)', background: 'var(--accent-soft)', fontFamily: FONT, color: 'var(--text)' }, p.style) },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } }, kidAvatar(p.name, 44, 18),
+        h('span', { style: { flexGrow: 1, fontSize: 16, lineHeight: '22px', fontWeight: 700 } }, p.title || ((p.name || 'Votre enfant') + ' souhaite relier son compte au vôtre'))),
+      h('p', { style: { margin: 0, fontSize: 14, lineHeight: '20px', color: 'var(--text-secondary)' } }, p.body || 'En acceptant, vous validez son compte et vous suivez ses progrès.'),
+      p.error ? h('p', { role: 'alert', style: { margin: 0, fontSize: 13, lineHeight: '18px', fontWeight: 500, color: 'var(--error-strong)' } }, p.error) : null,
+      h('div', { style: { display: 'flex', gap: 12 } },
+        h(Button, { variant: 'danger', fullWidth: true, disabled: p.pending, href: p.declineHref, onClick: p.onDecline }, p.declineLabel || 'Refuser'),
+        h(Button, { variant: 'vivid', fullWidth: true, disabled: p.pending, href: p.acceptHref, onClick: p.onAccept }, p.acceptLabel || 'Accepter')));
+  }
+
   function HeroCard(p) {
-    return h(Card, { as: 'section', attrs: { 'aria-label': p.label || p.title }, style: { background: TONES.hero, color: '#fff', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 } },
+    return h(Card, { as: 'section', attrs: { 'aria-label': p.label || p.title }, style: assign({ background: TONES.hero, color: '#fff', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }, lift(p, 'hero')) },
       h(Watermark, { name: p.icon || 'star', size: 140, opacity: 0.12, style: { right: -36, top: -30 } }),
       p.kicker || p.title ? h('div', { style: { position: 'relative', display: 'flex', alignItems: 'center', gap: 12 } },
         p.logo ? h('span', { style: { width: 44, height: 44, borderRadius: 999, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' } }, h(Logo, { size: 36, alt: '' })) : null,
@@ -876,9 +1094,18 @@
   }
 
   function AdviceCard(p) {
-    return h('section', { 'aria-label': p.title || "Comment l'encourager", style: { display: 'flex', flexDirection: 'column', gap: 12, padding: 20, background: 'var(--accent-soft)', borderRadius: 'var(--radius-3xl)', fontFamily: FONT } },
-      h('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } }, h(Veil, { icon: 'bulb', background: SUBJECTS['physique-chimie'].gradient, iconSize: 20 }), h('span', { style: { fontSize: 18, lineHeight: '24px', fontWeight: 900, color: 'var(--violet-600)' } }, p.title || "Comment l'encourager")),
-      h('p', { style: { margin: 0, fontSize: 15, lineHeight: '22px', color: 'var(--violet-800)' } }, p.children));
+    var qs = p.questions || [];
+    return h('section', { 'aria-label': p.title || 'Comment l’encourager', style: { display: 'flex', flexDirection: 'column', gap: 12, padding: 20, background: 'var(--accent-soft)', borderRadius: 'var(--radius-3xl)', fontFamily: FONT } },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } }, h(Veil, { icon: 'bulb', background: SUBJECTS['physique-chimie'].gradient, iconSize: 20 }), h('span', { style: { fontSize: 22, lineHeight: '30px', fontWeight: 900, color: 'var(--violet-600)' } }, p.title || 'Comment l’encourager')),
+      h('p', { style: { margin: 0, fontSize: 15, lineHeight: '22px', color: 'var(--violet-800)' } }, p.children),
+      qs.length ? h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 'var(--radius-2xl)', background: 'var(--surface)' } },
+        h('span', { style: { fontSize: 14, lineHeight: '20px', fontWeight: 700, color: 'var(--violet-600)' } }, p.questionsTitle || 'Questions à lui poser'),
+        h('ul', { style: { margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 } },
+          qs.map(function (q, i) {
+            return h('li', { key: i, style: { display: 'flex', alignItems: 'flex-start', gap: 8 } },
+              h(Icon, { name: 'bubble', size: 18, strokeWidth: 1.75, color: 'var(--violet-600)', style: { marginTop: 1 } }),
+              h('span', { style: { fontSize: 14, lineHeight: '20px', color: 'var(--violet-800)' } }, q));
+          }))) : null);
   }
 
   function SubjectProgressCard(p) {
@@ -891,7 +1118,8 @@
     chapters.forEach(function (c) { counts[c.status] = (counts[c.status] || 0) + 1; });
     var meta = [counts.acquired ? counts.acquired + ' acquis' : null, counts.inProgress ? counts.inProgress + ' en cours' : null, counts.toConsolidate ? counts.toConsolidate + ' à consolider' : null].filter(Boolean).join(' · ');
     var up = (p.delta || 0) >= 0;
-    return h('div', { style: { background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', overflow: 'hidden', fontFamily: FONT, color: 'var(--text)' } },
+    var tinted = p.tinted !== false;
+    return h('div', { style: tinted ? { background: s.soft, borderRadius: 'var(--radius-2xl)', overflow: 'hidden', fontFamily: FONT, color: 'var(--text)' } : { background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', overflow: 'hidden', fontFamily: FONT, color: 'var(--text)' } },
       h('button', { type: 'button', onClick: toggle, 'aria-expanded': open, style: { width: '100%', display: 'flex', flexDirection: 'column', gap: 14, padding: '18px 20px', border: 'none', background: 'transparent', textAlign: 'left', color: 'var(--text)', fontFamily: FONT, cursor: 'pointer' } },
         h('span', { style: { width: '100%', display: 'flex', alignItems: 'center', gap: 14 } },
           h('span', { style: { width: 48, height: 48, flexShrink: 0, borderRadius: 16, background: s.gradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: p.subject, size: 22 })),
@@ -903,7 +1131,7 @@
         h('span', { style: { alignSelf: 'center', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 700, color: s.ink } }, open ? 'Masquer les chapitres' : 'Voir les ' + chapters.length + ' chapitres', h(Icon, { name: 'chevronDown', size: 16, strokeWidth: 2.25, style: { transform: 'rotate(' + (open ? 180 : 0) + 'deg)', transition: 'transform 0.25s ease' } }))),
       open ? h('ul', { style: { margin: 0, padding: '0 20px 20px', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 } },
         chapters.map(function (c, i) {
-          return h('li', { key: i, style: { display: 'flex', alignItems: 'center', gap: 12, minHeight: 52, padding: '10px 12px 10px 14px', borderRadius: 16, background: s.soft } },
+          return h('li', { key: i, style: { display: 'flex', alignItems: 'center', gap: 12, minHeight: 52, padding: '10px 12px 10px 14px', borderRadius: 16, background: tinted ? 'var(--surface)' : s.soft } },
             h('span', { style: { flexGrow: 1, display: 'flex', flexDirection: 'column' } }, h('span', { style: { fontSize: 14, lineHeight: '20px', fontWeight: 700 } }, c.title), c.meta ? h('span', { style: { fontSize: 12, lineHeight: '16px', color: 'var(--text-secondary)' } }, c.meta) : null),
             h(StatusChip, { status: c.status }));
         })) : null);
@@ -937,6 +1165,67 @@
     return h('div', { style: style }, body);
   }
 
+  /* ---------- Côté jeu (HUD d'Explorer, v2.10) : texte de jeu, bouton et panneau de bois ---------- */
+  var HUD = {
+    ink: '#16244F', drop: 'rgba(12,22,60,0.35)', shine: 'rgba(255,255,255,0.38)',
+    wood: { frame: '#3F230D', bevel: 'rgba(255,220,170,0.45)', groove: '#2D1808', nail: ['#FBFBFB', '#9C9C9C'], parchment: '#FFF2D9', parchmentBorder: '#CAA06A' },
+    gold: ['#FFF09A', '#FFC933', '#F0A500'], goldDepth: '#B87400', streak: '#F07A12', tab: ['#5B95FF', '#2E6BE6']
+  };
+  var WOOD = '/_blob/f9058aac2d90c6338ad0a9292d484762';
+  var GAME_FONT = 'var(--font-game, "Lilita One", "Satoshi", sans-serif)';
+  var AROUND = [[1, 0], [-1, 0], [0, 1], [0, -1], [0.7, 0.7], [-0.7, 0.7], [0.7, -0.7], [-0.7, -0.7]];
+  function r1(v) { return Math.round(v * 10) / 10; }
+  function gameShadow(stroke, drop) {
+    var out = [];
+    if (stroke) AROUND.forEach(function (a) { out.push(r1(a[0] * stroke) + 'px ' + r1(a[1] * stroke) + 'px 0 ' + HUD.ink); });
+    if (drop) AROUND.forEach(function (a) { out.push(r1(a[0] * stroke) + 'px ' + r1(a[1] * stroke + drop) + 'px 0 ' + HUD.drop); });
+    return out.length ? out.join(', ') : 'none';
+  }
+
+  /* Texte de jeu : Lilita One, blanc cerné de bleu nuit, avec une ombre portée. */
+  function GameText(p) {
+    var size = p.size || 17;
+    var stroke = p.stroke != null ? p.stroke : Math.max(2, Math.round(size / 9));
+    var drop = p.drop != null ? p.drop : Math.round(size / 8);
+    return h(p.as || 'span', { style: assign({ fontFamily: GAME_FONT, fontSize: size, lineHeight: Math.round(size * 1.2) + 'px', letterSpacing: 0.3, fontWeight: 400, color: p.color || '#fff', textAlign: p.align || 'left', textShadow: gameShadow(stroke, drop) }, p.style) }, p.children);
+  }
+
+  /* Bouton de bois : une planche du panneau « Ta quête », cadre sombre, biseau clair, posée sur un rebord. */
+  function WoodButton(p) {
+    var size = p.size || 48, depth = 5;
+    var st = useState(false), pressed = st[0];
+    var layer = { position: 'absolute', left: 0, right: 0, height: size, boxSizing: 'border-box', borderRadius: 18, border: '2.5px solid ' + HUD.wood.frame };
+    return h('button', { type: 'button', onClick: p.onClick, 'aria-label': p.ariaLabel || p.label,
+        onPointerDown: function () { st[1](true); }, onPointerUp: function () { st[1](false); }, onPointerLeave: function () { st[1](false); },
+        style: { position: 'relative', display: 'block', width: p.width || '100%', height: size + depth, padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: FONT } },
+      h('span', { 'aria-hidden': 'true', style: assign({}, layer, { top: depth, background: HUD.wood.groove }) }),
+      h('span', { style: assign({}, layer, { top: pressed ? depth - 1 : 0, overflow: 'hidden', background: HUD.wood.frame + ' url(' + WOOD + ') center / cover no-repeat', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '0 16px' }) },
+        h('span', { 'aria-hidden': 'true', style: { position: 'absolute', inset: 0, borderRadius: 16, border: '2px solid ' + HUD.wood.bevel } }),
+        h(GameText, { size: Math.round(size * 0.36), align: 'center', style: { position: 'relative', whiteSpace: 'nowrap' } }, p.label),
+        p.icon ? h(Icon, { name: p.icon, size: Math.round(size * 0.42), strokeWidth: 3, color: '#fff', style: { position: 'relative' } }) : null),
+      p.badge ? h('span', { 'aria-hidden': 'true', style: { position: 'absolute', top: -6, right: -6, minWidth: 22, height: 22, boxSizing: 'border-box', padding: '0 4px', borderRadius: 999, border: '2px solid ' + HUD.ink, background: HUD.streak, display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+        h(GameText, { size: 12, stroke: 2, drop: 0, align: 'center' }, String(p.badge))) : null);
+  }
+
+  /* Panneau de bois : planches, cadre, clous aux quatre coins et ruban bleu sur le bord haut. */
+  function WoodFrame(p) {
+    var nails = [{ top: 8, left: 8 }, { top: 8, right: 8 }, { bottom: 8, left: 8 }, { bottom: 8, right: 8 }];
+    return h('section', { 'aria-label': p.ariaLabel || p.tab, style: assign({ position: 'relative', marginTop: p.tab ? 14 : 0, padding: 4, borderRadius: 28, background: HUD.wood.frame, boxShadow: 'var(--shadow-lg)', fontFamily: FONT }, p.style) },
+      h('div', { style: { position: 'relative', borderRadius: 24, overflow: 'hidden', background: HUD.wood.frame + ' url(' + WOOD + ') center / cover no-repeat' } },
+        h('span', { 'aria-hidden': 'true', style: { position: 'absolute', inset: 0, borderRadius: 24, border: '2px solid ' + HUD.wood.bevel, pointerEvents: 'none' } }),
+        h('div', { style: { position: 'relative', display: 'flex', flexDirection: 'column', gap: 8, padding: '20px 16px 12px' } }, p.children)),
+      nails.map(function (n, i) { return h('span', { key: i, 'aria-hidden': 'true', style: assign({ position: 'absolute', width: 8, height: 8, boxSizing: 'border-box', borderRadius: 999, border: '1.5px solid ' + HUD.wood.groove, background: 'linear-gradient(160deg, ' + HUD.wood.nail[0] + ' 0%, ' + HUD.wood.nail[1] + ' 100%)' }, n) }); }),
+      p.tab ? h('span', { style: { position: 'absolute', top: -14, left: 20, padding: 2.5, borderRadius: 999, background: HUD.ink } },
+        h('span', { style: { height: 24, padding: '0 12px', display: 'flex', alignItems: 'center', borderRadius: 999, background: 'linear-gradient(180deg, ' + HUD.tab[0] + ' 0%, ' + HUD.tab[1] + ' 100%)' } },
+          h(GameText, { size: 13, stroke: 2, drop: 0 }, p.tab))) : null);
+  }
+
+  /* Pastille dorée dans une encoche sombre (compte de trophées, étoiles). */
+  function WoodChip(p) {
+    return h('span', { role: 'img', 'aria-label': p.label || p.value, style: { display: 'flex', alignItems: 'center', gap: 4, height: 30, boxSizing: 'border-box', padding: '0 8px', borderRadius: 999, border: '2px solid ' + HUD.goldDepth, background: HUD.wood.groove } },
+      h(Icon, { name: p.icon || 'medal', size: 18, color: HUD.gold[1] }), h(GameText, { size: 17, stroke: 2, drop: 0 }, p.value));
+  }
+
   /* ---------- Profil de l'élève (v2.8) ---------- */
   var PROFILE_TONES = {
     orange: ['linear-gradient(160deg, var(--orange-400) 0%, var(--orange-600) 50%, var(--orange-700) 100%)', 'rgba(208,136,37,0.35)'],
@@ -965,10 +1254,9 @@
         h('h1', { style: { margin: 0, fontSize: 44, lineHeight: '48px', fontWeight: 900 } }, p.name),
         p.grade ? h('span', { style: { alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 6, height: 30, padding: '0 12px 0 10px', borderRadius: 999, background: GLASS, fontSize: 13, fontWeight: 700 } }, h(Icon, { name: 'cap', size: 16, strokeWidth: 2 }), 'Élève de ' + p.grade) : null,
         p.since ? h('span', { style: { fontSize: 13, lineHeight: '18px', fontWeight: 500, opacity: 0.85 } }, p.since) : null,
-        h('button', { type: 'button', onClick: p.onEditAvatar, 'aria-label': (p.avatarSrc ? 'Modifier l’avatar' : 'Créer mon avatar') + (news ? ', ' + news + ' nouveauté' + (news > 1 ? 's' : '') : ''),
-          style: { position: 'relative', alignSelf: 'flex-start', marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px 0 12px', border: 'none', borderRadius: 999, background: '#fff', color: 'var(--blue-600)', fontFamily: FONT, fontSize: 14, fontWeight: 700, boxShadow: '0 8px 20px rgba(3,39,110,0.25)', cursor: 'pointer' } },
-          h(Icon, { name: 'pencil', size: 16, strokeWidth: 2 }), p.avatarSrc ? 'Modifier l’avatar' : 'Créer mon avatar',
-          news ? h('span', { 'aria-hidden': 'true', style: { position: 'absolute', top: -4, right: -4, minWidth: 20, height: 20, padding: '0 5px', boxSizing: 'border-box', borderRadius: 999, background: 'var(--orange-600)', border: '2px solid #fff', color: '#fff', fontSize: 11, lineHeight: '16px', fontWeight: 900, textAlign: 'center' } }, news) : null)));
+        h('div', { style: { position: 'relative', width: 190, marginTop: 8 } },
+          h(WoodButton, { size: 46, label: p.avatarSrc ? 'Modifier l’avatar' : 'Créer mon avatar', icon: 'pencil', badge: news || null, onClick: p.onEditAvatar,
+            ariaLabel: (p.avatarSrc ? 'Modifier l’avatar' : 'Créer mon avatar') + (news ? ', ' + news + ' nouveauté' + (news > 1 ? 's' : '') + ' dans ta garde-robe' : '') }))));
   }
 
   /* Barre de niveau : pastille du niveau atteint, barre et curseur, pastille du suivant en pointillés. */
@@ -991,7 +1279,7 @@
   /* Résumé du profil : trois chiffres centrés sous leur icône, puis la barre de niveau. */
   function ProfileSummary(p) {
     var stats = p.stats || [];
-    return h('section', { 'aria-label': p.label || 'Mon résumé', style: { display: 'flex', flexDirection: 'column', gap: 16, padding: 20, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' } },
+    return h('section', { 'aria-label': p.label || 'Mon résumé', style: assign({ display: 'flex', flexDirection: 'column', gap: 16, padding: 20, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' }, lift(p, 'white')) },
       h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(' + Math.max(1, stats.length) + ', minmax(0, 1fr))' } },
         stats.map(function (s, i) {
           var t = profileTone(s.tone);
@@ -1005,26 +1293,37 @@
   }
 
   /* Une médaille : disque en dégradé avec son icône, ou grisée avec un cadenas si elle n'est pas gagnée. */
+  var TROPHY_TONES = {
+    orange: ['var(--orange-400)', 'var(--orange-600)', 'var(--orange-700)'], blue: ['var(--blue-400)', 'var(--blue-600)', 'var(--blue-700)'],
+    green: ['var(--green-600)', 'var(--green-700)', 'var(--green-800)'], red: ['var(--red-400)', 'var(--red-600)', 'var(--red-700)'],
+    violet: ['var(--violet-400)', 'var(--violet-600)', 'var(--violet-700)'], cyan: ['var(--cyan-600)', 'var(--cyan-700)', 'var(--cyan-800)']
+  };
   function TrophyBadge(p) {
-    var t = profileTone(p.tone);
-    var medal = p.locked
-      ? { background: '#EEF1F6', color: 'var(--gray-300)', boxShadow: 'inset 0 0 0 3px #DCE2EC' }
-      : { background: t[0], color: '#fff', boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.35), 0 6px 14px rgba(9,17,34,0.14)' };
-    return h('div', { role: 'listitem', 'aria-label': p.label + (p.locked ? ' (à gagner)' : ''), onClick: p.onClick, style: { flexShrink: 0, width: 84, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center', fontFamily: FONT, cursor: p.onClick ? 'pointer' : 'default' } },
-      h('span', { 'aria-hidden': 'true', style: assign({ width: 64, height: 64, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }, medal) }, h(Icon, { name: p.locked ? 'lock' : (p.icon || 'trophy'), size: p.locked ? 24 : 28, strokeWidth: 2 })),
-      h('span', { style: { fontSize: 12, lineHeight: '15px', fontWeight: 700, color: p.locked ? 'var(--gray-300)' : 'var(--text)' } }, p.label));
+    var tone = TROPHY_TONES[p.tone] || TROPHY_TONES.blue;
+    var layer = { position: 'absolute', left: 0, width: 64, height: 64, boxSizing: 'border-box', borderRadius: 999, border: '2.5px solid ' + HUD.ink };
+    var face = p.locked
+      ? h('span', { style: assign({}, layer, { top: 0, borderColor: HUD.wood.frame, background: HUD.wood.groove, display: 'flex', alignItems: 'center', justifyContent: 'center' }) }, h(Icon, { name: 'lock', size: 24, strokeWidth: 2.5, color: HUD.wood.parchmentBorder }))
+      : h('span', { style: assign({}, layer, { top: 0, overflow: 'hidden', background: 'linear-gradient(180deg, ' + HUD.gold[0] + ' 0%, ' + HUD.gold[1] + ' 50%, ' + HUD.gold[2] + ' 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }) },
+          h('span', { 'aria-hidden': 'true', style: { position: 'absolute', top: 0, left: 0, right: 0, height: 25.6, background: HUD.shine } }),
+          h('span', { style: { position: 'relative', width: 48, height: 48, boxSizing: 'border-box', borderRadius: 999, border: '2px solid ' + HUD.ink, background: 'linear-gradient(180deg, ' + tone[0] + ' 0%, ' + tone[1] + ' 50%, ' + tone[2] + ' 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+            h(Icon, { name: p.icon || 'trophy', size: 24, strokeWidth: 2.5, color: '#fff' })));
+    return h('div', { role: 'listitem', 'aria-label': p.label + (p.locked ? ', pas encore gagné' : ''), onClick: p.onClick, style: { flexShrink: 0, width: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, textAlign: 'center', cursor: p.onClick ? 'pointer' : 'default' } },
+      h('span', { 'aria-hidden': 'true', style: { position: 'relative', width: 64, height: 68 } }, h('span', { style: assign({}, layer, { top: 4, background: p.locked ? HUD.wood.frame : HUD.goldDepth }) }), face),
+      h(GameText, { size: 12, stroke: 2, drop: 0, align: 'center', color: p.locked ? HUD.wood.parchment : '#fff', style: { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } }, p.label));
   }
 
   /* Carte « Mes trophées » : titre, compteur, médailles qui défilent sur le côté (les gagnées d'abord). */
   function TrophyShelf(p) {
     var list = p.trophies || [];
     var earned = p.earned != null ? p.earned : list.filter(function (t) { return !t.locked; }).length;
-    return h('section', { 'aria-label': p.title || 'Mes trophées', style: { display: 'flex', flexDirection: 'column', gap: 14, padding: 20, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' } },
-      h('div', { style: { display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 } },
-        h('h2', { style: { margin: 0, fontSize: 22, lineHeight: '28px', fontWeight: 900 } }, p.title || 'Mes trophées'),
-        h('span', { style: { fontSize: 13, lineHeight: '18px', fontWeight: 700, color: 'var(--text-secondary)' } }, earned + ' sur ' + (p.total != null ? p.total : list.length))),
-      h('div', { role: 'list', style: { display: 'flex', gap: 6, margin: '0 -20px', padding: '2px 20px 4px', overflowX: 'auto' } },
-        list.map(function (t, i) { return h(TrophyBadge, assign({ key: i }, t)); })));
+    var count = earned + ' sur ' + (p.total != null ? p.total : list.length);
+    var title = p.title || 'Mes trophées';
+    return h(WoodFrame, { tab: title, ariaLabel: title + ', ' + count },
+      h('div', { style: { display: 'flex', justifyContent: 'flex-end' } }, h(WoodChip, { icon: 'medal', value: count })),
+      h('div', { style: { margin: '0 -16px', overflowX: 'auto', scrollbarWidth: 'none' } },
+        h('div', { role: 'list', style: { position: 'relative', width: 'max-content', display: 'flex', gap: 8, padding: '4px 16px' } },
+          h('span', { 'aria-hidden': 'true', style: { position: 'absolute', top: 68, left: 0, right: 0, height: 10, boxSizing: 'border-box', borderTop: '2px solid ' + HUD.wood.bevel, background: HUD.wood.groove } }),
+          list.map(function (t, i) { return h(TrophyBadge, assign({ key: i }, t)); }))));
   }
 
   /* ---------- Connexion, inscription et onboarding ---------- */
@@ -1035,7 +1334,7 @@
   function space(id) { return SPACE[id === 'parent' || id === 'parents' || id === 'violet' ? 'parents' : 'eleve']; }
   function grad(t) { return t === 'brown' ? SUBJECTS.svt.gradient : (TONES[t] && t !== 'blue' ? TONES[t] : (SUBJECTS[t] ? SUBJECTS[t].gradient : SUBJECTS.francais.gradient)); }
   var FIELD = { width: '100%', height: 52, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 'var(--radius-2xl)', background: 'var(--surface)', boxShadow: 'var(--shadow-sm)', fontFamily: FONT, fontSize: 16, color: 'var(--text)' };
-  var FILLED = { background: 'var(--gray-100)', border: '1px solid #E1E6F0', boxShadow: 'none' };
+  var FIELD_FILLED = { background: 'var(--gray-100)', border: '1px solid #E1E6F0', boxShadow: 'none' };
   var LABEL = { fontSize: 14, lineHeight: '20px', fontWeight: 700, color: 'var(--text)' };
 
   function TextField(p) {
@@ -1052,19 +1351,29 @@
       h('span', { style: { position: 'relative', display: 'block' } },
         p.icon ? h('span', { style: { position: 'absolute', left: 16, top: 16, color: 'var(--gray-400)', display: 'flex' } }, h(Icon, { name: p.icon, size: 20 })) : null,
         h('input', { type: type, value: val, onChange: change, placeholder: p.placeholder, autoComplete: p.autoComplete, inputMode: p.inputMode, maxLength: p.maxLength,
-          style: assign({}, FIELD, p.filled ? FILLED : null, { padding: '0 ' + (pw ? 52 : 16) + 'px 0 ' + (p.icon ? 48 : 16) + 'px', letterSpacing: p.inputMode === 'numeric' ? '0.08em' : undefined }) }),
+          style: assign({}, FIELD, p.filled ? FIELD_FILLED : null, { padding: '0 ' + (pw ? 52 : 16) + 'px 0 ' + (p.icon ? 48 : 16) + 'px', letterSpacing: p.inputMode === 'numeric' ? '0.08em' : undefined }) }),
         pw ? h('button', { type: 'button', onClick: function () { shown[1](!shown[0]); }, 'aria-label': shown[0] ? 'Masquer le mot de passe' : 'Afficher le mot de passe',
           style: { position: 'absolute', right: 6, top: 6, width: 40, height: 40, border: 'none', borderRadius: 12, background: 'transparent', color: 'var(--gray-400)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } },
           h(Icon, { name: shown[0] ? 'eyeOff' : 'eye', size: 20 })) : null),
       p.hint ? h('span', { style: { fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } }, p.hint) : null);
   }
 
+  var SR_ONLY = { position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' };
+  function RulePill(p) {
+    return h('li', { style: { display: 'inline-flex', alignItems: 'center', gap: 6, height: 28, padding: '0 10px 0 6px', boxSizing: 'border-box', borderRadius: 999, background: p.ok ? 'var(--success-soft)' : '#EEF1F6', color: p.ok ? 'var(--success-strong)' : 'var(--text-secondary)', fontFamily: FONT, fontSize: 12, lineHeight: '16px', fontWeight: 700 } },
+      h('span', { style: { width: 16, height: 16, borderRadius: 999, background: p.ok ? 'var(--success)' : '#B7BFCD', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'check', size: 11, strokeWidth: 3 })),
+      p.label, h('span', { style: SR_ONLY }, p.ok ? ' (validé)' : ' (à faire)'));
+  }
   function PasswordRules(p) {
+    if (p.pills) {
+      return h('ul', { 'aria-label': 'Règles du mot de passe', style: { margin: '-6px 0 0', padding: 0, listStyle: 'none', display: 'flex', flexWrap: 'wrap', gap: 6 } },
+        (p.rules || []).map(function (r, i) { return h(RulePill, { key: i, ok: r.ok, label: r.label }); }));
+    }
     return h('ul', { 'aria-label': 'Règles du mot de passe', style: { margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: p.inline ? 'row' : 'column', flexWrap: 'wrap', gap: p.inline ? '6px 14px' : 6, fontFamily: FONT } },
       (p.rules || []).map(function (r, i) {
         return h('li', { key: i, style: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, lineHeight: '18px', fontWeight: 500, color: r.ok ? 'var(--success-strong)' : 'var(--text-secondary)' } },
           h('span', { style: { width: 18, height: 18, borderRadius: 999, background: r.ok ? 'var(--success)' : 'var(--gray-200)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'check', size: 12, strokeWidth: 3 })),
-          r.label, h('span', { style: { position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' } }, r.ok ? ' (validé)' : ' (à faire)'));
+          r.label, h('span', { style: SR_ONLY }, r.ok ? ' (validé)' : ' (à faire)'));
       }));
   }
 
@@ -1124,8 +1433,8 @@
           p.onBack === null ? null : h('button', { type: 'button', onClick: p.onBack, 'aria-label': 'Retour', style: { width: 44, height: 44, padding: 0, border: 'none', borderRadius: 999, background: GLASS, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } },
             h(Icon, { name: 'chevronLeft', size: 22, strokeWidth: 2 }))),
         h('div', { style: { marginTop: -34 } }, h(VoiceAvatar, { size: 96, state: 'speaking', level: hop[0], label: 'Tutor’IA' })),
-        h('h1', { style: { margin: '4px 0 0', fontSize: 28, lineHeight: '34px', fontWeight: 900 } }, p.title),
-        p.subtitle ? h('p', { style: { margin: '4px 0 0', maxWidth: 320, fontSize: 15, lineHeight: '22px', fontWeight: 500, color: 'rgba(255,255,255,0.85)' } }, p.subtitle) : null),
+        h('h1', { style: { margin: '4px 0 0', maxWidth: 330, fontSize: 28, lineHeight: '34px', fontWeight: 900, textWrap: 'balance' } }, p.title),
+        p.subtitle ? h('p', { style: { margin: '4px 0 0', maxWidth: 320, fontSize: 15, lineHeight: '22px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textWrap: 'balance' } }, p.subtitle) : null),
       h('main', { className: 'tia-sheet', style: { position: 'relative', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 16, padding: '24px 20px 32px', background: 'var(--surface)', borderRadius: '32px 32px 0 0', boxShadow: '0 -12px 32px rgba(3,39,110,0.25)', color: 'var(--text)' } },
         p.children,
         p.footer ? h('div', { style: { marginTop: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center', fontSize: 15, lineHeight: '22px', color: 'var(--text-secondary)' } }, p.footer) : null));
@@ -1161,12 +1470,13 @@
   function StepHeader(p) {
     var s = space(p.tone);
     var bars = [];
-    for (var i = 0; i < (p.total || 4); i++) bars.push(h('span', { key: i, style: { flex: '1 1 0', height: 8, borderRadius: 999, background: i < p.step ? s.main : (s === SPACE.parents ? 'var(--violet-200)' : 'var(--blue-200)') } }));
+    var bare = p.back === false;
+    for (var i = 0; i < (p.total || 4); i++) bars.push(h('span', { key: i, style: { flex: '1 1 0', height: bare ? 6 : 8, borderRadius: 999, background: i < p.step ? s.main : (s === SPACE.parents ? 'var(--violet-200)' : 'var(--blue-200)') } }));
     var back = { width: 48, height: 48, flexShrink: 0, borderRadius: 'var(--radius-2xl)', border: 'none', background: 'var(--surface)', boxShadow: 'var(--shadow-sm)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', textDecoration: 'none' };
     return h('div', { style: { display: 'flex', alignItems: 'center', gap: 12, fontFamily: FONT } },
-      p.backHref ? h('a', { href: p.backHref, 'aria-label': 'Retour', style: back }, h(Icon, { name: 'chevronLeft', size: 22, strokeWidth: 2 }))
+      bare ? null : p.backHref ? h('a', { href: p.backHref, 'aria-label': 'Retour', style: back }, h(Icon, { name: 'chevronLeft', size: 22, strokeWidth: 2 }))
         : h('button', { type: 'button', onClick: p.onBack, 'aria-label': 'Retour', style: back }, h(Icon, { name: 'chevronLeft', size: 22, strokeWidth: 2 })),
-      h('div', { style: { flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 6 } },
+      h('div', { style: { flexGrow: 1, display: 'flex', flexDirection: 'column', gap: bare ? 8 : 6 } },
         h(Overline, { color: s.ink }, 'Étape ' + p.step + ' sur ' + (p.total || 4)),
         h('span', { 'aria-hidden': 'true', style: { display: 'flex', gap: 6 } }, bars)),
       p.onSkip || p.skipLabel ? h('button', { type: 'button', onClick: p.onSkip, style: { flexShrink: 0, height: 48, padding: '0 4px', border: 'none', background: 'transparent', fontFamily: FONT, fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', cursor: 'pointer' } }, p.skipLabel || 'Passer') : null);
@@ -1180,6 +1490,8 @@
     function pick(g) { st[1](g); if (p.onChange) p.onChange(g); }
     function chip(g) {
       var on = g === val;
+      if (p.filled) return h('button', { key: g, type: 'button', role: 'radio', 'aria-checked': on, onClick: function () { pick(g); },
+        style: { height: 48, padding: 0, boxSizing: 'border-box', border: '1px solid ' + (on ? s.main : '#E1E6F0'), borderRadius: 14, background: on ? s.main : 'var(--gray-100)', boxShadow: on ? s.shadow : 'none', color: on ? '#fff' : 'var(--text)', fontFamily: FONT, fontSize: 15, fontWeight: 700, cursor: 'pointer' } }, g);
       return h('button', { key: g, type: 'button', role: 'radio', 'aria-checked': on, onClick: function () { pick(g); },
         style: { minWidth: p.grouped === false ? 0 : 68, height: p.grouped === false ? 48 : 52, padding: '0 16px', boxSizing: 'border-box', border: on ? 'none' : '1px solid var(--border)', borderRadius: 'var(--radius-2xl)', background: on ? s.grad : 'var(--surface)', boxShadow: on ? s.shadow : 'var(--shadow-sm)', color: on ? '#fff' : 'var(--text)', fontFamily: FONT, fontSize: p.grouped === false ? 15 : 16, fontWeight: 700, cursor: 'pointer' } }, g);
     }
@@ -1187,11 +1499,11 @@
       var all = [].concat(GRADES[0][1], GRADES[1][1], GRADES[2][1]);
       return h('div', { role: 'radiogroup', 'aria-label': p.label || 'Classe', style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 } }, all.map(chip));
     }
-    return h('div', { role: 'radiogroup', 'aria-label': p.label || 'Classe', style: { display: 'flex', flexDirection: 'column', gap: 16, fontFamily: FONT } },
+    return h('div', { role: 'radiogroup', 'aria-label': p.label || 'Classe', style: { display: 'flex', flexDirection: 'column', gap: p.filled ? 14 : 16, fontFamily: FONT } },
       GRADES.map(function (g) {
         return h('div', { key: g[0], style: { display: 'flex', flexDirection: 'column', gap: 8 } },
           h(Overline, { color: 'var(--text-secondary)' }, g[0]),
-          h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 8 } }, g[1].map(chip)));
+          h('div', { style: p.filled ? { display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 } : { display: 'flex', flexWrap: 'wrap', gap: 8 } }, g[1].map(chip)));
       }));
   }
 
@@ -1257,25 +1569,492 @@
   }
 
   function ParentCodeCard(p) {
-    return h('section', { 'aria-label': 'Code de connexion', style: { position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 14, padding: 24, borderRadius: 'var(--radius-3xl)', background: SPACE.parents.grad, color: '#fff', boxShadow: 'var(--shadow-md)', fontFamily: FONT } },
+    return h('section', { 'aria-label': 'Code de connexion' + (p.name ? ' de ' + p.name : ''), style: { position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 12, padding: 20, borderRadius: 'var(--radius-3xl)', background: SPACE.parents.grad, color: '#fff', boxShadow: SPACE.parents.shadow, fontFamily: FONT } },
       h(Watermark, { name: 'key', size: 150, opacity: 0.14, style: { right: -30, top: -34 } }),
       h(Overline, { color: 'rgba(255,255,255,0.9)', style: { position: 'relative' } }, 'Code de connexion' + (p.name ? ' de ' + p.name : '')),
-      h('span', { style: { position: 'relative', fontSize: 48, lineHeight: '52px', fontWeight: 900, letterSpacing: '0.12em' } }, p.code),
-      h('span', { style: { position: 'relative', display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, lineHeight: '20px', fontWeight: 500, opacity: 0.92 } }, h(Icon, { name: 'clock', size: 16, strokeWidth: 2 }), p.validity || 'Valable 24 h'),
-      h('button', { type: 'button', onClick: p.onShare, style: { position: 'relative', alignSelf: 'flex-start', height: 44, padding: '0 16px', display: 'flex', alignItems: 'center', gap: 8, border: 'none', borderRadius: 14, background: '#fff', color: 'var(--violet-600)', fontFamily: FONT, fontSize: 14, fontWeight: 700, cursor: 'pointer' } },
-        h(Icon, { name: 'share', size: 18, strokeWidth: 2 }), p.shareLabel || 'Partager le code'));
+      h('span', { 'aria-label': 'Code de connexion : ' + String(p.code || '').replace(/\D/g, '').split('').join(' '), style: { position: 'relative', fontSize: 48, lineHeight: '52px', fontWeight: 900, letterSpacing: '0.04em' } }, p.code),
+      h('span', { style: { position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6, height: 30, padding: '0 12px 0 10px', borderRadius: 999, background: GLASS, fontSize: 13, lineHeight: '18px', fontWeight: 700, whiteSpace: 'nowrap' } },
+        h(Icon, { name: 'clock', size: 16, strokeWidth: 2 }), p.validity || 'Valable 24 h'),
+      h('button', { type: 'button', onClick: p.onShare, style: { position: 'relative', alignSelf: 'stretch', height: 48, marginTop: 4, padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, border: 'none', borderRadius: 14, background: '#fff', color: 'var(--violet-600)', fontFamily: FONT, fontSize: 15, fontWeight: 700, cursor: 'pointer' } },
+        h(Icon, { name: 'share', size: 20, strokeWidth: 2 }), p.shareLabel || 'Partager le code'));
   }
 
   function StepList(p) {
-    var s = space(p.tone);
-    return h('section', { 'aria-label': p.title, style: { display: 'flex', flexDirection: 'column', gap: 14, padding: 20, borderRadius: 'var(--radius-3xl)', background: 'var(--surface)', boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' } },
-      p.title ? h('h2', { style: { margin: 0, display: 'flex', alignItems: 'center', gap: 8, fontSize: 16, lineHeight: '22px', fontWeight: 900 } }, p.icon ? h(Icon, { name: p.icon, size: 20, strokeWidth: 2, color: s.ink }) : null, p.title) : null,
+    var s = space(p.tone), plain = !!p.plain;
+    var box = plain ? { display: 'flex', flexDirection: 'column', gap: 14, fontFamily: FONT, color: 'var(--text)' }
+      : { display: 'flex', flexDirection: 'column', gap: 14, padding: 20, borderRadius: 'var(--radius-3xl)', background: 'var(--surface)', boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' };
+    return h('section', { 'aria-label': p.title, style: box },
+      p.title ? h('h2', { style: { margin: 0, display: 'flex', alignItems: 'center', gap: 8, fontSize: plain ? 17 : 16, lineHeight: '22px', fontWeight: 900 } }, p.icon ? h(Icon, { name: p.icon, size: 20, strokeWidth: 2, color: s.ink }) : null, p.title) : null,
       h('ol', { style: { margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 } },
         (p.steps || []).map(function (t, i) {
-          return h('li', { key: i, style: { display: 'flex', alignItems: 'center', gap: 12 } },
-            h('span', { style: { flexShrink: 0, width: 32, height: 32, borderRadius: 999, background: s.soft, color: s.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 900 } }, i + 1),
-            h('span', { style: { fontSize: 14, lineHeight: '20px', color: 'var(--gray-700)' } }, t));
+          return h('li', { key: i, style: { display: 'flex', alignItems: plain ? 'flex-start' : 'center', gap: 12 } },
+            h('span', { style: { flexShrink: 0, width: plain ? 28 : 32, height: plain ? 28 : 32, borderRadius: 999, background: s.soft, color: s.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 900 } }, i + 1),
+            h('span', { style: plain ? { paddingTop: 3, fontSize: 15, lineHeight: '22px', color: 'var(--text)' } : { fontSize: 14, lineHeight: '20px', color: 'var(--gray-700)' } }, t));
         })));
+  }
+
+  /* ---------- Compte (v2.11) : codes, double saisie, aides ---------- */
+  var RING = { eleve: 'rgba(46,107,230,0.22)', parents: 'rgba(102,46,230,0.22)' };
+  var LINE = { eleve: 'var(--blue-200)', parents: 'var(--violet-200)' };
+  function CodeInput(p) {
+    var parent = space(p.tone) === SPACE.parents, s = space(p.tone);
+    var n = p.length || 6;
+    var st = useState(p.defaultValue || '');
+    var foc = useState(false);
+    var val = String(p.value != null ? p.value : st[0]).replace(/\D/g, '').slice(0, n);
+    var focused = p.focused != null ? p.focused : foc[0];
+    var active = focused ? Math.min(val.length, n - 1) : -1;
+    function change(e) { var v = e.target.value.replace(/\D/g, '').slice(0, n); st[1](v); if (p.onChange) p.onChange(v); }
+    var cells = [];
+    for (var i = 0; i < n; i++) {
+      var d = val[i] || '', on = i === active && !(val.length === n && i === n - 1 && d);
+      var look = on ? { background: '#fff', border: '2px solid ' + s.main, boxShadow: '0 0 0 3px ' + RING[parent ? 'parents' : 'eleve'] }
+        : d ? { background: '#fff', border: '2px solid ' + LINE[parent ? 'parents' : 'eleve'] } : { background: 'var(--gray-100)', border: '1px solid #E1E6F0' };
+      cells.push(h('span', { key: i, 'aria-hidden': 'true', style: assign({ flex: '1 1 0', height: 60, marginLeft: n === 6 && i === 3 ? 8 : 0, boxSizing: 'border-box', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, lineHeight: '32px', fontWeight: 900, color: 'var(--text)' }, look) },
+        on && !d ? h('span', { className: 'tia-caret', style: { width: 2, height: 28, borderRadius: 2, background: s.main } }) : d));
+    }
+    return h('label', { style: { display: 'flex', flexDirection: 'column', gap: 8, fontFamily: FONT } },
+      p.label ? h('span', { style: LABEL }, p.label) : null,
+      h('span', { style: { position: 'relative', display: 'flex', gap: 8 } }, cells,
+        h('input', { value: val, onChange: change, onFocus: function () { foc[1](true); }, onBlur: function () { foc[1](false); }, inputMode: 'numeric', autoComplete: p.autoComplete || 'one-time-code', maxLength: n, 'aria-label': p.ariaLabel || (p.label ? p.label + ', ' + n + ' chiffres' : 'Code à ' + n + ' chiffres'),
+          style: { position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, border: 'none', fontSize: 16, cursor: 'text' } })),
+      p.hint ? h('span', { style: { display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } },
+        h(Icon, { name: p.hintIcon || 'clock', size: 16, strokeWidth: 2, color: 'var(--gray-400)', style: { marginTop: 1 } }), p.hint) : null);
+  }
+
+  function PasswordMatch(p) {
+    var same = p.match != null ? !!p.match : (!!p.password && p.password === p.confirm);
+    return h('ul', { 'aria-live': 'polite', style: { margin: '-6px 0 0', padding: 0, listStyle: 'none', display: 'flex' } },
+      h(RulePill, { ok: same, label: same ? (p.okLabel || 'Les deux sont identiques') : (p.waitLabel || 'Pas encore identiques') }));
+  }
+
+  function SwitchField(p) {
+    var s = space(p.tone), on = !!p.checked;
+    return h('button', { type: 'button', role: 'switch', 'aria-checked': on, onClick: function () { if (p.onChange) p.onChange(!on); },
+      style: { display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '12px 14px 12px 16px', boxSizing: 'border-box', border: '1px solid #E1E6F0', borderRadius: 'var(--radius-2xl)', background: 'var(--gray-100)', textAlign: 'left', cursor: 'pointer', color: 'var(--text)', fontFamily: FONT } },
+      h('span', { style: { flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 } },
+        h('span', { style: { fontSize: 15, lineHeight: '20px', fontWeight: 700 } }, p.label),
+        p.hint ? h('span', { style: { fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } }, p.hint) : null),
+      h('span', { 'aria-hidden': 'true', style: { flexShrink: 0, position: 'relative', width: 52, height: 32, borderRadius: 999, background: on ? s.main : 'var(--gray-200)', transition: 'background 0.2s ease' } },
+        h('span', { style: { position: 'absolute', top: 4, left: on ? 24 : 4, width: 24, height: 24, borderRadius: 999, background: '#fff', boxShadow: '0 1px 3px rgba(9,17,34,0.25)', transition: 'left 0.2s ease' } })));
+  }
+
+  function HelpCard(p) {
+    var s = space(p.tone);
+    return h('div', { style: { display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 16px', borderRadius: 20, background: s.soft, fontFamily: FONT, color: 'var(--text)' } },
+      h('span', { style: { width: 36, height: 36, flexShrink: 0, borderRadius: 12, background: '#fff', color: s.ink, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: p.icon || 'info', size: 20, strokeWidth: 2 })),
+      h('span', { style: { display: 'flex', flexDirection: 'column', gap: 2 } },
+        p.title ? h('span', { style: { fontSize: 15, lineHeight: '20px', fontWeight: 700 } }, p.title) : null,
+        h('span', { style: { fontSize: 14, lineHeight: '20px', color: 'var(--gray-600)' } }, p.children)));
+  }
+
+  function InlineNotice(p) {
+    return h('div', { role: 'status', style: { display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', borderRadius: 'var(--radius-2xl)', background: 'var(--success-soft)', color: 'var(--success-strong)', fontFamily: FONT } },
+      h('span', { style: { width: 28, height: 28, flexShrink: 0, borderRadius: 999, background: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: p.icon || 'check', size: 16, strokeWidth: 3 })),
+      h('span', { style: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 } },
+        h('span', { style: { fontSize: 14, lineHeight: '20px', fontWeight: 700 } }, p.children),
+        p.actionLabel ? h('button', { type: 'button', onClick: p.onAction, style: { padding: 0, border: 'none', background: 'transparent', color: 'var(--success-strong)', fontFamily: FONT, fontSize: 13, lineHeight: '18px', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer' } }, p.actionLabel) : null));
+  }
+
+  function ConsentPendingCard(p) {
+    var days = p.days != null ? p.days : 28;
+    return h('section', { 'aria-label': 'Accord d’un parent', style: { display: 'flex', flexDirection: 'column', gap: 14, padding: 16, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: '0 12px 28px rgba(3,39,110,0.35)', color: 'var(--text)', fontFamily: FONT, textAlign: 'left' } },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
+        h('span', { style: { width: 44, height: 44, flexShrink: 0, borderRadius: 14, background: 'var(--violet-100)', color: 'var(--violet-600)', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'hourglass', size: 22, strokeWidth: 2 })),
+        h('span', { style: { flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 } },
+          h('span', { style: { fontSize: 15, lineHeight: '20px', fontWeight: 700 } }, p.title || 'Un parent doit valider ton compte'),
+          p.parentEmail ? h('span', { style: { fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, 'Demande envoyée à ' + p.parentEmail) : null)),
+      h(Button, { fullWidth: true, brand: true, iconRight: 'arrowRight', onClick: p.onLink, href: p.linkHref }, p.linkLabel || 'Relier un parent'),
+      h('p', { style: { margin: 0, paddingTop: 12, borderTop: '1px solid var(--blue-100)', display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } },
+        h(Icon, { name: 'info', size: 16, strokeWidth: 2, color: 'var(--gray-400)', style: { marginTop: 1 } }),
+        h('span', null, 'Sans validation, ton compte sera supprimé dans ' + days + ' jour' + (days > 1 ? 's' : '') + '.')));
+  }
+
+  /* ---------- Explorer · une leçon dans le HUD de jeu (v2.13) ---------- */
+  var GAME_TONES = {
+    yellow: { face: ['#FFE872', '#FFC21F'], depth: '#C98600', icon: '#5A3600' },
+    green: { face: ['#7EE86D', '#2FB84A'], depth: '#1B7F33', icon: '#fff' },
+    blue: { face: ['#7FB0FF', '#3F7BE8'], depth: '#1F4FB5', icon: '#fff' },
+    red: { face: ['#FF8F7F', '#E0504F'], depth: '#A3302E', icon: '#fff' },
+    white: { face: ['#FFFFFF', '#E6ECF7'], depth: '#AEBBD2', icon: 'var(--primary)' }
+  };
+  var SKY = 'linear-gradient(180deg, #2F6FD0 0%, #5F9CE8 55%, #8FC0F2 100%)';
+  var SLATE = 'radial-gradient(120% 90% at 30% 20%, #2F5547 0%, #24443A 55%, #1C362E 100%)';
+  var NODE = { lecon: '#2FBF5F', exercices: '#3F86F0', evaluation: '#E0504F' };
+
+  function GameButton(p) {
+    var t = GAME_TONES[p.tone] || GAME_TONES.blue, size = p.size || 56, depth = 5;
+    var radius = p.round === false ? 18 : size / 2;
+    var st = useState(false), down = st[0];
+    var layer = { position: 'absolute', left: 0, right: 0, height: size, boxSizing: 'border-box', borderRadius: radius, border: '2.5px solid ' + HUD.ink };
+    var kids = [
+      h('span', { key: 'd', 'aria-hidden': 'true', style: assign({}, layer, { top: depth, background: t.depth }) }),
+      h('span', { key: 'f', style: assign({}, layer, { top: down ? depth - 1 : 0, overflow: 'hidden', background: 'linear-gradient(180deg, ' + t.face[0] + ' 0%, ' + t.face[1] + ' 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: p.label ? '0 16px' : 0, transition: 'top 0.08s' }) },
+        h('span', { 'aria-hidden': 'true', style: { position: 'absolute', top: 0, left: 0, right: 0, height: Math.round(size * 0.42), background: HUD.shine } }),
+        p.label ? h(GameText, { size: Math.round(size * 0.36), align: 'center', style: { position: 'relative', whiteSpace: 'nowrap' } }, p.label) : null,
+        p.icon ? h(Icon, { name: p.icon, size: Math.round(size * 0.46), strokeWidth: 3, color: t.icon, style: assign({ position: 'relative' }, p.iconStyle) }) : null)
+    ];
+    var style = { position: 'relative', display: 'block', flexShrink: 0, width: p.label ? (p.width || 'auto') : size, minWidth: p.label ? size : undefined, height: size + depth, padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', textDecoration: 'none', fontFamily: FONT, opacity: p.disabled ? 0.55 : 1 };
+    var events = { onPointerDown: function () { st[1](true); }, onPointerUp: function () { st[1](false); }, onPointerLeave: function () { st[1](false); } };
+    if (p.href) return h('a', assign({ href: p.href, 'aria-label': p.ariaLabel || p.label, style: style }, events), kids);
+    return h('button', assign({ type: 'button', onClick: p.onClick, disabled: p.disabled, 'aria-label': p.ariaLabel || p.label, 'aria-pressed': p.pressed, 'aria-expanded': p.expanded, style: style }, events), kids);
+  }
+
+  function GameChatInput(p) {
+    return h('form', { onSubmit: function (e) { e.preventDefault(); p.send(); }, style: { display: 'flex', alignItems: 'flex-end', gap: 8, margin: 0, fontFamily: FONT } },
+      p.onCamera || p.cameraHref ? h(GameButton, { tone: 'white', size: 44, icon: 'camera', href: p.cameraHref, onClick: p.onCamera, ariaLabel: 'Envoyer la photo d’un exercice' }) : null,
+      h('input', { type: 'text', 'aria-label': p.label || 'Ta réponse', value: p.val, onChange: p.change, disabled: p.disabled, placeholder: p.placeholder || 'Écris ta réponse…', style: { flexGrow: 1, minWidth: 0, height: 46, marginBottom: 3, padding: '0 14px', boxSizing: 'border-box', border: '2px solid ' + HUD.ink, borderRadius: 16, background: '#fff', fontFamily: FONT, fontSize: 16, color: 'var(--text)' } }),
+      h(GameButton, { tone: 'blue', size: 44, icon: 'arrowUp', onClick: p.send, disabled: p.disabled, ariaLabel: 'Envoyer' }));
+  }
+
+  function LevelBackdrop(p) {
+    var night = !!p.night;
+    var clouds = p.clouds || (night ? [[-30, 640, 160, 0.10], [250, 700, 170, 0.12]] : [[-30, 128, 150, 0.35], [262, 300, 150, 0.4], [300, 140, 110, 0.3]]);
+    var stars = [[40, 120, 3, .8], [96, 70, 2, .6], [170, 140, 3, .7], [230, 60, 2, .5], [300, 210, 2, .6], [60, 250, 2, .5], [150, 220, 3, .6], [340, 300, 3, .7], [24, 360, 2, .5]];
+    return h('div', { style: assign({ position: 'relative', width: '100%', height: p.height || '100%', overflow: 'hidden', background: night ? 'linear-gradient(180deg, #16244F 0%, #2D3F8A 55%, #5A6FC0 100%)' : SKY, fontFamily: FONT }, p.style) },
+      night ? h('svg', { 'aria-hidden': 'true', width: 64, height: 64, viewBox: '0 0 24 24', style: { position: 'absolute', right: 44, top: 92 } }, h('path', { d: ICONS.moon, fill: '#FFF3B0' })) : null,
+      night ? stars.map(function (s, i) { return h('span', { key: 's' + i, 'aria-hidden': 'true', style: { position: 'absolute', left: s[0], top: s[1], width: s[2], height: s[2], borderRadius: 999, background: '#fff', opacity: s[3] } }); }) : null,
+      clouds.map(function (c, i) {
+        return h('svg', { key: i, 'aria-hidden': 'true', className: 'tia-cloud', width: c[2], height: Math.round(c[2] * 52 / 120), viewBox: '0 0 120 52', style: { position: 'absolute', left: c[0], top: c[1], opacity: c[3] } },
+          h('path', { d: 'M18 50h86a16 16 0 0 0 2-31.9A24 24 0 0 0 62 8a20 20 0 0 0-35 9A17 17 0 0 0 18 50z', fill: '#fff' }));
+      }),
+      h('div', { style: { position: 'relative', height: '100%' } }, p.children));
+  }
+
+  function LevelHeader(p) {
+    var type = p.type || 'lecon', total = p.total || 4, done = Math.min(p.done || 0, total);
+    var unit = { lecon: 'Étape', exercices: 'Exercice', evaluation: 'Question' }[type] || 'Étape';
+    var segs = [];
+    for (var i = 0; i < total; i++) segs.push(h('span', { key: i, style: { flex: '1 1 0', height: 10, boxSizing: 'border-box', borderRadius: 999, border: '2px solid ' + HUD.ink, background: i < done ? '#2FD35A' : 'rgba(255,255,255,0.35)' } }));
+    var line = p.callTime ? 'À la voix · ' + p.callTime + (p.city ? ' · ' + p.city : '') : unit + ' ' + Math.min(done + 1, total) + ' sur ' + total + (p.city ? ' · ' + p.city : '');
+    return h('header', { style: { display: 'flex', flexDirection: 'column', gap: 8, fontFamily: FONT } },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
+        h(GameButton, { tone: 'yellow', size: 48, icon: 'chevronLeft', onClick: p.onBack, href: p.backHref, ariaLabel: p.callTime ? 'Raccrocher et revenir à la carte' : 'Revenir à la carte' }),
+        h('div', { style: { flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 } },
+          h('span', { style: { display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px', boxSizing: 'border-box', borderRadius: 999, border: '2px solid ' + HUD.ink, background: NODE[type] || NODE.lecon } },
+            h(GameText, { size: 12, stroke: 2, drop: 0 }, ltype(type).label)),
+          h(GameText, { as: 'h1', size: 20, style: { margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' } }, p.title))),
+      p.callTime ? null : h('div', { role: 'progressbar', 'aria-label': line, 'aria-valuemin': 0, 'aria-valuemax': total, 'aria-valuenow': done, style: { display: 'flex', gap: 4 } }, segs),
+      h(GameText, { size: 13, stroke: 2, drop: 1, style: { fontVariantNumeric: 'tabular-nums' } }, line));
+  }
+
+  function woodPanel(children, opts) {
+    var o = opts || {};
+    var nails = [{ top: 8, left: 8 }, { top: 8, right: 8 }, { bottom: 8, left: 8 }, { bottom: 8, right: 8 }];
+    return h('section', { 'aria-label': o.ariaLabel, style: assign({ position: 'relative', boxSizing: 'border-box', padding: 4, borderRadius: 28, background: HUD.wood.frame, boxShadow: '0 12px 32px rgba(9,17,34,0.25)', fontFamily: FONT }, o.style) },
+      h('div', { style: { position: 'relative', height: '100%', boxSizing: 'border-box', borderRadius: 24, overflow: 'hidden', background: HUD.wood.frame + ' url(' + WOOD + ') center / cover no-repeat' } },
+        h('span', { 'aria-hidden': 'true', style: { position: 'absolute', inset: 0, borderRadius: 24, border: '2px solid ' + HUD.wood.bevel, pointerEvents: 'none' } }),
+        h('div', { style: { position: 'relative', height: '100%', boxSizing: 'border-box', padding: o.padding || 12 } }, children)),
+      nails.map(function (n, i) { return h('span', { key: i, 'aria-hidden': 'true', style: assign({ position: 'absolute', width: 8, height: 8, boxSizing: 'border-box', borderRadius: 999, border: '1.5px solid ' + HUD.wood.groove, background: 'linear-gradient(160deg, ' + HUD.wood.nail[0] + ' 0%, ' + HUD.wood.nail[1] + ' 100%)' }, n) }); }),
+      o.tab ? h('span', { style: { position: 'absolute', top: -14, left: 20, padding: 2.5, borderRadius: 999, background: HUD.ink } },
+        h('span', { style: { height: 24, padding: '0 12px', display: 'flex', alignItems: 'center', borderRadius: 999, background: 'linear-gradient(180deg, ' + HUD.tab[0] + ' 0%, ' + HUD.tab[1] + ' 100%)' } }, h(GameText, { size: 13, stroke: 2, drop: 0 }, o.tab))) : null,
+      o.buttons ? h('span', { style: { position: 'absolute', top: -18, right: 14, display: 'flex', gap: 8 } }, o.buttons) : null);
+  }
+
+  function SlateBoard(p) {
+    var st = useState(p.defaultOpen !== false);
+    var collapsible = !!p.collapsible || p.onToggle != null;
+    var open = collapsible ? (p.open != null ? p.open : st[0]) : true;
+    function toggle() { if (p.onToggle) p.onToggle(!open); if (p.open == null) st[1](!open); }
+    var slate = { position: 'relative', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: open ? '10px 14px' : '0 14px', borderRadius: 14, border: '2px solid ' + HUD.wood.groove, background: SLATE, boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.35)' };
+    var steps = p.steps || [];
+    var buttons = [
+      p.expandable === false ? null : h(GameButton, { key: 'e', tone: 'blue', size: 44, icon: 'expand', onClick: p.onExpand, ariaLabel: 'Agrandir le tableau' }),
+      collapsible ? h(GameButton, { key: 't', tone: 'blue', size: 44, icon: 'chevronUp', onClick: toggle, expanded: open, ariaLabel: (open ? 'Réduire' : 'Afficher') + ' le tableau', iconStyle: { transform: 'rotate(' + (open ? 0 : 180) + 'deg)', transition: 'transform 0.25s ease' } }) : null
+    ];
+    var inner = open
+      ? h('div', { style: slate }, h('span', { 'aria-hidden': 'true', style: { position: 'absolute', inset: 0, borderRadius: 12, background: 'repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 9px)' } }),
+          h('div', { style: { position: 'relative' } }, h(Whiteboard, assign({}, p, { chalk: true }))))
+      : h('div', { style: assign({}, slate, { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }) },
+          h('span', { style: { fontFamily: MATH_FONT, fontSize: 20, color: '#F4F1E6', whiteSpace: 'nowrap' } }, mathText(p.title || (steps[0] && steps[0].expr) || '')));
+    return woodPanel(inner, { ariaLabel: 'Tableau du tuteur', tab: p.tab || 'Au tableau', buttons: buttons, padding: '12px 12px 10px', style: { height: open ? (p.height || 'auto') : 76, transition: 'height 0.25s ease' } });
+  }
+
+  function LevelStepCard(p) {
+    var text = p.text || ('Étape ' + (p.step || 1) + ' réussie !');
+    return h('div', { role: 'status', 'aria-label': text, style: { alignSelf: 'flex-start', marginLeft: p.inChat === false ? 0 : 40, display: 'inline-flex', alignItems: 'center', gap: 10, height: 44, padding: '0 16px 0 8px', boxSizing: 'border-box', borderRadius: 999, border: '2.5px solid ' + HUD.ink, background: 'linear-gradient(180deg, #7EE86D 0%, #2FB84A 100%)', boxShadow: '0 4px 0 #1B7F33', fontFamily: FONT } },
+      h('span', { 'aria-hidden': 'true', style: { width: 28, height: 28, boxSizing: 'border-box', borderRadius: 999, border: '2px solid ' + HUD.ink, background: '#fff', color: '#1B7F33', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'check', size: 16, strokeWidth: 3.25 })),
+      h(GameText, { size: 17, stroke: 2, drop: 2 }, text));
+  }
+
+  function CaptionBubble(p) {
+    return h('section', { 'aria-label': 'Sous-titres du tuteur', style: { position: 'relative', boxSizing: 'border-box', minHeight: 80, padding: '18px 16px 12px', background: '#fff', border: '3px solid ' + HUD.ink, borderRadius: 20, boxShadow: '0 5px 0 rgba(12,22,60,0.25)', fontFamily: FONT } },
+      h('span', { style: { position: 'absolute', top: -13, left: 16, padding: 2.5, borderRadius: 999, background: HUD.ink } },
+        h('span', { style: { height: 22, padding: '0 12px', display: 'flex', alignItems: 'center', borderRadius: 999, background: 'linear-gradient(180deg, ' + HUD.tab[0] + ' 0%, ' + HUD.tab[1] + ' 100%)' } }, h(GameText, { size: 13, stroke: 2, drop: 0 }, p.name || 'Tutor’IA'))),
+      h(LiveCaptions, { text: p.text, spoken: p.spoken, surface: 'light', size: 'md', align: 'left', maxLines: p.maxLines || 3, colorWords: p.colorWords, placeholder: p.placeholder }));
+  }
+
+  function WoodCallDock(p) {
+    var muted = !!p.muted, cc = p.captionsOn !== false, cam = !!p.cameraOn, camVisible = p.cameraVisible !== false;
+    function item(key, btn, cap) {
+      return h('div', { key: key, style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 6, width: 76 } }, btn, h(GameText, { size: 12, stroke: 2, drop: 0 }, cap));
+    }
+    var items = [
+      item('m', h(GameButton, { tone: muted ? 'yellow' : 'blue', icon: muted ? 'micOff' : 'mic', pressed: muted, onClick: p.onToggleMute, ariaLabel: muted ? 'Réactiver le micro' : 'Couper le micro' }), muted ? 'Micro coupé' : 'Micro'),
+      item('c', h(GameButton, { tone: cc ? 'yellow' : 'blue', icon: 'captions', pressed: cc, onClick: p.onToggleCaptions, ariaLabel: cc ? 'Masquer les sous-titres' : 'Afficher les sous-titres' }), 'Sous-titres'),
+      camVisible ? item('v', h(GameButton, { tone: cam ? 'yellow' : 'blue', icon: cam ? 'video' : 'videoOff', pressed: cam, onClick: p.onCamera, ariaLabel: cam ? 'Photo de l’exercice en cours' : 'Montrer mon exercice' }), 'Caméra') : null,
+      item('h', h(GameButton, { tone: 'red', size: 64, icon: 'hangup', onClick: p.onHangUp, href: p.hangUpHref, ariaLabel: 'Raccrocher et revenir à la carte', iconStyle: { transform: 'rotate(135deg)' } }), 'Raccrocher')
+    ];
+    return woodPanel(h('div', { role: 'group', 'aria-label': 'Commandes de l’appel', style: { height: '100%', display: 'flex', justifyContent: camVisible ? 'space-between' : 'space-around', alignItems: 'flex-end', padding: '0 2px' } }, items),
+      { padding: '12px 6px 10px', style: assign({ height: 120 }, p.style) });
+  }
+
+  /* ---------- Explorer · quitter et bilan d'un niveau (v2.14) ---------- */
+  /* Étiquette de parchemin posée sur le bois : légende 12/16 en gras, encre brune. */
+  function Parchment(p) {
+    return h('p', { style: assign({ margin: 0, padding: '4px 12px', borderRadius: 10, border: '2px solid ' + HUD.wood.parchmentBorder, background: HUD.wood.parchment, color: '#5B3713', fontFamily: FONT, fontSize: 12, lineHeight: '16px', fontWeight: 700, letterSpacing: 0.12 }, p.style) }, p.children);
+  }
+
+  function gameActions(items, marginTop) {
+    return h('div', { style: { display: 'flex', gap: 12, marginTop: marginTop } }, items.map(function (it, i) {
+      return h('div', { key: i, style: { flex: '1 1 0', minWidth: 0 } }, h(GameButton, { tone: it.tone, label: it.label, size: it.size, round: false, width: '100%', onClick: it.onClick, href: it.href }));
+    }));
+  }
+
+  function gameVeil(color, onClose, closeLabel, panel, style) {
+    return h('div', { style: assign({ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 20px', background: color, fontFamily: FONT }, style) },
+      onClose ? h('button', { type: 'button', 'aria-label': closeLabel, onClick: onClose, style: { position: 'absolute', inset: 0, padding: 0, border: 'none', background: 'transparent', cursor: 'default' } }) : null,
+      panel);
+  }
+
+  /* Question posée dans un écran de jeu, sur un panneau de bois : autre choix en jaune, action conseillée en vert. */
+  function WoodDialog(p) {
+    var primary = p.primaryLabel || 'Continuer', secondary = p.secondaryLabel || 'Quitter';
+    var acts = p.single ? [{ tone: p.primaryTone || 'green', label: primary, size: 52, onClick: p.onPrimary, href: p.primaryHref }]
+      : [{ tone: 'yellow', label: secondary, size: 48, onClick: p.onSecondary, href: p.secondaryHref }, { tone: p.primaryTone || 'green', label: primary, size: 48, onClick: p.onPrimary, href: p.primaryHref }];
+    var panel = h('div', { role: 'alertdialog', 'aria-modal': 'true', 'aria-label': p.title, style: { position: 'relative', alignSelf: 'center', width: '100%', maxWidth: 420 } },
+      h(WoodFrame, { ariaLabel: p.title, tab: p.tab },
+        h(GameText, { as: 'h2', size: p.tab ? 24 : 22, align: 'center', style: { margin: 0 } }, p.title),
+        p.body ? h(Parchment, null, p.body) : null,
+        p.note ? h(Parchment, null, p.note) : null,
+        gameActions(acts, 8)));
+    return p.veil === false ? panel : gameVeil('rgba(0,6,18,0.40)', p.onPrimary, primary, panel, p.style);
+  }
+
+  var RESULT_VERDICT = { lecon: ['réussie', 'à revoir'], exercices: ['réussis', 'à revoir'], evaluation: ['réussie', 'à consolider'] };
+  var RESULT_RETRY = {
+    lecon: 'On reprend tranquillement, et tu retentes quand tu veux.',
+    exercices: 'Il faut une étoile pour ouvrir la suite. On revoit la notion, et tu retentes quand tu veux.',
+    evaluation: 'Il faut 70 % pour valider la ville. On consolide, et tu retentes quand tu veux.'
+  };
+
+  /* Bilan d'un niveau (X5a, X5b) : panneau de bois posé sur la leçon, verdict, étoiles, score, XP et la suite. */
+  function LevelResultPanel(p) {
+    var type = RESULT_VERDICT[p.type] ? p.type : 'lecon', ok = p.passed !== false;
+    var stars = p.stars != null ? p.stars : (ok ? 3 : 0);
+    var who = p.firstName ? ', ' + p.firstName : '';
+    var score = p.score != null ? p.score : p.total ? (type === 'lecon' ? p.correct + ' étapes sur ' + p.total : p.correct + ' sur ' + p.total + ' · ' + Math.round(100 * p.correct / p.total) + ' %') : null;
+    var starRow = [1, 2, 3].map(function (n) {
+      var s = n === 2 ? 52 : 42, c = n <= stars ? HUD.gold[1] : HUD.wood.groove;
+      return h('svg', { key: n, width: s, height: s, viewBox: '0 0 24 24', 'aria-hidden': 'true' }, h('path', { d: ICONS.star, fill: c, stroke: c, strokeWidth: 1.5, strokeLinejoin: 'round' }));
+    });
+    var after = null;
+    if (ok) {
+      after = [
+        p.objectives && p.objectives.length ? h(Parchment, { key: 'w' }, 'Ce que tu as travaillé : ' + p.objectives.join(' ')) : null,
+        stars < 3 && type !== 'lecon' ? h(Parchment, { key: 's' }, 'Rejoue quand tu veux pour décrocher plus d’étoiles.') : null
+      ];
+    } else if (p.review) {
+      after = h(Parchment, null, 'À revoir : la leçon « ' + p.review + ' », puis retente.');
+    }
+    var actions = !ok && p.review
+      ? [{ tone: 'yellow', label: 'Retour à la carte', size: 50, onClick: p.onContinue, href: p.continueHref }, { tone: 'green', label: 'Revoir la notion', size: 50, onClick: p.onReview, href: p.reviewHref }]
+      : [{ tone: 'green', label: 'Continuer', size: 52, onClick: p.onContinue, href: p.continueHref }];
+    var panel = h('div', { role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Résultat du niveau', style: { position: 'relative', alignSelf: 'center', width: '100%', maxWidth: 440 } },
+      h(WoodFrame, { tab: ltype(type).label + ' · ' + RESULT_VERDICT[type][ok ? 0 : 1], ariaLabel: 'Résultat du niveau' },
+        h(GameText, { as: 'h2', size: 26, align: 'center', style: { margin: 0 } }, (ok ? 'Bien joué' : 'Presque') + who + ' !'),
+        h(Parchment, null, ok ? 'Tu as validé « ' + (p.levelTitle || '') + ' ».' : RESULT_RETRY[type]),
+        h('div', { role: 'img', 'aria-label': stars + ' étoile' + (stars > 1 ? 's' : '') + ' sur 3', style: { display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 8, padding: '4px 0' } }, starRow),
+        h('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+          score ? h('div', { style: { flex: '1 1 0', height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 999, background: HUD.wood.groove } }, h(GameText, { size: 15, stroke: 2, drop: 0 }, score)) : null,
+          p.xp > 0 ? h('div', { 'aria-label': p.xp + ' points d’expérience gagnés', style: { height: 36, boxSizing: 'border-box', padding: '0 16px', display: 'flex', alignItems: 'center', border: '2px solid ' + HUD.goldDepth, borderRadius: 999, background: 'linear-gradient(180deg, ' + HUD.gold[0] + ' 0%, ' + HUD.gold[1] + ' 50%, ' + HUD.gold[2] + ' 100%)' } }, h(GameText, { size: 16, stroke: 2, drop: 0 }, '+' + p.xp + ' XP')) : null),
+        after,
+        gameActions(actions, 4)));
+    return p.veil === false ? panel : gameVeil('rgba(9,17,34,0.45)', null, null, panel, p.style);
+  }
+
+  /* ---------- Règles des parents côté élève (v2.15) : la pause ---------- */
+  var PAUSE_KINDS = {
+    evening: { badge: 'moon', color: 'var(--violet-600)', title: 'Il est tard, on reprend demain ?', body: function () { return 'Ton cerveau range tout ce que tu as appris pendant la nuit.'; } },
+    window: { badge: 'clock', color: 'var(--orange-700)', title: function (p) { return 'On se retrouve à ' + (p.from || '17 h'); }, body: function (p) { return 'Tu peux réviser entre ' + (p.from || '17 h') + ' et ' + (p.until || '21 h') + '. À tout à l’heure !'; } },
+    daily: { badge: 'trophy', color: 'var(--green-800)', title: 'Tu as bien travaillé aujourd’hui !', body: function () { return 'On se retrouve demain.'; } }
+  };
+  function pauseButton(label, icon, onClick, href, glass) {
+    var style = glass
+      ? { alignSelf: 'stretch', height: 52, boxSizing: 'border-box', borderRadius: 16, background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.32)', color: '#fff', fontFamily: FONT, fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, textDecoration: 'none', cursor: 'pointer' }
+      : { alignSelf: 'stretch', height: 56, boxSizing: 'border-box', border: 'none', borderRadius: 18, background: '#fff', boxShadow: '0 12px 28px rgba(3,39,110,0.35)', color: 'var(--blue-600)', fontFamily: FONT, fontSize: 17, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, textDecoration: 'none', cursor: 'pointer' };
+    var kids = [h(Icon, { key: 'i', name: icon, size: glass ? 20 : 22 }), label];
+    return href ? h('a', { href: href, style: style }, kids) : h('button', { type: 'button', onClick: onClick, style: style }, kids);
+  }
+  /* Pause décidée avec les parents (StudyPauseScreen) : le tuteur, les flashcards et les niveaux d'Explorer attendent. */
+  function StudyPauseScreen(p) {
+    var kind = PAUSE_KINDS[p.reason] ? p.reason : 'evening', k = PAUSE_KINDS[kind];
+    var title = typeof k.title === 'function' ? k.title(p) : k.title;
+    var daily = kind === 'daily';
+    return h('div', { style: assign({ position: 'relative', width: '100%', height: p.height || 844, overflow: 'hidden', background: 'linear-gradient(170deg, var(--blue-500) 0%, var(--blue-600) 42%, var(--blue-700) 78%, #03276E 100%)', fontFamily: FONT, display: 'flex', flexDirection: 'column' }, p.style) },
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', left: -120, top: -80, width: 420, height: 420, borderRadius: 999, background: 'radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 65%)' } }),
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: -160, bottom: 120, width: 380, height: 380, borderRadius: 999, background: 'radial-gradient(circle, rgba(126,170,255,0.20) 0%, rgba(126,170,255,0) 65%)' } }),
+      h('main', { style: { position: 'relative', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: p.footer ? '56px 20px 112px' : '40px 20px', color: '#fff', textAlign: 'center' } },
+        h('div', { style: { position: 'relative' } }, h(VoiceAvatar, { size: 148, state: 'idle', label: 'Tutor’IA' }),
+          h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: 18, top: 18, width: 48, height: 48, borderRadius: 999, background: '#fff', color: k.color, boxShadow: '0 8px 20px rgba(3,39,110,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: k.badge, size: 24, strokeWidth: 2.25 }))),
+        h('h1', { style: { margin: '12px 0 0', fontSize: 28, lineHeight: '34px', fontWeight: 900, textWrap: 'balance' } }, title),
+        h('p', { style: { margin: '6px 0 0', maxWidth: 300, fontSize: 15, lineHeight: '22px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textWrap: 'balance' } }, k.body(p)),
+        daily ? h('section', { 'aria-label': 'Ton temps de révision du jour', style: { position: 'relative', overflow: 'hidden', alignSelf: 'stretch', marginTop: 24, display: 'flex', flexDirection: 'column', gap: 14, padding: 20, borderRadius: 24, background: TONES.green, boxShadow: '0 12px 28px rgba(3,39,110,0.35)', color: '#fff', textAlign: 'left' } },
+          h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: -22, bottom: -30, opacity: 0.14, display: 'flex' } }, h(Icon, { name: 'trophy', size: 128, strokeWidth: 1.2 })),
+          h('div', { style: { position: 'relative', display: 'flex', alignItems: 'center', gap: 12 } },
+            h('span', { style: { width: 48, height: 48, flexShrink: 0, borderRadius: 16, background: 'rgba(255,255,255,0.24)', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'trophy', size: 24 })),
+            h('span', { style: { display: 'flex', flexDirection: 'column' } }, h('span', { style: { fontSize: 30, lineHeight: '34px', fontWeight: 900 } }, p.time || '1 h 30'), h('span', { style: { fontSize: 15, lineHeight: '20px', fontWeight: 700 } }, 'de révisions aujourd’hui'))),
+          h('div', { role: 'progressbar', 'aria-label': 'Temps de révision du jour', 'aria-valuenow': 100, 'aria-valuemin': 0, 'aria-valuemax': 100, style: { position: 'relative', height: 10, borderRadius: 999, background: 'rgba(255,255,255,0.28)', overflow: 'hidden' } }, h('div', { style: { width: '100%', height: '100%', borderRadius: 999, background: '#fff' } })),
+          h('span', { style: { position: 'relative', marginTop: -6, fontSize: 13, lineHeight: '18px', fontWeight: 500, color: 'rgba(255,255,255,0.9)' } }, 'Ton maximum du jour, décidé avec tes parents'),
+          p.streak ? h('span', { style: { position: 'relative', alignSelf: 'flex-start', height: 30, padding: '0 12px 0 10px', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: 'rgba(255,255,255,0.2)', fontSize: 13, fontWeight: 700 } }, h(Icon, { name: 'flame', size: 16, filled: true }), 'Ta série de ' + p.streak + ' jours continue demain') : null) : null,
+        h('div', { style: { alignSelf: 'stretch', marginTop: daily ? 24 : 32, display: 'flex', flexDirection: 'column', gap: 12 } },
+          pauseButton('Revenir à l’accueil', 'home', p.onHome, p.homeHref, false),
+          daily ? pauseButton('Voir mes progrès', 'chart', p.onProgress, p.progressHref, true) : null)),
+      p.footer ? h('div', { style: { position: 'absolute', left: 20, right: 20, bottom: 20 } }, p.footer) : null);
+  }
+
+  /* ---------- Premiers jours et hors connexion (v2.19) ---------- */
+  /* H1 · Le tuteur n'a plus de réseau : un message jaune dans la conversation, sous la question de l'élève qui n'est pas partie,
+     et un bouton rond pour réessayer (v2.19.1, demande de Romain : plus lisible que le violet en haut de l'écran). */
+  var OFFLINE_YELLOW = '#FFD43B';
+  function OfflineNotice(p) {
+    return h('div', { role: 'alert', style: assign({ alignSelf: 'stretch', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 12px 12px 14px', borderRadius: 'var(--radius-2xl)', background: OFFLINE_YELLOW, boxShadow: '0 6px 16px rgba(163,100,13,0.22)', color: 'var(--orange-900)', fontFamily: FONT }, p.style) },
+      h('span', { 'aria-hidden': 'true', style: { flexShrink: 0, width: 36, height: 36, borderRadius: 999, background: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'wifiOff', size: 18, strokeWidth: 2.25 })),
+      h('span', { style: { flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 } },
+        h('span', { style: { fontSize: 15, lineHeight: '20px', fontWeight: 700 } }, p.title || 'Pas de connexion'),
+        h('span', { style: { fontSize: 13, lineHeight: '18px', fontWeight: 500 } }, p.body || 'Vérifie ton Wi-Fi ou tes données mobiles.')),
+      p.onRetry || p.retryHref ? h(p.retryHref ? 'a' : 'button', { type: p.retryHref ? undefined : 'button', href: p.retryHref, onClick: p.onRetry, 'aria-label': p.retryLabel || 'Réessayer',
+        style: { flexShrink: 0, width: 40, height: 40, padding: 0, border: 'none', borderRadius: 999, background: '#fff', color: 'var(--orange-900)', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', cursor: 'pointer' } },
+        h(Icon, { name: 'refresh', size: 20, strokeWidth: 2.25 })) : null);
+  }
+
+  /* H2 · Pas de réseau au premier lancement, élève ou parent : l'écran de marque de la pause, le tuteur avec un badge sans réseau. Texte neutre. */
+  function OfflineScreen(p) {
+    var link = p.linkLabel === null ? null : h(p.linkHref ? 'a' : 'button', { type: p.linkHref ? undefined : 'button', href: p.linkHref, onClick: p.onLink,
+      style: { marginTop: 28, minHeight: 48, padding: 0, border: 'none', background: 'transparent', display: 'flex', alignItems: 'center', fontFamily: FONT, fontSize: 15, fontWeight: 700, color: '#fff', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer' } }, p.linkLabel || 'Changer de compte');
+    return h('div', { style: assign({ position: 'relative', width: '100%', height: p.height || 844, overflow: 'hidden', background: 'linear-gradient(170deg, var(--blue-500) 0%, var(--blue-600) 42%, var(--blue-700) 78%, #03276E 100%)', fontFamily: FONT, display: 'flex', flexDirection: 'column' }, p.style) },
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', left: -120, top: -80, width: 420, height: 420, borderRadius: 999, background: 'radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 65%)' } }),
+      h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: -160, bottom: 120, width: 380, height: 380, borderRadius: 999, background: 'radial-gradient(circle, rgba(126,170,255,0.20) 0%, rgba(126,170,255,0) 65%)' } }),
+      h('main', { style: { position: 'relative', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '56px 20px 40px', color: '#fff', textAlign: 'center' } },
+        h('div', { style: { position: 'relative' } }, h(VoiceAvatar, { size: 148, state: 'idle', label: 'Tutor’IA' }),
+          h('span', { 'aria-hidden': 'true', style: { position: 'absolute', right: 18, top: 18, width: 48, height: 48, borderRadius: 999, background: '#fff', color: 'var(--orange-700)', boxShadow: '0 8px 20px rgba(3,39,110,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'wifiOff', size: 24, strokeWidth: 2.25 }))),
+        h('h1', { style: { margin: '12px 0 0', fontSize: 28, lineHeight: '34px', fontWeight: 900, textWrap: 'balance' } }, p.title || 'Pas de connexion pour le moment'),
+        h('p', { style: { margin: '6px 0 0', maxWidth: 310, fontSize: 15, lineHeight: '22px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textWrap: 'balance' } }, p.body || 'Tutor’IA a besoin d’Internet pour ouvrir le compte la première fois.'),
+        h('div', { style: { alignSelf: 'stretch', marginTop: 32, display: 'flex', flexDirection: 'column', gap: 12 } },
+          pauseButton(p.retryLabel || 'Réessayer', 'refresh', p.onRetry, p.retryHref, false),
+          p.hint === null ? null : h('p', { style: { margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: 13, lineHeight: '18px', fontWeight: 500, color: 'rgba(255,255,255,0.85)' } }, h(Icon, { name: 'info', size: 16 }), p.hint || 'Wi-Fi ou données mobiles : on réessaie tout seul.')),
+        link));
+  }
+
+  /* B1 · « Bientôt disponible » : une feuille du bas sur l'écran d'où l'on vient, qui dit ce qui arrive. */
+  function ComingSoonSheet(p) {
+    var items = p.items || [];
+    var sheet = h('section', { role: 'dialog', 'aria-modal': 'true', 'aria-label': p.title, style: assign({ display: 'flex', flexDirection: 'column', gap: 16, padding: '12px 20px 32px', background: 'var(--surface)', borderRadius: '32px 32px 0 0', boxShadow: '0 -12px 32px rgba(3,39,110,0.25)', fontFamily: FONT, color: 'var(--text)' }, p.veil === false ? p.style : null) },
+      h('span', { 'aria-hidden': 'true', style: { alignSelf: 'center', width: 40, height: 5, borderRadius: 999, background: 'var(--border)' } }),
+      h('div', { style: { display: 'flex', alignItems: 'flex-start', gap: 14 } },
+        h('span', { style: { flexShrink: 0, width: 56, height: 56, borderRadius: 18, background: SPACE.eleve.grad, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: p.icon || 'sliders', size: 26, strokeWidth: 1.75 })),
+        h('span', { style: { flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 6 } },
+          h(Pill, { background: 'var(--orange-100)', color: 'var(--orange-700)', height: 24, style: { alignSelf: 'flex-start' } }, p.badge || 'Bientôt'),
+          h('h2', { style: { margin: 0, fontSize: 20, lineHeight: '26px', fontWeight: 900 } }, p.title)),
+        h('button', { type: 'button', onClick: p.onClose, 'aria-label': 'Fermer', style: { flexShrink: 0, width: 44, height: 44, border: 'none', borderRadius: 999, background: 'var(--bg)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' } }, h(Icon, { name: 'close', size: 20, strokeWidth: 2 }))),
+      p.body ? h('p', { style: { margin: 0, fontSize: 15, lineHeight: '22px', color: 'var(--text-secondary)' } }, p.body) : null,
+      items.length ? h('ul', { style: { margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 } }, items.map(function (t, k) {
+        return h('li', { key: k, style: { display: 'flex', alignItems: 'center', gap: 10, fontSize: 15, lineHeight: '20px' } },
+          h('span', { 'aria-hidden': 'true', style: { flexShrink: 0, width: 24, height: 24, borderRadius: 999, background: 'var(--blue-100)', color: 'var(--blue-600)', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'clock', size: 14, strokeWidth: 2.25 })), t);
+      })) : null,
+      h(Button, { brand: true, fullWidth: true, onClick: p.onAction || p.onClose, href: p.actionHref }, p.actionLabel || 'Continuer'));
+    if (p.veil === false) return sheet;
+    return h('div', { style: assign({ position: 'absolute', inset: 0, zIndex: 20, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(0,6,18,0.40)' }, p.style) }, sheet);
+  }
+
+  /* J3 · Espace Parents sans enfant relié : la carte posée sur le bandeau, les trois étapes et « Ajouter un enfant ». */
+  function AddChildCard(p) {
+    var steps = p.steps || ['Créez son profil : son prénom et sa classe.', 'Donnez-lui son code de connexion.', 'Suivez ses progrès ici, chaque semaine.'];
+    return h('section', { 'aria-label': p.title || 'Ajoutez votre enfant', style: assign({ display: 'flex', flexDirection: 'column', gap: 16, padding: '24px 20px 20px', background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: p.lifted === false ? 'var(--shadow-md)' : liftShadow('white', true), fontFamily: FONT, color: 'var(--text)' }, p.style) },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
+        h('span', { style: { flexShrink: 0, width: 48, height: 48, borderRadius: 16, background: SPACE.parents.grad, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'family', size: 24, strokeWidth: 1.75 })),
+        h('h2', { style: { margin: 0, fontSize: 22, lineHeight: '30px', fontWeight: 900 } }, p.title || 'Ajoutez votre enfant')),
+      h(StepList, { tone: 'parents', plain: true, steps: steps }),
+      h(Button, { variant: 'vivid', brand: true, fullWidth: true, icon: 'plus', onClick: p.onAdd, href: p.href }, p.actionLabel || 'Ajouter un enfant'));
+  }
+
+  /* Ce qu'un écran montrera : une courte liste d'icônes et de phrases, et une ligne de confiance en bas (J3). */
+  function FeatureList(p) {
+    var s = space(p.tone), parents = s === SPACE.parents;
+    return h('section', { 'aria-label': p.title, style: assign({ display: 'flex', flexDirection: 'column', gap: 14, padding: 20, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-md)', fontFamily: FONT, color: 'var(--text)' }, p.style) },
+      p.title ? h('h2', { style: { margin: 0, fontSize: 20, lineHeight: '26px', fontWeight: 900 } }, p.title) : null,
+      h('ul', { style: { margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 } }, (p.items || []).map(function (it, k) {
+        return h('li', { key: k, style: { display: 'flex', alignItems: 'center', gap: 12 } },
+          h('span', { 'aria-hidden': 'true', style: { flexShrink: 0, width: 36, height: 36, borderRadius: 12, background: s.soft, color: s.ink, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: it.icon, size: 18 })),
+          h('span', { style: { fontSize: 15, lineHeight: '20px' } }, it.text));
+      })),
+      p.note ? h('p', { style: { margin: 0, paddingTop: 12, borderTop: '1px solid ' + (parents ? 'var(--violet-100)' : 'var(--blue-100)'), display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } },
+        h('span', { style: { flexShrink: 0, color: s.ink, display: 'flex' } }, h(Icon, { name: p.noteIcon || 'lock', size: 16 })), p.note) : null);
+  }
+
+  /* ---------- Données et confidentialité (v2.16) ---------- */
+  /* Confirmation d'une action qui efface : le choix sûr d'abord, la suppression en second. */
+  function ConfirmDialog(p) {
+    var s = space(p.tone), parents = s === SPACE.parents;
+    var st = useState(!!p.acked), acked = st[0];
+    var ok = !p.ackLabel || acked;
+    var card = h('div', { role: 'alertdialog', 'aria-modal': 'true', 'aria-label': p.title, style: assign({ boxSizing: 'border-box', width: '100%', display: 'flex', flexDirection: 'column', gap: 12, padding: 24, background: 'var(--surface)', borderRadius: 'var(--radius-3xl)', boxShadow: 'var(--shadow-lg)', fontFamily: FONT, color: 'var(--text)', textAlign: 'center' }, p.veil === false ? p.style : null) },
+      h('span', { 'aria-hidden': 'true', style: { alignSelf: 'center', width: 56, height: 56, borderRadius: 999, background: 'var(--error-soft)', color: 'var(--error-strong)', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: p.icon || 'trash', size: 26 })),
+      h('h2', { style: { margin: '4px 0 0', fontSize: 20, lineHeight: '26px', fontWeight: 900 } }, p.title),
+      p.body ? h('p', { style: { margin: 0, fontSize: 15, lineHeight: '22px', color: 'var(--text-secondary)' } }, p.body) : null,
+      p.extraLabel ? h(p.extraHref ? 'a' : 'button', { type: p.extraHref ? undefined : 'button', href: p.extraHref, onClick: p.onExtra, style: { alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', background: 'transparent', color: s.main, fontFamily: FONT, fontSize: 14, fontWeight: 700, textDecoration: 'none', cursor: 'pointer' } }, h(Icon, { name: p.extraIcon || 'download', size: 18 }), p.extraLabel) : null,
+      p.ackLabel ? h('button', { type: 'button', role: 'checkbox', 'aria-checked': acked, onClick: function () { st[1](!acked); }, style: { marginTop: 4, display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', border: '1.5px solid ' + (acked ? s.main : 'var(--border)'), borderRadius: 16, background: acked ? s.soft : 'var(--surface)', fontFamily: FONT, fontSize: 14, lineHeight: '20px', fontWeight: 700, color: 'var(--text)', textAlign: 'left', cursor: 'pointer' } },
+        h('span', { 'aria-hidden': 'true', style: { width: 24, height: 24, flexShrink: 0, boxSizing: 'border-box', borderRadius: 8, border: '2px solid ' + (acked ? s.main : 'var(--gray-300)'), background: acked ? s.main : '#fff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, acked ? h(Icon, { name: 'check', size: 16, strokeWidth: 3 }) : null),
+        p.ackLabel) : null,
+      h('div', { style: { marginTop: p.ackLabel ? 4 : 8, display: 'flex', flexDirection: 'column', gap: 10 } },
+        h(Button, { variant: parents ? 'vivid' : 'primary', brand: true, fullWidth: true, href: p.keepHref, onClick: p.onKeep }, p.keepLabel || 'Garder mon compte'),
+        h(Button, { variant: p.ackLabel ? 'dangerSolid' : 'danger', size: p.ackLabel ? 'md' : 'sm', fullWidth: true, disabled: !ok, onClick: ok ? p.onConfirm : undefined }, p.confirmLabel || 'Supprimer définitivement')));
+    if (p.veil === false) return card;
+    return h('div', { style: assign({ position: 'absolute', inset: 0, zIndex: 20, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 20px', background: 'rgba(0,6,18,0.40)' }, p.style) }, card);
+  }
+
+  /* Ce que voient les parents, ce que garde le tuteur, ce que nous gardons : des listes qu'on lit d'un coup d'œil. */
+  var FACTS = { yes: { icon: 'checkCircle', color: 'var(--success)' }, no: { icon: 'lock', color: 'var(--blue-600)' } };
+  var FACT_CHIPS = { blue: ['var(--blue-100)', 'var(--blue-600)'], green: ['var(--success-soft)', 'var(--success-strong)'], violet: ['var(--violet-100)', 'var(--violet-600)'] };
+  function PrivacyCard(p) {
+    var items = p.items || [];
+    return h(Card, { as: 'section', attrs: { 'aria-label': p.title }, style: assign({ display: 'flex', flexDirection: 'column', gap: p.chips || p.children ? 14 : 12, padding: 16 }, lift(p, 'white'), p.style) },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
+        h('span', { style: { width: 40, height: 40, flexShrink: 0, borderRadius: 12, background: grad(p.tone || 'violet'), color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: p.icon || 'shield', size: 20 })),
+        h('h2', { style: { margin: 0, fontSize: 20, lineHeight: '26px', fontWeight: 900 } }, p.title)),
+      items.length ? h('ul', { style: { margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column' } }, items.map(function (it, i) {
+        var k = FACTS[it.kind], c = FACT_CHIPS[it.chipTone || 'blue'];
+        return h('li', { key: i, style: { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: i ? '1px solid var(--blue-100)' : 'none', fontSize: 15, lineHeight: '20px' } },
+          h('span', { style: { flexShrink: 0, display: 'flex', color: k ? k.color : 'var(--text-secondary)' } }, h(Icon, { name: it.icon || (k ? k.icon : 'info'), size: 20 })),
+          h('span', { style: { flexGrow: 1 } }, it.text),
+          it.chip ? h(Pill, { background: c[0], color: c[1] }, it.chip) : null);
+      })) : null,
+      p.chips ? h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 8 } }, p.chips.map(function (t, i) {
+        return h(Pill, { key: i, background: 'var(--violet-100)', color: 'var(--violet-600)', height: 32, style: { padding: '0 12px 0 8px', fontSize: 13 } }, h(Icon, { name: 'check', size: 16, strokeWidth: 2.5 }), t);
+      })) : null,
+      p.note ? h('p', { style: { margin: 0, display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 14, lineHeight: '20px', color: 'var(--text-secondary)' } }, h('span', { style: { flexShrink: 0, display: 'flex', color: 'var(--icon)' } }, h(Icon, { name: 'info', size: 18 })), p.note) : null,
+      p.text ? h('p', { style: { margin: 0, fontSize: 15, lineHeight: '22px', color: 'var(--gray-600)' } }, p.text) : null,
+      p.children);
+  }
+
+  /* L'enfant d'un parent : son accord, retirer le lien, et la suppression à part. */
+  function ChildDataCard(p) {
+    var name = p.name || 'Léa';
+    return h(Card, { as: 'section', attrs: { 'aria-label': 'Données de ' + name }, style: assign({ display: 'flex', flexDirection: 'column', gap: 14, padding: 16 }, p.style) },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
+        h('span', { 'aria-hidden': 'true', style: { width: 48, height: 48, flexShrink: 0, borderRadius: 999, background: TONES.hero, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 900 } }, name.charAt(0)),
+        h('span', { style: { flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 } },
+          h('span', { style: { fontSize: 18, lineHeight: '24px', fontWeight: 900 } }, 'Données de ' + name),
+          h('span', { style: { display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } }, p.grade || 'Classe de 4e',
+            p.consent === false
+              ? h(Pill, { background: 'var(--warning-soft)', color: 'var(--warning-strong)', height: 24 }, 'Accord en attente')
+              : h(Pill, { background: 'var(--success-soft)', color: 'var(--success-strong)', height: 24, style: { padding: '0 10px 0 8px', gap: 4 } }, h(Icon, { name: 'check', size: 14, strokeWidth: 2.5 }), 'Accord donné')))),
+      h('p', { style: { margin: 0, fontSize: 14, lineHeight: '20px', color: 'var(--text-secondary)' } }, p.hint || (name + ' peut exporter ses données depuis son profil.')),
+      h(Button, { variant: 'vividSoft', fullWidth: true, icon: 'unlink', href: p.unlinkHref, onClick: p.onUnlink }, 'Retirer le lien avec ' + name),
+      h('div', { style: { marginTop: 4, paddingTop: 14, borderTop: '1px solid var(--blue-100)', display: 'flex', flexDirection: 'column', gap: 10 } },
+        h('span', { style: { fontSize: 15, lineHeight: '20px', fontWeight: 700, color: 'var(--error-strong)' } }, 'Supprimer le compte de ' + name),
+        h('span', { style: { fontSize: 13, lineHeight: '18px', color: 'var(--text-secondary)' } }, p.deleteHint || 'Vous retirez votre accord : son compte et toutes ses données sont supprimés, définitivement.'),
+        h(Button, { variant: 'danger', size: 'sm', fullWidth: true, icon: 'trash', href: p.deleteHref, onClick: p.onDelete }, 'Supprimer le compte de ' + name)));
   }
 
   function PlanRow(p) {
@@ -1561,15 +2340,15 @@
     Icon: Icon, Logo: Logo, Button: Button, IconButton: IconButton, SegmentedControl: SegmentedControl, ModeToggle: ModeToggle,
     BottomNav: BottomNav, Switch: Switch, GoalStepper: GoalStepper, StatusChip: StatusChip, ProgressRing: ProgressRing, Quote: Quote,
     SubjectCard: SubjectCard, StreakCard: StreakCard, LevelCard: LevelCard, ResumeCard: ResumeCard, GoalCard: GoalCard, TopicCard: TopicCard,
-    ChatBubble: ChatBubble, TipCard: TipCard, ChatInput: ChatInput, VoiceVisualizer: VoiceVisualizer, CallControls: CallControls,
+    ChatBubble: ChatBubble, TipCard: TipCard, ChatInput: ChatInput, ChatStarters: ChatStarters, VisualChip: VisualChip, ConversationDrawer: ConversationDrawer, PhotoSourceDialog: PhotoSourceDialog, VoiceVisualizer: VoiceVisualizer, CallControls: CallControls,
     PanelHeader: PanelHeader, VisualPanel: VisualPanel, MathGraph: MathGraph, Whiteboard: Whiteboard,
     CallTopBar: CallTopBar, VoiceAvatar: VoiceAvatar, VoiceStatus: VoiceStatus, LiveCaptions: LiveCaptions, CallDock: CallDock,
-    DailyReviewCard: DailyReviewCard, ChapterRow: ChapterRow, SessionProgress: SessionProgress, AnswerOption: AnswerOption, QuizCard: QuizCard, TallyChips: TallyChips,
+    DailyReviewCard: DailyReviewCard, ChapterRow: ChapterRow, SessionProgress: SessionProgress, AnswerOption: AnswerOption, QuizCard: QuizCard, TallyChips: TallyChips, NextCardButton: NextCardButton, SessionComplete: SessionComplete,
     KpiCard: KpiCard, BarChart: BarChart, LineChart: LineChart, Heatmap: Heatmap, SubjectProgressRow: SubjectProgressRow, InsightList: InsightList,
-    ChildSwitcher: ChildSwitcher, HeroCard: HeroCard, AlertCard: AlertCard, AdviceCard: AdviceCard, SubjectProgressCard: SubjectProgressCard,
-    SessionSummaryCard: SessionSummaryCard, SettingRow: SettingRow, ProfileHero: ProfileHero, ProfileSummary: ProfileSummary, LevelBar: LevelBar, TrophyShelf: TrophyShelf, TrophyBadge: TrophyBadge,
-    TextField: TextField, PasswordRules: PasswordRules, Checkbox: Checkbox, OrDivider: OrDivider, AuthProviderButtons: AuthProviderButtons, AuthHero: AuthHero, AuthScreen: AuthScreen, ProfileChoiceCard: ProfileChoiceCard, SubjectCluster: SubjectCluster, StepHeader: StepHeader, GradePicker: GradePicker, SelfAssessmentRow: SelfAssessmentRow, GoalTile: GoalTile, DurationPicker: DurationPicker, ChoiceRow: ChoiceRow, ToggleChip: ToggleChip, ParentCodeCard: ParentCodeCard, StepList: StepList, PlanRow: PlanRow,
+    ChildSwitcher: ChildSwitcher, ChildPickerSheet: ChildPickerSheet, LinkRequestCard: LinkRequestCard, HeroCard: HeroCard, AlertCard: AlertCard, AdviceCard: AdviceCard, SubjectProgressCard: SubjectProgressCard,
+    SessionSummaryCard: SessionSummaryCard, SettingRow: SettingRow, ProfileHero: ProfileHero, ProfileSummary: ProfileSummary, LevelBar: LevelBar, TrophyShelf: TrophyShelf, TrophyBadge: TrophyBadge, GameText: GameText, WoodButton: WoodButton, WoodFrame: WoodFrame, GameButton: GameButton, LevelBackdrop: LevelBackdrop, LevelHeader: LevelHeader, SlateBoard: SlateBoard, LevelStepCard: LevelStepCard, CaptionBubble: CaptionBubble, WoodCallDock: WoodCallDock, Parchment: Parchment, WoodDialog: WoodDialog, LevelResultPanel: LevelResultPanel,
+    TextField: TextField, PasswordRules: PasswordRules, Checkbox: Checkbox, OrDivider: OrDivider, AuthProviderButtons: AuthProviderButtons, AuthHero: AuthHero, AuthScreen: AuthScreen, CodeInput: CodeInput, PasswordMatch: PasswordMatch, SwitchField: SwitchField, HelpCard: HelpCard, InlineNotice: InlineNotice, ConsentPendingCard: ConsentPendingCard, StudyPauseScreen: StudyPauseScreen, OfflineNotice: OfflineNotice, OfflineScreen: OfflineScreen, ComingSoonSheet: ComingSoonSheet, AddChildCard: AddChildCard, FeatureList: FeatureList, ConfirmDialog: ConfirmDialog, PrivacyCard: PrivacyCard, ChildDataCard: ChildDataCard, ProfileChoiceCard: ProfileChoiceCard, SubjectCluster: SubjectCluster, StepHeader: StepHeader, GradePicker: GradePicker, SelfAssessmentRow: SelfAssessmentRow, GoalTile: GoalTile, DurationPicker: DurationPicker, ChoiceRow: ChoiceRow, ToggleChip: ToggleChip, ParentCodeCard: ParentCodeCard, StepList: StepList, PlanRow: PlanRow,
     Stars: Stars, IslandIllustration: IslandIllustration, IslandCarousel: IslandCarousel, IslandProgressCard: IslandProgressCard, ExplorerHud: ExplorerHud, LevelNode: LevelNode, MapAvatar: MapAvatar, CityBanner: CityBanner, RegionSign: RegionSign, WorldMap: WorldMap, LevelTypePill: LevelTypePill, LevelSheet: LevelSheet, IslandBackdrop: IslandBackdrop, LevelProgressHeader: LevelProgressHeader, VoiceBoardCard: VoiceBoardCard, LevelResultCard: LevelResultCard, TutorFeedback: TutorFeedback,
-    LEVEL_TYPES: LEVEL_TYPES, SUBJECTS: SUBJECTS, ICONS: ICONS, VISUAL_KINDS: VISUAL_KINDS
+    LEVEL_TYPES: LEVEL_TYPES, SUBJECTS: SUBJECTS, ICONS: ICONS, VISUAL_KINDS: VISUAL_KINDS, liftShadow: liftShadow
   };
 })();

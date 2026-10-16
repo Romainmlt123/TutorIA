@@ -16,7 +16,8 @@ type TypeStyle = {
 
 export type DesignTokens = {
   color: { tokens: ColorToken[] };
-  type: { groups: { styles: TypeStyle[] }[] };
+  /** Un groupe d'une autre famille que Satoshi (« game ») a sa propre police dans l'app (GameText). */
+  type: { groups: { family?: string; styles: TypeStyle[] }[] };
   spacing: { tokens: { name: string; value: string }[] };
   radius: { tokens: { name: string; value: string }[] };
   shadow: { tokens: { name: string; value: string }[] };
@@ -205,7 +206,8 @@ function buildPalette(tokens: ColorToken[], resolve: (v: string) => string) {
 
 function buildTypeScale(design: DesignTokens) {
   const scale: Record<string, object> = {};
-  for (const style of design.type.groups.flatMap((g) => g.styles)) {
+  const satoshi = design.type.groups.filter((g) => !g.family || g.family === 'sans');
+  for (const style of satoshi.flatMap((g) => g.styles)) {
     const fontSize = parsePx(style.fontSize);
     const em = style.letterSpacing ? Number(style.letterSpacing.replace('em', '')) : 0;
     scale[kebabToCamel(style.name)] = {
@@ -238,7 +240,13 @@ export function buildTokens(design: DesignTokens, app: AppTokens) {
       parsePx,
     ),
   } as Record<string, number>;
-  const shadow = scaleByName(design.shadow.tokens, 'shadow-', (v) => v) as Record<string, string>;
+  // `shadow-lift-parents` devient `liftParents`.
+  const shadow = Object.fromEntries(
+    Object.entries(scaleByName(design.shadow.tokens, 'shadow-', (v) => v)).map(([k, v]) => [
+      kebabToCamel(k),
+      v,
+    ]),
+  ) as Record<string, string>;
 
   const subjects = Object.fromEntries(
     app.subjects.map((s) => [

@@ -1,0 +1,14 @@
+<!-- @dsCard group="Jeu" height=210 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { width: 350 } }, h(T.WoodFrame, { tab: 'Ta quête' },
+  h(T.GameText, { size: 17 }, 'Ville des Équations'),
+  h(T.Parchment, null, 'Prochaine étape : Leçon · Isoler x'),
+  h(T.Parchment, null, 'Ta progression dans ce niveau ne sera pas gardée : tu le reprendras depuis le début.')));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

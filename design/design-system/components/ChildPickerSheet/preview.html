@@ -1,0 +1,15 @@
+<!-- @dsCard group="Parents" height=420 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    var st = React.useState('Léa');
+    return h('div', { style: { width: 390, maxWidth: '100%' } },
+      h(T.ChildPickerSheet, { veil: false, selected: st[0], onSelect: function (c) { st[1](c.name); },
+        childList: [{ name: 'Léa', grade: '4e', week: '4 h 40' }, { name: 'Tom', grade: '6e', week: '1 h 10' }],
+        addHint: 'Jusqu’à 4 profils avec la formule Famille' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

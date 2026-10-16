@@ -1,5 +1,7 @@
 # LevelResultCard
 
+> Remplacé par `LevelResultPanel` (le bilan dans un panneau de bois, comme l’app) depuis la v2.14.
+
 Carte de bilan d'un niveau : validé sur dégradé vert, à consolider sur dégradé orange, étoiles, message, score et XP.
 
 ## Quand l'utiliser

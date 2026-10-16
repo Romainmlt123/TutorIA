@@ -1,0 +1,14 @@
+<!-- @dsCard group="Tuteur" height=732 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { height: 684, margin: '0 0 0 -24px', display: 'flex' } }, h(T.ConversationDrawer, { groups: [
+  { label: 'Aujourd’hui', items: [{ id: 'a', subject: 'maths', title: 'Équations du 1er degré', active: true }, { id: 'b', subject: 'francais', title: 'Le subjonctif présent' }] },
+  { label: 'Hier', items: [{ id: 'c', subject: 'histoire-geo', title: 'La Révolution française' }, { id: 'd', subject: 'svt', title: 'La photosynthèse' }] },
+  { label: '7 derniers jours', items: [{ id: 'e', subject: 'anglais', title: 'Present perfect ou prétérit\u00a0?' }, { id: 'f', subject: 'toutes', title: 'Une question sur les volcans' }] }] }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

@@ -13,6 +13,7 @@ Grille 2 colonnes de l'accueil et choix de la matière en flashcards. Chaque mat
 | `subject` | `'maths' \| 'francais' \| 'histoire-geo' \| 'anglais' \| 'svt' \| 'physique-chimie'` | Matière. |
 | `progress` | `number` | Progression en % (barre blanche). |
 | `count` | `string` | Ligne secondaire (ex. « 24 cartes »). |
+| `fresh` | `boolean` | Matière pas encore commencée (v2.19) : « À découvrir » à la place du pourcentage et de la barre. |
 | `selected` | `boolean` | Anneau de sélection + coche. |
 | `onClick` | `function` | Rend la carte cliquable. |
 

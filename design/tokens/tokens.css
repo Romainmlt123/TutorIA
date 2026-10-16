@@ -11,6 +11,7 @@
 @font-face { font-family: "Satoshi"; src: url("../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
 @font-face { font-family: "Satoshi"; src: url("../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
 @font-face { font-family: "Satoshi"; src: url("../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2") format("woff2"); font-weight: 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Lilita One"; src: url("../../assets/typographie/LilitaOne/LilitaOne-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; } /* côté jeu (v2.10) */
 
 :root {
   /* ---------- Partie 1 : design system Tutor'IA ---------- */
@@ -64,6 +65,8 @@
   --shadow-lg: 0 12px 32px rgba(9,17,34,0.10);
   --shadow-brand: 0 8px 20px rgba(46,107,230,0.25);
   --shadow-focus: 0 0 0 3px rgba(46,107,230,0.35);
+  --shadow-lift: 0 18px 32px -10px rgba(3,39,110,0.30), 0 4px 12px rgba(3,39,110,0.16);          /* v2.17 : carte blanche à cheval sur le bandeau (élève) */
+  --shadow-lift-parents: 0 18px 32px -10px rgba(59,13,162,0.30), 0 4px 12px rgba(59,13,162,0.16);  /* sur le bandeau violet de l’espace Parents */
 
   /* Typographie */
   --font-sans: "Satoshi", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -132,6 +135,7 @@
   --section-title-size: 22px; /* 22/30 Black */
 
   /* Objectif du jour (Accueil) */
+  --font-game: "Lilita One", "Satoshi", system-ui, sans-serif; /* côté jeu : GameText (v2.10) */
   --goal-gradient: linear-gradient(160deg, #662ee6 0%, #2e6be6 100%); /* violet → bleu (07/10) */
 
   /* Appel vocal (v2.6) */

@@ -1,0 +1,13 @@
+<!-- @dsCard group="Jeu" height=150 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { width: 350, padding: 20, boxSizing: 'border-box', borderRadius: 24, background: 'linear-gradient(170deg, var(--blue-500) 0%, var(--blue-600) 55%, var(--blue-700) 100%)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 16 } },
+  h(T.WoodButton, { label: 'Modifier l’avatar', icon: 'pencil', size: 46, width: 190, badge: 2, onClick: function () {} }),
+  h(T.WoodButton, { label: 'Ta quête', size: 48, width: 160, onClick: function () {} }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>

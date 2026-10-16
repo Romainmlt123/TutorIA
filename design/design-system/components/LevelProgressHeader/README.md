@@ -1,5 +1,7 @@
 # LevelProgressHeader
 
+> Remplacé par `LevelHeader` (HUD de jeu) depuis la v2.13.
+
 En-tête du chat d'un niveau : retour à la carte, type et titre, bascule écrit / vocal et progression en segments de la couleur du type.
 
 ## Quand l'utiliser

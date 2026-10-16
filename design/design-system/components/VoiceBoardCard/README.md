@@ -1,5 +1,7 @@
 # VoiceBoardCard
 
+> Remplacé par `SlateBoard` (l’ardoise dans son cadre de bois) depuis la v2.13.
+
 Tableau du tuteur en mode vocal : les étapes du calcul s'écrivent au fil de la voix (faites en vert, à venir en gris).
 
 ## Quand l'utiliser

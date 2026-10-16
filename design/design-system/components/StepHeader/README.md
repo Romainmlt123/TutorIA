@@ -4,7 +4,7 @@ En-tête des parcours en plusieurs étapes : retour, « Étape n sur N », barre
 
 ## Quand l'utiliser
 
-Onboarding élève (bleu) et inscription parent (violet).
+Onboarding élève (bleu). Dans l'inscription parent plein écran (L4 à L6, v2.11), `back: false` : la flèche de retour est dans l'en-tête de `AuthScreen`, et l'étape se pose en tête de la feuille blanche, avec des barres de 6 px.
 
 ## Props
 
@@ -15,6 +15,7 @@ Onboarding élève (bleu) et inscription parent (violet).
 | `tone` | `'eleve' \| 'parents'` | Couleur. |
 | `onBack` | `function` | Retour. |
 | `backHref` | `string` | Retour en lien. |
+| `back` | `boolean` | `false` : sans flèche (dans la feuille). |
 | `onSkip` | `function` | Affiche « Passer ». |
 | `skipLabel` | `string` | Libellé du lien. |
 
@@ -22,4 +23,5 @@ Onboarding élève (bleu) et inscription parent (violet).
 
 ```js
 const { StepHeader } = window.TutorIA;
+h(StepHeader, { step: 1, total: 2, tone: 'parents', back: false });
 ```

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tuteur · en attente de l’accord d’un parent</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Satoshi";src:url(../../assets/typographie/Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+:root{--bg:#F5F8FF;--surface:#FFFFFF;--text:#000612;--text-secondary:#5D677D;--text-disabled:#798398;--icon:#798398;--border:#CED4E2;--primary:#2E6BE6;--primary-hover:#1750C4;--primary-soft:#EBF1FF;--accent:#662EE6;--accent-soft:#F1EBFF;--success:#0C9E42;--success-strong:#03702B;--success-soft:#EBFFF2;--warning:#A3640D;--warning-strong:#6E4204;--warning-soft:#FFF7EB;--error:#E62E2E;--error-strong:#C21A1A;--radius-2xl:16px;--radius-3xl:24px;--shadow-sm:0 1px 2px rgba(9,17,34,0.06);--shadow-md:0 4px 16px rgba(9,17,34,0.06);--shadow-lg:0 12px 32px rgba(9,17,34,0.10);--shadow-brand:0 8px 20px rgba(46,107,230,0.25);--shadow-focus:0 0 0 3px rgba(46,107,230,0.35);--font-sans:"Satoshi",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;font-family:var(--font-sans);background:#F5F8FF;color:#000612}
+a{color:#2E6BE6}a:hover{color:#1750C4}
+button,input{font-family:inherit}
+input::placeholder{color:#798398}
+input:focus{outline:none;border-color:#2E6BE6;box-shadow:var(--shadow-focus)}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+@keyframes tiaRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.tia-rise{animation:tiaRise .55s cubic-bezier(.2,.7,.3,1) both}
+@keyframes tiaSheet{from{opacity:0;transform:translateY(48px)}to{opacity:1;transform:none}}
+.tia-sheet{animation:tiaSheet .55s cubic-bezier(.2,.8,.3,1) both}
+.vio input:focus{border-color:#662EE6;box-shadow:0 0 0 3px rgba(102,46,230,0.30)}
+.vio a{color:#521DC8}
+@media (prefers-reduced-motion:reduce){.tia-rise,.tia-sheet{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: linear-gradient(170deg, #2E6BE6 0%, #1750C4 42%, #0A3B9D 78%, #03276E 100%); font-family: var(--font-sans); color: #000612; display: flex; flex-direction: column">
+<span aria-hidden="true" style="position: absolute; left: -120px; top: -80px; width: 420px; height: 420px; border-radius: 999px; background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 65%)"></span><span aria-hidden="true" style="position: absolute; right: -160px; bottom: 120px; width: 380px; height: 380px; border-radius: 999px; background: radial-gradient(circle, rgba(126,170,255,0.20) 0%, rgba(126,170,255,0) 65%)"></span><main style="position: relative; flex-grow: 1; display: flex; flex-direction: column; align-items: center; padding: 64px 20px 112px; color: #FFFFFF; text-align: center"><dc-import name="../components/VoiceAvatar" fond="transparent" size="148" hop="{{ hop }}" tilt="0" label="Tutor’IA" hint-size="196px,184px"></dc-import><h1 style="margin: 12px 0 0; font-size: 28px; line-height: 34px; font-weight: 900">Ton tuteur t’attend</h1><p style="margin: 6px 0 0; max-width: 300px; font-size: 15px; line-height: 22px; font-weight: 500; color: rgba(255,255,255,0.85); text-wrap: balance">Il s’ouvre dès qu’un parent a validé ton compte.</p><section aria-label="Accord d’un parent" style="align-self: stretch; margin-top: 24px; display: flex; flex-direction: column; gap: 14px; padding: 16px; background: #FFFFFF; border-radius: 24px; box-shadow: 0 12px 28px rgba(3,39,110,0.35); color: #000612; text-align: left"><div style="display: flex; align-items: center; gap: 12px"><span style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; background: #F1EBFF; color: #521DC8; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12M6 21h12M7.5 3v3.5a4.5 4.5 0 0 0 9 0V3M7.5 21v-3.5a4.5 4.5 0 0 1 9 0V21"></path></svg></span><span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; line-height: 20px; font-weight: 700">Un parent doit valider ton compte</span><span style="font-size: 13px; line-height: 18px; color: #5D677D; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Demande envoyée à claire.martin@exemple.fr</span></span></div><a href="C2-Accord-Relier-Parent.dc.html" style="width: 100%; height: 52px; box-sizing: border-box; flex-shrink: 0; border-radius: 16px; background: #2E6BE6; box-shadow: var(--shadow-brand); color: #FFFFFF; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">Relier un parent<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><p style="margin: 0; padding-top: 12px; border-top: 1px solid #EBF1FF; display: flex; align-items: flex-start; gap: 8px; font-size: 13px; line-height: 18px; color: #5D677D"><span style="flex-shrink: 0; margin-top: 1px; color: #798398; display: flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 11v6M12 7.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path></svg></span><span>Sans validation, ton compte sera supprimé dans 28 jours.</span></p></section><a href="03a-Flashcards-Choix.dc.html" style="align-self: stretch; margin-top: 12px; height: 52px; box-sizing: border-box; border-radius: 16px; background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.32); color: #FFFFFF; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h10a2 2 0 0 1 2 2v12M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"></path></svg>Réviser avec mes flashcards</a></main><div style="position: absolute; left: 20px; right: 20px; bottom: 20px; height: 72px; z-index: 5"><dc-import name="../components/BottomNav" espace="eleve" active="tuteur" hint-size="350px,72px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { show: false, pw: '', cgu: true, news: true, ok: true, hop: 0 }; }
+componentDidMount() { this.t1 = setTimeout(() => this.setState({ hop: 0.3 }), 350); this.t2 = setTimeout(() => this.setState({ hop: 0 }), 2100); }
+componentWillUnmount() { clearTimeout(this.t1); clearTimeout(this.t2); }
+renderVals() {
+const s = this.state;
+const pw = s.pw || '';
+const rules = [['8 caractères', pw.length >= 8], ['Un chiffre', /\d/.test(pw)], ['Une majuscule', /[A-Z]/.test(pw)]]
+.map(([label, ok]) => ({ label, color: ok ? '#03702B' : '#5D677D', bg: ok ? '#EBFFF2' : '#EEF1F6', dot: ok ? '#0C9E42' : '#B7BFCD' }));
+const bd = (on) => on ? '2px solid #2E6BE6' : '2px solid #CED4E2';
+const bx = (on) => on ? '#2E6BE6' : '#FFFFFF';
+return {
+pw, pwType: s.show ? 'text' : 'password', show: s.show, hide: !s.show,
+pwLabel: s.show ? 'Masquer le mot de passe' : 'Afficher le mot de passe',
+togglePw: () => this.setState({ show: !s.show }),
+setPw: (e) => this.setState({ pw: e.target.value }),
+rules,
+ck_cgu: s.cgu, bd_cgu: bd(s.cgu), bx_cgu: bx(s.cgu), tg_cgu: () => this.setState({ cgu: !s.cgu }),
+ck_news: s.news, bd_news: bd(s.news), bx_news: bx(s.news), tg_news: () => this.setState({ news: !s.news }),
+ck_ok: s.ok, bd_ok: bd(s.ok), bx_ok: bx(s.ok), tg_ok: () => this.setState({ ok: !s.ok }),
+hop: s.hop
+};
+}
+}
+</script>
+</body>
+</html>

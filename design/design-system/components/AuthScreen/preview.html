@@ -7,9 +7,14 @@
     var sp = React.useState('eleve'), parent = sp[0] === 'parents';
     var link = { color: parent ? 'var(--violet-600)' : 'var(--primary)', fontWeight: 700, textDecoration: 'none', cursor: 'pointer' };
     return h('div', { style: { width: 360, display: 'flex', flexDirection: 'column', gap: 16 } },
-      h(T.SegmentedControl, { fullWidth: true, label: 'Espace', value: sp[0], onChange: sp[1], options: [{ id: 'eleve', label: 'Élève (L2)' }, { id: 'parents', label: 'Parent (L3)' }] }),
+      h(T.SegmentedControl, { fullWidth: true, label: 'Espace', value: sp[0], onChange: sp[1], options: [{ id: 'eleve', label: 'Élève (L2)' }, { id: 'code', label: 'Code (L7)' }, { id: 'parents', label: 'Parent (L3)' }] }),
       h('div', { key: sp[0], style: { borderRadius: 32, overflow: 'hidden', boxShadow: 'var(--shadow-lg)' } },
-        parent
+        sp[0] === 'code'
+          ? h(T.AuthScreen, { space: 'eleve', title: 'Relier mon compte à un parent', subtitle: 'Tape le code à 6\u00a0chiffres que ton parent a créé dans son espace.', onBack: function () {} },
+              h(T.CodeInput, { label: 'Code parent', defaultValue: '482913', hint: 'Il est valable 24\u00a0h. Il sera relié dès que tu te connectes.' }),
+              h(T.Button, { fullWidth: true, brand: true, iconRight: 'arrowRight' }, 'Garder ce code'),
+              h(T.HelpCard, { icon: 'key', title: 'Où trouver ce code\u00a0?' }, 'Ton parent le crée dans son espace Tutor’IA, en ajoutant ton profil.'))
+        : parent
           ? h(T.AuthScreen, { space: 'parents', title: 'Bon retour parmi nous', subtitle: 'Connectez-vous pour suivre les progrès de votre enfant.', onBack: function () {},
               footer: h('span', null, 'Pas encore de compte\u00a0? ', h('a', { style: link }, 'Créer un compte')) },
               h(T.TextField, { label: 'E-mail', icon: 'mail', type: 'email', defaultValue: 'claire.martin@exemple.fr', filled: true }),
@@ -19,7 +24,7 @@
               h(T.AuthProviderButtons, {}))
           : h(T.AuthScreen, { space: 'eleve', title: 'Content de te revoir\u00a0!', subtitle: 'Connecte-toi pour reprendre tes révisions.', onBack: function () {},
               footer: [h('a', { key: 'c', style: link }, 'J’ai un code de mon parent'), h('span', { key: 'n' }, 'Pas encore de compte\u00a0? ', h('a', { style: link }, 'Créer mon compte'))] },
-              h(T.TextField, { label: 'Identifiant ou e-mail', icon: 'user', defaultValue: 'lea.martin', filled: true }),
+              h(T.TextField, { label: 'E-mail', icon: 'mail', type: 'email', defaultValue: 'lea.martin@exemple.fr', filled: true }),
               h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10 } },
                 h(T.TextField, { label: 'Mot de passe', icon: 'lock', type: 'password', placeholder: 'Ton mot de passe', filled: true }),
                 h('a', { style: Object.assign({ alignSelf: 'flex-end', fontSize: 14 }, link) }, 'Mot de passe oublié\u00a0?')),

@@ -10,10 +10,11 @@ Sous le logo du tuteur. Elle est annoncée aux lecteurs d’écran (`aria-live`)
 
 | Prop | Type | Rôle |
 | --- | --- | --- |
-| `state` | `'speaking' | 'listening' | 'muted' | 'connecting' | 'ended' | 'error'` | État de l’appel. |
+| `state` | `'speaking' | 'listening' | 'muted' | 'connecting' | 'ended' | 'error' | 'limit'` | État de l’appel ; `limit` : « Appels du jour terminés » (R4, v2.15). |
 | `listenColor` | `'red' | 'orange'` | Couleur de « Je t’écoute… » (rouge par défaut). |
 | `size` | `'md' | 'sm'` | Hauteur 40 ou 32 px. |
 | `label` | `string` | Remplace le libellé. |
+| `hud` | `boolean` | HUD d’Explorer (X4b, v2.13) : cernée de bleu nuit, ombre dure, bleu nuit pour les états neutres. |
 
 ## Exemple
 

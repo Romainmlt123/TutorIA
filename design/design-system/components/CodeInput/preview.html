@@ -1,0 +1,14 @@
+<!-- @dsCard group="Connexion" height=384 -->
+<div id="root" data-theme="light" style="padding:24px;background:var(--bg);font-family:var(--font-sans);color:var(--text);box-sizing:border-box;min-height:100vh"></div>
+<script>
+(function () {
+  var h = React.createElement, T = window.TutorIA;
+  function App() {
+    return h('div', { style: { width: 350, display: 'flex', flexDirection: 'column', gap: 20 } },
+  h(T.CodeInput, { label: 'Code reçu', defaultValue: '30571', focused: true }),
+  h(T.CodeInput, { label: 'Code parent', defaultValue: '482913', hint: 'Il est valable 24\u00a0h. Il sera relié dès que tu te connectes.' }),
+  h(T.CodeInput, { label: 'Code reçu', tone: 'parents', defaultValue: '718305' }));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>
