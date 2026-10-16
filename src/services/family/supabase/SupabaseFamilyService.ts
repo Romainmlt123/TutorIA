@@ -138,7 +138,7 @@ export class SupabaseFamilyService implements FamilyService {
       .gte('day', addDays(end, -6))
       .lte('day', end);
     if (error) throw error;
-    const totals: Record<string, number> = {};
+    const totals: Record<string, number> = Object.fromEntries(studentIds.map((id) => [id, 0]));
     for (const row of data) totals[row.student_id] = (totals[row.student_id] ?? 0) + row.seconds;
     return totals;
   }
