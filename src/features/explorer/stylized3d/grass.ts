@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 
+import { SCENE_TIME } from '@/lib/three/sceneClock';
 import { explorerArt } from '@/theme/explorerArt';
-
-import { SCENE_TIME } from './time';
 
 /*
  * Brins d'herbe (modèle Blender, maillage « brins ») : sombres au pied, plus clairs et un peu secs

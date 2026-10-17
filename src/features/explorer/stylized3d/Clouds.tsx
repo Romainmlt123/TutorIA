@@ -1,11 +1,10 @@
-import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 
+import { SCENE_TIME } from '@/lib/three/sceneClock';
 import { explorerArt } from '@/theme/explorerArt';
 
 import { seeded } from '../hd2d/pixels';
-import { SCENE_TIME } from './time';
 
 /*
  * Nuages vaporeux : des bouffées face à la caméra, dont la forme vient d'un bruit fractal (bords
@@ -28,7 +27,6 @@ type Props = {
   clouds: readonly CloudSpec[];
   /** Les nuages qui dérivent reviennent à gauche en sortant de cet intervalle de x. */
   wrap: readonly [number, number];
-  animated?: boolean;
 };
 
 /** Bouffées d'un nuage : une grosse au centre, quatre plus petites de part et d'autre. */
@@ -137,12 +135,7 @@ function cloudMaterial(wrap: readonly [number, number]): THREE.ShaderMaterial {
   });
 }
 
-/** L'horloge des nuages avance même sans île (pendant son chargement, ou sur une île « Bientôt »). */
-function tickClouds(t: number, animated: boolean) {
-  if (animated) SCENE_TIME.value = t;
-}
-
-export function Clouds({ clouds, wrap, animated = true }: Props) {
+export function Clouds({ clouds, wrap }: Props) {
   const mesh = useMemo(() => {
     const m = new THREE.Mesh(cloudGeometry(clouds), cloudMaterial(wrap));
     // Les sommets sont placés par le shader : la sphère englobante ne veut rien dire.
@@ -157,6 +150,5 @@ export function Clouds({ clouds, wrap, animated = true }: Props) {
     },
     [mesh],
   );
-  useFrame(({ clock }) => tickClouds(clock.elapsedTime, animated));
   return <primitive object={mesh} />;
 }

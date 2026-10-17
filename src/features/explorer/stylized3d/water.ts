@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 
+import { SCENE_TIME } from '@/lib/three/sceneClock';
 import { explorerArt } from '@/theme/explorerArt';
 
-import { SCENE_TIME } from './time';
+import { SUN_DIRECTION } from './sun';
 import layout from './water.json';
+import { piPoints, WATER_SURFACE } from './waterLayout';
 
 /*
  * Eau de l'île des Maths, animée en temps réel : un bassin en forme de π, la rivière qui en sort
@@ -14,21 +16,16 @@ import layout from './water.json';
 
 const WATER = explorerArt.water3d;
 /** Direction du soleil cuit dans le modèle (tools/explorer-3d/lib/bake.py), repère de l'app. */
-const SUN = new THREE.Vector3(-0.67, 0.656, 0.348).normalize();
-/** Hauteur de l'eau, juste au-dessus des bosses du plateau (±0,015, lib/geo.py). */
-const SURFACE = 0.022;
+const SUN = new THREE.Vector3(...SUN_DIRECTION).normalize();
 const RIVER_SAMPLES = 12;
 
 export function piOutline(): THREE.Vector2[] {
-  const { origin, shape } = layout.pi;
-  return shape.map(
-    ([x, y]) => new THREE.Vector2(origin.x + x! * origin.sx, origin.z - y! * origin.sz),
-  );
+  return piPoints().map(([x, z]) => new THREE.Vector2(x, z));
 }
 
 export function riverCurve(): THREE.CatmullRomCurve3 {
   // Même courbe que le script Blender (geo.catmull_rom) : Catmull-Rom uniforme, tension 0,5.
-  const points = layout.river.points.map(([x, z]) => new THREE.Vector3(x, SURFACE, z));
+  const points = layout.river.points.map(([x, z]) => new THREE.Vector3(x, WATER_SURFACE, z));
   return new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.5);
 }
 
@@ -280,7 +277,7 @@ export function waterMeshes(scale = 1): THREE.Group {
   );
   piGeometry.rotateX(-Math.PI / 2);
   const piMesh = new THREE.Mesh(piGeometry, flat);
-  piMesh.position.y = SURFACE;
+  piMesh.position.y = WATER_SURFACE;
   piMesh.renderOrder = 2;
   const riverMesh = new THREE.Mesh(
     ribbon(

@@ -12,6 +12,7 @@ import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
+import { SCENE_TIME } from '@/lib/three/sceneClock';
 import { useModel } from '@/lib/three/useModel';
 import { explorerArt } from '@/theme/explorerArt';
 
@@ -24,7 +25,6 @@ import {
   type RegionLook,
   type RegionTintUniforms,
 } from './regionTint';
-import { SCENE_TIME } from './time';
 import { fallCurve, waterMeshes } from './water';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- asset Metro (identifiant en natif, URL sur le web)
@@ -153,7 +153,7 @@ function appearance(w: World, t: number, animated: boolean): number {
   return 1 - (1 - p) ** 3;
 }
 
-/** Une image : apparition, teinte des régions, flottement, eau, chiffres qui tombent. */
+/** Une image : apparition, teinte des régions, flottement, chiffres qui tombent. */
 function tickWorld(
   w: World,
   t: number,
@@ -170,7 +170,6 @@ function tickWorld(
     : regions.mix;
   setRegionLook(w.tint, { ...regions, mix: w.regionMix });
   if (animated) {
-    SCENE_TIME.value = t;
     // L'île ne flotte plus dans les vues de région : les panneaux posés dessus restent en place.
     w.root.position.y += Math.sin(t * 1.1) * 0.08 * (1 - w.regionMix);
     for (const d of w.digits) {
@@ -208,8 +207,6 @@ function LoadedIsland({ gltf, animated = true, regions = NO_REGIONS }: Props & {
   const camera = useThree((s) => s.camera);
   const world = useMemo(() => buildWorld(gltf), [gltf]);
   useEffect(() => () => disposeWorld(world), [world]);
-  useFrame(({ clock }, delta) =>
-    tickWorld(world, clock.elapsedTime, delta, camera, animated, regions),
-  );
+  useFrame((_, delta) => tickWorld(world, SCENE_TIME.value, delta, camera, animated, regions));
   return <primitive object={world.root} />;
 }

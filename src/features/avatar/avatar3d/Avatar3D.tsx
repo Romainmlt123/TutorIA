@@ -1,4 +1,4 @@
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useStore } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -231,10 +231,19 @@ function LoadedAvatar({
   turn = 0,
   speed = 1,
 }: Props & { gltf: GLTF }) {
+  const store = useStore();
   const rig = useMemo(() => buildRig(gltf), [gltf]);
   useEffect(() => () => dispose(rig), [rig]);
-  useEffect(() => dress(rig, look), [rig, look]);
-  useEffect(() => play(rig, animation, animated, speed), [rig, animation, animated, speed]);
+  // Habit et pose changent la figurine sans que R3F le voie : une scène dessinée à la demande
+  // (FrameDriver, animations réduites) redemande une image.
+  useEffect(() => {
+    dress(rig, look);
+    store.getState().invalidate();
+  }, [rig, look, store]);
+  useEffect(() => {
+    play(rig, animation, animated, speed);
+    store.getState().invalidate();
+  }, [rig, animation, animated, speed, store]);
   useFrame((_, delta) => {
     if (animated) rig.mixer.update(Math.min(delta, 0.1));
   });
@@ -245,16 +254,20 @@ function LoadedAvatar({
   );
 }
 
+/** Direction du soleil des scènes d'avatar : de face, en haut à gauche. */
+const AVATAR_SUN = [-3.5, 4.5, 3] as const;
+
 /**
  * Lumière des scènes où paraissent des avatars : ciel et sol clairs (la figurine reste lisible
  * jusque sous le menton, quelle que soit sa peau), soleil de face en haut à gauche comme la cuisson
- * des îles, et une lumière d'appoint de face à droite.
+ * des îles, et une lumière d'appoint de face à droite. `sun` donne une autre direction au soleil
+ * (celle de la cuisson, sur la carte pré-rendue).
  */
-export function AvatarLights() {
+export function AvatarLights({ sun = AVATAR_SUN }: { sun?: readonly [number, number, number] }) {
   return (
     <>
       <hemisphereLight args={[avatarArt.light.sky, avatarArt.light.ground, 2.2]} />
-      <directionalLight position={[-3.5, 4.5, 3]} intensity={1.7} color={avatarArt.light.sun} />
+      <directionalLight position={[...sun]} intensity={1.7} color={avatarArt.light.sun} />
       <directionalLight position={[3, 1, 4]} intensity={0.7} color={avatarArt.light.fill} />
     </>
   );
