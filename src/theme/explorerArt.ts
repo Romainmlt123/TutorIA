@@ -105,6 +105,14 @@ export const explorerArt = {
     /** Géométrie des boutons en relief : rebord, contour, arrondi. */
     button: { depth: 5, border: 2.5, radius: 18 },
   },
+  /** Ciel de nuit d'un niveau pendant la pause du soir (R6, v2.15) : lune et étoiles. */
+  night: {
+    top: '#16244f',
+    middle: '#2d3f8a',
+    horizon: '#5a6fc0',
+    moon: '#fff3b0',
+    star: '#ffffff',
+  },
   /** Étalonnage final (Hd2dPost) : vif pour la HD-2D, naturel pour la 3D réaliste. */
   post: {
     hd2d: {
