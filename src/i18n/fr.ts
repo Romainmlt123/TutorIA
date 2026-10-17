@@ -175,6 +175,11 @@ export const fr = {
       ended: 'Appel terminé',
       error: 'Le vocal ne répond pas. Tu peux continuer à l’écrit.',
     },
+    /** R7 : le vocal coupé dans les réglages des parents (P4). */
+    voiceLocked: {
+      withCamera: 'Le vocal et la caméra sont coupés dans les réglages de tes parents.',
+      voiceOnly: 'Le vocal est coupé dans les réglages de tes parents.',
+    },
     voiceDailyLimit:
       'Tu as fait tes appels du jour. Tu peux continuer à l’écrit, le vocal revient demain !',
     voiceHint: 'Touche l’écran pour interrompre',
@@ -190,6 +195,16 @@ export const fr = {
         muted: 'Ton micro est coupé',
         ended: 'Appel terminé',
         error: 'Connexion perdue',
+        limit: 'Appels du jour terminés',
+      },
+      /** R4 (v2.15) : la limite d'appels du jour, posée par le serveur. */
+      limitTitle: 'Tu as fait tes appels du jour.',
+      limitBody: 'Le vocal revient demain. On continue à l’écrit ?',
+      continueWritten: 'Continuer à l’écrit',
+      /** Deux minutes avant que le surveillant raccroche. */
+      warning: {
+        pause: 'Plus que 2 minutes avant la pause',
+        end: 'Plus que 2 minutes d’appel',
       },
       speakerTutor: 'Tutor’IA',
       captionsLabel: 'Sous-titres de l’appel',
@@ -780,12 +795,53 @@ export const fr = {
   },
   /** Réglages parentaux appliqués : pause du soir, plage horaire, limite du jour. */
   studyPause: {
-    title: 'On fait une pause ?',
-    evening_pause: 'Il est tard : on reprend demain ? Ton cerveau range tout pendant la nuit.',
-    outside_window: (from: string, until: string) =>
-      `Tu peux réviser entre ${from} et ${until}. À tout à l’heure !`,
-    daily_limit: 'Tu as bien travaillé aujourd’hui ! On se retrouve demain.',
+    evening_pause: {
+      title: 'Il est tard, on reprend demain ?',
+      body: 'Ton cerveau range tout ce que tu as appris pendant la nuit.',
+    },
+    outside_window: {
+      title: (from: string) => `On se retrouve à ${from}`,
+      body: (from: string, until: string) =>
+        `Tu peux réviser entre ${from} et ${until}. À tout à l’heure !`,
+    },
+    daily_limit: { title: 'Tu as bien travaillé aujourd’hui !', body: 'On se retrouve demain.' },
+    today: 'de révisions aujourd’hui',
+    todayLabel: (time: string) => `${time} de révisions aujourd’hui`,
+    dailyMax: 'Ton maximum du jour, décidé avec tes parents',
+    streak: (days: number) =>
+      days === 1
+        ? 'Ta série d’un jour continue demain'
+        : `Ta série de ${days} jours continue demain`,
     back: 'Revenir à l’accueil',
+    progress: 'Voir mes progrès',
+    /** R6 : un niveau d'Explorer pendant la pause, sur un panneau de bois. */
+    level: {
+      title: 'On fait une pause ?',
+      ribbon: {
+        evening_pause: 'Pause du soir',
+        outside_window: 'Hors de ta plage',
+        daily_limit: 'Temps du jour atteint',
+      },
+      reason: {
+        evening_pause: 'Il est tard : on reprend demain ? Ton cerveau range tout pendant la nuit.',
+        outside_window: (from: string, until: string) =>
+          `Tu peux jouer entre ${from} et ${until}. À tout à l’heure !`,
+        daily_limit: 'Tu as bien travaillé aujourd’hui ! On se retrouve demain.',
+      },
+      rule: {
+        evening_pause:
+          'Pause décidée avec tes parents. Les niveaux reviennent demain matin, ta série continue.',
+        outside_window: 'Plage horaire décidée avec tes parents. Ta série continue.',
+        daily_limit: 'Ton maximum du jour, décidé avec tes parents. Ta série continue demain.',
+      },
+      back: 'Revenir à la carte',
+      /** Sur la fiche d'un niveau, à la place de « À l'écrit » et « À la voix ». */
+      sheet: {
+        evening_pause: 'Pause du soir : les niveaux reviennent demain matin.',
+        outside_window: (from: string) => `Hors de ta plage horaire : on se retrouve à ${from}.`,
+        daily_limit: 'Tu as bien travaillé aujourd’hui ! Les niveaux reviennent demain.',
+      },
+    },
   },
   profile: {
     signOut: 'Se déconnecter',
@@ -1401,6 +1457,16 @@ export const fr = {
       unlockAll: 'Débloquer toute la garde-robe',
       unlocked: 'Tous les objets sont débloqués sur cet appareil.',
       reset: 'Remettre la garde-robe à zéro',
+    },
+    rules: {
+      title: 'Règles des parents (simulé)',
+      none: 'Aucune',
+      evening: 'Pause du soir (après 21 h)',
+      window: 'Hors de la plage',
+      daily: 'Temps du jour atteint',
+      soon: 'Pause dans 90 s',
+      noVoice: 'Vocal et caméra coupés',
+      noCamera: 'Caméra coupée',
     },
     explorer: {
       title: 'Explorer (démo)',
