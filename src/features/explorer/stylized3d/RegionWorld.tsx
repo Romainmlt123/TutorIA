@@ -7,6 +7,7 @@ import { preloadAvatar } from '@/features/avatar/avatar3d/Avatar3D';
 import { preloadModel, useModel } from '@/lib/three/useModel';
 import { explorerArt } from '@/theme/explorerArt';
 
+import { honeyGaps } from '../logic/mapMarkers';
 import type { RegionMap } from '../logic/regionMap';
 import { seedOf } from '../logic/regionSeed';
 import {
@@ -123,7 +124,7 @@ function buildBase(
     materials.push(grass, cliff);
     root.add(new THREE.Mesh(terrain.top, grass), new THREE.Mesh(terrain.cliff, cliff));
   }
-  const ribbon = pathGeometry(map.path, map.pawnIndex);
+  const ribbon = pathGeometry(map.path, new Set(honeyGaps(map.nodes, map.pawnIndex)));
   const paving = pathMaterial();
   geometries.push(ribbon);
   materials.push(paving);

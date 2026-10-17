@@ -1,5 +1,6 @@
 import { fr } from '@/i18n/fr';
 
+import { honeyGaps } from './mapMarkers';
 import type { CityStatus, Stars } from './progression';
 import type { RegionMap } from './regionMap';
 
@@ -41,9 +42,9 @@ function cityChange(from: CityStatus, to: CityStatus): CityChange['to'] | null {
 
 /**
  * Progression entre la carte vue la dernière fois (`before`) et la carte d'aujourd'hui, ou null s'il
- * n'y a rien à célébrer (première visite, autre région, résultats inchangés). Le chemin est miel
- * jusqu'au pion (doneSegmentsBefore) : ses tronçons nouveaux sont ceux entre l'ancien pion et le
- * nouveau. Un niveau absent de l'ancienne carte (contenu modifié) n'est pas célébré.
+ * n'y a rien à célébrer (première visite, autre région, résultats inchangés). Les tronçons nouveaux
+ * sont ceux qui sont miel aujourd'hui (honeyGaps) et ne l'étaient pas. Un niveau absent de l'ancienne
+ * carte (contenu modifié) n'est pas célébré.
  */
 export function progressSince(before: RegionMap | undefined, map: RegionMap): MapProgress | null {
   if (!before || before.regionId !== map.regionId) return null;
@@ -60,8 +61,8 @@ export function progressSince(before: RegionMap | undefined, map: RegionMap): Ma
     }
     if (previous.state === 'locked' && node.state !== 'locked') unlocked.push(node.levelId);
   }
-  const gaps: number[] = [];
-  for (let gap = before.pawnIndex; gap < map.pawnIndex; gap += 1) gaps.push(gap);
+  const wasHoney = new Set(honeyGaps(before.nodes, before.pawnIndex));
+  const gaps = honeyGaps(map.nodes, map.pawnIndex).filter((gap) => !wasHoney.has(gap));
   const oldCities = new Map(before.cities.map((city) => [city.id, city.status]));
   const cities = map.cities.flatMap((city): CityChange[] => {
     const from = oldCities.get(city.id);

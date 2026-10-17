@@ -7,7 +7,7 @@ import type { CelebrationMoment, MapCelebration } from '../../hooks/useMapCelebr
 import { useMapClock } from '../../hooks/useMapClock';
 import { useMapContent } from '../../hooks/useMapContent';
 import { mapClouds, scaledPi, waterGlints } from '../../logic/ambientLayout';
-import { backToFront, doneSegmentsBefore, nodeGround } from '../../logic/mapMarkers';
+import { backToFront, doneSegmentsOf, honeyGaps, nodeGround } from '../../logic/mapMarkers';
 import {
   scrollToContentTranslation,
   tileRect,
@@ -52,7 +52,7 @@ type Props = {
  * Carte d'une région pré-rendue (X2b), dessinée par React Native, sans 3D : le contenu est un seul
  * plan que le fil de l'interface déplace d'après le point suivi (`useMapContent`). De bas en haut :
  * les nuages qui dérivent sous l'île, le sol en tuiles, les reflets du soleil sur l'eau, les
- * tronçons miel du chemin jusqu'au pion, les halos des niveaux ouverts, les disques des niveaux, du
+ * tronçons miel du chemin parcouru (honeyGaps), les halos des niveaux ouverts, les disques des niveaux, du
  * fond vers l'avant, puis l'avatar (`children`). Tout est monté une fois pour toutes : seule la
  * progression change ce qui est posé, jamais le défilement. Les nuages, les reflets et le halo du
  * niveau à jouer suivent une seule horloge à 30 Hz (`useMapClock`), arrêtée avec `ambient`. Au
@@ -100,8 +100,8 @@ export const RegionMapWorld = memo(function RegionMapWorld({
     ),
   );
   const done = useMemo(
-    () => doneSegmentsBefore(tiles.doneSegments, map.pawnIndex),
-    [tiles, map.pawnIndex],
+    () => doneSegmentsOf(tiles.doneSegments, honeyGaps(map.nodes, map.pawnIndex)),
+    [tiles, map.nodes, map.pawnIndex],
   );
   const discs = useMemo(() => backToFront(map.nodes), [map.nodes]);
   // Rang de chaque niveau dans la carte : celui que le toucher désigne.

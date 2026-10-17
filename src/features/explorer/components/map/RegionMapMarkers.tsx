@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { PixelRatio, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { PressableBase } from '@/components/PressableBase';
@@ -7,8 +7,8 @@ import { fr } from '@/i18n/fr';
 
 import type { MapCelebration } from '../../hooks/useMapCelebration';
 import { useMapContent } from '../../hooks/useMapContent';
-import { cityBannerAnchor, discFace } from '../../logic/mapMarkers';
-import { worldToContentDp, type ScreenSize } from '../../logic/mapProjection';
+import { cityBannerPlaces, discFace } from '../../logic/mapMarkers';
+import type { ScreenSize } from '../../logic/mapProjection';
 import type { MapCity, MapNode, RegionMap } from '../../logic/regionMap';
 import type { MapTiles } from '../../tiles';
 import { CityBanner } from './CityBanner';
@@ -27,6 +27,14 @@ type Props = {
   /** Célébration au retour d'un niveau (useMapCelebration) : étoiles gagnées et villes. */
   celebration?: MapCelebration | null;
 };
+
+/**
+ * Taille d'un bandeau de ville (dp), estimée d'après son nom : la police de jeu à 12 pt fait environ
+ * 5,6 dp par lettre (agrandie avec le texte, 1,3 fois au plus), plus l'icône, les marges et le rebord.
+ */
+function bannerSize(name: string, fontScale: number) {
+  return { width: 50 + 5.6 * name.length * Math.min(fontScale, 1.3), height: MAP_TARGET };
+}
 
 /**
  * Ce qui se touche sur une carte pré-rendue (X2b) : un bouton de 48 dp sur chaque niveau, avec son
@@ -59,6 +67,12 @@ export function RegionMapMarkers({
     }
     return { stars, flips };
   }, [celebration]);
+  // Places des bandeaux, une fois pour toutes : aucun ne cache un disque, des étoiles ni un autre bandeau.
+  const banners = useMemo(() => {
+    const fontScale = PixelRatio.getFontScale();
+    const sizes = new Map(map.cities.map((city) => [city.id, bannerSize(city.name, fontScale)]));
+    return cityBannerPlaces(map, origin, k, sizes);
+  }, [map, origin, k]);
   return (
     <Animated.View pointerEvents="box-none" style={[styles.content, area, shift]}>
       {map.nodes.map((node) => {
@@ -84,13 +98,17 @@ export function RegionMapMarkers({
         );
       })}
       {map.cities.map((city) => {
-        const [x, y, z] = cityBannerAnchor(city);
-        const at = worldToContentDp(origin, k, x, z, y);
+        const place = banners.get(city.id);
+        if (!place) return null;
+        // Le bandeau se pose par le milieu de son bas (CityBanner).
         return (
           <View
             key={city.id}
             pointerEvents="box-none"
-            style={[styles.banner, { left: at.x, top: at.y }]}>
+            style={[
+              styles.banner,
+              { left: place.left + place.width / 2, top: place.top + place.height },
+            ]}>
             <CityBanner
               city={city}
               onPress={() => onCity(city)}

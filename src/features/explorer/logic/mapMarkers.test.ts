@@ -5,16 +5,20 @@ import { MAP_LAYOUT } from './mapLayout';
 import {
   backToFront,
   cityBannerAnchor,
+  cityBannerPlaces,
   DISC_TOP,
   discFace,
   discSpriteOf,
-  doneSegmentsBefore,
+  doneSegmentsOf,
   groundSpriteRect,
   haloSpritesOf,
+  honeyGaps,
+  markerObstacles,
   nodeGround,
+  overlap,
 } from './mapMarkers';
-import { worldToImagePx } from './mapProjection';
-import { buildRegionMap } from './regionMap';
+import { worldToContentDp, worldToImagePx } from './mapProjection';
+import { buildRegionMap, type MapCity, type MapNode } from './regionMap';
 
 const SIN = Math.sin((52 * Math.PI) / 180);
 const COS = Math.cos((52 * Math.PI) / 180);
@@ -44,16 +48,36 @@ const SPRITES: NodeSprites = {
 const FRAME = { x0: -2, v0: -1 };
 
 describe('carte pré-rendue : chemin parcouru', () => {
-  const segments = [0, 1, 2, 3].map((gap) => ({ gap }));
+  const states = (...list: MapNode['state'][]) => list.map((state) => ({ state }));
 
-  it('pose les tronçons miel jusqu’au niveau du pion, comme les planches de la carte 3D', () => {
-    expect(doneSegmentsBefore(segments, 0)).toEqual([]);
-    expect(doneSegmentsBefore(segments, 1)).toEqual([{ gap: 0 }]);
-    expect(doneSegmentsBefore(segments, 3)).toEqual([{ gap: 0 }, { gap: 1 }, { gap: 2 }]);
+  it('relie les niveaux terminés, puis le dernier terminé au niveau à jouer', () => {
+    const nodes = states('completed', 'completed', 'active', 'locked');
+    expect(honeyGaps(nodes, 2)).toEqual([0, 1]);
   });
 
-  it('pose tout le chemin quand le pion est au dernier niveau', () => {
-    expect(doneSegmentsBefore(segments, 4)).toEqual(segments);
+  it('ne colore rien tant que le premier niveau n’est pas terminé', () => {
+    expect(honeyGaps(states('active', 'locked', 'locked'), 0)).toEqual([]);
+  });
+
+  it('laisse gris un tronçon qui mène à un niveau fermé ou qui part d’un niveau à faire', () => {
+    // Une ville ouverte plus loin sur le chemin : ses niveaux sont faits, ceux d'avant non.
+    const nodes = states('active', 'locked', 'completed', 'completed', 'active', 'locked');
+    expect(honeyGaps(nodes, 4)).toEqual([2, 3]);
+  });
+
+  it('ne va pas jusqu’à un niveau ouvert qui n’est pas celui à jouer', () => {
+    const nodes = states('completed', 'active', 'completed', 'active');
+    expect(honeyGaps(nodes, 3)).toEqual([2]);
+  });
+
+  it('colore tout le chemin quand tout est fait', () => {
+    expect(honeyGaps(states('completed', 'completed', 'completed'), 2)).toEqual([0, 1]);
+  });
+
+  it('ne pose que les tronçons miel parmi ceux rendus', () => {
+    const segments = [0, 1, 2, 3].map((gap) => ({ gap }));
+    expect(doneSegmentsOf(segments, [1, 3])).toEqual([{ gap: 1 }, { gap: 3 }]);
+    expect(doneSegmentsOf(segments, [])).toEqual([]);
   });
 });
 
@@ -140,6 +164,78 @@ describe('carte pré-rendue : bandeaux des villes', () => {
     expect(x).toBe(3);
     expect(y).toBe(0.3);
     expect(z).toBeCloseTo(4 - (2.5 - MAP_LAYOUT.clearing) - 0.35, 12);
+  });
+});
+
+describe('carte pré-rendue : places des bandeaux des villes', () => {
+  /** Taille d'un bandeau de ce nom (la même estimation que RegionMapMarkers, en plus large). */
+  const sizeOf = (name: string) => ({ width: 60 + 6 * name.length, height: 48 });
+  const sizes = (cities: readonly MapCity[]) =>
+    new Map(cities.map((city) => [city.id, sizeOf(city.name)]));
+  const tiles = PRERENDERED_MAPS['maths-nombres']!;
+  const K = 390 / 4;
+
+  /** Nombres avec tous ses niveaux terminés : chaque disque porte sa rangée d'étoiles. */
+  function allDone() {
+    const empty = buildRegionMap(islandOf('maths')!, 'maths-nombres', new Map())!;
+    const records = new Map(
+      empty.nodes.map((node) => [
+        node.levelId,
+        { levelId: node.levelId, finished: true, bestScore: 1, stars: 3 as const, attempts: 1 },
+      ]),
+    );
+    return buildRegionMap(islandOf('maths')!, 'maths-nombres', records)!;
+  }
+
+  it.each([
+    ['sans progression', () => buildRegionMap(islandOf('maths')!, 'maths-nombres', new Map())!],
+    ['tout terminé', allDone],
+  ])(
+    'à Nombres (%s), aucun bandeau ne cache un disque, des étoiles ou un autre bandeau',
+    (_, make) => {
+      const map = make();
+      const places = cityBannerPlaces(map, tiles, K, sizes(map.cities));
+      expect(places.size).toBe(map.cities.length);
+      const blocked = markerObstacles(tiles, K, map.nodes);
+      const rects = [...places.values()];
+      for (const rect of rects) {
+        for (const obstacle of blocked) expect(overlap(rect, obstacle)).toBe(0);
+      }
+      rects.forEach((a, i) => rects.slice(i + 1).forEach((b) => expect(overlap(a, b)).toBe(0)));
+    },
+  );
+
+  it('garde la place derrière le cercle des niveaux quand elle est libre', () => {
+    const city = {
+      id: 'a',
+      name: 'Ville',
+      center: { x: 0, z: 0 },
+      radius: 1 + MAP_LAYOUT.clearing,
+    };
+    const map = { cities: [city as MapCity], nodes: [] };
+    const rect = cityBannerPlaces(map, FRAME, 100, new Map([['a', { width: 80, height: 40 }]])).get(
+      'a',
+    )!;
+    const [x, y, z] = cityBannerAnchor(city);
+    const behind = worldToContentDp(FRAME, 100, x, z, y);
+    expect(rect).toEqual({ left: behind.x - 40, top: behind.y - 40, width: 80, height: 40 });
+  });
+
+  it('change de place quand un niveau d’une autre ville est derrière le cercle', () => {
+    const city = {
+      id: 'a',
+      name: 'Ville',
+      center: { x: 0, z: 0 },
+      radius: 1 + MAP_LAYOUT.clearing,
+    };
+    const intruder = { x: 0, z: -1.75, radius: 0.26, state: 'locked' } as MapNode;
+    const map = { cities: [city as MapCity], nodes: [intruder] };
+    const rect = cityBannerPlaces(map, FRAME, 100, new Map([['a', { width: 80, height: 40 }]])).get(
+      'a',
+    )!;
+    for (const obstacle of markerObstacles(FRAME, 100, [intruder])) {
+      expect(overlap(rect, obstacle)).toBe(0);
+    }
   });
 });
 
