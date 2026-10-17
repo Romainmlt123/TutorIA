@@ -469,7 +469,8 @@ export function ExplorerScreen() {
               map={map}
               start={tiledPlace.start}
               terrainScale={TERRAIN_SCALES[map.regionId]}
-              ambient={active && animated}
+              // La liste couvre la carte : nuages, reflets et halo s'arrêtent.
+              ambient={active && animated && !mapListMode}
               probe={perfHud}
               celebration={celebration.shown}
               touch={discTouch.values}
@@ -482,7 +483,7 @@ export function ExplorerScreen() {
                   look={avatarLook}
                   levelId={avatarLevelId}
                   quick={arriving !== null}
-                  active={active}
+                  active={active && !mapListMode}
                   animated={animated}
                   probe={perfHud}
                   hold={avatarHeld}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { PixelRatio, StyleSheet, View } from 'react-native';
+import { PixelRatio, Platform, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import type { AvatarLook } from '@/features/avatar/logic/avatarLook';
@@ -72,7 +72,9 @@ export function MapAvatarView({
   onArrive,
 }: Props) {
   const k = dpPerMeter(screen.width);
-  const ratio = PixelRatio.get();
+  // Pixels du tampon de la vue 3D par dp : la densité de l'écran en natif (R3F ignore `dpr`), 2 au
+  // plus sur le web (dpr={[1, 2]}), pour que la vue tombe sur des pixels entiers.
+  const ratio = Platform.OS === 'web' ? Math.min(PixelRatio.get(), 2) : PixelRatio.get();
   const frame = useMemo(() => avatarFrame(k, ratio), [k, ratio]);
   const shadow = useMemo(() => avatarShadow(k), [k]);
   const origin = useMemo(() => ({ x0: tiles.x0, v0: tiles.v0 }), [tiles.x0, tiles.v0]);
