@@ -17,7 +17,8 @@ import { theme } from '@/theme';
 
 const T = fr.tutor.call;
 
-type Props = { elapsed: string; live: boolean; onWritten: () => void };
+/** Sans `elapsed`, pas de chrono : l'appel n'a pas commencé (R4). */
+type Props = { elapsed?: string; live: boolean; onWritten: () => void };
 
 /** Haut de l'appel (CallTopBar) : « Écrit » à gauche, chrono et point qui clignote à droite. */
 export function CallTopBar({ elapsed, live, onWritten }: Props) {
@@ -47,12 +48,14 @@ export function CallTopBar({ elapsed, live, onWritten }: Props) {
           {T.written}
         </Text>
       </PressableBase>
-      <View accessible accessibilityLabel={T.timerLabel(elapsed)} style={styles.timer}>
-        <Animated.View style={[styles.dot, dot]} />
-        <Text variant="label" weight="bold" color="textOnColor" style={styles.digits}>
-          {elapsed}
-        </Text>
-      </View>
+      {elapsed ? (
+        <View accessible accessibilityLabel={T.timerLabel(elapsed)} style={styles.timer}>
+          <Animated.View style={[styles.dot, dot]} />
+          <Text variant="label" weight="bold" color="textOnColor" style={styles.digits}>
+            {elapsed}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 }

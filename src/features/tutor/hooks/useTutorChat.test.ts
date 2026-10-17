@@ -1,6 +1,9 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 
 import { demoConversation } from '@/data/mock/tutorConversation';
+import { fr } from '@/i18n/fr';
+import { queryClient } from '@/lib/queryClient';
+import { studyRulesKey } from '@/lib/session/useStudyRules';
 import { MockConversationService } from '@/services/conversations/mock/MockConversationService';
 import type { TutorService } from '@/services/tutor';
 import { createMockTutorService } from '@/services/tutor/mock/MockTutorService';
@@ -32,6 +35,24 @@ const failingService: TutorService = {
 };
 
 describe('useTutorChat', () => {
+  it('relit les règles des parents dès que le serveur annonce la pause', async () => {
+    const paused: TutorService = {
+      ...failingService,
+      async *sendMessage() {
+        yield { type: 'error', code: 'paused' };
+      },
+    };
+    const invalidate = jest.spyOn(queryClient, 'invalidateQueries').mockResolvedValue();
+    const { result } = await renderHook(() => useTutorChat({ topic, service: paused, resume }));
+    await act(async () => {
+      await result.current.send('x = 5');
+    });
+    await waitFor(() => expect(result.current.pending).toBe(false));
+    expect(result.current.messages.at(-1)?.text).toBe(fr.tutor.errors.paused);
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: studyRulesKey });
+    invalidate.mockRestore();
+  });
+
   it('ouvre la conversation de la maquette et reçoit la réponse du tuteur en flux', async () => {
     const service = createMockTutorService({ chunkDelayMs: 0 });
     const { result } = await renderHook(() => useTutorChat({ topic, service, resume }));

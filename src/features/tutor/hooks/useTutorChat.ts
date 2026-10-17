@@ -4,6 +4,8 @@ import { cardsOfChapter, chapterById } from '@/features/flashcards/logic/catalog
 import type { SubjectId } from '@/data/types';
 import { fr } from '@/i18n/fr';
 import { logError } from '@/lib/logger';
+import { queryClient } from '@/lib/queryClient';
+import { studyRulesKey } from '@/lib/session/useStudyRules';
 import {
   tutorService,
   type TutorErrorCode,
@@ -287,6 +289,9 @@ export function useTutorChat({
             const code =
               event.code === 'bad_request' || event.code === 'network' ? 'upstream' : event.code;
             dispatch({ type: 'replace', id, text: fr.tutor.errors[code] });
+            // La pause vient de commencer : relire les règles bascule tout de suite sur l'écran de
+            // pause, au lieu d'attendre la relecture de chaque minute.
+            if (code === 'paused') void queryClient.invalidateQueries({ queryKey: studyRulesKey });
             finished = true;
           }
         }

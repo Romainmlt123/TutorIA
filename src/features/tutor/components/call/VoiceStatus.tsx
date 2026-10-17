@@ -17,6 +17,7 @@ const ICON: Record<CallState, IconName> = {
   muted: 'micro-barre',
   ended: 'combine',
   error: 'alerte',
+  limit: 'combine-barre',
 };
 
 type Props = { state: CallState; size?: 'md' | 'sm' };

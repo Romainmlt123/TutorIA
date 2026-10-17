@@ -5,21 +5,24 @@ import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeInUp, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Button } from '@/components/Button';
 import { SubjectTile } from '@/components/subject/SubjectTile';
 import { Text } from '@/components/Text';
 import { VoiceAvatar } from '@/components/VoiceAvatar';
 import { fr } from '@/i18n/fr';
 import { useStudyRules } from '@/lib/session/useStudyRules';
 import type { TutorVisual } from '@/services/tutor/visuals';
-import { angleToPoints, theme } from '@/theme';
+import { angleToPoints, extras, theme } from '@/theme';
 
 import { CallDock } from './components/call/CallDock';
 import { CallTopBar } from './components/call/CallTopBar';
+import { CallWarningPill } from './components/call/CallWarningPill';
 import { LiveCaptions } from './components/call/LiveCaptions';
 import { VoiceStatus } from './components/call/VoiceStatus';
 import { VisualModal } from './components/visual/VisualModal';
 import { CallVisualCard } from './components/visual/VisualPanel';
 import { useCallVisualSync } from './hooks/useCallVisualSync';
+import { useCallWarning } from './hooks/useCallWarning';
 import { useSpokenCaption } from './hooks/useSpokenCaption';
 import { useTopicLabels, useTopicParams } from './hooks/useTutorTopic';
 import { useVoiceCall } from './hooks/useVoiceCall';
@@ -42,7 +45,8 @@ export function VoiceTutorScreen() {
   const insets = useSafeAreaInsets();
   const topic = useTopicParams();
   const { subjectName, chapterTitle } = useTopicLabels(topic);
-  const cameraEnabled = useStudyRules().data?.cameraEnabled ?? true;
+  const rules = useStudyRules().data;
+  const cameraEnabled = rules?.cameraEnabled ?? true;
   const backToWritten = () =>
     router.canGoBack()
       ? router.back()
@@ -54,7 +58,10 @@ export function VoiceTutorScreen() {
           },
         });
   const call = useVoiceCall(topic, backToWritten);
-  const state = callStateOf(call.status);
+  // R4 : les appels du jour sont faits, l'appel n'a pas commencé.
+  const limit = call.limitReached;
+  const state = limit ? 'limit' : callStateOf(call.status);
+  const warning = useCallWarning(call.elapsed, rules);
   const spoken = useSpokenCaption(call.caption, state === 'speaking');
   // La courbe s'allume quand sa couleur est prononcée, pas quand elle est écrite.
   const said =
@@ -90,8 +97,8 @@ export function VoiceTutorScreen() {
           },
         ]}>
         <CallTopBar
-          elapsed={formatCallTime(call.elapsed)}
-          live={state !== 'ended' && state !== 'error'}
+          elapsed={limit ? undefined : formatCallTime(call.elapsed)}
+          live={state !== 'ended' && state !== 'error' && !limit}
           onWritten={call.hangUp}
         />
 
@@ -131,28 +138,55 @@ export function VoiceTutorScreen() {
             onReport={call.report}
           />
           <VoiceStatus state={state} size={visual ? 'sm' : 'md'} />
-          <View style={[styles.captions, visual ? styles.captionsCompact : null]}>
-            {call.captionsOn || notice ? (
-              <LiveCaptions
-                caption={call.caption}
-                compact={!!visual}
-                notice={notice}
-                spoken={spoken}
-              />
-            ) : null}
-          </View>
+          {limit ? (
+            <View style={styles.limit}>
+              <Text variant="h3" weight="bold" color="textOnColor" align="center">
+                {fr.tutor.call.limitTitle}
+              </Text>
+              <Text variant="body" color="textOnColor" align="center" style={styles.limitBody}>
+                {fr.tutor.call.limitBody}
+              </Text>
+            </View>
+          ) : (
+            <View style={[styles.captions, visual ? styles.captionsCompact : null]}>
+              {call.captionsOn || notice ? (
+                <LiveCaptions
+                  caption={call.caption}
+                  compact={!!visual}
+                  notice={notice}
+                  spoken={spoken}
+                />
+              ) : null}
+            </View>
+          )}
         </Animated.View>
 
-        <CallDock
-          muted={call.muted}
-          captionsOn={call.captionsOn}
-          cameraActive={call.cameraActive}
-          cameraVisible={cameraEnabled}
-          onToggleMute={call.toggleMute}
-          onToggleCaptions={call.toggleCaptions}
-          onCamera={call.sendPhoto}
-          onHangUp={call.hangUp}
-        />
+        {limit ? (
+          <Button
+            label={fr.tutor.call.continueWritten}
+            variant="white"
+            size="lg"
+            leadingIcon="clavier"
+            labelColor={theme.colors.primaryHover}
+            shadow={extras.studyPause.buttonShadow}
+            onPress={backToWritten}
+            style={styles.written}
+          />
+        ) : (
+          <>
+            {warning ? <CallWarningPill warning={warning} /> : null}
+            <CallDock
+              muted={call.muted}
+              captionsOn={call.captionsOn}
+              cameraActive={call.cameraActive}
+              cameraVisible={cameraEnabled}
+              onToggleMute={call.toggleMute}
+              onToggleCaptions={call.toggleCaptions}
+              onCamera={call.sendPhoto}
+              onHangUp={call.hangUp}
+            />
+          </>
+        )}
       </View>
       <VisualModal
         visual={expanded}
@@ -173,4 +207,7 @@ const styles = StyleSheet.create({
   middle: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: theme.space[4] },
   captions: { alignSelf: 'stretch', minHeight: 120, paddingHorizontal: theme.space[2] },
   captionsCompact: { minHeight: 48, paddingHorizontal: theme.space[1] },
+  limit: { gap: theme.space[2], marginTop: theme.space[4], paddingHorizontal: theme.space[2] },
+  limitBody: { opacity: 0.85 },
+  written: { height: 56, borderRadius: 18, marginBottom: theme.space[4] },
 });
