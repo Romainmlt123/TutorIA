@@ -80,9 +80,9 @@ Rien n'est encore vérifié sur un vrai téléphone. Romain teste sur un Pixel 8
 - **Style du monde :** une maquette réaliste miniature, sans contour noir, sans toon. Les couleurs du monde sont libres (palette d'art, hors charte de la marque).
 - **Disques de niveau :** couleurs **vives**, telles qu'installées. Romain a refusé une version plus « calibrée » : ne pas les recolorer ni les recalibrer sans lui montrer.
 - **Herbe des tuiles :** la version « intermédiaire » (propre mais vive), choisie par Romain.
-- **L'île (X1, X2a) :** gardée telle quelle. Seules les améliorations techniques sont permises, et l'anticrénelage doit être montré avant/après.
+- **L'île (X1, X2a) :** gardée telle quelle jusqu'au chantier C3 (§ 8.0), où elle passe au niveau d'art de la carte, avec l'accord de Romain sur l'image cible.
 - **Caméra de la carte :** orthographique, 52° d'élévation, azimut nul. Tuiles à 224 px/m (« 2x »), WebP q80 de 512 px.
-- **Pas de module natif nouveau :** tout doit marcher dans Expo Go.
+- **Expo Go d'abord :** tout doit marcher dans Expo Go. Un module du SDK présent dans Expo Go (`expo-audio`, `expo-haptics`) demande l'accord de Romain et un nouveau build EAS ; aucun autre module natif.
 
 ### 2.3 Défauts constatés et confirmés par Romain
 
@@ -322,7 +322,34 @@ Ces points se notent dans la pull request, sous « À vérifier sur le télépho
 
 ## 8. Backlog, par ordre de priorité
 
-Il y a deux pistes indépendantes. **La piste A (cuisson) touche `tools/explorer-3d/`, la disposition et les assets ; la piste B (app) touche `src/`.** Romain dit dans sa demande quelle piste prendre. Ne pas faire les deux en parallèle d'une autre session sans qu'il l'ait dit, car les fichiers se recouvrent.
+### 8.0 Le programme « vrai jeu vidéo » (décision de Romain, 18 octobre 2026)
+
+Romain veut que **tout ce qui existe dans Explorer soit refait en mieux**, jusqu'à ce que l'onglet soit un vrai jeu vidéo mobile, digne d'être vendu. Ce n'est pas une réécriture à partir de zéro : le code, la chaîne de rendu et les décisions validées (§ 2.2) restent la base, et chaque chantier les améliore.
+
+**Périmètre :** l'onglet Explorer (île, régions, carte, niveaux vus depuis la carte), l'avatar et son éditeur, le HUD de jeu (`src/components/game/`), la chaîne Blender (`tools/explorer-3d/`, `tools/avatar-3d/`). **Hors périmètre :** les autres onglets, l'espace Parents, le serveur, Supabase, le tuteur, et les fichiers interdits du § 0.
+
+**Méthode, pour chaque chantier :**
+
+1. une branche `explorer/<chantier>` créée depuis `origin/explorer/rendu-v2` à jour, et une pull request vers `explorer/rendu-v2` ;
+2. d'abord une **image cible** (une vue retouchée jusqu'au niveau voulu, sur une petite zone), validée par Romain, **avant** de l'appliquer partout ;
+3. des captures avant/après dans la pull request, `npm run check` au vert, les budgets du § 3.5 tenus ;
+4. un chantier fini et fusionné par Romain avant d'attaquer le suivant, sauf s'il en décide autrement.
+
+**Les chantiers, dans l'ordre :**
+
+| #   | Chantier                           | Contenu                                                                                                                                                                                                                                                                                                                                                                                                                   | Fini quand                                                                                            |
+| --- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| C1  | Direction artistique               | À partir des captures de référence de Romain (2 ou 3 jeux), une planche de style : palette, lumière, matières, densité de détail, et une vue de ville finie au niveau visé. Note de style ajoutée au § 3.                                                                                                                                                                                                                 | Romain valide la planche et la vue de ville.                                                          |
+| C2  | La carte de Nombres                | La piste A ci-dessous (A1 eau et rives, A2 disposition, A3 herbe, A5 passe beauté), au niveau de C1, puis une seule recuisson (A4).                                                                                                                                                                                                                                                                                       | Les 6 villes au niveau de la vue validée en C1, sans aucun défaut du § 2.3.                           |
+| C3  | L'île des Maths (X1, X2a)          | Même niveau d'art que la carte : eau, rives, matières, lumière, grands repères, transitions entre l'île, les régions et la carte. Recuisson par `npm run explorer:models`, budgets tenus (île ≤ 1,5 Mo).                                                                                                                                                                                                                  | Romain valide l'île sur son téléphone ; plus de rechargement visible.                                 |
+| C4  | Avatar v2                          | Identité à faire choisir par Romain (recommandé : une figurine originale aux proportions de Tutor'IA, plutôt que « façon Mii », plus sûr pour les stores) ; visage dessiné par le shader gardé ; ≤ 8 000 triangles par défaut ; même étalonnage partout ; clips `attente`, `marche`, `saut`, `salut`, plus « bravo » et « encouragement ». Les contrats du § 10 de `CLAUDE.md` (garde-robe, `AvatarLook`) ne cassent pas. | Planche de référence validée, puis la figurine dans l'éditeur, le profil et la carte.                 |
+| C5  | Sensation de jeu et son            | Sons (`expo-audio`) et vibrations légères (`expo-haptics`) commandés par l'interrupteur « Sons et vibrations » du profil, coupés par défaut si Romain le préfère ; transitions (plongée de l'île vers la région, arrivée dans une ville) ; micro-animations du HUD. Sons libres de droits (licence CC0 ou équivalente, notée dans le dépôt).                                                                              | Romain valide sur le téléphone ; « Réduire les animations » respecté ; aucun son sans l'interrupteur. |
+| C6  | Les trois autres régions des Maths | Données, Espace, Algorithmique : 9 monuments, la même chaîne que Nombres, au niveau de C1 à C3.                                                                                                                                                                                                                                                                                                                           | Les 4 régions jouables, budgets tenus.                                                                |
+| C7  | Qualité de sortie                  | Mesure sur un Android milieu de gamme (Romain), mémoire, temps d'ouverture d'Explorer, poids de l'app ; régions téléchargées à la demande si le poids l'exige.                                                                                                                                                                                                                                                            | Seuils notés dans `CLAUDE.md`, tenus.                                                                 |
+
+**Décisions qui reviennent à Romain** (les lui demander, ne pas les prendre) : le déplacement du soleil, l'ajout d'un paquet (`expo-audio`, `expo-haptics` : modules natifs, donc un nouveau build EAS), la voix de la marque dans les sons, l'identité de l'avatar, tout ce qui change les décisions du § 2.2.
+
+Les sections suivantes détaillent le chantier C2 (piste A) et ce qui reste de la finition de l'app (piste B).
 
 ### Piste A · Cuisson de la carte (une seule recuisson pour A1, A2, A3 et A5)
 
@@ -423,16 +450,17 @@ Le but : que la carte de Nombres ait l'air d'un grand jeu mobile, pas seulement 
 
 ## 10. Lancer une session Devin
 
-Premier message à coller, sur une session ouverte sur le dépôt `Romainmlt123/TutorIA` :
+Premier message à coller, sur une session ouverte sur le dépôt `Romainmlt123/TutorIA`, avec les captures de référence de Romain en pièces jointes :
 
 ```
 Lis d'abord docs/explorer-passation.md en entier, puis CLAUDE.md : ils font foi.
-Crée ta branche explorer/eau-et-rives à partir de origin/explorer/rendu-v2.
-Prends la piste A du backlog (§ 8), dans l'ordre : A1 eau et rives, A2 disposition autour de la Tour des Puissances (avec le test anti-chevauchement), A3 traînées d'herbe autour du moulin, puis A5 la passe beauté des rendus de la carte, et termine par une seule recuisson complète (A4).
-Ne touche pas aux fichiers de l'app hors de la piste A (src/features/explorer/components, hooks, ExplorerScreen.tsx) : une autre session y travaille.
-Règles git strictes : ne pousse jamais sur dev, main ni explorer/rendu-v2 ; jamais de force push, de merge ni de rebase de ces branches. Pousse seulement explorer/eau-et-rives et ouvre une pull request vers explorer/rendu-v2. Ne fusionne rien.
+Je veux que tout l'onglet Explorer soit refait en mieux, jusqu'à être un vrai jeu vidéo mobile digne d'être vendu : suis le programme du § 8.0, chantier par chantier, dans l'ordre (C1 direction artistique, puis C2 la carte de Nombres, puis C3 l'île, etc.).
+Pour chaque chantier : une branche explorer/<chantier> créée depuis origin/explorer/rendu-v2, une image cible que je valide avant d'appliquer partout, des avant/après, npm run check au vert, puis une pull request vers explorer/rendu-v2. Attends que j'aie fusionné un chantier avant d'attaquer le suivant.
+Commence par C1 avec les captures de référence jointes à ce message.
+Règles git strictes : ne pousse jamais sur dev, main ni explorer/rendu-v2 ; jamais de force push, de merge ni de rebase de ces branches. Ne fusionne rien.
+Reste dans le périmètre du § 8.0 (Explorer, avatar, HUD de jeu, chaîne Blender) : ne touche ni aux autres onglets, ni à l'espace Parents, ni au serveur, ni à Supabase.
 Mode simulé uniquement (EXPO_PUBLIC_BACKEND=mock), aucune connexion à Supabase, aucune clé.
-Itère sur de petites zones (EXPLORER_TILES_ZONE) et montre-moi les avant/après (eau d'abord, puis chaque idée de la passe beauté) avant la recuisson complète.
+Pose-moi les décisions listées au § 8.0 au lieu de les prendre.
 ```
 
 ## 11. Rendre compte à Romain
