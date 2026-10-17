@@ -60,7 +60,15 @@ function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
       <Stack.Protected guard={space === 'student' || space === 'onboarding'}>
         <Stack.Screen name="relier-parent" options={{ presentation: 'modal' }} />
       </Stack.Protected>
-      <Stack.Screen name="bientot" options={{ presentation: 'modal' }} />
+      {/* B1 (v2.19) : une feuille du bas sur l'écran d'où l'on vient. */}
+      <Stack.Screen
+        name="bientot"
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+          contentStyle: { backgroundColor: 'transparent' },
+        }}
+      />
       <Stack.Protected guard={__DEV__}>
         <Stack.Screen name="dev/catalogue" />
         <Stack.Screen name="dev/explorer-atelier" />

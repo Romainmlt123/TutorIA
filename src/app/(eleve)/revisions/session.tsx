@@ -3,7 +3,7 @@ import { SessionScreen } from '@/features/flashcards/SessionScreen';
 
 export default function FlashcardSessionRoute() {
   return (
-    <StudyGate>
+    <StudyGate withNav={false}>
       <SessionScreen />
     </StudyGate>
   );

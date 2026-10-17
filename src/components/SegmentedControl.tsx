@@ -6,7 +6,13 @@ import { Icon, type IconName } from './Icon';
 import { PressableBase } from './PressableBase';
 import { Text } from './Text';
 
-export type SegmentOption<T extends string> = { value: T; label: string; icon?: IconName };
+export type SegmentOption<T extends string> = {
+  value: T;
+  label: string;
+  icon?: IconName;
+  /** Grisé (coupé par un parent, R7) : le toucher reste transmis, pour expliquer pourquoi. */
+  locked?: boolean;
+};
 
 export type SegmentedControlProps<T extends string> = {
   options: readonly SegmentOption<T>[];
@@ -46,19 +52,22 @@ export function SegmentedControl<T extends string>({
       ]}>
       {options.map((option) => {
         const selected = option.value === value;
-        const color = onBand
-          ? selected
-            ? bandInk
-            : theme.colors.textOnColor
-          : selected
-            ? theme.colors.textOnColor
-            : theme.colors.textSecondary;
+        const color = option.locked
+          ? theme.palette.gray[300]
+          : onBand
+            ? selected
+              ? bandInk
+              : theme.colors.textOnColor
+            : selected
+              ? theme.colors.textOnColor
+              : theme.colors.textSecondary;
         return (
           <PressableBase
             key={option.value}
             onPress={() => onChange(option.value)}
             accessibilityRole="tab"
             aria-selected={selected}
+            aria-disabled={option.locked}
             hitSlop={theme.space[1]}
             style={[
               styles.segment,

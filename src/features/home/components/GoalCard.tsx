@@ -94,7 +94,7 @@ export function GoalCard({ minutes, sessionsDone, sessionsTarget }: Props) {
             {fr.home.goalDetail(minutes, sessionsDone, sessionsTarget)}
           </Text>
           <Pill
-            label={fr.home.goalRemaining(sessionsTarget - sessionsDone)}
+            label={fr.home.goalRemaining(sessionsTarget - sessionsDone, sessionsDone)}
             backgroundColor={theme.colors.surface}
             color={blue}
             style={styles.pill}

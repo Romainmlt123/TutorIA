@@ -39,6 +39,8 @@ export function useVoiceCall(
   const [persistentNotice, setPersistentNotice] = useState<string | undefined>();
   const [camera, setCamera] = useState<CameraState>('idle');
   const [elapsed, setElapsed] = useState(0);
+  /** R4 : le serveur refuse l'appel, les appels du jour sont faits. */
+  const [limitReached, setLimitReached] = useState(false);
   const session = useRef<VoiceSession | null>(null);
   const status = voiceStatus(state);
   const level = useSharedValue(0);
@@ -74,15 +76,18 @@ export function useVoiceCall(
         return;
       }
       const code = error instanceof VoiceSessionError ? error.code : 'network';
+      if (code === 'daily_limit') {
+        setLimitReached(true);
+        dispatch({ type: 'failed' });
+        return;
+      }
       if (code !== 'microphone') logError('voice.start', error);
       setPersistentNotice(
         code === 'microphone'
           ? fr.tutor.micDenied
-          : code === 'daily_limit'
-            ? fr.tutor.voiceDailyLimit
-            : code === 'rate_limited'
-              ? fr.tutor.errors.rate_limited
-              : fr.tutor.voiceStatus.error,
+          : code === 'rate_limited'
+            ? fr.tutor.errors.rate_limited
+            : fr.tutor.voiceStatus.error,
       );
       dispatch({ type: 'failed' });
     });
@@ -164,6 +169,7 @@ export function useVoiceCall(
     visual,
     muted: state.muted,
     elapsed,
+    limitReached,
     notice: notice ?? persistentNotice,
     cameraActive: camera === 'active',
     toggleMute,

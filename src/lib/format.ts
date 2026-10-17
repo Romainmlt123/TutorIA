@@ -29,3 +29,9 @@ export function formatDurationDelta(delta: number): string {
 export function formatCountDelta(delta: number): string {
   return `${sign(delta)}${formatCount(delta)}`;
 }
+
+/** Heure d'un réglage parental : « 17:00 » → « 17 h », « 17:30 » → « 17 h 30 ». */
+export function formatHour(time: string): string {
+  const [hours = '0', minutes = '00'] = time.split(':');
+  return minutes === '00' ? `${Number(hours)} h` : `${Number(hours)} h ${minutes}`;
+}

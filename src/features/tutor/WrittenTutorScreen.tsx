@@ -76,9 +76,8 @@ function TutorChat({ entry, resume, onConversation, onTitle }: ChatProps) {
       <ChatBubble
         role="tutor"
         text={item.streaming && !item.text ? fr.tutor.typing : item.text}
-        label={item.practice ? fr.tutor.practice : undefined}
         reported={item.reported}
-        onLongPress={item.practice || item.streaming ? undefined : () => report(item.id)}
+        onLongPress={item.streaming ? undefined : () => report(item.id)}
       />
     );
     const shown = item.visual;
@@ -121,16 +120,13 @@ function TutorChat({ entry, resume, onConversation, onTitle }: ChatProps) {
 
       {/* Android bord à bord : la fenêtre ne rétrécit plus avec le clavier, `padding` le compense. */}
       <KeyboardAvoidingView style={styles.body} behavior="padding">
-        {offline ? (
-          <View style={styles.banner}>
-            <OfflineBanner onRetry={retry} />
-          </View>
-        ) : null}
         <FlatList
           ref={list}
           data={messages}
           keyExtractor={(m) => m.id}
           renderItem={renderItem}
+          // H1 : sans réseau, la carte se place sous la question restée en attente.
+          ListFooterComponent={offline ? <OfflineBanner onRetry={retry} /> : null}
           accessibilityLabel={fr.tutor.conversationLabel}
           contentContainerStyle={styles.messages}
           onContentSizeChange={() => list.current?.scrollToEnd({ animated: true })}
@@ -227,7 +223,13 @@ function useChatEntry() {
 export function WrittenTutorScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const voiceEnabled = useStudyRules().data?.voiceEnabled ?? true;
+  const rules = useStudyRules().data;
+  const voiceEnabled = rules?.voiceEnabled ?? true;
+  const voiceLocked = voiceEnabled
+    ? null
+    : rules?.cameraEnabled === false
+      ? fr.tutor.voiceLocked.withCamera
+      : fr.tutor.voiceLocked.voiceOnly;
   const { entry, setEntry } = useChatEntry();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const newCount = useRef(0);
@@ -276,10 +278,12 @@ export function WrittenTutorScreen() {
             accessibilityLabel={T.openHistory}
             onPress={() => setDrawerOpen(true)}
           />
-          {/* Tuteur vocal désactivé par un parent (P4) : pas de bascule vers le vocal. */}
-          {voiceEnabled ? (
-            <TutorModeToggle value="written" onChange={(mode) => mode === 'voice' && openVoice()} />
-          ) : null}
+          {/* Tuteur vocal désactivé par un parent (P4) : « Vocal » grisé, qui dit pourquoi (R7). */}
+          <TutorModeToggle
+            value="written"
+            voiceLocked={voiceLocked}
+            onChange={(mode) => mode === 'voice' && openVoice()}
+          />
           <IconButton icon="plus" accessibilityLabel={T.newChat} onPress={startNew} />
         </View>
       </TutorHeader>
@@ -333,7 +337,6 @@ const styles = StyleSheet.create({
   },
   body: { flex: 1 },
   topic: { paddingHorizontal: theme.layout.screenPadding, paddingTop: theme.space[3] },
-  banner: { paddingHorizontal: theme.layout.screenPadding, paddingTop: theme.space[3] },
   messages: {
     flexGrow: 1,
     justifyContent: 'flex-end',

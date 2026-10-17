@@ -39,6 +39,8 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Interface     | **v2.12 et v2.17 · bandeaux, en-tête de l'Accueil, séance de flashcards**     | ✅ validé   | `feat/bandeau-et-flashcards`      |
 | Interface     | **v2.16 · données et confidentialité (D1 à D4)**                              | ✅ validé   | `feat/donnees-et-confidentialite` |
 | Interface     | **v2.18 · la famille (F1, F2, F3, F5)**                                       | ✅ validé   | `feat/famille`                    |
+| Interface     | **v2.15 · les règles des parents, côté élève (R1 à R7)**                      | ✅ validé   | `feat/regles-des-parents`         |
+| Interface     | **v2.19 · premiers jours et hors connexion (J1, J3, H1, H2, B1)**             | ✅ validé   | `feat/premiers-jours`             |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -289,6 +291,17 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - Option 1 retenue : seul le parent qui a validé le compte d'un enfant de moins de 15 ans modifie son prénom et sa classe (fonction `update_child_profile`, migration `20261016063758`, à appliquer en ligne par Romain).
   - La v2.18 est validée par Romain, et la migration `child_profile_by_parent` est appliquée en ligne (version `20261016063758`, par Romain avec `supabase db push`).
   - Les notifications (v2.20) viendront dans un lot à part.
+
+- **16/10 (v2.15, les règles des parents) :**
+  - Plan validé par Romain, avec deux choix : R4 s'affiche quand le serveur refuse l'appel (pas de nouvelle route pour le savoir avant), et « Plus que 2 minutes » est une pastille au-dessus des commandes, visible même sous-titres coupés.
+  - La pastille prévient aussi de la fin des 10 minutes d'appel, que le surveillant applique sans prévenir.
+  - 17/10 : publiée sur l'APK (EAS Update, canal `preview`) avec les lots 1 à 4, puis validée par Romain sur le Pixel.
+
+- **17/10 (v2.19, premiers jours et hors connexion) :**
+  - Plan validé par Romain, avec deux choix : pas d'`expo-network` (H2 réessaie toutes les 15 s et au retour au premier plan, sans nouvel APK) ; « Ta première séance » suit l'auto-évaluation de l'onboarding.
+  - L'entraînement hors ligne est retiré (décision de la v2.19.1). La carte « Pas de connexion » ne s'affiche que pour une vraie coupure, pas pour une erreur d'OpenAI.
+  - La feuille du choix de l'enfant (F3) et celle de « Bientôt » (B1) partagent `BottomSheet` : coins de 32 px comme les maquettes.
+  - Validé par Romain le 17/10.
 
 ## Prochaines étapes, gardées en tête (08/10)
 

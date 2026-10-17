@@ -3,13 +3,14 @@ import { Modal, StyleSheet, View } from 'react-native';
 
 import { GradientSurface } from '@/components/GradientSurface';
 import { Icon } from '@/components/Icon';
+import { BottomSheet } from '@/components/BottomSheet';
 import { IconButton } from '@/components/IconButton';
 import { PressableBase } from '@/components/PressableBase';
 import { Text } from '@/components/Text';
 import { fr } from '@/i18n/fr';
 import { formatDuration } from '@/lib/format';
 import type { LinkedChild } from '@/services/family';
-import { extras, theme } from '@/theme';
+import { theme } from '@/theme';
 
 import { useChildrenWeek } from '../hooks/useFamily';
 
@@ -64,86 +65,75 @@ export function ChildSwitcher({ childList, selected, onSelect, onAddChild }: Pro
         </View>
         <Icon name="chevron-bas" size={18} color={theme.palette.gray[500]} strokeWidth={2} />
       </PressableBase>
-      <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-        <View style={styles.backdrop}>
-          <PressableBase
-            onPress={() => setOpen(false)}
-            accessibilityRole="button"
-            accessibilityLabel={t.closeChooser}
-            style={StyleSheet.absoluteFill}
-          />
-          <View style={styles.sheet}>
-            <View aria-hidden style={styles.handle} />
-            <View style={styles.sheetHead}>
-              <Text variant="metric" accessibilityRole="header" style={styles.sheetTitle}>
-                {t.chooseChild}
-              </Text>
-              <IconButton
-                icon="croix"
-                accessibilityLabel={t.closeChooser}
-                onPress={() => setOpen(false)}
-              />
-            </View>
-            {childList.map((child) => {
-              const active = child.id === selected.id;
-              const seconds = week.data?.[child.id];
-              return (
-                <PressableBase
-                  key={child.id}
-                  onPress={() => {
-                    onSelect(child);
-                    setOpen(false);
-                  }}
-                  role="radio"
-                  aria-checked={active}
-                  accessibilityLabel={child.firstName}
-                  style={[styles.option, active && styles.optionActive]}>
-                  <ChildAvatar name={child.firstName} size={44} />
-                  <View style={styles.optionText}>
-                    <Text variant="body" weight="bold">
-                      {child.firstName}
-                    </Text>
-                    <Text variant="caption" color="textSecondary">
-                      {t.childLine(
-                        child.grade,
-                        seconds === undefined ? null : formatDuration(seconds / 60),
-                      )}
-                    </Text>
-                  </View>
-                  <View aria-hidden style={[styles.radio, active && styles.radioActive]}>
-                    {active ? (
-                      <Icon
-                        name="coche"
-                        size={14}
-                        color={theme.colors.textOnColor}
-                        strokeWidth={3}
-                      />
-                    ) : null}
-                  </View>
-                </PressableBase>
-              );
-            })}
-            <PressableBase
-              onPress={() => {
-                setOpen(false);
-                onAddChild();
-              }}
-              accessibilityRole="button"
-              style={[styles.option, styles.addOption]}>
-              <View style={styles.add}>
-                <Icon name="plus" size={20} color={theme.colors.accent} strokeWidth={2.5} />
-              </View>
-              <View style={styles.optionText}>
-                <Text variant="body" weight="bold" color="accent">
-                  {fr.parent.settings.addChild.label}
-                </Text>
-                <Text variant="caption" color="textSecondary">
-                  {fr.parent.settings.addChild.hint}
-                </Text>
-              </View>
-            </PressableBase>
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <BottomSheet
+          onClose={() => setOpen(false)}
+          closeLabel={t.closeChooser}
+          accessibilityLabel={t.chooseChild}>
+          <View style={styles.sheetHead}>
+            <Text variant="metric" accessibilityRole="header" style={styles.sheetTitle}>
+              {t.chooseChild}
+            </Text>
+            <IconButton
+              icon="croix"
+              accessibilityLabel={t.closeChooser}
+              onPress={() => setOpen(false)}
+            />
           </View>
-        </View>
+          {childList.map((child) => {
+            const active = child.id === selected.id;
+            const seconds = week.data?.[child.id];
+            return (
+              <PressableBase
+                key={child.id}
+                onPress={() => {
+                  onSelect(child);
+                  setOpen(false);
+                }}
+                role="radio"
+                aria-checked={active}
+                accessibilityLabel={child.firstName}
+                style={[styles.option, active && styles.optionActive]}>
+                <ChildAvatar name={child.firstName} size={44} />
+                <View style={styles.optionText}>
+                  <Text variant="body" weight="bold">
+                    {child.firstName}
+                  </Text>
+                  <Text variant="caption" color="textSecondary">
+                    {t.childLine(
+                      child.grade,
+                      seconds === undefined ? null : formatDuration(seconds / 60),
+                    )}
+                  </Text>
+                </View>
+                <View aria-hidden style={[styles.radio, active && styles.radioActive]}>
+                  {active ? (
+                    <Icon name="coche" size={14} color={theme.colors.textOnColor} strokeWidth={3} />
+                  ) : null}
+                </View>
+              </PressableBase>
+            );
+          })}
+          <PressableBase
+            onPress={() => {
+              setOpen(false);
+              onAddChild();
+            }}
+            accessibilityRole="button"
+            style={[styles.option, styles.addOption]}>
+            <View style={styles.add}>
+              <Icon name="plus" size={20} color={theme.colors.accent} strokeWidth={2.5} />
+            </View>
+            <View style={styles.optionText}>
+              <Text variant="body" weight="bold" color="accent">
+                {fr.parent.settings.addChild.label}
+              </Text>
+              <Text variant="caption" color="textSecondary">
+                {fr.parent.settings.addChild.hint}
+              </Text>
+            </View>
+          </PressableBase>
+        </BottomSheet>
       </Modal>
     </>
   );
@@ -161,25 +151,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
   },
   center: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
-  // F3 (v2.18) : une feuille du bas, comme « Bientôt » et le choix de la photo.
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: extras.backdrop },
-  sheet: {
-    gap: theme.space[3],
-    paddingTop: theme.space[2],
-    paddingBottom: theme.space[8],
-    paddingHorizontal: theme.layout.screenPadding,
-    borderTopLeftRadius: theme.radius['3xl'],
-    borderTopRightRadius: theme.radius['3xl'],
-    backgroundColor: theme.colors.surface,
-    boxShadow: theme.shadow.lg,
-  },
-  handle: {
-    alignSelf: 'center',
-    width: 40,
-    height: 4,
-    borderRadius: theme.radius.full,
-    backgroundColor: theme.colors.border,
-  },
   sheetHead: { flexDirection: 'row', alignItems: 'center' },
   sheetTitle: { flex: 1 },
   option: {

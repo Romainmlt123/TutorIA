@@ -18,6 +18,7 @@ import { useCaptionsPreference } from '@/features/tutor/hooks/useCaptionsPrefere
 import { fr } from '@/i18n/fr';
 import { logError } from '@/lib/logger';
 import { monthIndex, parisDay } from '@/lib/parisTime';
+import { studentKeys } from '@/lib/session/useStudentOverview';
 import { useDevicePreference } from '@/lib/useDevicePreference';
 import { authService } from '@/services/auth';
 import { familyService } from '@/services/family';
@@ -34,7 +35,7 @@ import { useProfileData } from './hooks/useProfileData';
 const t = fr.profile;
 /** Sons et vibrations : retenu sur l'appareil, sans effet pour l'instant (feuille de route). */
 const SOUNDS_KEY = 'tutoria.sounds';
-const onboardingKey = ['onboarding', 'answers'] as const;
+const onboardingKey = studentKeys.onboarding;
 
 /**
  * 05 · Profil de l'élève (design/screens/05-Profil.dc.html, v2.8) : bandeau avec la figurine,

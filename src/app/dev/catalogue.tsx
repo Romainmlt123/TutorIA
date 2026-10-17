@@ -22,9 +22,12 @@ import { logError } from '@/lib/logger';
 import { showNotice } from '@/lib/notice';
 import { WARDROBE } from '@/features/avatar/logic/wardrobe';
 import { useStudentAccount } from '@/lib/session/SessionProvider';
+import { studyRulesKey } from '@/lib/session/useStudyRules';
 import { authService, mockAuthService } from '@/services/auth';
 import { avatarService } from '@/services/avatar';
 import { mockExplorerService } from '@/services/explorer';
+import { mockFamilyService } from '@/services/family';
+import { mockStudentDataService, type StudyRules } from '@/services/student';
 import { MOCK_VISUALS } from '@/services/tutor/mock/visualScripts';
 import type { PersonaId } from '@/services/auth/mock/MockAuthService';
 import { theme, type ColorRole, type TypeVariant } from '@/theme';
@@ -57,6 +60,7 @@ export default function Catalogue() {
       </Text>
 
       <PersonaSwitcher />
+      <RulesDemo />
       <Button label={t.avatarLab} variant="soft" onPress={() => router.push('/dev/avatars')} />
       <ExplorerDemo />
       <WardrobeDemo />
@@ -306,6 +310,60 @@ function ExplorerDemo() {
   );
 }
 
+/** Toute la journée : la plage horaire ne bloque pas, seul le temps du jour compte. */
+const ALL_DAY = { dailyLimitEnabled: true, allowedFrom: '00:00', allowedUntil: '23:59' } as const;
+
+const RULE_PRESETS: readonly { label: string; rules: Partial<StudyRules> }[] = [
+  { label: t.rules.none, rules: {} },
+  { label: t.rules.evening, rules: { eveningPause: true } },
+  {
+    label: t.rules.window,
+    rules: { dailyLimitEnabled: true, allowedFrom: '06:00', allowedUntil: '06:01' },
+  },
+  { label: t.rules.daily, rules: { ...ALL_DAY, dailyLimitMinutes: 90, todaySeconds: 5400 } },
+  { label: t.rules.soon, rules: { ...ALL_DAY, dailyLimitMinutes: 90, todaySeconds: 5310 } },
+  { label: t.rules.noVoice, rules: { voiceEnabled: false, cameraEnabled: false } },
+  { label: t.rules.noCamera, rules: { cameraEnabled: false } },
+];
+
+/** Élève simulé : premier jour (J1) ou progression de Léa, et règles des parents (R1 à R7). */
+function RulesDemo() {
+  const queryClient = useQueryClient();
+  const service = mockStudentDataService;
+  if (!service) return null;
+  const apply = (rules: Partial<StudyRules>) => {
+    service.setRules(rules);
+    void queryClient.invalidateQueries({ queryKey: studyRulesKey });
+  };
+  return (
+    <Section title={t.rules.title}>
+      <View style={styles.row2}>
+        {[true, false].map((on) => (
+          <Button
+            key={String(on)}
+            label={on ? t.rules.firstDay : t.rules.progress}
+            variant="soft"
+            onPress={() => {
+              service.setFirstDay(on);
+              void queryClient.invalidateQueries({ queryKey: ['student'] });
+            }}
+          />
+        ))}
+      </View>
+      <View style={styles.row2}>
+        {RULE_PRESETS.map((preset) => (
+          <Button
+            key={preset.label}
+            label={preset.label}
+            variant="soft"
+            onPress={() => apply(preset.rules)}
+          />
+        ))}
+      </View>
+    </Section>
+  );
+}
+
 const PERSONAS: readonly { id: PersonaId; label: string }[] = [
   { id: 'lea', label: t.personas.lea },
   { id: 'claire', label: t.personas.claire },
@@ -317,6 +375,7 @@ const PERSONAS: readonly { id: PersonaId; label: string }[] = [
  * (npm run db:seed) se connectent depuis l'écran de connexion ; on se déconnecte ici.
  */
 function PersonaSwitcher() {
+  const queryClient = useQueryClient();
   const signOut = () => {
     authService.signOut().catch((error: unknown) => logError('dev.signOut', error));
   };
@@ -338,6 +397,21 @@ function PersonaSwitcher() {
           {t.personas.supabaseHint}
         </Text>
       )}
+      {mockFamilyService ? (
+        <View style={styles.row2}>
+          {[false, true].map((on) => (
+            <Button
+              key={String(on)}
+              label={on ? t.personas.withChild : t.personas.noChild}
+              variant="soft"
+              onPress={() => {
+                mockFamilyService?.setDemoLink(on);
+                void queryClient.invalidateQueries();
+              }}
+            />
+          ))}
+        </View>
+      ) : null}
       <Button label={t.personas.signOut} variant="soft" onPress={signOut} />
     </Section>
   );
