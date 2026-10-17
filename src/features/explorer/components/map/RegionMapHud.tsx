@@ -82,6 +82,9 @@ export function RegionMapHud({
   const previous = map.cities[position - 1];
   const next = map.cities[position + 1];
   const nextNode = map.nodes.find((n) => n.cityId === city.id && n.state === 'active');
+  // Un nom long (« Ville des Produits de fractions ») passe en plus petit, sur deux lignes au besoin,
+  // sans jamais glisser sous les boutons.
+  const long = city.name.length > TITLE_FIT;
   return (
     <>
       <View style={styles.top}>
@@ -100,7 +103,11 @@ export function RegionMapHud({
           <GameText size={13} align="center" stroke={2} drop={1} numberOfLines={1}>
             {regionName}
           </GameText>
-          <GameText size={22} align="center" numberOfLines={1}>
+          <GameText
+            size={long ? 18 : 22}
+            align="center"
+            numberOfLines={long ? 2 : 1}
+            style={styles.title}>
             {city.name}
           </GameText>
         </View>
@@ -132,9 +139,14 @@ export function RegionMapHud({
   );
 }
 
+/** Nombre de lettres d'un nom de ville qui tient en grand entre les deux boutons (écran de 360 dp). */
+const TITLE_FIT = 20;
+
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
   titles: { flex: 1, alignItems: 'center' },
+  // Le titre prend toute la largeur entre les boutons : un nom trop long y revient à la ligne.
+  title: { alignSelf: 'stretch' },
   zone: { flex: 1 },
   list: { flex: 1 },
 });
