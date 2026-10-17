@@ -2,6 +2,8 @@ import * as THREE from 'three';
 
 import { explorerArt } from '@/theme/explorerArt';
 
+import { SHADOW_FALL } from './sun';
+
 /*
  * Ombres douces posées au sol sous les décors et les monuments de la carte d'une région : le terrain
  * est cuit sans eux, ces taches les ancrent dans l'herbe. Une seule pièce instanciée, un dégradé
@@ -9,10 +11,6 @@ import { explorerArt } from '@/theme/explorerArt';
  */
 
 export type ShadowSpot = { x: number; z: number; radius: number; height: number };
-
-/** Direction horizontale où tombent les ombres, par mètre de hauteur de l'objet. */
-const SUN = new THREE.Vector3(-0.67, 0.656, 0.348).normalize();
-const FALL = { x: (-SUN.x / SUN.y) * 0.35, z: (-SUN.z / SUN.y) * 0.35 };
 
 export function groundShadows(spots: readonly ShadowSpot[]): THREE.InstancedMesh {
   const geometry = new THREE.PlaneGeometry(1, 1);
@@ -47,7 +45,11 @@ export function groundShadows(spots: readonly ShadowSpot[]): THREE.InstancedMesh
   spots.forEach((spot, i) => {
     const size = spot.radius * 2.6;
     matrix.compose(
-      new THREE.Vector3(spot.x + FALL.x * spot.height, 0.04, spot.z + FALL.z * spot.height),
+      new THREE.Vector3(
+        spot.x + SHADOW_FALL.x * spot.height,
+        0.04,
+        spot.z + SHADOW_FALL.z * spot.height,
+      ),
       quaternion,
       new THREE.Vector3(size * 1.15, 1, size),
     );

@@ -1,4 +1,5 @@
 import { seeded } from '../hd2d/pixels';
+import regionDecor from '../stylized3d/regionDecor.json';
 import type { PathSample, Vec } from './mapLayout';
 import type { RegionMap } from './regionMap';
 
@@ -193,6 +194,46 @@ export function grassTufts(map: RegionMap, decor: readonly Decor[], seed: number
   return tufts;
 }
 
+/**
+ * Brins d'herbe des touffes, semés autour de chacune : des triangles (x, y, z en mètres, pied au
+ * sol) et leurs UV (v = hauteur du brin, de 0 au pied à 1 à la pointe). La carte 3D en fait un
+ * maillage (stripKit), la carte pré-rendue les transmet à Blender (mapExport).
+ */
+export function tuftBlades(
+  tufts: readonly Tuft[],
+  seed: number,
+): { position: number[]; uv: number[] } {
+  const random = seeded(seed);
+  const position: number[] = [];
+  const uv: number[] = [];
+  for (const tuft of tufts) {
+    const blades = tuft.tall ? 5 + Math.floor(random() * 5) : 4 + Math.floor(random() * 5);
+    for (let b = 0; b < blades; b++) {
+      const bx = tuft.x + (random() - 0.5) * 0.06;
+      const bz = tuft.z + (random() - 0.5) * 0.06;
+      const yaw = random() * Math.PI * 2;
+      const lean = tuft.tall ? 0.1 + random() * 0.3 : 0.15 + random() * 0.4;
+      const height = tuft.tall ? 0.11 + random() * 0.09 : 0.07 + random() * 0.08;
+      const width = 0.008 + random() * 0.006;
+      const dx = Math.cos(yaw);
+      const dz = Math.sin(yaw);
+      position.push(
+        bx - dz * width,
+        0,
+        bz + dx * width,
+        bx + dz * width,
+        0,
+        bz - dx * width,
+        bx + dx * Math.sin(lean) * height,
+        Math.cos(lean) * height,
+        bz + dz * Math.sin(lean) * height,
+      );
+      uv.push(0, 0, 1, 0, 0.5, 1);
+    }
+  }
+  return { position, uv };
+}
+
 /** Cases de la grille du chemin (mètres) : une distance jusqu'à 1,5 m se lit dans les cases voisines. */
 const GRID = 1.5;
 
@@ -227,6 +268,11 @@ export function pathDistance(map: RegionMap): (x: number, z: number) => number {
 /** Décor d'une carte cuite, tel que l'écrit tools/explorer-3d/region_map.py : [sorte, x, z, angle, échelle]. */
 export type DecorEntry = readonly [string, number, number, number, number];
 
+/** Décors des cartes cuites, par région (regionDecor.json, écrit par region_map.py). */
+export const BAKED_DECOR = regionDecor as unknown as Readonly<
+  Record<string, readonly DecorEntry[]>
+>;
+
 const RADIUS = new Map<string, number>(DECOR_KINDS.map((k) => [k.kind, k.radius]));
 
 /**
@@ -249,13 +295,26 @@ export function placedDecor(map: RegionMap, entries: readonly DecorEntry[]): Dec
 const PATH_WIDTH_HALF = 0.2;
 const MONUMENT_FOOTPRINT = 0.95;
 
+/**
+ * Où l'herbe ne pousse pas (mètres) : le chemin et sa marge, les points de niveau et leur marge,
+ * l'emprise des monuments. La carte pré-rendue le transmet à Blender (mapExport).
+ */
+export const BLADE_RULE = {
+  pathHalf: PATH_WIDTH_HALF,
+  pathMargin: 0.05,
+  nodeMargin: 0.04,
+  monumentFootprint: MONUMENT_FOOTPRINT,
+} as const;
+
 /** Vrai si un brin d'herbe peut pousser là : ni sur le chemin, ni sous un point de niveau ou un monument. */
 export function bladeAllowed(map: RegionMap): (x: number, z: number) => boolean {
   const near = pathDistance(map);
   return (x, z) =>
-    near(x, z) > PATH_WIDTH_HALF + 0.05 &&
-    !map.nodes.some((n) => Math.hypot(n.x - x, n.z - z) < n.radius + 0.04) &&
-    !map.cities.some((c) => Math.hypot(c.center.x - x, c.center.z - z) < MONUMENT_FOOTPRINT);
+    near(x, z) > BLADE_RULE.pathHalf + BLADE_RULE.pathMargin &&
+    !map.nodes.some((n) => Math.hypot(n.x - x, n.z - z) < n.radius + BLADE_RULE.nodeMargin) &&
+    !map.cities.some(
+      (c) => Math.hypot(c.center.x - x, c.center.z - z) < BLADE_RULE.monumentFootprint,
+    );
 }
 
 /** Touffes d'herbe par mètre carré dans une clairière, et décors semés autour de chaque monument. */

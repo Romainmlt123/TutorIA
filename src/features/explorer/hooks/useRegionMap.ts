@@ -14,18 +14,23 @@ const NO_RECORDS: readonly LevelRecord[] = [];
 /**
  * Carte de la région ouverte (X2b), recalculée quand les résultats de l'élève changent. Elle attend
  * les résultats : sans eux, la carte s'ouvrirait sur la première ville au lieu de celle du pion.
- * Si leur chargement échoue, la carte s'affiche quand même, comme pour un élève qui débute.
+ * Si leur chargement échoue, la carte s'affiche quand même, comme pour un élève qui débute
+ * (`loaded` est alors faux : elle ne dit rien du progrès de l'élève).
  */
-export function useRegionMap(subjectId: SubjectId, regionId: string | null): RegionMap | null {
+export function useRegionMap(
+  subjectId: SubjectId,
+  regionId: string | null,
+): { map: RegionMap | null; loaded: boolean } {
   const query = useQuery({
     queryKey: explorerKeys.records,
     queryFn: () => explorerService.levelRecords(),
   });
   const records = query.data ?? NO_RECORDS;
   const waiting = query.isPending;
-  return useMemo(() => {
+  const map = useMemo(() => {
     const island = islandOf(subjectId);
     if (!island || !regionId || waiting) return null;
     return buildRegionMap(island, regionId, new Map(records.map((r) => [r.levelId, r])));
   }, [subjectId, regionId, records, waiting]);
+  return { map, loaded: query.data !== undefined };
 }

@@ -11,6 +11,7 @@ import {
   onLand,
   pathDistance,
   placedDecor,
+  tuftBlades,
   type DecorEntry,
 } from './terrainLayout';
 
@@ -153,5 +154,37 @@ describe('herbe et fleurs des clairières, autour des monuments', () => {
 
   it('donne toujours le même semis pour une même graine', () => {
     expect(clearingDressing(map, 7)).toEqual(dressing);
+  });
+});
+
+describe('brins d’herbe des touffes', () => {
+  const tufts = [
+    { x: 1, z: 2, tall: false },
+    { x: -3, z: 0.5, tall: true },
+  ];
+  const blades = tuftBlades(tufts, 11);
+
+  it('donne un triangle par brin, de 4 à 9 brins par touffe, avec ses UV', () => {
+    const count = blades.position.length / 9;
+    expect(Number.isInteger(count)).toBe(true);
+    expect(count).toBeGreaterThanOrEqual(8);
+    expect(count).toBeLessThanOrEqual(18);
+    expect(blades.uv).toHaveLength(count * 6);
+    expect(blades.uv.slice(0, 6)).toEqual([0, 0, 1, 0, 0.5, 1]);
+  });
+
+  it('plante les brins au sol, près de leur touffe, la pointe en l’air', () => {
+    for (let i = 0; i < blades.position.length; i += 9) {
+      const [x0, y0, z0, , y1, , , y2] = blades.position.slice(i, i + 9);
+      expect(y0).toBe(0);
+      expect(y1).toBe(0);
+      expect(y2).toBeGreaterThan(0.05);
+      expect(tufts.some((t) => Math.hypot(t.x - x0!, t.z - z0!) < 0.06)).toBe(true);
+    }
+  });
+
+  it('donne toujours les mêmes brins pour une même graine', () => {
+    expect(tuftBlades(tufts, 11)).toEqual(blades);
+    expect(tuftBlades(tufts, 12)).not.toEqual(blades);
   });
 });

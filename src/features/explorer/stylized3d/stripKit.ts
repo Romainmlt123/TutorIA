@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-import { seeded } from '../hd2d/pixels';
-import type { Decor, DecorKind, Tuft } from '../logic/terrainLayout';
+import { tuftBlades, type Decor, type DecorKind, type Tuft } from '../logic/terrainLayout';
 
 /*
  * Kit de décor des cartes de région (modèle Blender strip-kit.glb, tools/explorer-3d/strip_kit.py) :
@@ -83,36 +82,9 @@ export function decorMeshes(
  * matériau de grass.ts les fait onduler au vent.
  */
 export function tuftsGeometry(tufts: readonly Tuft[], seed: number): THREE.BufferGeometry {
-  const random = seeded(seed);
-  const positions: number[] = [];
-  const uvs: number[] = [];
-  for (const tuft of tufts) {
-    const blades = tuft.tall ? 5 + Math.floor(random() * 5) : 4 + Math.floor(random() * 5);
-    for (let b = 0; b < blades; b++) {
-      const bx = tuft.x + (random() - 0.5) * 0.06;
-      const bz = tuft.z + (random() - 0.5) * 0.06;
-      const yaw = random() * Math.PI * 2;
-      const lean = tuft.tall ? 0.1 + random() * 0.3 : 0.15 + random() * 0.4;
-      const height = tuft.tall ? 0.11 + random() * 0.09 : 0.07 + random() * 0.08;
-      const width = 0.008 + random() * 0.006;
-      const dx = Math.cos(yaw);
-      const dz = Math.sin(yaw);
-      positions.push(
-        bx - dz * width,
-        0,
-        bz + dx * width,
-        bx + dz * width,
-        0,
-        bz - dx * width,
-        bx + dx * Math.sin(lean) * height,
-        Math.cos(lean) * height,
-        bz + dz * Math.sin(lean) * height,
-      );
-      uvs.push(0, 0, 1, 0, 0.5, 1);
-    }
-  }
+  const blades = tuftBlades(tufts, seed);
   const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(blades.position, 3));
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(blades.uv, 2));
   return geometry;
 }

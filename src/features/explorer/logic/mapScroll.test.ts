@@ -4,9 +4,11 @@ import {
   createScroll,
   dragScroll,
   goTo,
+  isCoasting,
   jumpTo,
   releaseScroll,
   setBounds,
+  settleScroll,
   type Bounds,
 } from './mapScroll';
 
@@ -97,5 +99,40 @@ describe('déplacement sur la carte', () => {
     releaseScroll(scroll, 0, 0, PX, PZ, true);
     coastScroll(scroll, 1 / 60, false);
     expect(scroll).toMatchObject({ x: 4, z: 3 });
+  });
+});
+
+describe('carte qui glisse d’elle-même', () => {
+  it('glisse après le lâcher tant qu’il reste de l’élan, un but ou un bord à retrouver', () => {
+    const scroll = scrollOf();
+    jumpTo(scroll, 5, 5);
+    expect(isCoasting(scroll)).toBe(false);
+    beginScroll(scroll);
+    // Le doigt mène : rien ne glisse d'office, même hors du rectangle.
+    dragScroll(scroll, PX * 9, 0, PX, PZ);
+    expect(isCoasting(scroll)).toBe(false);
+    releaseScroll(scroll, 0, 0, PX, PZ, true);
+    expect(isCoasting(scroll)).toBe(true);
+    for (let i = 0; i < 120; i++) coastScroll(scroll, 1 / 60);
+    expect(isCoasting(scroll)).toBe(false);
+    goTo(scroll, 7, 7);
+    expect(isCoasting(scroll)).toBe(true);
+    jumpTo(scroll, 2, 2);
+    beginScroll(scroll);
+    releaseScroll(scroll, -PX, 0, PX, PZ, true);
+    expect(isCoasting(scroll)).toBe(true);
+  });
+
+  it('se pose d’un coup sans animation : sur son but, ou dans le rectangle', () => {
+    const scroll = scrollOf();
+    goTo(scroll, 6, 7);
+    settleScroll(scroll);
+    expect(scroll).toMatchObject({ x: 6, z: 7, goal: null });
+    beginScroll(scroll);
+    dragScroll(scroll, -PX * 12, PZ * 30, PX, PZ);
+    releaseScroll(scroll, -PX * 8, 0, PX, PZ, false);
+    settleScroll(scroll);
+    expect(scroll).toMatchObject({ x: 10, z: 0, vx: 0, vz: 0 });
+    expect(isCoasting(scroll)).toBe(false);
   });
 });
