@@ -17,7 +17,7 @@ Ce document dit d'où l'on part, ce que Romain (le porteur du projet) veut, comm
    - Travailler en mode simulé : `EXPO_PUBLIC_BACKEND=mock EXPO_PUBLIC_TUTOR_MODE=mock`. Les comptes sont en mémoire : `lea@tutoria.test` (élève de 4e, reliée à Claire), `claire@tutoria.test` (parent), `hugo@tutoria.test` (5e, sans onboarding). N'importe quel mot de passe non vide est accepté.
    - Aucune clé réelle dans la machine : pas de `.env` rempli. Sans `.env`, l'app passe d'elle-même en mode simulé.
 2. **Git.**
-   - Créer chaque branche depuis `explorer/rendu-v2`, avec un nom clair en français : `explorer/eau-et-rives`, `explorer/disposition-nombres`.
+   - Tout le travail d'Explorer est sur `explorer/rendu-v2` (pas encore sur `main` ni `dev`, la branche par défaut du dépôt étant `main`). Créer chaque branche depuis `origin/explorer/rendu-v2` à jour, avec un nom clair en français : `git fetch origin` puis `git switch --no-track -c explorer/c1-direction-artistique origin/explorer/rendu-v2`.
    - Ne jamais pousser sur `main`, `dev` ni `explorer/rendu-v2`. Ne jamais faire de force push, de merge ni de rebase d'une branche partagée.
    - Commits au format Conventional Commits, petits et cohérents.
    - Ouvrir une pull request vers `explorer/rendu-v2`. C'est Romain qui fusionne.
@@ -470,12 +470,13 @@ Le but : que la carte de Nombres ait l'air d'un grand jeu mobile, pas seulement 
 Premier message à coller, sur une session ouverte sur le dépôt `Romainmlt123/TutorIA` :
 
 ```
-Lis d'abord docs/explorer-passation.md en entier, puis CLAUDE.md : ils font foi.
+Tout le travail d'Explorer est sur la branche explorer/rendu-v2 du dépôt Romainmlt123/TutorIA, pas sur main ni sur dev (qui ne l'ont pas encore). Commence par : git fetch origin, puis git switch --no-track -c explorer/c1-direction-artistique origin/explorer/rendu-v2, puis npm ci.
+Lis ensuite docs/explorer-passation.md en entier, puis CLAUDE.md, tels qu'ils sont sur cette branche : ils font foi.
 Je veux que tout l'onglet Explorer soit refait en mieux, jusqu'à être un vrai jeu vidéo mobile digne d'être vendu : suis le programme du § 8.0, chantier par chantier, dans l'ordre (C1 direction artistique, puis C2 la carte de Nombres, puis C3 l'île, etc.).
-Pour chaque chantier : une branche explorer/<chantier> créée depuis origin/explorer/rendu-v2, une image cible que je valide avant d'appliquer partout, des avant/après, npm run check au vert, puis une pull request vers explorer/rendu-v2. Attends que j'aie fusionné un chantier avant d'attaquer le suivant.
+Pour chaque chantier : une nouvelle branche explorer/<chantier> créée depuis origin/explorer/rendu-v2 à jour (git fetch d'abord), une image cible que je valide avant d'appliquer partout, des avant/après, npm run check au vert, puis une pull request vers explorer/rendu-v2. Attends que j'aie fusionné un chantier avant d'attaquer le suivant.
 Tu as carte blanche pour tout refaire, y compris l'île (par exemple pour y poser de vraies villes) : la seule condition est de rester optimisé pour une app mobile, sans alourdir l'app (budgets du § 3.5, bloquants).
 Commence par C1 : inspire-toi de Link's Awakening (Switch, 2019), Captain Toad: Treasure Tracker et Tiny Glade, plus Royal Match et Candy Crush Saga pour la lisibilité de la carte, puis montre-moi trois variantes de la Ville des Relatifs, et je choisis.
-Règles git strictes : ne pousse jamais sur dev, main ni explorer/rendu-v2 ; jamais de force push, de merge ni de rebase de ces branches. Ne fusionne rien.
+Règles git strictes : pousse seulement tes branches explorer/<chantier> ; ne pousse jamais sur dev, main ni explorer/rendu-v2 ; jamais de force push, de merge ni de rebase de ces branches. Ne fusionne rien.
 Reste dans le périmètre du § 8.0 (Explorer, avatar, HUD de jeu, chaîne Blender) : ne touche ni aux autres onglets, ni à l'espace Parents, ni au serveur, ni à Supabase.
 Mode simulé uniquement (EXPO_PUBLIC_BACKEND=mock), aucune connexion à Supabase, aucune clé.
 Pose-moi les décisions listées au § 8.0 au lieu de les prendre.
