@@ -1,9 +1,11 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import * as THREE from 'three';
 
 import type { AvatarOnMap } from '../stylized3d/MapAvatar';
+import { FrameDriver } from '@/lib/three/FrameDriver';
+import { PerfProbe } from '@/lib/three/PerfProbe';
 import { explorerArt } from '@/theme/explorerArt';
 
 import { distanceToFit, orbit } from '../hd2d/camera';
@@ -22,6 +24,8 @@ import { RegionWorld } from '../stylized3d/RegionWorld';
 /*
  * Scène du carrousel (X1) : les îles alignées sur l'axe x, une tous les SPACING mètres, et la
  * caméra qui glisse de l'une à l'autre. Le ciel (dégradé) et l'étalonnage viennent de Hd2dPost.
+ * Les images sont calculées par FrameDriver : 60 par seconde au plus, et seulement quand la scène
+ * change si les animations sont réduites.
  */
 
 const SPACING = 8;
@@ -190,6 +194,7 @@ type CameraProps = {
   index: number;
   shot: Shot;
   orbit: Orbit;
+  active: boolean;
   animated: boolean;
   anchors: readonly StageAnchor[];
   /** Défilement de la carte d'une région, ou null sur l'île. */
@@ -205,12 +210,19 @@ function StageCamera({
   index,
   shot,
   orbit: orbitState,
+  active,
   animated,
   anchors,
   scroll,
   onProject,
 }: CameraProps) {
   const current = useRef<CameraState | null>(null);
+  // Une scène en pause (onglet caché, carte pré-rendue affichée à sa place) reprend posée sur son
+  // cadrage : la caméra ne finit pas un trajet commencé avant la pause, comme le plongeon vers une
+  // région qu'on quitte pour revenir à l'île.
+  useEffect(() => {
+    if (!active) current.current = null;
+  }, [active]);
   // Dernière projection : quels points, et d'où. Une nouvelle liste (autre vue, autre région), ou une
   // caméra posée ailleurs, se projette à nouveau : la caméra peut arriver en une seule image (animations
   // réduites, image très lente) sans jamais être vue en mouvement.
@@ -234,6 +246,9 @@ function StageCamera({
       animated,
     );
     current.current = next;
+    // Animations réduites, la scène ne se dessine qu'à la demande (FrameDriver) : doigt posé, élan
+    // ou ville visée, la caméra n'est pas au repos et redemande des images.
+    if (!next.settled) state.invalidate();
     const last = projected.current;
     const stale =
       !last ||
@@ -254,7 +269,8 @@ function StageCamera({
   return null;
 }
 
-type Props = {
+/** Props de la scène, données par l'écran Explorer (`stage/` : hôte de la racine sur Android). */
+export type IslandStageProps = {
   slides: readonly { subjectId: string }[];
   index: number;
   /** Cadrage de la vue courante : la caméra y glisse. */
@@ -270,7 +286,10 @@ type Props = {
   region?: { map: RegionMap; color: string; scroll: MapScroll; avatar: AvatarOnMap | null } | null;
   /** Faux quand l'onglet est caché ou l'app en arrière-plan : plus aucune image n'est calculée. */
   active: boolean;
+  /** Faux avec « Réduire les animations » : scène figée, dessinée seulement quand elle change. */
   animated: boolean;
+  /** Sonde du compteur de performance (développement seulement, `usePerfHud`). */
+  probe?: boolean;
 };
 
 export function IslandStage({
@@ -284,7 +303,8 @@ export function IslandStage({
   region = null,
   active,
   animated,
-}: Props) {
+  probe = false,
+}: IslandStageProps) {
   const bounds = region?.map.bounds;
   const { clouds, wrap } = useMemo(
     () => (bounds ? mapClouds(bounds) : stageClouds(slides.length)),
@@ -293,22 +313,24 @@ export function IslandStage({
   const mathsIndex = slides.findIndex((slide) => slide.subjectId === 'maths');
   return (
     <Canvas
-      style={StyleSheet.absoluteFill}
-      frameloop={active ? 'always' : 'never'}
+      style={styles.canvas}
+      frameloop="never"
       dpr={[1, 2]}
       flat
       gl={{ antialias: false, alpha: true }}
       camera={{ fov: FOV }}>
+      <FrameDriver active={active} animated={animated} />
       <StageCamera
         index={index}
         shot={shot}
         orbit={orbit}
+        active={active}
         animated={animated}
         anchors={anchors}
         scroll={region?.scroll ?? null}
         onProject={onProject}
       />
-      <Clouds clouds={clouds} wrap={wrap} animated={animated} />
+      <Clouds clouds={clouds} wrap={wrap} />
       {mathsIndex >= 0 ? (
         <group position={[mathsIndex * SPACING, 0, 0]} visible={!region}>
           <MathsIsland3D animated={animated} regions={regions} />
@@ -323,7 +345,20 @@ export function IslandStage({
           avatar={region.avatar}
         />
       ) : null}
-      <Hd2dPost focus={1 - shot.aimY} band={0.62} look={explorerArt.post.natural} />
+      {/* La carte d'une région est vue de haut, nette d'un bord à l'autre : pas de flou de maquette. */}
+      <Hd2dPost
+        focus={1 - shot.aimY}
+        band={0.62}
+        look={explorerArt.post.natural}
+        tiltShift={!region}
+      />
+      {probe ? <PerfProbe /> : null}
     </Canvas>
   );
 }
+
+const styles = StyleSheet.create({
+  // La scène n'écoute aucun toucher (les gestes sont sur le HUD de l'écran Explorer), même sur le
+  // web, où R3F pose sinon `pointer-events: auto` sur sa toile.
+  canvas: { ...StyleSheet.absoluteFill, pointerEvents: 'none' },
+});

@@ -9,6 +9,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { NoticeToast } from '@/components/NoticeToast';
 import { UnavailableScreen } from '@/features/auth/UnavailableScreen';
+import { ExplorerStageHost } from '@/features/explorer/stage/ExplorerStageHost';
+import { ROOT_STAGE, SEE_THROUGH } from '@/features/explorer/stage/rootStage';
 import { logError } from '@/lib/logger';
 import { queryClient } from '@/lib/queryClient';
 import { resolveSpace } from '@/lib/session/resolveSpace';
@@ -21,6 +23,8 @@ SplashScreen.preventAutoHideAsync().catch((error: unknown) => logError('splash',
  * Un groupe de routes par espace, choisi par la session (resolveSpace).
  * Un seul groupe est ouvert à la fois ; avec le SDK 57, l'ordre des blocs décide de l'écran
  * affiché quand l'espace change : les groupes passent avant les écrans communs.
+ * Pour l'espace élève sur Android, la scène d'Explorer est montée sous la pile, hors de
+ * react-native-screens : Android ne la retire jamais de la fenêtre et garde son contexte 3D.
  */
 function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
   const space = resolveSpace(useSession());
@@ -34,39 +38,43 @@ function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
   if (space === 'unavailable') return <UnavailableScreen />;
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: theme.colors.bg },
-      }}>
-      <Stack.Protected guard={space === 'auth'}>
-        <Stack.Screen name="(auth)" />
-      </Stack.Protected>
-      <Stack.Protected guard={space === 'account'}>
-        <Stack.Screen name="(compte)" />
-      </Stack.Protected>
-      <Stack.Protected guard={space === 'onboarding'}>
-        <Stack.Screen name="(onboarding)" />
-      </Stack.Protected>
-      <Stack.Protected guard={space === 'parent'}>
-        <Stack.Screen name="(parents)" />
-      </Stack.Protected>
-      <Stack.Protected guard={space === 'student'}>
-        <Stack.Screen name="(eleve)" />
-        <Stack.Screen name="avatar" />
-        <Stack.Screen name="niveau" />
-        <Stack.Screen name="confidentialite" />
-      </Stack.Protected>
-      <Stack.Protected guard={space === 'student' || space === 'onboarding'}>
-        <Stack.Screen name="relier-parent" options={{ presentation: 'modal' }} />
-      </Stack.Protected>
-      <Stack.Screen name="bientot" options={{ presentation: 'modal' }} />
-      <Stack.Protected guard={__DEV__}>
-        <Stack.Screen name="dev/catalogue" />
-        <Stack.Screen name="dev/explorer-atelier" />
-        <Stack.Screen name="dev/avatars" />
-      </Stack.Protected>
-    </Stack>
+    <>
+      {space === 'student' && ROOT_STAGE ? <ExplorerStageHost /> : null}
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: theme.colors.bg },
+        }}>
+        <Stack.Protected guard={space === 'auth'}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
+        <Stack.Protected guard={space === 'account'}>
+          <Stack.Screen name="(compte)" />
+        </Stack.Protected>
+        <Stack.Protected guard={space === 'onboarding'}>
+          <Stack.Screen name="(onboarding)" />
+        </Stack.Protected>
+        <Stack.Protected guard={space === 'parent'}>
+          <Stack.Screen name="(parents)" />
+        </Stack.Protected>
+        <Stack.Protected guard={space === 'student'}>
+          {/* Transparent : l'onglet Explorer laisse voir la scène 3D (les autres onglets ont leur fond). */}
+          <Stack.Screen name="(eleve)" options={{ contentStyle: SEE_THROUGH }} />
+          <Stack.Screen name="avatar" />
+          <Stack.Screen name="niveau" />
+          <Stack.Screen name="confidentialite" />
+        </Stack.Protected>
+        <Stack.Protected guard={space === 'student' || space === 'onboarding'}>
+          <Stack.Screen name="relier-parent" options={{ presentation: 'modal' }} />
+        </Stack.Protected>
+        <Stack.Screen name="bientot" options={{ presentation: 'modal' }} />
+        <Stack.Protected guard={__DEV__}>
+          <Stack.Screen name="dev/catalogue" />
+          <Stack.Screen name="dev/explorer-atelier" />
+          <Stack.Screen name="dev/avatars" />
+        </Stack.Protected>
+      </Stack>
+    </>
   );
 }
 
