@@ -167,9 +167,8 @@ function LevelChatView({ place }: { place: LevelPlace }) {
       <ChatBubble
         role="tutor"
         text={item.streaming && !item.text ? fr.tutor.typing : item.text}
-        label={item.practice ? fr.tutor.practice : undefined}
         reported={item.reported}
-        onLongPress={item.practice || item.streaming ? undefined : () => report(item.id)}
+        onLongPress={item.streaming ? undefined : () => report(item.id)}
       />
     );
     const shown = item.visual;
@@ -198,16 +197,13 @@ function LevelChatView({ place }: { place: LevelPlace }) {
               />
             </View>
           ) : null}
-          {offline ? (
-            <View style={styles.banner}>
-              <OfflineBanner onRetry={retry} />
-            </View>
-          ) : null}
           <FlatList
             ref={list}
             data={messages}
             keyExtractor={(m) => m.id}
             renderItem={renderItem}
+            // H1 : sans réseau, la carte se place sous la question restée en attente.
+            ListFooterComponent={offline ? <OfflineBanner onRetry={retry} /> : null}
             accessibilityLabel={fr.tutor.conversationLabel}
             contentContainerStyle={styles.messages}
             onContentSizeChange={() => list.current?.scrollToEnd({ animated: true })}
@@ -299,7 +295,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.bg,
   },
   controls: { paddingBottom: theme.space[4] },
-  banner: { paddingHorizontal: theme.space[4], paddingTop: theme.space[3] },
   visual: { paddingHorizontal: theme.space[3], paddingTop: theme.space[3] },
   withVisual: { gap: theme.space[2] },
   messages: {

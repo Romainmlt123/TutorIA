@@ -90,6 +90,16 @@ export const waitingButton = '#eef1f6';
 export const bandPills = ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.06)'] as const;
 
 /**
+ * « Pas de connexion » dans la discussion (H1, v2.19.1) : le seul jaune de l'app, hors palette
+ * (écart validé n° 12), texte `orange-900`.
+ */
+export const offlineNotice = {
+  background: '#ffd43b',
+  shadow: '0 6px 16px rgba(163,100,13,0.22)',
+  iconVeil: 'rgba(255,255,255,0.45)',
+} as const;
+
+/**
  * Pause décidée avec les parents (R1 à R3, v2.15) : badge du logo, bouton blanc, carte verte du temps
  * du jour atteint. Relevés sur les maquettes ; la teinte du badge dépend de la raison.
  */

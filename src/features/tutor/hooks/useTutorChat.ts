@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 
-import { cardsOfChapter, chapterById } from '@/features/flashcards/logic/catalog';
+import { chapterById } from '@/features/flashcards/logic/catalog';
 import type { SubjectId } from '@/data/types';
 import { fr } from '@/i18n/fr';
 import { logError } from '@/lib/logger';
@@ -14,7 +14,6 @@ import {
 } from '@/services/tutor';
 import { PHOTO_NOTE, type LevelOutcome } from '@/services/tutor/api-contract';
 import type { TutorVisual } from '@/services/tutor/visuals';
-import { checkPracticeAnswer, practiceQuestion } from '@/services/tutor/mock/practice';
 
 import { splitTip } from '../logic/conversations';
 
@@ -24,8 +23,6 @@ export type ChatMessage = {
   kind: 'tutor' | 'student' | 'tip' | 'step';
   text: string;
   streaming?: boolean;
-  /** Question ou retour d'entraînement du mode hors ligne. */
-  practice?: boolean;
   reported?: boolean;
   /** Visuel dessiné avec cette réponse du tuteur (graphique, diagramme, figure, tableau). */
   visual?: TutorVisual;
@@ -47,13 +44,16 @@ export type LevelChat = {
 type State = {
   messages: ChatMessage[];
   pending: boolean;
-  offline: boolean;
-  practiceIndex: number;
+  /** Pas de réseau : la question de l'élève attend, sous la carte « Pas de connexion » (H1). */
+  offline: Waiting | null;
   progress: LevelProgress | null;
   result: LevelOutcome | null;
   /** Dernier visuel du tuteur, affiché dans le panneau au-dessus de la discussion. */
   visual: TutorVisual | null;
 };
+
+/** Question restée sans réponse faute de réseau, renvoyée par « Réessayer ». */
+type Waiting = { id: string; text: string; image?: string };
 
 type Action =
   | { type: 'add'; message: ChatMessage }
@@ -63,8 +63,7 @@ type Action =
   | { type: 'replace'; id: string; text: string }
   | { type: 'remove'; id: string }
   | { type: 'pending'; pending: boolean }
-  | { type: 'offline'; offline: boolean }
-  | { type: 'nextPractice' }
+  | { type: 'offline'; offline: Waiting | null }
   | { type: 'reported'; id: string }
   | { type: 'progress'; progress: LevelProgress }
   | { type: 'result'; result: LevelOutcome }
@@ -107,8 +106,6 @@ function reducer(state: State, action: Action): State {
       return { ...state, pending: action.pending };
     case 'offline':
       return { ...state, offline: action.offline };
-    case 'nextPractice':
-      return { ...state, practiceIndex: state.practiceIndex + 1 };
     case 'reported':
       return update(action.id, (m) => ({ ...m, reported: true }));
     case 'progress':
@@ -127,8 +124,7 @@ function initialState(messages: readonly ChatMessage[]): State {
   return {
     messages: [...messages],
     pending: false,
-    offline: false,
-    practiceIndex: 0,
+    offline: null,
     progress: null,
     result: null,
     // Une discussion rouverte montre son dernier visuel.
@@ -136,7 +132,8 @@ function initialState(messages: readonly ChatMessage[]): State {
   };
 }
 
-const OFFLINE_CODES: readonly TutorErrorCode[] = ['network', 'timeout', 'upstream'];
+/** Coupures du réseau : la question attend. Une erreur d'OpenAI (`upstream`) garde son message. */
+const OFFLINE_CODES: readonly TutorErrorCode[] = ['network', 'timeout'];
 
 function openingFor(topic: TutorTopic, level?: LevelChat): ChatMessage[] {
   if (level) return [{ id: 'opening-0', kind: 'tutor', text: level.opening }];
@@ -159,8 +156,8 @@ export type TutorChatOptions = {
 };
 
 /**
- * Discussion écrite avec le tuteur : envoi, réponse en flux, erreurs bienveillantes,
- * signalement, et bascule en mode hors ligne assumé (questions d'entraînement du chapitre).
+ * Discussion écrite avec le tuteur : envoi, réponse en flux, erreurs bienveillantes, signalement.
+ * Sans réseau, la question de l'élève attend et « Réessayer » la renvoie (H1, v2.19).
  * Pour un niveau d'Explorer (`topic.levelId`), elle suit aussi l'avancement et le bilan.
  * Une discussion dure le temps du composant : l'écran change de clé pour en ouvrir une autre.
  */
@@ -185,48 +182,27 @@ export function useTutorChat({
   useEffect(() => () => abort.current?.abort(), []);
 
   const nextId = () => `m${++counter.current}`;
-  const practiceCards = useMemo(
-    () => (topic.chapterId ? cardsOfChapter(topic.chapterId) : []),
-    [topic.chapterId],
-  );
-
-  const askPractice = useCallback(
-    (index: number) => {
-      const card = practiceCards[index % Math.max(practiceCards.length, 1)];
-      if (card)
-        dispatch({
-          type: 'add',
-          message: { id: nextId(), kind: 'tutor', text: practiceQuestion(card), practice: true },
-        });
-    },
-    [practiceCards],
-  );
-
-  const send = useCallback(
-    async (text: string, image?: string) => {
+  /**
+   * Envoie une question au tuteur. `waiting` : la question restée sans réponse faute de réseau,
+   * déjà affichée, renvoyée telle quelle.
+   */
+  const ask = useCallback(
+    async (text: string, image?: string, waiting?: Waiting) => {
       const current = stateRef.current;
       if (current.pending || (!text && !image)) return;
-      dispatch({
-        type: 'add',
-        message: { id: nextId(), kind: 'student', text, ...(image ? { image } : {}) },
-      });
-
-      // Hors ligne, l'entraînement ne lit que le texte (le bouton photo y est masqué).
-      if (current.offline) {
-        const card = practiceCards[current.practiceIndex % Math.max(practiceCards.length, 1)];
-        if (!card) return;
-        const result = checkPracticeAnswer(card, text);
+      const studentId = waiting?.id ?? nextId();
+      if (!waiting) {
         dispatch({
           type: 'add',
-          message: { id: nextId(), kind: 'tutor', text: result.text, practice: true },
+          message: { id: studentId, kind: 'student', text, ...(image ? { image } : {}) },
         });
-        dispatch({ type: 'nextPractice' });
-        askPractice(current.practiceIndex + 1);
-        return;
       }
+      dispatch({ type: 'offline', offline: null });
 
       const history = current.messages
-        .filter((m) => (m.kind === 'tutor' || m.kind === 'student') && !m.practice && !m.streaming)
+        .filter(
+          (m) => (m.kind === 'tutor' || m.kind === 'student') && !m.streaming && m.id !== studentId,
+        )
         .map((m) => ({
           role: m.kind === 'student' ? ('student' as const) : ('tutor' as const),
           text: m.image ? [PHOTO_NOTE, m.text].filter(Boolean).join('\n') : m.text,
@@ -280,10 +256,13 @@ export function useTutorChat({
           } else if (event.type === 'done') {
             if (!finished) dispatch({ type: 'finish', id, tipId: nextId() });
             finished = true;
-          } else if (OFFLINE_CODES.includes(event.code) && !received && practiceCards.length > 0) {
+          } else if (OFFLINE_CODES.includes(event.code) && !received) {
+            // La bulle vide disparaît ; la question reste, sous la carte « Pas de connexion ».
             dispatch({ type: 'remove', id });
-            dispatch({ type: 'offline', offline: true });
-            askPractice(stateRef.current.practiceIndex);
+            dispatch({
+              type: 'offline',
+              offline: { id: studentId, text, ...(image ? { image } : {}) },
+            });
             finished = true;
           } else {
             const code =
@@ -309,10 +288,16 @@ export function useTutorChat({
         dispatch({ type: 'pending', pending: false });
       }
     },
-    [askPractice, level, onConversation, onTitle, practiceCards, service, topic],
+    [level, onConversation, onTitle, service, topic],
   );
 
-  const retry = useCallback(() => dispatch({ type: 'offline', offline: false }), []);
+  const send = useCallback((text: string, image?: string) => ask(text, image), [ask]);
+
+  /** « Réessayer » : la question restée en attente repart, sans être affichée une deuxième fois. */
+  const retry = useCallback(() => {
+    const waiting = stateRef.current.offline;
+    if (waiting) void ask(waiting.text, waiting.image, waiting);
+  }, [ask]);
 
   const report = useCallback(
     (id: string) => {
@@ -329,7 +314,7 @@ export function useTutorChat({
   return {
     messages: state.messages,
     pending: state.pending,
-    offline: state.offline,
+    offline: state.offline !== null,
     progress: state.progress,
     result: state.result,
     visual: state.visual,

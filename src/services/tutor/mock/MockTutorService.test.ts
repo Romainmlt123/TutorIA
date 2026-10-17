@@ -2,7 +2,6 @@ import type { VoiceEvent } from '@/features/tutor/logic/voice';
 
 import type { ChatRequest, TutorStreamEvent } from '../api-contract';
 import { chunkText, createMockTutorService } from './MockTutorService';
-import { checkPracticeAnswer, practiceQuestion } from './practice';
 import { scriptedReply } from './scripts';
 
 const request = (message: string): ChatRequest => ({
@@ -75,32 +74,6 @@ describe('tuteur simulé', () => {
       'ended',
     ]);
     jest.useRealTimers();
-  });
-});
-
-describe('entraînement hors ligne', () => {
-  const card = {
-    id: 'c',
-    chapterId: 'maths-equations',
-    question: 'Résous : x + 12 = 4',
-    options: ['x = 16', 'x = 8', 'x = −8', 'x = −16'],
-    answerIndex: 2,
-    explanation: 'On retire 12 des deux côtés.',
-  } as const;
-
-  it('pose la question avec ses 4 propositions', () => {
-    expect(practiceQuestion(card)).toBe(
-      'Résous : x + 12 = 4\nA. x = 16\nB. x = 8\nC. x = −8\nD. x = −16',
-    );
-  });
-
-  it('accepte la lettre ou le texte de la bonne réponse', () => {
-    expect(checkPracticeAnswer(card, 'c').right).toBe(true);
-    expect(checkPracticeAnswer(card, ' x = −8 ').right).toBe(true);
-    expect(checkPracticeAnswer(card, 'A')).toEqual({
-      right: false,
-      text: 'Pas tout à fait : c’était x = −8. On retire 12 des deux côtés.',
-    });
   });
 });
 

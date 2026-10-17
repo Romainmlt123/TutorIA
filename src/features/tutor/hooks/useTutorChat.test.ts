@@ -6,6 +6,7 @@ import { queryClient } from '@/lib/queryClient';
 import { studyRulesKey } from '@/lib/session/useStudyRules';
 import { MockConversationService } from '@/services/conversations/mock/MockConversationService';
 import type { TutorService } from '@/services/tutor';
+import type { ChatRequest } from '@/services/tutor/api-contract';
 import { createMockTutorService } from '@/services/tutor/mock/MockTutorService';
 
 import { chatMessagesOf } from '../logic/conversations';
@@ -67,23 +68,40 @@ describe('useTutorChat', () => {
     expect(last?.text).toContain('On divise les deux côtés par 3');
   });
 
-  it('passe en hors ligne assumé et propose une question d’entraînement du chapitre', async () => {
-    const { result } = await renderHook(() =>
-      useTutorChat({ topic, service: failingService, resume }),
-    );
+  it('sans réseau, garde la question en attente puis la renvoie avec « Réessayer »', async () => {
+    let online = false;
+    const sendMessage = jest.fn(async function* () {
+      if (!online) {
+        yield { type: 'error', code: 'network' } as const;
+        return;
+      }
+      yield { type: 'delta', text: 'On divise par 3.' } as const;
+      yield { type: 'done' } as const;
+    });
+    const service: TutorService = { ...failingService, sendMessage };
+    const { result } = await renderHook(() => useTutorChat({ topic, service, resume }));
     await act(async () => {
-      await result.current.send('x = 5');
+      await result.current.send('Je divise par 3 ?');
     });
     await waitFor(() => expect(result.current.offline).toBe(true));
-    const practice = result.current.messages.at(-1);
-    expect(practice).toMatchObject({ kind: 'tutor', practice: true });
-    expect(practice?.text).toContain('Résous : 2x − 7 = 9');
-
-    await act(async () => {
-      await result.current.send('B');
+    // La bulle vide du tuteur disparaît ; la question de l'élève reste, en dernier.
+    expect(result.current.messages.at(-1)).toMatchObject({
+      kind: 'student',
+      text: 'Je divise par 3 ?',
     });
-    const feedback = result.current.messages.at(-2);
-    expect(feedback?.text.startsWith('Bien joué !')).toBe(true);
+
+    online = true;
+    await act(async () => {
+      result.current.retry();
+    });
+    await waitFor(() => expect(result.current.pending).toBe(false));
+    expect(result.current.offline).toBe(false);
+    expect(result.current.messages.filter((m) => m.text === 'Je divise par 3 ?')).toHaveLength(1);
+    expect(result.current.messages.at(-1)?.text).toBe('On divise par 3.');
+    // La question renvoyée n'est pas répétée dans l'historique.
+    const resent = sendMessage.mock.calls[1] as unknown as [ChatRequest];
+    expect(resent[0].message).toBe('Je divise par 3 ?');
+    expect(resent[0].history.at(-1)?.text).not.toBe('Je divise par 3 ?');
   });
 
   it('marque une réponse signalée', async () => {
@@ -172,16 +190,22 @@ describe('useTutorChat', () => {
     expect(await conversations.messages(id)).toHaveLength(4);
   });
 
-  it('sans chapitre, une coupure affiche un message au lieu des questions d’entraînement', async () => {
+  it('une erreur du service (pas une coupure) garde son message, sans carte hors ligne', async () => {
+    const upstream: TutorService = {
+      ...failingService,
+      async *sendMessage() {
+        yield { type: 'error', code: 'upstream' };
+      },
+    };
     const { result } = await renderHook(() =>
-      useTutorChat({ topic: { subjectId: 'maths' }, service: failingService }),
+      useTutorChat({ topic: { subjectId: 'maths' }, service: upstream }),
     );
     await act(async () => {
       await result.current.send('Bonjour');
     });
     await waitFor(() => expect(result.current.pending).toBe(false));
     expect(result.current.offline).toBe(false);
-    expect(result.current.messages.at(-1)?.text).toContain('Petit souci de connexion');
+    expect(result.current.messages.at(-1)?.text).toBe(fr.tutor.errors.upstream);
   });
 
   it('envoie la photo d’un exercice avec le message, et la montre dans la bulle de l’élève', async () => {

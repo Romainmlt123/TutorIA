@@ -76,9 +76,8 @@ function TutorChat({ entry, resume, onConversation, onTitle }: ChatProps) {
       <ChatBubble
         role="tutor"
         text={item.streaming && !item.text ? fr.tutor.typing : item.text}
-        label={item.practice ? fr.tutor.practice : undefined}
         reported={item.reported}
-        onLongPress={item.practice || item.streaming ? undefined : () => report(item.id)}
+        onLongPress={item.streaming ? undefined : () => report(item.id)}
       />
     );
     const shown = item.visual;
@@ -121,16 +120,13 @@ function TutorChat({ entry, resume, onConversation, onTitle }: ChatProps) {
 
       {/* Android bord à bord : la fenêtre ne rétrécit plus avec le clavier, `padding` le compense. */}
       <KeyboardAvoidingView style={styles.body} behavior="padding">
-        {offline ? (
-          <View style={styles.banner}>
-            <OfflineBanner onRetry={retry} />
-          </View>
-        ) : null}
         <FlatList
           ref={list}
           data={messages}
           keyExtractor={(m) => m.id}
           renderItem={renderItem}
+          // H1 : sans réseau, la carte se place sous la question restée en attente.
+          ListFooterComponent={offline ? <OfflineBanner onRetry={retry} /> : null}
           accessibilityLabel={fr.tutor.conversationLabel}
           contentContainerStyle={styles.messages}
           onContentSizeChange={() => list.current?.scrollToEnd({ animated: true })}
@@ -341,7 +337,6 @@ const styles = StyleSheet.create({
   },
   body: { flex: 1 },
   topic: { paddingHorizontal: theme.layout.screenPadding, paddingTop: theme.space[3] },
-  banner: { paddingHorizontal: theme.layout.screenPadding, paddingTop: theme.space[3] },
   messages: {
     flexGrow: 1,
     justifyContent: 'flex-end',
