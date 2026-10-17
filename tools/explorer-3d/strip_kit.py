@@ -22,7 +22,9 @@ from lib import bake, geo  # noqa: E402
 from lib import materials as M  # noqa: E402
 from lib.geo import app  # noqa: E402
 
-geo.reset()
+# Lancé seul, le script part d'une scène vide ; importé (region_tiles.py), il construit dans la scène en cours.
+if __name__ == "__main__":
+    geo.reset()
 
 
 # ---------------------------------------------------------------------------
@@ -119,31 +121,36 @@ def lighten(obj, target):
     return sum(len(p.vertices) - 2 for p in obj.data.polygons)
 
 
-# Les pièces sont cuites côte à côte, posées sur un sol d'herbe qui leur donne ombre de contact et rebond vert.
-catcher = geo.box(app(0, 0, -0.05), (SPACING * len(DECOR) + 2, 3.0, 0.1), M.meadow(), bevel_width=0)
-pieces = []
-for k, (name, build) in enumerate(DECOR.items()):
-    obj = build()
-    obj.location = app((k - (len(DECOR) - 1) / 2) * SPACING, 0, 0)
-    pieces.append((obj, name))
-bake.apply_all()
-for obj, name in pieces:
-    print("TRIANGLES", name, lighten(obj, TRIANGLES.get(name, 10 ** 9)), flush=True)
+def main():
+    # Les pièces sont cuites côte à côte, posées sur un sol d'herbe qui leur donne ombre de contact et rebond vert.
+    catcher = geo.box(app(0, 0, -0.05), (SPACING * len(DECOR) + 2, 3.0, 0.1), M.meadow(), bevel_width=0)
+    pieces = []
+    for k, (name, build) in enumerate(DECOR.items()):
+        obj = build()
+        obj.location = app((k - (len(DECOR) - 1) / 2) * SPACING, 0, 0)
+        pieces.append((obj, name))
+    bake.apply_all()
+    for obj, name in pieces:
+        print("TRIANGLES", name, lighten(obj, TRIANGLES.get(name, 10 ** 9)), flush=True)
 
-if os.environ.get("EXPLORER_PREVIEW"):
+    if os.environ.get("EXPLORER_PREVIEW"):
+        bake.lights()
+        bake.preview(os.environ["EXPLORER_PREVIEW"], width=1600, height=600)
+        raise SystemExit(0)
+
+    SAMPLES = int(os.environ.get("EXPLORER_BAKE_SAMPLES", "32"))
     bake.lights()
-    bake.preview(os.environ["EXPLORER_PREVIEW"], width=1600, height=600)
-    raise SystemExit(0)
+    started = time.time()
+    for obj, name in pieces:
+        bake.unwrap(obj)
+        bake.bake(obj, name, size=TEXTURE.get(name, 512), samples=SAMPLES)
+        print("CUIT", name, round(time.time() - started), "s", flush=True)
+    bpy.data.objects.remove(catcher, do_unlink=True)
+    for obj, _ in pieces:
+        obj.location = (0, 0, 0)
+    path = bake.export("strip-kit.glb")
+    print("GLB", path, os.path.getsize(path), "octets")
 
-SAMPLES = int(os.environ.get("EXPLORER_BAKE_SAMPLES", "32"))
-bake.lights()
-started = time.time()
-for obj, name in pieces:
-    bake.unwrap(obj)
-    bake.bake(obj, name, size=TEXTURE.get(name, 512), samples=SAMPLES)
-    print("CUIT", name, round(time.time() - started), "s", flush=True)
-bpy.data.objects.remove(catcher, do_unlink=True)
-for obj, _ in pieces:
-    obj.location = (0, 0, 0)
-path = bake.export("strip-kit.glb")
-print("GLB", path, os.path.getsize(path), "octets")
+
+if __name__ == "__main__":
+    main()

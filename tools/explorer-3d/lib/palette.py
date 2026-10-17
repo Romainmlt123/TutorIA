@@ -44,6 +44,8 @@ COLORS = {
     # lumière
     "crystal-cyan": "#6fd0d6", "crystal-violet": "#a78fd8", "crystal-blue": "#7fa9e0",
     "sun": "#fff0d4", "sky": "#a8c6ea",
+    # crème de la droite graduée des Relatifs : s'affiche #ebe5d8 une fois éclairée (palette.calibrated, gain 1,45)
+    "ruler-cream": "#c7c2b7",
 }
 
 
@@ -58,3 +60,13 @@ def rgb(name):
 
 def rgba(name):
     return (*rgb(name), 1.0)
+
+
+def calibrated(hex_color, gain):
+    """Couleur de base à donner à une surface pour qu'elle s'affiche avec `hex_color` une fois éclairée.
+
+    Sous le soleil et le ciel de bake.lights(), une surface tournée vers le haut renvoie environ
+    `gain` fois sa couleur de base (1,45 avec l'étalonnage des cartes, 1,6 pour les sprites seuls) :
+    on divise donc la couleur voulue, en linéaire, par ce gain. Renvoie la couleur linéaire RGBA."""
+    h = hex_color.lstrip("#")
+    return (*(_linear(int(h[i:i + 2], 16) / 255) / gain for i in (0, 2, 4)), 1.0)

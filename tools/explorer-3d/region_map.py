@@ -562,6 +562,8 @@ if os.environ.get("EXPLORER_PREVIEW"):
     print("OUTLINE", round(minx, 1), round(maxx, 1), round(minz, 1), round(maxz, 1))
     raise SystemExit(0)
 
+# --- fin de la construction de la carte (region_tiles.py reprend la scène jusqu'ici) ---
+
 # --- Cuisson et export -------------------------------------------------------------------------------
 write_decor()
 blades = build_blades()

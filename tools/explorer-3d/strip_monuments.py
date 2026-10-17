@@ -31,7 +31,9 @@ from lib import bake, geo  # noqa: E402
 from lib import materials as M  # noqa: E402
 from lib.geo import app  # noqa: E402
 
-geo.reset()
+# Lancé seul, le script part d'une scène vide ; importé (region_tiles.py), il construit dans la scène en cours.
+if __name__ == "__main__":
+    geo.reset()
 
 ink = M.flat("ink")
 paint = M.paint
@@ -144,15 +146,22 @@ def flag(x, y, z_top, color, side=1):
 # ---------------------------------------------------------------------------
 def balance_signes():
     parts = []
-    # Droite graduée en bois clair posée dans l'herbe, le zéro sous le pivot.
-    ry = app(0, 0.27, 0)[1]
-    parts.append(rounded((0, ry, 0.014), (1.62, 0.26, 0.028), plank, 0.008))
+    # Droite graduée peinte en crème, posée dans l'herbe, le zéro sous le pivot. Les chiffres sont assez
+    # grands pour se lire sur la carte (vue de haut, 224 px/m), et les signes sont de vraies barres :
+    # un moins typographique, pas un trait d'union.
+    ry = app(0, 0.29, 0)[1]
+    parts.append(rounded((0, ry, 0.014), (1.66, 0.32, 0.028), paint("ruler-cream"), 0.01))
     for k in range(-4, 5):
         x = k * 0.18
-        parts.append(geo.box((x, ry + 0.09, 0.03), (0.014, 0.06, 0.006), ink, bevel_width=0))
-        label = "0" if k == 0 else (f"+{k}" if k > 0 else f"-{-k}")
+        parts.append(geo.box((x, ry + 0.115, 0.03), (0.014, 0.06, 0.006), ink, bevel_width=0))
         color = paint("cherry") if k < 0 else paint("blue") if k > 0 else ink
-        parts.append(top_text(label, x, ry - 0.03, 0.028, 0.085, color, depth=0.01))
+        digit_x = x + (0.022 if k else 0.0)
+        parts.append(top_text(str(abs(k)), digit_x, ry - 0.025, 0.028, 0.12, color, depth=0.01))
+        if k:
+            sign_x = x - 0.042
+            parts.append(rounded((sign_x, ry - 0.025, 0.033), (0.05, 0.015, 0.01), color, 0.004))
+            if k > 0:
+                parts.append(rounded((sign_x, ry - 0.025, 0.033), (0.015, 0.05, 0.01), color, 0.004))
     # Chevalet : deux A de bois, un axe de fer boulonné.
     for y in (-0.11, 0.11):
         for side in (-1, 1):
@@ -172,12 +181,10 @@ def balance_signes():
                                iron, "Poignee"))
     heavy, light = paint("cherry", "cherry-light"), paint("blue", "blue-light")
     moving.append(rounded((-0.64, 0, 0.465 + 0.14), (0.28, 0.24, 0.28), heavy, 0.045))
-    moving.append(rounded((-0.64, -0.122, 0.605), (0.15, 0.02, 0.045), white, 0.008))
-    moving.append(rounded((-0.64, 0, 0.745), (0.15, 0.045, 0.02), white, 0.008))
+    # Un seul signe par cube, sur le dessus : vus à 52°, deux signes (devant et dessus) se lisaient « = ».
+    moving.append(rounded((-0.64, 0, 0.745), (0.20, 0.055, 0.02), white, 0.008))
     moving.append(rounded((0.64, 0, 0.465 + 0.1), (0.2, 0.18, 0.2), light, 0.035))
-    moving.append(flat_shape([(x * 0.17, y * 0.17) for x, y in PLUS], 0.02, white, (0.64, -0.095, 0.565),
-                             rotation=(math.pi / 2, 0, 0), bevel=0.004, name="Plus"))
-    moving.append(flat_shape([(x * 0.17, y * 0.17) for x, y in PLUS], 0.02, white, (0.64, 0, 0.67), bevel=0.004,
+    moving.append(flat_shape([(x * 0.195, y * 0.195) for x, y in PLUS], 0.02, white, (0.64, 0, 0.67), bevel=0.004,
                              name="Plus dessus"))
     turn(moving, -0.18, pivot)
     parts += moving
@@ -518,54 +525,59 @@ def grid_position(k):
     return ((k % 3 - 1) * SPACING, -(k // 3) * SPACING * 0.95 + SPACING * 0.47, 0.0)
 
 
-if os.environ.get("EXPLORER_PREVIEW"):
-    only = os.environ.get("EXPLORER_ONLY")
-    chosen = {k: v for k, v in MONUMENTS.items() if not only or k == only}
-    ground = geo.box((0, 0, -0.05), (SPACING * 4, SPACING * 3, 0.1), M.grass(), bevel_width=0)
-    for k, build in enumerate(chosen.values()):
-        obj = build()
-        obj.location = (0, 0, 0) if only else grid_position(k)
-    bake.lights()
-    scene = bpy.context.scene
-    scene.render.engine = "CYCLES"
-    scene.cycles.device = "CPU"
-    scene.cycles.samples = int(os.environ.get("EXPLORER_PREVIEW_SAMPLES", "16"))
-    scene.cycles.use_denoising = True
-    scene.cycles.max_bounces = 4
-    scene.cycles.glossy_bounces = 0
-    width, height = (900, 900) if only else (1500, 1000)
-    scene.render.resolution_x, scene.render.resolution_y = width, height
-    scene.view_settings.view_transform = "Standard"
-    for mat in bpy.data.materials:
-        for node in mat.node_tree.nodes if mat.node_tree else []:
-            if node.bl_idname == "ShaderNodeBsdfPrincipled":
-                node.inputs["Specular IOR Level"].default_value = 0.0
-    preview_camera(2.6 if only else SPACING * 3.1, width / height, (0, 0, 0.45))
-    scene.render.filepath = os.environ["EXPLORER_PREVIEW"]
-    bpy.ops.render.render(write_still=True)
-    raise SystemExit(0)
+def main():
+    if os.environ.get("EXPLORER_PREVIEW"):
+        only = os.environ.get("EXPLORER_ONLY")
+        chosen = {k: v for k, v in MONUMENTS.items() if not only or k == only}
+        ground = geo.box((0, 0, -0.05), (SPACING * 4, SPACING * 3, 0.1), M.grass(), bevel_width=0)
+        for k, build in enumerate(chosen.values()):
+            obj = build()
+            obj.location = (0, 0, 0) if only else grid_position(k)
+        bake.lights()
+        scene = bpy.context.scene
+        scene.render.engine = "CYCLES"
+        scene.cycles.device = "CPU"
+        scene.cycles.samples = int(os.environ.get("EXPLORER_PREVIEW_SAMPLES", "16"))
+        scene.cycles.use_denoising = True
+        scene.cycles.max_bounces = 4
+        scene.cycles.glossy_bounces = 0
+        width, height = (900, 900) if only else (1500, 1000)
+        scene.render.resolution_x, scene.render.resolution_y = width, height
+        scene.view_settings.view_transform = "Standard"
+        for mat in bpy.data.materials:
+            for node in mat.node_tree.nodes if mat.node_tree else []:
+                if node.bl_idname == "ShaderNodeBsdfPrincipled":
+                    node.inputs["Specular IOR Level"].default_value = 0.0
+        preview_camera(2.6 if only else SPACING * 3.1, width / height, (0, 0, 0.45))
+        scene.render.filepath = os.environ["EXPLORER_PREVIEW"]
+        bpy.ops.render.render(write_still=True)
+        raise SystemExit(0)
 
-# ---------------------------------------------------------------------------
-# Cuisson et export : une texture par monument
-# ---------------------------------------------------------------------------
-SAMPLES = int(os.environ.get("EXPLORER_BAKE_SAMPLES", "48"))
-SIZE = int(os.environ.get("EXPLORER_MONUMENT_SIZE", "1536"))
-catcher = geo.box(app(0, -8, -0.05), (SPACING * len(MONUMENTS) + 2, 3.0, 0.1), M.grass(), bevel_width=0)
-pieces = []
-for k, (name, build) in enumerate(MONUMENTS.items()):
-    obj = build()
-    obj.location = app((k - (len(MONUMENTS) - 1) / 2) * SPACING, -8, 0)
-    pieces.append((obj, name))
-bake.apply_all()
-bake.lights()
-started = time.time()
-for obj, name in pieces:
-    print("TRIANGLES", name, sum(len(p.vertices) - 2 for p in obj.data.polygons), flush=True)
-    bake.unwrap(obj)
-    bake.bake(obj, name, size=SIZE, samples=SAMPLES)
-    print("CUIT", name, round(time.time() - started), "s", flush=True)
-bpy.data.objects.remove(catcher, do_unlink=True)
-for obj, name in pieces:
-    obj.location = (0, 0, 0)
-path = bake.export("strip-nombres.glb", jpeg_quality=86)
-print("GLB", path, os.path.getsize(path), "octets")
+    # ---------------------------------------------------------------------------
+    # Cuisson et export : une texture par monument
+    # ---------------------------------------------------------------------------
+    SAMPLES = int(os.environ.get("EXPLORER_BAKE_SAMPLES", "48"))
+    SIZE = int(os.environ.get("EXPLORER_MONUMENT_SIZE", "1536"))
+    catcher = geo.box(app(0, -8, -0.05), (SPACING * len(MONUMENTS) + 2, 3.0, 0.1), M.grass(), bevel_width=0)
+    pieces = []
+    for k, (name, build) in enumerate(MONUMENTS.items()):
+        obj = build()
+        obj.location = app((k - (len(MONUMENTS) - 1) / 2) * SPACING, -8, 0)
+        pieces.append((obj, name))
+    bake.apply_all()
+    bake.lights()
+    started = time.time()
+    for obj, name in pieces:
+        print("TRIANGLES", name, sum(len(p.vertices) - 2 for p in obj.data.polygons), flush=True)
+        bake.unwrap(obj)
+        bake.bake(obj, name, size=SIZE, samples=SAMPLES)
+        print("CUIT", name, round(time.time() - started), "s", flush=True)
+    bpy.data.objects.remove(catcher, do_unlink=True)
+    for obj, name in pieces:
+        obj.location = (0, 0, 0)
+    path = bake.export("strip-nombres.glb", jpeg_quality=86)
+    print("GLB", path, os.path.getsize(path), "octets")
+
+
+if __name__ == "__main__":
+    main()

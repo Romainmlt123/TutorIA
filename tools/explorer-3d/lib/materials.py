@@ -223,6 +223,51 @@ def grass(shore=None, extent=3.6, vivid=False):
     return _cached(f"herbe-rive-{extent}-{vivid}" if shore else f"herbe-{vivid}", build)
 
 
+def meadow_map(shore, extent, quiet=None):
+    """Herbe des cartes de région pré-rendues (region_tiles.py), vue à 224 px/m : seulement des
+    variations larges (zones sèches, trèfle, teinte), aucun détail plus fin que 2 px à l'écran, et
+    une couleur plus douce que l'herbe de l'île cuite. `quiet` : (image, x0, y0, largeur, hauteur) en
+    mètres de Blender, rouge = chemin, vert = points de niveau, bleu = clairières ; l'herbe y est plus
+    calme et plus claire, foulée au milieu du chemin."""
+    def build():
+        g = Graph("prairie-carte")
+        color = g.ramp(g.noise(0.3, 2.0, roughness=0.45), [(0.38, "grass"), (0.66, "grass-light")])
+        dry = g.mask(g.noise(0.45, 3.0), 0.58, 0.70)
+        color = g.mix(g.times(dry, 0.45), color, "grass-dry")
+        color = g.mix(0.2, color, g.ramp(g.noise(2.5, 2.0), [(0.4, "moss"), (0.6, "grass")]))
+        clover = g.mask(g.voronoi(9.0), 0.16, 0.05)
+        color = g.mix(g.times(clover, 0.25), color, "moss")
+        if quiet:
+            image, x0, y0, width, height = quiet
+            mapped = g.nodes.new("ShaderNodeMapping")
+            mapped.inputs["Location"].default_value = (-x0 / width, -y0 / height, 0.0)
+            mapped.inputs["Scale"].default_value = (1.0 / width, 1.0 / height, 1.0)
+            g.link(g.object, mapped.inputs["Vector"])
+            tex = g.nodes.new("ShaderNodeTexImage")
+            tex.image = image
+            tex.extension = "EXTEND"
+            g.link(mapped.outputs["Vector"], _input(tex, "Vector"))
+            channels = g.nodes.new("ShaderNodeSeparateColor")
+            g.link(_output(tex, "Color"), channels.inputs[0])
+            path, nodes = channels.outputs[0], channels.outputs[1]
+            either = g.nodes.new("ShaderNodeMath")
+            either.operation = "MAXIMUM"
+            g.link(path, either.inputs[0])
+            g.link(nodes, either.inputs[1])
+            calm = g.mix(0.25, color, "grass-light")
+            color = g.mix(g.times(either.outputs[0], 0.45), color, calm)
+            core = g.mask(path, 0.75, 0.95)
+            worn = g.times(g.times(g.mask(g.noise(3.5, 2.0), 0.5, 0.62), core), 0.35)
+            color = g.mix(worn, color, "dirt")
+            rim = g.mask(path, 0.25, 0.7)
+            color = g.mix(g.times(rim, 0.18), color, "grass-dry")
+        color = g.shore(color, shore, extent)
+        g.bump(g.noise(9.0, 2.0), 0.2, 0.01)
+        # Couleurs vives, comme l'herbe d'avant (Romain préfère la couleur) : ni voile ni désaturation.
+        return g.finish(color, 0.9)
+    return _cached("prairie-carte", build)
+
+
 def soil(top=0.0, bottom=-3.9):
     """Dessous de l'île : sol sombre sous l'herbe, strates d'argile plus ou moins claires, taches
     rousses et grises, fissures, cailloux de plusieurs tailles, racines, et une terre de plus en

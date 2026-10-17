@@ -1,0 +1,12 @@
+{
+  "node": {
+    "lecon": "#2fbf5f",
+    "exercices": "#3f86f0",
+    "evaluation": "#e0504f",
+    "locked": "#aab2c0"
+  },
+  "nodeRim": { "light": "#fff3a3", "face": "#ffc933", "dark": "#c98600", "glow": "#ffd84a" },
+  "nodeRimLocked": { "light": "#f1f3f7", "face": "#d3d8e1", "dark": "#8f98a8" },
+  "ink": "#16244f",
+  "radius": { "normal": 0.26, "evaluation": 0.34 }
+}
