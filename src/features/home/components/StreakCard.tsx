@@ -6,21 +6,28 @@ import { Watermark } from '@/components/Watermark';
 import { fr } from '@/i18n/fr';
 import { extras, liftShadow, theme } from '@/theme';
 
-/** Carte Série : orange uni (jamais de dégradé), texte blanc, flamme en filigrane. */
+/**
+ * Carte Série : orange uni (jamais de dégradé), texte blanc, flamme en filigrane. À 0 jour, elle
+ * annonce ce qui commence (J1, v2.19), jamais un retard.
+ */
 export function StreakCard({ days }: { days: number }) {
+  const start = days === 0;
   return (
     <View style={styles.shadow}>
-      <View accessible accessibilityLabel={fr.common.streakLabel(days)} style={styles.card}>
+      <View
+        accessible
+        accessibilityLabel={start ? fr.home.streakStartLabel : fr.common.streakLabel(days)}
+        style={styles.card}>
         <Watermark icon="flamme" opacity={extras.watermarkOpacity.streak} offset={-20} />
         <View style={styles.pill}>
           <Icon name="flamme" size={22} color={theme.game.streak.background} />
         </View>
         <View style={styles.texts}>
           <Text variant="title" color="textOnColor" numberOfLines={1}>
-            {fr.home.streakDays(days)}
+            {start ? fr.home.streakStart : fr.home.streakDays(days)}
           </Text>
           <Text variant="caption" weight="bold" color="textOnColor" numberOfLines={1}>
-            {fr.home.streakCaption}
+            {start ? fr.home.streakStartCaption : fr.home.streakCaption}
           </Text>
         </View>
       </View>

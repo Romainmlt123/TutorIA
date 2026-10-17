@@ -29,6 +29,10 @@ export const fr = {
     welcome: 'Bienvenue',
     streakDays: (days: number) => `${days} ${plural(days, 'jour', 'jours')}`,
     streakCaption: 'de série, continue !',
+    /** Série à 0 (J1, v2.19) : ce qui commence, jamais un retard. */
+    streakStart: 'Ta série',
+    streakStartCaption: 'commence aujourd’hui',
+    streakStartLabel: 'Ta série commence aujourd’hui',
     level: (level: number) => `Niveau ${level}`,
     xp: (xp: number, next: number) => `${xp} / ${next} XP`,
     levelLabel: (level: number, xp: number, next: number) =>
@@ -39,19 +43,31 @@ export const fr = {
         : `${subject} · Leçon ${lesson} sur ${total}`,
     chapterProgress: 'Progression du chapitre',
     resume: 'Reprendre',
+    /** « Ta première séance » (J1) : la première leçon du parcours, à la place de « Reprendre ». */
+    first: {
+      overline: 'Ta première séance',
+      minutes: (n: number) => `${n} min`,
+      fromPlan: 'D’après ton parcours',
+      start: 'Commencer',
+    },
     goalSection: 'Objectif du jour',
     goalTitle: 'Objectif du jour',
     goalDetail: (minutes: number, done: number, target: number) =>
       `${minutes} min · ${done}/${target} sessions`,
-    goalRemaining: (remaining: number) =>
-      remaining <= 0
-        ? 'Objectif atteint !'
-        : remaining === 1
-          ? 'Plus qu’une !'
-          : `Plus que ${remaining} !`,
+    goalRemaining: (remaining: number, done: number) =>
+      done === 0
+        ? 'Une séance pour lancer ta journée'
+        : remaining <= 0
+          ? 'Objectif atteint !'
+          : remaining === 1
+            ? 'Plus qu’une !'
+            : `Plus que ${remaining} !`,
     subjects: 'Tes matières',
     seeAll: 'Tout voir',
     subjectCardLabel: (name: string, percent: number) => `${name}, ${percent} % de maîtrise`,
+    /** Matière jamais ouverte (J1) : ni pourcentage ni barre. */
+    subjectFresh: 'À découvrir',
+    subjectFreshLabel: (name: string) => `${name}, à découvrir`,
   },
   tutor: {
     modeLabel: 'Mode de discussion',
@@ -124,10 +140,9 @@ export const fr = {
     report: 'Signaler cette réponse',
     reportDone: 'Merci, on va regarder ça.',
     reportHint: 'Appui long pour signaler une réponse du tuteur',
-    offlineTitle: 'Tutor’IA est hors ligne',
-    offlineBody: 'Je n’arrive pas à me connecter. En attendant, entraîne-toi avec ces questions.',
+    offlineTitle: 'Pas de connexion',
+    offlineBody: 'Vérifie ton Wi-Fi ou tes données mobiles.',
     retry: 'Réessayer',
-    practice: 'Entraînement',
     /** Visuels du tuteur (2C, 2E) : graphique, tableau blanc, diagramme, figure. */
     visual: {
       kinds: { graph: 'Graphique', board: 'Tableau', chart: 'Statistiques', figure: 'Figure' },
@@ -510,17 +525,25 @@ export const fr = {
     },
   },
   comingSoon: {
-    body: 'Cette partie arrive bientôt. On garde le rythme en attendant ?',
+    soon: 'Bientôt',
     close: 'Fermer',
     neutralBody: 'Cette fonctionnalité arrive bientôt.',
     topics: {
       notifications: 'Notifications',
-      profil: 'Ton profil',
       reglages: 'Réglages des révisions',
       comptes: 'Connexion avec Apple ou Google',
       conditions: 'Conditions et confidentialité',
       abonnement: 'Abonnement',
-      carte: 'La carte de l’île',
+    },
+    /** B1 (v2.19) : ce qui arrive dans les réglages de Flashcards (3A). */
+    reglages: {
+      intro: 'On prépare de quoi régler tes révisions :',
+      items: [
+        'Choisir le nombre de cartes par séance',
+        'Garder ou retirer une matière',
+        'Changer l’heure de ton rappel',
+      ],
+      back: 'Continuer mes révisions',
     },
   },
   /** Dates en toutes lettres (sans dépendre de la langue de l'appareil). */
@@ -600,6 +623,7 @@ export const fr = {
     title: 'Pas de connexion pour le moment',
     body: 'Tutor’IA a besoin d’Internet pour ouvrir le compte la première fois.',
     retry: 'Réessayer',
+    hint: 'Wi-Fi ou données mobiles : on réessaie tout seul.',
     signOut: 'Changer de compte',
   },
 
@@ -1252,10 +1276,25 @@ export const fr = {
         count === 0
           ? 'Aucune session après 21 h.'
           : `${count} ${count > 1 ? 'sessions' : 'session'} après 21 h.`,
+      /** J3 (v2.19) : l'espace Parents avant le premier enfant relié. */
+      welcome: 'Bienvenue dans l’espace Parents.',
       noChild: {
         title: 'Ajoutez votre enfant',
-        body: 'Créez son profil pour obtenir son code de connexion. Vous suivrez ensuite ses progrès ici.',
+        steps: [
+          'Créez son profil : son prénom et sa classe.',
+          'Donnez-lui son code de connexion.',
+          'Suivez ses progrès ici, chaque semaine.',
+        ],
         cta: 'Ajouter un enfant',
+      },
+      weekly: {
+        title: 'Chaque semaine, vous verrez',
+        items: [
+          'Un résumé de sa semaine, rédigé par Tutor’IA',
+          'Son temps d’étude et ses progrès par matière',
+          'Un conseil pour l’encourager',
+        ],
+        never: 'Jamais ses conversations avec le tuteur.',
       },
       request: {
         title: (name: string) => `${name} souhaite relier son compte au vôtre`,
@@ -1459,7 +1498,9 @@ export const fr = {
       reset: 'Remettre la garde-robe à zéro',
     },
     rules: {
-      title: 'Règles des parents (simulé)',
+      title: 'Élève simulé : premier jour et règles des parents',
+      firstDay: 'Premier jour',
+      progress: 'Progression de Léa',
       none: 'Aucune',
       evening: 'Pause du soir (après 21 h)',
       window: 'Hors de la plage',
@@ -1486,6 +1527,8 @@ export const fr = {
       lea: 'Léa (élève)',
       claire: 'Claire (parent)',
       hugo: 'Hugo (onboarding)',
+      noChild: 'Claire sans enfant',
+      withChild: 'Claire avec Léa',
       signOut: 'Se déconnecter',
       supabaseHint:
         'Comptes du seed (npm run db:seed) : lea@tutoria.test, claire@tutoria.test, hugo@tutoria.test.',
