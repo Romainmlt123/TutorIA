@@ -398,7 +398,18 @@ export const fr = {
     levelState: { completed: 'terminé', active: 'à jouer', locked: 'fermé' },
     levelLabel: (type: string, title: string, state: string, stars: number) =>
       `${type}, ${title}, ${state}${stars > 0 ? `, ${stars} ${plural(stars, 'étoile', 'étoiles')} sur 3` : ''}`,
+    /** Niveau où se tient l'avatar sur la carte. */
+    levelHere: (label: string) => `${label}, tu es ici`,
     cityBanner: (name: string, status: string) => `${name}, ${status}`,
+    /** Ce que le lecteur d'écran annonce au retour sur la carte, après un niveau qui fait progresser. */
+    celebration: {
+      stars: (n: number, type: string, title: string) =>
+        `${n} ${plural(n, 'étoile gagnée', 'étoiles gagnées')} : ${type} · ${title}.`,
+      cityDone: (name: string) => `Bravo, ${name} est validée !`,
+      cityConsolidate: (name: string) =>
+        `${name} : à consolider. Tu as bien avancé, tu pourras retenter le bilan quand tu veux.`,
+      unlocked: (type: string, title: string) => `Nouveau niveau ouvert : ${type} · ${title}.`,
+    },
     progressLabel: 'Progression sur l’île',
     questTab: 'Ta quête',
     citiesCount: (done: number, total: number) => `${done} / ${total}`,
@@ -1426,5 +1437,40 @@ export const fr = {
     },
     weightSample: 'Apprends à ton rythme',
     italicSample: 'Une notion à retenir',
+    perf: {
+      hudSwitch: 'Compteur de performance sur Explorer',
+      waiting: 'Compteur : en attente d’une image…',
+      unknown: '—',
+      frames: (fps: string, p50: string, p95: string, max: string) =>
+        `${fps} i/s · p50 ${p50} · p95 ${p95} · max ${max} ms`,
+      glLag: (ms: string) => `Attente du fil GL : ${ms} ms (image suivante non comptée)`,
+      glLagWeb: 'Attente du fil GL : sans objet sur le web',
+      draws: (calls: string, triangles: string) => `${calls} appels · ${triangles} k triangles`,
+      memory: (textures: string, geometries: string) =>
+        `${textures} textures · ${geometries} géométries`,
+      context: (id: string, count: number) =>
+        `Contexte n° ${id} · ${count} ${count > 1 ? 'vus' : 'vu'} par la sonde`,
+      ratio: (screen: string, render: string) => `Densité ×${screen} · rendu ×${render}`,
+      ambient: (rate: string) => `Animations de la carte : ${rate} mises à jour/s`,
+      uiFrames: (fps: string, p95: string, max: string, late: number) =>
+        `Fil de l’interface : ${fps} i/s · p95 ${p95} · max ${max} ms · ${late} en retard`,
+      capsTitle: 'Capacités GL',
+      capsShow: 'Afficher les capacités GL',
+      capsHide: 'Masquer les capacités GL',
+      capsWaiting: 'En attente du contexte 3D…',
+      capsNoScene: 'Pas de contexte 3D dans cette vue.',
+      caps: {
+        webAssembly: 'typeof WebAssembly',
+        pixelRatio: 'PixelRatio',
+        maxTextureSize: 'MAX_TEXTURE_SIZE',
+        maxRenderbufferSize: 'MAX_RENDERBUFFER_SIZE',
+        maxSamples: 'MAX_SAMPLES',
+        renderer: 'Puce graphique',
+        vendor: 'Fabricant',
+        version: 'Version',
+        extensions: (count: number) => `Extensions (${count})`,
+        row: (label: string, value: string) => `${label} : ${value}`,
+      },
+    },
   },
 } as const;
