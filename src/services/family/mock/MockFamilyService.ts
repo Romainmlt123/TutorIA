@@ -19,6 +19,20 @@ export class MockFamilyService implements FamilyService {
 
   constructor(private readonly auth: AuthService) {}
 
+  /** Relie ou délie Claire et Léa depuis `/dev/catalogue`, pour voir l'espace Parents sans enfant (J3). */
+  setDemoLink(on: boolean): void {
+    const isDemo = (link: Link) =>
+      link.parentId === PERSONAS.claire.id && link.studentId === lea.id;
+    this.links = this.links.filter((link) => !isDemo(link));
+    if (on) {
+      this.links.push({
+        parentId: PERSONAS.claire.id,
+        studentId: lea.id,
+        linkedAt: '2026-09-02T08:00:00.000Z',
+      });
+    }
+  }
+
   private me() {
     const session = this.auth.getSession();
     if (session.status !== 'signedIn') throw new AuthError('unauthorized');

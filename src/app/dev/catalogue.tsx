@@ -26,6 +26,7 @@ import { studyRulesKey } from '@/lib/session/useStudyRules';
 import { authService, mockAuthService } from '@/services/auth';
 import { avatarService } from '@/services/avatar';
 import { mockExplorerService } from '@/services/explorer';
+import { mockFamilyService } from '@/services/family';
 import { mockStudentDataService, type StudyRules } from '@/services/student';
 import { MOCK_VISUALS } from '@/services/tutor/mock/visualScripts';
 import type { PersonaId } from '@/services/auth/mock/MockAuthService';
@@ -325,7 +326,7 @@ const RULE_PRESETS: readonly { label: string; rules: Partial<StudyRules> }[] = [
   { label: t.rules.noCamera, rules: { cameraEnabled: false } },
 ];
 
-/** Règles des parents imposées à l'élève simulé (R1 à R7), sans attendre l'heure. */
+/** Élève simulé : premier jour (J1) ou progression de Léa, et règles des parents (R1 à R7). */
 function RulesDemo() {
   const queryClient = useQueryClient();
   const service = mockStudentDataService;
@@ -336,6 +337,19 @@ function RulesDemo() {
   };
   return (
     <Section title={t.rules.title}>
+      <View style={styles.row2}>
+        {[true, false].map((on) => (
+          <Button
+            key={String(on)}
+            label={on ? t.rules.firstDay : t.rules.progress}
+            variant="soft"
+            onPress={() => {
+              service.setFirstDay(on);
+              void queryClient.invalidateQueries({ queryKey: ['student'] });
+            }}
+          />
+        ))}
+      </View>
       <View style={styles.row2}>
         {RULE_PRESETS.map((preset) => (
           <Button
@@ -361,6 +375,7 @@ const PERSONAS: readonly { id: PersonaId; label: string }[] = [
  * (npm run db:seed) se connectent depuis l'écran de connexion ; on se déconnecte ici.
  */
 function PersonaSwitcher() {
+  const queryClient = useQueryClient();
   const signOut = () => {
     authService.signOut().catch((error: unknown) => logError('dev.signOut', error));
   };
@@ -382,6 +397,21 @@ function PersonaSwitcher() {
           {t.personas.supabaseHint}
         </Text>
       )}
+      {mockFamilyService ? (
+        <View style={styles.row2}>
+          {[false, true].map((on) => (
+            <Button
+              key={String(on)}
+              label={on ? t.personas.withChild : t.personas.noChild}
+              variant="soft"
+              onPress={() => {
+                mockFamilyService?.setDemoLink(on);
+                void queryClient.invalidateQueries();
+              }}
+            />
+          ))}
+        </View>
+      ) : null}
       <Button label={t.personas.signOut} variant="soft" onPress={signOut} />
     </Section>
   );
