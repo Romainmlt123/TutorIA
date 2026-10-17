@@ -39,6 +39,7 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Interface     | **v2.12 et v2.17 · bandeaux, en-tête de l'Accueil, séance de flashcards**     | ✅ validé   | `feat/bandeau-et-flashcards`      |
 | Interface     | **v2.16 · données et confidentialité (D1 à D4)**                              | ✅ validé   | `feat/donnees-et-confidentialite` |
 | Interface     | **v2.18 · la famille (F1, F2, F3, F5)**                                       | ✅ validé   | `feat/famille`                    |
+| Interface     | **v2.15 · les règles des parents, côté élève (R1 à R7)**                      | ✅ validé   | `feat/regles-des-parents`         |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -289,6 +290,11 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - Option 1 retenue : seul le parent qui a validé le compte d'un enfant de moins de 15 ans modifie son prénom et sa classe (fonction `update_child_profile`, migration `20261016063758`, à appliquer en ligne par Romain).
   - La v2.18 est validée par Romain, et la migration `child_profile_by_parent` est appliquée en ligne (version `20261016063758`, par Romain avec `supabase db push`).
   - Les notifications (v2.20) viendront dans un lot à part.
+
+- **16/10 (v2.15, les règles des parents) :**
+  - Plan validé par Romain, avec deux choix : R4 s'affiche quand le serveur refuse l'appel (pas de nouvelle route pour le savoir avant), et « Plus que 2 minutes » est une pastille au-dessus des commandes, visible même sous-titres coupés.
+  - La pastille prévient aussi de la fin des 10 minutes d'appel, que le surveillant applique sans prévenir.
+  - 17/10 : publiée sur l'APK (EAS Update, canal `preview`) avec les lots 1 à 4, puis validée par Romain sur le Pixel.
 
 ## Prochaines étapes, gardées en tête (08/10)
 
