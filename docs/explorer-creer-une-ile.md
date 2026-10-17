@@ -60,8 +60,19 @@ Blender : island_<matière>.py ──> island-<matière>-3d.glb + image de repli
           strip_kit.py        ──> strip-kit.glb (décors, communs à toutes les régions)
           strip_monuments.py  ──> strip-<région>.glb (un monument par ville)
         │
-        ▼ gltf-transform quantize
+        ▼ gltf-transform quantize, puis npm run explorer:clean (données que l'app ne lit pas)
 app : IslandStage, MathsIsland3D, RegionWorld, Hd2dPost, HUD de jeu
+
+Carte pré-rendue d'une région (section 5, « La carte pré-rendue ») :
+app (npm run explorer:layout) ──> tools/explorer-3d/layouts/<id>.json (disposition + empreinte)
+        │
+        ▼
+Blender : region_tiles.py (passes sol, puis planches) ──> images du rendu + crops.json + segments.json
+          node_sprites.py (commun à toutes les régions) ──> sprites des niveaux + sprites.json
+        │
+        ▼ Pillow : tile_map.py, sprite_pack.py
+app : assets/explorer/tiles/<id>/*.webp + tiles/<id>.generated.ts, assets/explorer/sprites/*.webp + tiles/sprites.generated.ts
+      RegionMapWorld (React Native), MapAvatarCanvas (seule 3D de la carte)
 ```
 
 ### Direction artistique (validée par Romain)
@@ -199,6 +210,14 @@ Le matériau cuit de l'île est complété par un shader. La région choisie est
 - **Une cuisson longue se lance en tâche de fond suivie**, jamais détachée avec `&` (`CLAUDE.md`).
 - **Tout est déterministe :** chaque tirage au hasard a sa graine.
 - **Tout sort quantifié** (`npx -y @gltf-transform/cli@4.5.1 quantize`) : les sommets passent en entiers 16 bits. L'app doit donc garder la position, la rotation et l'échelle de chaque nœud (voir `copyOf`).
+- **Puis tout est nettoyé** (`npm run explorer:clean`, `scripts/clean-glb.ts`, à la fin de `explorer:models` et de `avatar:model`) :
+  - chaque GLB ne garde que les attributs que l'app lit, d'après une liste blanche par fichier et par nœud (`src/features/explorer/logic/modelRules.ts`) : ni normales sur les pièces cuites et les brins, ni UV sur les chiffres et l'avatar ;
+  - les brins perdent leurs indices, qui ne faisaient que répéter l'ordre des sommets ;
+  - chaque attribut est rangé à part (sommets non entrelacés), pour que three.js n'envoie pas deux fois les mêmes octets à la carte graphique ;
+  - les textures, les noms, les transformations, les matériaux, les squelettes, les formes et les animations ne changent pas ;
+  - un nouveau GLB, ou un nœud sans règle, arrête le script : écrire sa règle d'abord. Un matériau éclairé a besoin de `NORMAL`, une texture de `TEXCOORD_0`.
+- **Jamais `gltf-transform optimize`** : il fusionne les dix `chiffre_*` en un seul nœud, retire l'UV des brins (le vent en dépend) et simplifie l'île. Jamais de WebP, de KTX2, de Draco ni de Meshopt dans un GLB non plus : sur téléphone, expo-gl ne décode que le JPEG et le PNG, et l'app n'embarque aucun décodeur.
+- **Qualité JPEG :** Blender 5.2 lit `export_image_quality` et ignore `export_jpeg_quality`, que `bake.export` passait jusqu'au 16 octobre 2026. Toutes les textures actuelles sont donc en qualité 75, pas 90. La qualité demandée (90 par défaut, 80 pour les régions, 86 pour les monuments) s'appliquera à la prochaine cuisson et alourdira les textures : environ +0,26 Mo pour l'île à 90 (estimation). La choisir en connaissance de cause.
 
 ### Les bibliothèques communes (`tools/explorer-3d/lib/`)
 
@@ -229,16 +248,16 @@ Le matériau cuit de l'île est complété par un shader. La région choisie est
 
 Ces contrats ne sont protégés par aucun test, sauf mention contraire. Toute nouvelle île doit les respecter, ou bien l'app doit être généralisée (section 6).
 
-| Contrat          | Détail                                                                                                                                                                                         |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Noms des nœuds   | `ile` (texture cuite), `brins`, `chiffre_*`. Sinon, `readModel` lève une erreur et l'image de repli s'affiche. Toujours chercher par nom de nœud : le maillage fusionné s'appelle « Bordure ». |
-| Brins d'herbe    | La coordonnée v de l'UV donne la hauteur le long du brin : 0 au pied, 1 à la pointe. Le vent de `grass.ts` en dépend.                                                                          |
-| Soleil           | La direction `SUN` de `water.ts` doit être celle de `bake.lights()`, rotation (42°, −28°, −35°). Les reflets de l'eau et les ombres de la carte en dépendent.                                  |
-| Hauteur de l'eau | `SURFACE = 0,022` m, juste au-dessus des bosses du plateau.                                                                                                                                    |
-| Largeur          | 7,4 m, inscrite en dur dans le cadrage de l'app (`IslandStage`, `shots.ts`). `stageFrame.ts` suppose aussi la silhouette des Maths (hauteur relative 1,05, visée sous le plateau).             |
-| Contour          | `geo.edge` est aussi recopié dans `hd2d/MathsIslandHD.tsx`.                                                                                                                                    |
-| Tracé de l'eau   | `water.json`, lu par Blender et par l'app (`water.test.ts`). Toute modification oblige à tout recuire et à vérifier les polygones de `regions.json`.                                           |
-| Cadrage          | La caméra de Blender (`_app_camera` : 26° de champ, élévation 24°, azimut −0,2, visée à y = −0,9) reproduit celle du carrousel de l'app. L'image de repli en dépend.                           |
+| Contrat          | Détail                                                                                                                                                                                                                        |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Noms des nœuds   | `ile` (texture cuite), `brins`, `chiffre_*`. Sinon, `readModel` lève une erreur et l'image de repli s'affiche. Toujours chercher par nom de nœud : le maillage fusionné s'appelle « Bordure ». Vérifiés par `assets.test.ts`. |
+| Brins d'herbe    | La coordonnée v de l'UV donne la hauteur le long du brin : 0 au pied, 1 à la pointe. Le vent de `grass.ts` en dépend.                                                                                                         |
+| Soleil           | La direction `SUN` de `water.ts` doit être celle de `bake.lights()`, rotation (42°, −28°, −35°). Les reflets de l'eau et les ombres de la carte en dépendent.                                                                 |
+| Hauteur de l'eau | `SURFACE = 0,022` m, juste au-dessus des bosses du plateau.                                                                                                                                                                   |
+| Largeur          | 7,4 m, inscrite en dur dans le cadrage de l'app (`IslandStage`, `shots.ts`). `stageFrame.ts` suppose aussi la silhouette des Maths (hauteur relative 1,05, visée sous le plateau).                                            |
+| Contour          | `geo.edge` est aussi recopié dans `hd2d/MathsIslandHD.tsx`.                                                                                                                                                                   |
+| Tracé de l'eau   | `water.json`, lu par Blender et par l'app (`water.test.ts`). Toute modification oblige à tout recuire et à vérifier les polygones de `regions.json`.                                                                          |
+| Cadrage          | La caméra de Blender (`_app_camera` : 26° de champ, élévation 24°, azimut −0,2, visée à y = −0,9) reproduit celle du carrousel de l'app. L'image de repli en dépend.                                                          |
 
 ### Variables d'environnement
 
@@ -284,10 +303,12 @@ Il rend `assets/explorer/images/wood-panel.webp` (trois planches, 1200 × 750 px
 | --------------------------- | ------------ | --------------------------------------------------------------- |
 | Triangles à l'écran         | < 60 000     | environ 49 000 (île 44 000, brins 2 300, chiffres)              |
 | Appels de dessin            | < 60         | île 1, brins 1, chiffres 7, eau 3, nuages 1                     |
-| Poids des modèles d'une île | ≤ 1,5 Mo     | **1,98 Mo** (texture 0,6 Mo), plus l'îlot 0,70 Mo : hors budget |
-| Texture                     | 2048 px JPEG | 2048 px, qualité 90                                             |
+| Poids des modèles d'une île | ≤ 1,5 Mo     | **1,53 Mo** (texture 0,6 Mo), plus l'îlot 0,54 Mo : hors budget |
+| Texture                     | 2048 px JPEG | 2048 px, qualité 75                                             |
 
-Pas de Draco ni de KTX2, que expo-gl ne gère pas bien : la quantification et le JPEG suffisent.
+- **Le budget de 1,5 Mo** est à atteindre à la prochaine cuisson de l'île, en choisissant la taille et la qualité de sa texture.
+- **`src/features/explorer/assets.test.ts`** vérifie chaque GLB versionné : extensions (la quantification seulement), images (JPEG ou PNG), attributs (la liste blanche), sommets non entrelacés et poids.
+- **Le plafond de poids de chaque fichier** est dans `modelRules.ts` : le poids nettoyé du 16 octobre 2026, plus 2 à 4 %. Un modèle recuit plus lourd fait échouer le test : l'alléger, ou relever son plafond en connaissance de cause.
 
 ### Durées
 
@@ -332,6 +353,7 @@ blender -b -P tools/explorer-3d/region_map.py
 ```sh
 EXPLORER_REGION=maths-nombres EXPLORER_REGION_SCALE=6 EXPLORER_DROP=boulier,octaedre blender -b -P tools/explorer-3d/region_map.py
 npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/region-maths-nombres.glb assets/explorer/models/region-maths-nombres.glb
+npm run explorer:clean
 ```
 
 - **`region` :** le sol, cuit en 3072 px.
@@ -378,9 +400,10 @@ npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/region-maths-no
 
 ### Déclarer une région cuite dans l'app
 
-1. `stylized3d/terrains.ts` : `TERRAIN_MODELS['<id>'] = { asset: require('…/region-<id>.glb'), scale: 6 }`. `scale` doit valoir `EXPLORER_REGION_SCALE` : il règle aussi l'échelle de l'eau.
+1. `stylized3d/terrainScales.ts` : `TERRAIN_SCALES['<id>'] = 6`, qui doit valoir `EXPLORER_REGION_SCALE` : il règle aussi l'échelle de l'eau, et celle des reflets d'une carte pré-rendue. Puis `stylized3d/terrains.ts` : `TERRAIN_MODELS['<id>'] = { asset: require('…/region-<id>.glb'), scale: TERRAIN_SCALES['<id>']! }`. Une région pré-rendue garde son échelle même sans GLB (`ambientLayout.test.ts` le vérifie).
 2. `stylized3d/monuments.ts` : `MONUMENT_MODELS['<id>'] = require('…/strip-<région>.glb')`. C'est tout ou rien pour une région.
-3. `package.json`, script `explorer:models` : ajouter la cuisson et la quantification, avec `EXPLORER_REGION=<id>` écrit explicitement.
+3. `package.json`, script `explorer:models` : ajouter la cuisson et la quantification (avant le `npm run explorer:clean` final), avec `EXPLORER_REGION=<id>` écrit explicitement.
+4. `src/features/explorer/logic/modelRules.ts` : la règle de chaque nouveau GLB (attributs gardés par nœud, plafond de poids). Sans elle, `explorer:clean` s'arrête et `assets.test.ts` échoue.
 
 **Sans modèle, la région reste jouable** grâce à une carte simple :
 
@@ -398,6 +421,94 @@ npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/region-maths-no
 - **Avatar** (`MapAvatar.tsx`) : la figurine de l'élève à la place du pion ; il salue en entrant, marche le long du chemin quand le pion avance (`logic/avatarWalk.ts`), puis saute en arrivant.
 - **Boutons :** chaque point de niveau a un bouton de 48 px, posé sur sa position projetée à l'écran. La position est recalculée dès que la caméra se pose, et suivie sur le fil d'interface pendant le déplacement (`MapOverlay`).
 - **Ouverture :** la carte attend les résultats de l'élève avant de s'ouvrir sur la ville du pion.
+- **Effet d'image :** `Hd2dPost` sans flou de maquette (`tiltShift={false}`) : la carte est nette d'un bord à l'autre, et ses deux passes les plus chères sont économisées.
+
+### La carte pré-rendue (tuiles)
+
+**Le principe.** Une région listée dans `PRERENDERED_MAPS` (`src/features/explorer/tiles/index.ts`) n'a plus de carte 3D. Blender rend la carte une fois pour toutes, et React Native l'affiche en tuiles. Les autres régions gardent la carte 3D décrite plus haut.
+
+- **Caméra de Blender :** orthographique, 52° d'élévation, azimut nul, 224 px par mètre du plan image. Plan image : `x` de la carte, et `v = z·sin 52° − y·cos 52°` vers le bas, en mètres. Sans perspective, l'app retrouve chaque pixel par le calcul (`logic/mapProjection.ts`, vérifié au millième de pixel contre Blender).
+- **Ce que l'image contient :** le terrain de la région, ses repères (réduits autour de leur pied), l'eau du π immobile (la formule de l'app à t = 0), les monuments, les décors du kit, l'herbe et les planches grisées du chemin. Le ciel reste transparent.
+- **Ce que l'app pose dessus** (`RegionMapWorld`, dans un seul plan que le fil de l'interface déplace) : les tronçons miel du chemin jusqu'à l'avatar, les sprites des disques et des halos, les icônes, les étoiles, les bandeaux des villes et les boutons de 48 dp (`RegionMapMarkers`), l'avatar dans son petit Canvas (`MapAvatarView`), et la vie de la carte (`MapAmbient`) : des nuages qui dérivent sous l'île, visibles là où le rendu est transparent, et des reflets du soleil qui scintillent sur l'eau du π.
+- **Rectangle rendu :** les bornes des niveaux, plus un demi-écran de chaque côté, sur l'écran le plus haut prévu (20:9). Le défilement ne sort jamais de l'image.
+
+**La disposition vient de l'app.** `logic/mapExport.ts` exporte les villes, les niveaux, les échantillons du chemin, les décors posés, les touffes, l'étalonnage, le soleil, les couleurs de l'eau et le rectangle à rendre, avec leur empreinte (`layoutHash`, les 16 premiers caractères du SHA-256 des villes, niveaux, chemin, décors et touffes).
+
+```sh
+npm run explorer:layout   # réécrit tools/explorer-3d/layouts/<id>.json pour chaque région de PRERENDERED_MAPS
+```
+
+Sans la variable de mise à jour, `mapExport.test.ts` vérifie que le fichier est à jour et que les tuiles installées ont la même empreinte. **Un chapitre, un niveau ou un décor qui change impose de refaire les tuiles de la région.**
+
+**Le rendu, en deux passes** (`tools/explorer-3d/region_tiles.py`, Cycles, en morceaux de 1 600 px débruités). C'est un rendu long : le lancer en tâche de fond suivie, jamais détaché avec `&`.
+
+```sh
+EXPLORER_LAYOUT=tools/explorer-3d/layouts/maths-nombres.json EXPLORER_REGION_SCALE=6 EXPLORER_DROP=boulier,octaedre \
+EXPLORER_TILES_OUT=<dossier> EXPLORER_TILES_PASS=sol blender -b -P tools/explorer-3d/region_tiles.py
+# puis la même commande avec EXPLORER_TILES_PASS=planches
+python3 -I tools/explorer-3d/tile_map.py <dossier> assets/explorer/tiles/maths-nombres src/features/explorer/tiles/maths-nombres.generated.ts
+```
+
+- **Passe `sol` :** tout, sauf le chemin parcouru. Elle écrit les morceaux du rendu (PNG 8 bits sRGB, étalonnés comme l'île, alpha droit) et `crops.json`.
+- **Passe `planches` :** les planches miel seules, tronçon par tronçon (entre le niveau `i` et le suivant). Le reste de la scène est en découpe : il cache les planches et leur fait de l'ombre, mais reste transparent. Elle écrit `segments.json`.
+- **`EXPLORER_REGION_SCALE` et `EXPLORER_DROP`** sont ceux du plan de `region_map.py`, dont le script reprend la scène.
+- **Autres variables :** `EXPLORER_TILES_ZONE=x0,x1,v0,v1` (une zone seulement), `EXPLORER_TILES_SAMPLES` (64), `EXPLORER_TILES_THREADS` (4), `EXPLORER_TILES_CROP` (1 600 px), `EXPLORER_TILES_LOG` (journal dans un fichier).
+- **Eau refaite sans relancer Cycles :** `tools/explorer-3d/rewater.py` recalcule l'eau pleine des images déjà rendues ; relancer ensuite `tile_map.py`.
+
+**La découpe** (`tile_map.py`, Python du système avec Pillow) :
+
+- tuiles WebP (qualité 80) de 512 px, avec 1 px de recouvrement de chaque côté : agrandies par l'écran, deux voisines ne laissent pas de joint ;
+- les tuiles entièrement transparentes ne sont pas écrites : l'app dessine le ciel ;
+- une sous-couche, l'image entière au quart (`sous-couche.webp`), posée sous les tuiles pour qu'aucun trou n'apparaisse pendant un lancer ;
+- un tronçon miel par écart entre deux niveaux (`troncon-<i>.webp`) ;
+- le manifeste (`manifest.json`) et le module de l'app (`<id>.generated.ts`, un `require` statique par image, à ne jamais modifier à la main).
+
+**Le manifeste :** `version`, `regionId`, `ppm` (224), `elevation` (52), `x0` et `v0` (point du plan image du pixel (0, 0)), `width` et `height` (pixels), `tile` (512), `bleed` (1), `layoutHash`, `underlay` (`file`, `factor`), `tiles` (`col`, `row`, `file`, `x`, `y`, `width`, `height`) et `doneSegments` (`gap`, `file`, `x`, `y`, `width`, `height`). `tile_map.py` refuse des planches rendues pour une autre zone ou une autre empreinte que le sol.
+
+**Les sprites des niveaux**, communs à toutes les régions (`node_sprites.py`, puis `sprite_pack.py`) :
+
+```sh
+EXPLORER_SPRITES_COLORS=couleurs.json EXPLORER_SPRITES_OUT=<dossier> blender -b -P tools/explorer-3d/node_sprites.py
+python3 -I tools/explorer-3d/sprite_pack.py <dossier> assets/explorer/sprites src/features/explorer/tiles/sprites.generated.ts
+```
+
+- `couleurs.json` (couleurs en `#rrggbb`, rayons en mètres), écrit à la main depuis le thème et la disposition :
+
+  ```json
+  {
+    "node": { "lecon": "…", "exercices": "…", "evaluation": "…", "locked": "…" },
+    "nodeRim": { "light": "…", "face": "…", "dark": "…", "glow": "…" },
+    "nodeRimLocked": { "light": "…", "face": "…", "dark": "…" },
+    "ink": "…",
+    "radius": { "normal": 0.26, "evaluation": 0.34 }
+  }
+  ```
+
+  - `node`, `nodeRim` et `nodeRimLocked` : `explorerArt.map.node`, `explorerArt.map.nodeRim` et `explorerArt.map.nodeRimLocked`, tels quels ;
+  - `ink` : `explorerArt.hud.ink` (le liseré bleu nuit) ;
+  - `radius` : `MAP_LAYOUT.nodeRadius` et `MAP_LAYOUT.evaluationRadius` (`logic/mapLayout.ts`) ;
+  - `node_sprites.py` lit toutes ces clés : une clé absente l'arrête (`KeyError`).
+
+- Sprites : `niveau-lecon`, `niveau-exercices`, `niveau-evaluation`, `niveau-verrou`, `niveau-verrou-grand`, et le halo des niveaux ouverts en deux pièces, l'anneau net (`anneau`, `anneau-grand`) et la lueur douce (`lueur`, `lueur-grand`). Rendus à 336 px par mètre (3x), avec la même caméra et le même soleil que la carte ; le point d'ancrage est le pied du niveau.
+- L'app pose l'icône du type (ou le cadenas) par-dessus. **Les disques restent vifs, tels que Romain les a validés.**
+
+**Les règles de l'app** (`CLAUDE.md`, « Carte pré-rendue d'une région ») :
+
+- aucun commit React pendant que la carte bouge : toutes les tuiles sont montées d'un coup, avec `fadeDuration={0}` ;
+- jamais de react-native-svg pour une grande surface ;
+- les animations (halo, reflets, nuages) suivent une seule horloge à 30 Hz (`useMapClock`), arrêtée hors de l'onglet et avec « Réduire les animations » ; le compteur de performance affiche son rythme, puis celui des images du fil de l'interface ;
+- l'avatar est la seule 3D de la carte, dans un petit Canvas posé dans le plan qui défile ;
+- les reflets ne vont que sur l'eau du π d'une région à terrain cuit (`TERRAIN_SCALES`, `stylized3d/terrainScales.ts`, dont l'échelle agrandit le π) ; la rivière, hors de Nombres, n'en a pas encore.
+
+**Les budgets** (`src/features/explorer/tiles/budget.test.ts`) :
+
+| Élément                                      | Budget             | Nombres (17 octobre 2026) |
+| -------------------------------------------- | ------------------ | ------------------------- |
+| Une région : tuiles, sous-couche et tronçons | ≤ 2 000 000 octets | 1 153 354 octets          |
+| Tuiles d'une région                          | ≤ 100              | 85 (et 42 tronçons)       |
+| Sprites des niveaux (toutes les régions)     | ≤ 150 000 octets   | 98 896 octets             |
+
+Le test vérifie aussi que chaque image importée existe et qu'aucune image du dossier n'est sans usage.
 
 ---
 
@@ -440,11 +551,15 @@ npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/region-maths-no
 ### Règles de robustesse (`CLAUDE.md`)
 
 - **Modèles :** `useModel` / `preloadModel` de `@/lib/three/useModel`, jamais `useLoader` ni rien qui suspende sous un `Canvas`.
-- **Écran caché :** `useSceneActive()` arrête le calcul des images (`frameloop="never"`) quand l'onglet est caché ou l'app en arrière-plan.
-- **Android :** `useSceneKey()` sert de clé à la scène. Elle est recréée au retour sur l'écran, car Android détruit le contexte 3D d'un écran caché.
-- **Erreur dans la scène :** `SceneBoundary` journalise l'erreur et affiche l'image de repli.
+- **Rythme des images :** le Canvas est en `frameloop="never"` et `FrameDriver` calcule les images, 60 par seconde au plus. Il fait aussi avancer l'horloge de la scène (`SCENE_TIME`, `@/lib/three/sceneClock`) : toute animation la lit, jamais `clock` de R3F, et toute scène qui montre l'eau, l'herbe ou les nuages prend `FrameDriver`.
+- **Écran caché :** `useSceneActive()` arrête tout à fait la boucle de `FrameDriver` quand l'onglet est caché ou l'app en arrière-plan.
+- **Une seule scène, montée à la racine sur Android :** Android détruit le contexte 3D d'un écran que react-native-screens retire de la fenêtre (onglet caché, niveau ou avatar ouvert par-dessus). La scène d'Explorer y est donc montée sous la pile de navigation, hors de react-native-screens, par `ExplorerStageHost` (`stage/`), à la première visite d'Explorer, et gardée jusqu'à la déconnexion. L'écran Explorer confie ses props à l'hôte (`ExplorerStage`, `stageStore.ts`). Sur iOS et le web, où le contexte survit, `ExplorerStage` dessine la scène dans l'écran, comme avant (`ROOT_STAGE`). Une île de plus s'ajoute donc dans `IslandStage`, comme avant, sans rien changer à l'hôte.
+- **Fonds transparents :** sur Android, la scène se voit à travers trois fonds transparents : l'espace élève, l'onglet Explorer (`SEE_THROUGH`) et l'écran Explorer. Tout nouvel écran ou onglet garde le fond du thème, y compris dans un `contentStyle` ou un `sceneStyle` qui lui est propre (garde : `opaqueScreens.test.ts`, qui ne lit que les `_layout.tsx`). Rien de 3D ne passe au-dessus des vues de l'écran : un panneau ou un bouton sur l'île est une vue React Native posée par-dessus.
+- **Scène cachée hors de l'onglet :** l'écran Explorer publie `shown` (`useTabShown`) : vrai tant qu'Explorer est l'onglet choisi, même sous un niveau ou l'avatar. Faux, l'hôte rend la scène transparente (opacité nulle, jamais `display: 'none'`) : la transition d'un écran ouvert depuis un autre onglet laisse voir le fond de l'app, pas l'île, et la vue 3D garde son contexte.
+- **Contexte détruit malgré tout :** `Hd2dPost` saute l'image tant que le contexte est mort (`isContextDead`), et R3F reconstruit la scène dans le nouveau. Pas de `useSceneKey()` pour Explorer.
+- **Erreur dans la scène :** `SceneBoundary` journalise l'erreur et affiche l'image de repli, puis la scène est retentée à la visite suivante d'Explorer (`StageView`), retour au premier plan compris.
 - **Sans WebGL :** image fixe pour l'île et vue en liste pour la carte. La vue en liste sert aussi avec un lecteur d'écran.
-- **« Réduire les animations » :** l'île est figée, l'eau et l'herbe sont immobiles, la caméra saute sans glisser.
+- **« Réduire les animations » :** l'île est figée, l'eau et l'herbe sont immobiles, la caméra saute sans glisser. La scène ne se dessine alors que quand elle change : un geste ou un déplacement demandé hors du Canvas appelle `requestSceneFrames()`, une pièce qui bouge encore appelle `invalidate()` dans son `useFrame`.
 - **Couleurs :** uniquement dans `src/theme/explorerArt.ts`.
 - **Textes :** uniquement dans `src/i18n/fr.ts`, y compris `fr.explorer.islandNames`, qui contient déjà les six matières.
 
@@ -457,6 +572,8 @@ npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/region-maths-no
   - les régions (`regions.test.ts`) ;
   - les emplacements des villes (`regionMap.test.ts`) ;
   - l'eau (`water.test.ts`) ;
+  - les modèles 3D (`assets.test.ts`) : extensions, images, attributs et poids de chaque GLB ;
+  - les cartes pré-rendues : disposition à jour et empreinte des tuiles (`mapExport.test.ts`), budgets (`tiles/budget.test.ts`) ;
   - la progression.
 - **L'atelier `/dev/explorer-atelier`** (`npm run web`) : faire le tour de l'île et vérifier la texture cuite, le vent dans l'herbe, l'eau calée sur les rives peintes et la cascade.
 - **Le web en 390 px de large :** les trois vues, l'aller-retour X1 → X2a → X2b, la vue en liste.
@@ -464,10 +581,18 @@ npx -y @gltf-transform/cli@4.5.1 quantize assets/explorer/models/region-maths-no
   - fluidité ;
   - boutons touchables ;
   - bouton retour d'Android ;
-  - retour depuis un autre onglet et depuis un écran empilé, sans erreur ;
+  - retour depuis un autre onglet (dont plusieurs allers-retours avec l'Accueil) et depuis un écran empilé (niveau, avatar), sans erreur ni rechargement : avec le compteur de performance allumé dans l'atelier, le `Contexte n°` ne change pas et un seul contexte est vu ;
+  - aucun autre écran ne laisse voir l'île, une fois Explorer visité ;
   - « Réduire les animations » ;
-  - TalkBack.
-- **Les budgets :** triangles (`EXPLORER_STATS`) et poids des fichiers GLB.
+  - TalkBack ;
+  - ces vérifications de la scène montée à la racine sont à refaire à chaque montée de version de React Native, react-native-screens, expo-gl ou R3F : le détachement des écrans et leur composition peuvent changer.
+- **Les budgets :** triangles (`EXPLORER_STATS`) et poids des fichiers GLB (tableau affiché par `npm run explorer:clean`, plafonds vérifiés par `assets.test.ts`).
+- **Une carte pré-rendue, sur le Pixel, avec le compteur de performance :**
+  - au repos, la ligne « Animations de la carte » reste à 30 mises à jour par seconde au plus, et tombe à 0 avec « Réduire les animations » ;
+  - la ligne « Fil de l'interface » donne le rythme des images, leur p95, la pire et celles en retard (plus d'une fois et demie l'image médiane). La relever au repos et pendant un lancer, animations allumées puis réduites : un écart net entre les deux dit ce que coûtent les nuages et les reflets. S'il est trop lourd, passer les bouffées et les reflets en petites images douces, ou en poser moins ;
+  - chaque relevé affiché est un commit React (quelques-uns par seconde : celui de la carte n'est publié que s'il change, celui du Canvas de l'avatar deux fois par seconde), qui suspend un instant les mises à jour de Reanimated : juger la fluidité d'un lancer au doigt, compteur éteint ;
+  - sur iOS, le serveur de rendu (ombres floues composées hors écran) ne retarde pas le fil de l'interface : il se mesure dans Instruments (Core Animation) ;
+  - les nuages ne se voient que dans le ciel, les reflets jamais sur la berge.
 - **La validation de Romain sur son téléphone, à chaque étape** (`ROADMAP.md`).
 
 ---
@@ -488,10 +613,10 @@ Chaque étape se termine par une validation de Romain sur son téléphone.
 4. **L'inspiration :** partir de l'image de `assets/inspirations/explorer/`, puis fixer le relief (eau ou non, et sa forme) et les décors avec Romain.
 5. **Le script Blender de l'île** (`island_<matière>.py`), en reprenant la structure de `island_maths.py` et sa ligne repère :
    - aperçus rapides jusqu'à validation ;
-   - puis cuisson, quantification et image de repli.
+   - puis cuisson, quantification, nettoyage (`npm run explorer:clean`, avec la règle du nouveau GLB dans `modelRules.ts`) et image de repli.
 6. **`regions.json` et `water.json`** pour cette île, puis le test des régions (`PROPS`).
 7. **La généralisation de l'app** (section 6), la première fois seulement.
-8. **Les cartes de région :** pour chaque région, le plan, l'aperçu et l'ajustement, les monuments, la cuisson, puis la déclaration dans `terrains.ts` et `monuments.ts`. Validation région par région.
+8. **Les cartes de région :** pour chaque région, le plan, l'aperçu et l'ajustement, les monuments, la cuisson, puis la déclaration dans `terrains.ts` et `monuments.ts`. Puis la carte pré-rendue : `npm run explorer:layout`, les passes `sol` et `planches`, la découpe, et la région ajoutée à `PRERENDERED_MAPS`. Validation région par région.
 9. **Le script `explorer:models`**, mis à jour avec les nouvelles commandes.
 10. **Les budgets :** vérifier le poids et les triangles, et alléger si besoin.
 11. **La documentation :** mettre à jour ce guide, `README.md` et `CLAUDE.md` (commandes), et `ROADMAP.md` (statut).
@@ -511,8 +636,8 @@ Ces points ont été relevés en relisant le code le 6 octobre 2026. Aucun n'est
 
 **Modèles et poids**
 
-- **L'île des Maths pèse 1,98 Mo** (budget 1,5) et l'îlot 0,70 Mo.
-- **La carte de Nombres pèse 5,6 Mo**, dont 58 % pour les brins : normales inutiles et indices 32 bits. À alléger, et à charger à la demande (`ROADMAP.md`).
+- **L'île des Maths pèse 1,53 Mo** (budget 1,5) et l'îlot 0,54 Mo, après le nettoyage du 16 octobre 2026 (normales et UV inutiles retirés).
+- **La carte de Nombres pèse 3,40 Mo** après le même nettoyage (5,6 Mo avant), dont 57 % pour les brins. À charger à la demande (`ROADMAP.md`).
 - **Les fleurs du kit ne sont pas allégées :** environ 207 000 triangles pour toutes leurs instances sur la carte de Nombres.
 - **Le modèle de l'île date d'avant un changement de `grass()`.** Une nouvelle cuisson donnerait une herbe un peu différente.
 - **Les pièces du kit n'ont pas leur origine au pied :** la barrière est à moitié enterrée sur les cartes simples.
