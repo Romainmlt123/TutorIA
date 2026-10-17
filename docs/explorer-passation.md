@@ -90,9 +90,9 @@ Ils viennent de captures de l'app web en 390 px, avec Léa :
 
 1. **L'eau du π est moche.** Elle est granuleuse, comme une moquette, et sombre près de la Ville des Équations. La **démarcation entre la terre et l'eau est trop forte** : une ligne droite, sans rive ni pente.
 2. **La Tour des Puissances :** l'évaluation des Puissances (nœud 25) et la première leçon du Calcul littéral (nœud 26) se chevauchent (0,4 m d'écart sur le plan image), et le disque 25 semble posé au sommet de la tour. C'est le seul chevauchement de la région.
-3. **Les bannières des villes cachent des disques :** « Ville des Puissances » en recouvre deux, « Ville du Calcul littéral » un.
-4. **Le chemin miel traverse des niveaux fermés :** il est coloré jusqu'au niveau le plus avancé, alors que les villes ne s'ouvrent pas forcément dans l'ordre du chemin. La carte 3D d'avant avait déjà ce défaut.
-5. **Les noms longs débordent dans le titre du HUD :** « Ville des Produits de fractions » passe sous le bouton de droite.
+3. **(Corrigé, piste B.) Les bannières des villes cachaient des disques :** « Ville des Puissances » en recouvre deux, « Ville du Calcul littéral » un.
+4. **(Corrigé, piste B.) Le chemin miel traversait des niveaux fermés :** il est coloré jusqu'au niveau le plus avancé, alors que les villes ne s'ouvrent pas forcément dans l'ordre du chemin. La carte 3D d'avant avait déjà ce défaut.
+5. **(Corrigé, piste B.) Les noms longs débordaient dans le titre du HUD :** « Ville des Produits de fractions » passe sous le bouton de droite.
 6. **Des traînées d'herbe en étoile** convergent vers le moulin (Produits de fractions), sur sa gauche. C'est un défaut de la cuisson.
 
 ---
@@ -324,7 +324,7 @@ Ces points se notent dans la pull request, sous « À vérifier sur le télépho
 
 Il y a deux pistes indépendantes. **La piste A (cuisson) touche `tools/explorer-3d/`, la disposition et les assets ; la piste B (app) touche `src/`.** Romain dit dans sa demande quelle piste prendre. Ne pas faire les deux en parallèle d'une autre session sans qu'il l'ait dit, car les fichiers se recouvrent.
 
-### Piste A · Cuisson de la carte (une seule recuisson pour A1 à A3)
+### Piste A · Cuisson de la carte (une seule recuisson pour A1, A2, A3 et A5)
 
 **A1. Eau du π et rives.**
 
@@ -358,23 +358,42 @@ Il y a deux pistes indépendantes. **La piste A (cuisson) touche `tools/explorer
 - Lancer les passes `sol` et `planches`, puis `tile_map.py`, puis `npm run check` (budgets compris).
 - Livrer les captures des 6 villes, avant et après, dans la pull request.
 
-### Piste B · Finition de l'app
+**A5. Passe beauté des rendus de la carte (demandée par Romain).**
 
-- **B1. Bannières des villes.** Elles ne doivent jamais recouvrir un disque, une étoile ni l'avatar : chercher une place libre autour de la clairière (`logic/mapMarkers.ts`), avec un test.
-- **B2. Chemin miel.**
-  - Règle proposée, **à faire valider par Romain** : un tronçon est miel seulement si les deux niveaux qu'il relie sont terminés (ou le second est celui de l'avatar).
-  - Fichiers : `RegionMapWorld.tsx`, la logique des tronçons, et la même règle dans `stylized3d/mapPath.ts` pour l'ancienne carte.
-- **B3. Titre du HUD.** Un nom long ne passe jamais sous les boutons : réduction de la taille ou retour à la ligne, en respectant les tailles de texte dynamiques.
+Le but : que la carte de Nombres ait l'air d'un grand jeu mobile, pas seulement « propre et cohérente ». Cette passe se fait **après A1 à A3**, et se termine par la même recuisson que A4 (une seule cuisson complète pour tout).
+
+- **Périmètre :** la carte pré-rendue (sol, eau, monuments, décor, planches, sprites des disques). L'île en 3D (X1, X2a) n'en fait pas partie, sauf si Romain le demande.
+- **Pistes, par ordre d'effet attendu :**
+  1. **Lumière et matières :** une occlusion ambiante plus présente au pied des objets, des ombres de contact douces, une lumière chaude qui accroche les arêtes biseautées des monuments, un léger dégradé de brume sur les bords de l'île.
+  2. **Une ambiance par ville :** une teinte de sol propre à chaque clairière et quelques accessoires autour du monument qui racontent sa notion (sans arbres ni buissons).
+  3. **Des décors plus riches :** décors groupés en massifs plutôt que semés au hasard, plusieurs espèces de fleurs (une par massif), de vraies pierres moussues, des repères à mi-hauteur (murets de pierre sèche, panneau à l'entrée de chaque ville, bouts de barrière).
+  4. **Des planches vivantes :** clous, coins ébréchés, planches à venir un peu envahies par l'herbe, chemin parcouru dégagé, planches plus courtes dans les virages serrés.
+  5. **Des contrôles automatiques de l'art** à chaque rendu (`tools/explorer-3d/check_tiles.py`) : teinte et contraste de l'herbe, pixels saturés, ordre des valeurs (sol plus sombre que les planches à faire, elles-mêmes plus sombres que les planches faites), contraste des disques sur le sol à chaque position du manifeste.
+- **Ce qui ne bouge pas :**
+  - les décisions du § 2.2 (disques vifs, herbe « intermédiaire », caméra, densité des tuiles) ;
+  - les règles du § 3 (aucun détail sous 2 px à l'écran, zones calmes sous le chemin et les niveaux, l'interface reste l'élément le plus contrasté) ;
+  - les budgets du § 3.5 (2 Mo par région au plus).
+- **À demander à Romain avant de le faire :** déplacer le soleil (il est partagé par l'île, l'eau et l'avatar, donc tout serait recuit), et réduire ou retirer les grands repères de l'île visibles sur la carte.
+- **Méthode :**
+  1. Si Romain a joint des captures de jeux de référence, s'en servir comme cible commune.
+  2. Rendre de petites zones (`EXPLORER_TILES_ZONE`) qui contiennent une ville entière, et montrer à Romain des planches avant/après à 100 % et à la taille du téléphone.
+  3. Ne garder que ce que Romain valide, puis faire la recuisson complète.
+
+### Piste B · Finition de l'app (faite le 17 octobre, sauf la fin de B4)
+
+- **B1. Bannières des villes : fait.** `cityBannerPlaces` (`logic/mapMarkers.ts`) place chaque bandeau derrière le cercle de ses niveaux si la place est libre, sinon devant, à gauche ou à droite. Un test vérifie, à Nombres, qu'aucun bandeau ne cache un disque, une rangée d'étoiles ni un autre bandeau.
+- **B2. Chemin miel : fait, règle validée par Romain.** Un tronçon est miel s'il relie deux niveaux terminés, ou un niveau terminé au niveau à jouer (`honeyGaps`). La même règle sert à la carte 3D (`mapPath.ts`) et à la célébration (`progressSince`).
+- **B3. Titre du HUD : fait.** Un nom de plus de 20 lettres passe à 18 pt, sur deux lignes au besoin (`RegionMapHud.tsx`).
 - **B4. Points mineurs des relectures de P1 :**
-  - le halo qui pulse suit le pion (`map.pawnIndex`), alors que « tu es ici » suit l'avatar : les aligner ;
-  - mémoïser `RegionMapWorld` et `MapTiles`, pour que l'ouverture d'une fiche ne recalcule pas les 85 tuiles ;
-  - la boucle d'inertie (`useFrameCallback`) tourne à chaque image même au repos : ne l'activer que pendant un lancer ;
-  - le voile s'ouvre avant que les disques soient chargés : attendre aussi les sprites ;
-  - la scène de l'avatar continue à 30 images/s hors de l'écran et sous la vue en liste : la mettre en pause ;
-  - au départ d'une marche, l'avatar peut glisser 1 à 3 images avant l'animation de marche : synchroniser le départ ;
-  - sur le web, avec une densité d'écran supérieure à 2, la taille du Canvas de l'avatar n'est plus calée au pixel ;
-  - `runOnUI` est déprécié dans react-native-worklets 0.10 : passer à `scheduleOnUI`.
-- **B5. Défilement au doigt sur le web.** Un glisser simulé (événements tactiles de Chrome) n'a pas fait bouger la carte. Vérifier dans un vrai navigateur, puis corriger si besoin.
+  - fait : la boucle d'inertie ne tourne plus que pendant que la carte glisse (`useMapPan.ts`), avec `scheduleOnUI` à la place de `runOnUI` ;
+  - fait : sous la vue en liste, les nuages, les reflets, le halo et la scène de l'avatar s'arrêtent ;
+  - fait : sur le web, la vue de l'avatar suit la densité réelle du Canvas (2 au plus) ;
+  - fait par P1.6 : `MapTiles` est mémoïsé, et l'ouverture d'une fiche ne recalcule plus les 85 tuiles ;
+  - gardé tel quel, par choix : le halo qui pulse marque le niveau à jouer (le pion), et « tu es ici » l'endroit où se tient l'avatar. Les deux peuvent différer, comme sur la carte d'un jeu ;
+  - reste : mettre en pause la scène de l'avatar quand il sort de l'écran, sans commit React pendant le défilement ;
+  - reste : faire attendre au voile les sprites des disques ;
+  - reste : synchroniser le départ d'une marche (1 à 3 images de glissade possibles).
+- **B5. Défilement au doigt sur le web : vérifié, il marche.** Le premier essai partait du panneau de la ville, qui ne fait pas défiler la carte.
 
 ### Plus tard (ne pas commencer sans l'accord de Romain)
 
@@ -402,7 +421,21 @@ Il y a deux pistes indépendantes. **La piste A (cuisson) touche `tools/explorer
 
 ---
 
-## 10. Rendre compte à Romain
+## 10. Lancer une session Devin
+
+Premier message à coller, sur une session ouverte sur le dépôt `Romainmlt123/TutorIA` :
+
+```
+Lis d'abord docs/explorer-passation.md en entier, puis CLAUDE.md : ils font foi.
+Crée ta branche explorer/eau-et-rives à partir de origin/explorer/rendu-v2.
+Prends la piste A du backlog (§ 8), dans l'ordre : A1 eau et rives, A2 disposition autour de la Tour des Puissances (avec le test anti-chevauchement), A3 traînées d'herbe autour du moulin, puis A5 la passe beauté des rendus de la carte, et termine par une seule recuisson complète (A4).
+Ne touche pas aux fichiers de l'app hors de la piste A (src/features/explorer/components, hooks, ExplorerScreen.tsx) : une autre session y travaille.
+Règles git strictes : ne pousse jamais sur dev, main ni explorer/rendu-v2 ; jamais de force push, de merge ni de rebase de ces branches. Pousse seulement explorer/eau-et-rives et ouvre une pull request vers explorer/rendu-v2. Ne fusionne rien.
+Mode simulé uniquement (EXPO_PUBLIC_BACKEND=mock), aucune connexion à Supabase, aucune clé.
+Itère sur de petites zones (EXPLORER_TILES_ZONE) et montre-moi les avant/après (eau d'abord, puis chaque idée de la passe beauté) avant la recuisson complète.
+```
+
+## 11. Rendre compte à Romain
 
 Romain écrit en français ; lui répondre en français, avec des phrases courtes. Chaque pull request contient :
 
