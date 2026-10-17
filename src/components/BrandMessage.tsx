@@ -24,24 +24,39 @@ type Props = {
   body: string;
   /** Laisse la place de la barre de navigation (onglet Tutor'IA) ; sinon, plein écran. */
   withNav?: boolean;
+  /**
+   * Hors de la navigation (écran « Pas de connexion » du lancement, H2) : la barre d'état est
+   * claire d'office, sans savoir si un écran est affiché.
+   */
+  standalone?: boolean;
   /** Carte et boutons, sous le texte. */
   children: ReactNode;
 };
 
+/** Heure et batterie en blanc sur le dégradé, tant que l'écran est affiché. */
+function FocusedLightStatusBar() {
+  return useIsFocused() ? <StatusBar style="light" /> : null;
+}
+
 /**
- * Message plein écran sur le fond de marque (pause R1 à R3, v2.15) : le logo du tuteur qui dit
+ * Message plein écran sur le fond de marque (pause R1 à R3, v2.15 ; sans réseau, H2) : le logo du tuteur qui dit
  * bonjour avec un badge, le titre et le texte en blanc, puis les actions. Tout est centré et défile
  * sur les petits écrans.
  */
-export function BrandMessage({ badge, title, body, withNav = true, children }: Props) {
+export function BrandMessage({
+  badge,
+  title,
+  body,
+  withNav = true,
+  standalone = false,
+  children,
+}: Props) {
   const insets = useSafeAreaInsets();
   const { clearance } = useBottomNavLayout();
   const greeting = useAvatarGreeting();
-  // Heure et batterie en blanc sur le dégradé, tant que l'écran est affiché.
-  const focused = useIsFocused();
   return (
     <View style={styles.screen}>
-      {focused ? <StatusBar style="light" /> : null}
+      {standalone ? <StatusBar style="light" /> : <FocusedLightStatusBar />}
       <BrandBackdrop />
       <ScrollView
         contentContainerStyle={[
