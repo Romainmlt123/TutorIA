@@ -22,9 +22,11 @@ import { logError } from '@/lib/logger';
 import { showNotice } from '@/lib/notice';
 import { WARDROBE } from '@/features/avatar/logic/wardrobe';
 import { useStudentAccount } from '@/lib/session/SessionProvider';
+import { studyRulesKey } from '@/lib/session/useStudyRules';
 import { authService, mockAuthService } from '@/services/auth';
 import { avatarService } from '@/services/avatar';
 import { mockExplorerService } from '@/services/explorer';
+import { mockStudentDataService, type StudyRules } from '@/services/student';
 import { MOCK_VISUALS } from '@/services/tutor/mock/visualScripts';
 import type { PersonaId } from '@/services/auth/mock/MockAuthService';
 import { theme, type ColorRole, type TypeVariant } from '@/theme';
@@ -57,6 +59,7 @@ export default function Catalogue() {
       </Text>
 
       <PersonaSwitcher />
+      <RulesDemo />
       <Button label={t.avatarLab} variant="soft" onPress={() => router.push('/dev/avatars')} />
       <ExplorerDemo />
       <WardrobeDemo />
@@ -302,6 +305,47 @@ function ExplorerDemo() {
           void refresh();
         }}
       />
+    </Section>
+  );
+}
+
+/** Toute la journée : la plage horaire ne bloque pas, seul le temps du jour compte. */
+const ALL_DAY = { dailyLimitEnabled: true, allowedFrom: '00:00', allowedUntil: '23:59' } as const;
+
+const RULE_PRESETS: readonly { label: string; rules: Partial<StudyRules> }[] = [
+  { label: t.rules.none, rules: {} },
+  { label: t.rules.evening, rules: { eveningPause: true } },
+  {
+    label: t.rules.window,
+    rules: { dailyLimitEnabled: true, allowedFrom: '06:00', allowedUntil: '06:01' },
+  },
+  { label: t.rules.daily, rules: { ...ALL_DAY, dailyLimitMinutes: 90, todaySeconds: 5400 } },
+  { label: t.rules.soon, rules: { ...ALL_DAY, dailyLimitMinutes: 90, todaySeconds: 5310 } },
+  { label: t.rules.noVoice, rules: { voiceEnabled: false, cameraEnabled: false } },
+  { label: t.rules.noCamera, rules: { cameraEnabled: false } },
+];
+
+/** Règles des parents imposées à l'élève simulé (R1 à R7), sans attendre l'heure. */
+function RulesDemo() {
+  const queryClient = useQueryClient();
+  const service = mockStudentDataService;
+  if (!service) return null;
+  const apply = (rules: Partial<StudyRules>) => {
+    service.setRules(rules);
+    void queryClient.invalidateQueries({ queryKey: studyRulesKey });
+  };
+  return (
+    <Section title={t.rules.title}>
+      <View style={styles.row2}>
+        {RULE_PRESETS.map((preset) => (
+          <Button
+            key={preset.label}
+            label={preset.label}
+            variant="soft"
+            onPress={() => apply(preset.rules)}
+          />
+        ))}
+      </View>
     </Section>
   );
 }

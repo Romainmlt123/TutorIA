@@ -7,7 +7,9 @@ import { SupabaseStudentDataService } from './supabase/SupabaseStudentDataServic
 
 export type * from './StudentDataService';
 
+/** Version simulée, pour les outils de développement (null avec Supabase). */
+export const mockStudentDataService: MockStudentDataService | null =
+  config.backend === 'supabase' ? null : new MockStudentDataService();
+
 export const studentDataService: StudentDataService =
-  config.backend === 'supabase'
-    ? new SupabaseStudentDataService(getSupabase())
-    : new MockStudentDataService();
+  mockStudentDataService ?? new SupabaseStudentDataService(getSupabase());
