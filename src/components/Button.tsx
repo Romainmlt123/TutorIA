@@ -35,6 +35,8 @@ export type ButtonProps = {
   iconSize?: number;
   /** `shadow-brand` : l'action principale de l'écran, une seule par écran. */
   highlight?: boolean;
+  /** Ombre propre à un écran (bouton blanc sur le fond de marque), à la place de `highlight`. */
+  shadow?: string;
   disabled?: boolean;
   weight?: FontWeightName;
   /** Couleur du libellé pour la variante `white` (par défaut `primary`). */
@@ -95,6 +97,7 @@ export function Button({
   leadingIcon,
   iconSize = 20,
   highlight = false,
+  shadow: customShadow,
   disabled = false,
   weight = 'medium',
   labelColor,
@@ -113,11 +116,13 @@ export function Button({
   const fg = labelColor ?? colors.fg;
   const shadow = disabled
     ? undefined
-    : variant === 'vivid'
-      ? extras.vividShadow
-      : highlight
-        ? theme.spaces[tone].shadow
-        : undefined;
+    : customShadow
+      ? customShadow
+      : variant === 'vivid'
+        ? extras.vividShadow
+        : highlight
+          ? theme.spaces[tone].shadow
+          : undefined;
 
   return (
     <PressableBase

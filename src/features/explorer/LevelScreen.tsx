@@ -1,12 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { Redirect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { GameButton } from '@/components/game/GameButton';
 import { WoodDialog } from '@/components/game/WoodDialog';
-import { GradientSurface } from '@/components/GradientSurface';
 import { ChatBubble } from '@/features/tutor/components/ChatBubble';
 import { CallControls } from '@/features/tutor/components/CallControls';
 import { ChatInput } from '@/features/tutor/components/ChatInput';
@@ -22,6 +20,7 @@ import {
   type ChatMessage,
   type LevelChat,
 } from '@/features/tutor/hooks/useTutorChat';
+import { useCallWarning } from '@/features/tutor/hooks/useCallWarning';
 import { usePhotoDraft } from '@/features/tutor/hooks/usePhotoDraft';
 import { useVisualViewer } from '@/features/tutor/hooks/useVisualViewer';
 import { useVoiceCall } from '@/features/tutor/hooks/useVoiceCall';
@@ -35,6 +34,7 @@ import type { TutorTopic } from '@/services/tutor';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
+import { LevelBackdrop } from './components/level/LevelBackdrop';
 import { LevelHeader } from './components/level/LevelHeader';
 import { LevelResultPanel } from './components/level/LevelResultPanel';
 import { LevelStepCard } from './components/level/LevelStepCard';
@@ -42,10 +42,7 @@ import { levelById, type Level, type LevelPlace } from './content';
 import { explorerKeys } from './hooks/useExplorer';
 import { reviewLessonOf } from './logic/levelSheet';
 
-const SKY = explorerArt.post.natural.sky;
 const T = fr.explorer.level;
-/** Marge du haut sur le web (pas de zone sûre). */
-const WEB_TOP = 56;
 
 /** Retour à la carte, ou à l'onglet Explorer si le niveau a été ouvert directement par son adresse. */
 function useBackToMap() {
@@ -61,42 +58,19 @@ function topicOf({ island, city, level }: LevelPlace): TutorTopic {
 }
 
 /**
- * Fond de ciel et marges des écrans d'un niveau. Le clavier remonte la saisie : sur Android, l'app
- * est affichée bord à bord et la fenêtre ne rétrécit plus quand il sort. `padding` ne compte que la
- * partie de l'écran réellement cachée par le clavier, sur les deux systèmes.
- */
-function LevelBackdrop({ children }: { children: ReactNode }) {
-  const insets = useSafeAreaInsets();
-  return (
-    <View
-      style={[
-        styles.screen,
-        {
-          paddingTop: Platform.OS === 'web' ? WEB_TOP : insets.top + theme.layout.screenTopGap,
-          paddingBottom: insets.bottom + theme.space[3],
-        },
-      ]}>
-      <GradientSurface
-        gradient={{ colors: [SKY.top, SKY.middle, SKY.horizon], locations: [0, 0.55, 1] }}
-        angle={180}
-        style={StyleSheet.absoluteFill}
-      />
-      <KeyboardAvoidingView style={styles.content} behavior="padding">
-        {children}
-      </KeyboardAvoidingView>
-    </View>
-  );
-}
-
-/**
  * X4b · une leçon à la voix : le tuteur la mène étape par étape, mais à l'oral rien n'est jugé
  * (l'appel compte comme une séance, sans étoiles ni validation). Raccrocher ramène à la carte.
  */
 function LevelVoiceView({ place }: { place: LevelPlace }) {
   const backToMap = useBackToMap();
   const topic = useMemo(() => topicOf(place), [place]);
-  const cameraEnabled = useStudyRules().data?.cameraEnabled ?? true;
+  const rules = useStudyRules().data;
+  const cameraEnabled = rules?.cameraEnabled ?? true;
   const call = useVoiceCall(topic, backToMap);
+  const warning = useCallWarning(call.elapsed, rules);
+  const notice = call.limitReached
+    ? fr.tutor.voiceDailyLimit
+    : (call.notice ?? (warning ? fr.tutor.call.warning[warning] : undefined));
   return (
     <LevelBackdrop>
       <LevelHeader
@@ -108,7 +82,7 @@ function LevelVoiceView({ place }: { place: LevelPlace }) {
       <View style={styles.panel}>
         <VoiceVisualizer
           status={call.status}
-          notice={call.notice}
+          notice={notice}
           onInterrupt={call.interrupt}
           onLongPress={call.report}
         />
@@ -308,12 +282,6 @@ export function LevelScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: theme.colors.bg },
-  content: {
-    flex: 1,
-    gap: theme.space[3],
-    paddingHorizontal: theme.layout.screenPadding,
-  },
   chat: {
     flex: 1,
     overflow: 'hidden',

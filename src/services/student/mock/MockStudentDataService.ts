@@ -59,6 +59,13 @@ export class MockStudentDataService implements StudentDataService {
     return { unit: 'week', points: masteryHistory };
   }
 
+  /** Règles imposées depuis `/dev/catalogue`, pour voir chaque pause sans attendre l'heure. */
+  private rulesOverride: Partial<StudyRules> = {};
+
+  setRules(override: Partial<StudyRules>): void {
+    this.rulesOverride = override;
+  }
+
   async rules(): Promise<StudyRules> {
     return {
       ...demoSettings,
@@ -66,6 +73,7 @@ export class MockStudentDataService implements StudentDataService {
       eveningPause: false,
       cameraEnabled: true,
       todaySeconds: 600,
+      ...this.rulesOverride,
     };
   }
 

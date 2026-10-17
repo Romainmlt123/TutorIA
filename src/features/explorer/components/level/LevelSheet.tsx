@@ -7,6 +7,8 @@ import { Icon, type IconName } from '@/components/Icon';
 import { PressableBase } from '@/components/PressableBase';
 import { Text } from '@/components/Text';
 import { fr } from '@/i18n/fr';
+import { formatHour } from '@/lib/format';
+import { useStudyAccess } from '@/lib/session/useStudyRules';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
@@ -16,6 +18,7 @@ import type { MapNode, RegionMap } from '../../logic/regionMap';
 
 const HUD = explorerArt.hud;
 const T = fr.explorer.level;
+const P = fr.studyPause.level.sheet;
 
 function lockText(lock: LevelLock): string {
   switch (lock.kind) {
@@ -59,12 +62,21 @@ type Props = {
  * objectifs, puis « À l'écrit » et, pour une leçon, « À la voix ». Fermée, elle dit pourquoi.
  */
 export function LevelSheet({ map, bottom, node, voiceEnabled, onWrite, onVoice, onClose }: Props) {
+  const { rules, block } = useStudyAccess();
   const place = levelById(node.levelId);
   if (!place) return null;
   const { level, city, region } = place;
   const lock = lockOf(map, node);
   // À la voix, le tuteur n'a pas d'outil pour juger les réponses : seule une leçon s'y prête.
   const voice = voiceEnabled && level.type === 'lecon';
+  // Pause décidée avec les parents (R6) : sa raison, et les deux boutons grisés.
+  const pause =
+    block && rules
+      ? block === 'outside_window'
+        ? P.outside_window(formatHour(rules.allowedFrom))
+        : P[block]
+      : null;
+  const blocked = lock !== null || pause !== null;
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       <PressableBase
@@ -145,7 +157,11 @@ export function LevelSheet({ map, bottom, node, voiceEnabled, onWrite, onVoice, 
               </Text>
             </View>
           ) : null}
-          {lock ? <Parchment lines={3}>{lockText(lock)}</Parchment> : null}
+          {lock ? (
+            <Parchment lines={3}>{lockText(lock)}</Parchment>
+          ) : pause ? (
+            <Parchment lines={3}>{pause}</Parchment>
+          ) : null}
           <View style={styles.actions}>
             <GameButton
               tone="green"
@@ -153,7 +169,7 @@ export function LevelSheet({ map, bottom, node, voiceEnabled, onWrite, onVoice, 
               icon="clavier"
               size={52}
               accessibilityLabel={T.write}
-              disabled={lock !== null}
+              disabled={blocked}
               onPress={onWrite}
               style={styles.write}
             />
@@ -164,7 +180,7 @@ export function LevelSheet({ map, bottom, node, voiceEnabled, onWrite, onVoice, 
                 icon="micro"
                 size={52}
                 accessibilityLabel={T.voiceLabel}
-                disabled={lock !== null}
+                disabled={blocked}
                 onPress={onVoice}
                 style={styles.voice}
               />
