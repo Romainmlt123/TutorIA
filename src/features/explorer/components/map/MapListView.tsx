@@ -9,7 +9,7 @@ import { explorerArt } from '@/theme/explorerArt';
 
 import type { MapCity, MapNode, RegionMap } from '../../logic/regionMap';
 import { GameText } from '@/components/game/GameText';
-import { nodeLabel } from './MapOverlay';
+import { nodeLabel } from './levelMarks';
 
 const HUD = explorerArt.hud;
 const STATE_COLOR = {
