@@ -5,34 +5,43 @@ import { Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { GradientSurface } from '@/components/GradientSurface';
 import { useBottomNavLayout } from '@/components/navigation/useBottomNavLayout';
+import { preloadAvatar } from '@/features/avatar/avatar3d/Avatar3D';
 import { WardrobeNews } from '@/features/avatar/components/WardrobeNews';
 import { useStudentLook } from '@/features/avatar/hooks/useAvatarLook';
 import { useAvatarOfferOnVisit } from '@/features/avatar/hooks/useAvatarOfferOnVisit';
 import { useStudyRules } from '@/lib/session/useStudyRules';
-import { SceneBoundary } from '@/lib/three/SceneBoundary';
+import { requestSceneFrames } from '@/lib/three/FrameDriver';
+import { PerfHud } from '@/lib/three/PerfHud';
+import { usePerfHud } from '@/lib/three/perfHudFlag';
 import { useSceneActive } from '@/lib/three/useSceneActive';
-import { useSceneKey } from '@/lib/three/useSceneKey';
 import { canUseWebGL } from '@/lib/three/webgl';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
 import { CarouselHud } from './components/CarouselHud';
-import { IslandStage, type ScreenPoint, type StageAnchor } from './components/IslandStage';
+import type { ScreenPoint, StageAnchor } from './components/IslandStage';
 import { LevelSheet } from './components/level/LevelSheet';
+import { MapAvatarView } from './components/map/MapAvatarView';
 import { cityAnchorId, MapOverlay } from './components/map/MapOverlay';
 import { RegionMapHud } from './components/map/RegionMapHud';
+import { RegionMapMarkers } from './components/map/RegionMapMarkers';
+import { RegionMapWorld } from './components/map/RegionMapWorld';
 import { RegionsHud } from './components/RegionsHud';
+import { SkyBackdrop } from './components/SkyBackdrop';
 import { SkyVeil, useSkyVeil } from './components/SkyVeil';
 import { StageFallback } from './components/StageFallback';
 import { ISLANDS } from './content';
+import { useDiscTouch } from './hooks/useDiscTouch';
 import { useExplorer } from './hooks/useExplorer';
 import { useIslandRegions } from './hooks/useIslandRegions';
+import { useMapCelebration } from './hooks/useMapCelebration';
+import { useMapPan } from './hooks/useMapPan';
 import { useRegionMap } from './hooks/useRegionMap';
 import { useScreenReader } from './hooks/useScreenReader';
 import { useViewBack } from './hooks/useViewBack';
 import { paramsOf, upOf, viewFromParams, type ExplorerView } from './logic/explorerView';
+import { PRESS_DIP_SECONDS } from './logic/juice';
 import {
   beginScroll,
   createScroll,
@@ -43,15 +52,25 @@ import {
   setBounds,
 } from './logic/mapScroll';
 import { beginDrag, createOrbit, drag, release } from './logic/orbit';
-import type { MapCity, MapNode } from './logic/regionMap';
+import type { MapCity, MapNode, RegionMap } from './logic/regionMap';
 import { focusOf } from './logic/regions';
-import { MAP_LAYOUT } from './logic/mapLayout';
+import { cityBannerAnchor } from './logic/mapMarkers';
+import {
+  clampScroll,
+  dpPerMeter,
+  nodeScrollBounds,
+  tiledScrollBounds,
+} from './logic/mapProjection';
+import { SEEN_LEVEL } from './stylized3d/avatarChoreo';
 import { preloadRegion } from './stylized3d/RegionWorld';
-import { diveShot, MAP_ELEVATION, MAP_VISIBLE_WIDTH, shotFor } from './logic/shots';
+import { TERRAIN_SCALES } from './stylized3d/terrainScales';
+import { diveShot, MAP_ELEVATION, shotFor } from './logic/shots';
 import { DEFAULT_FRAME, frameFor } from './logic/stageFrame';
+import { ExplorerStage } from './stage/ExplorerStage';
+import { useTabShown } from './stage/useTabShown';
 import type { RegionLook } from './stylized3d/regionTint';
+import { PRERENDERED_MAPS } from './tiles';
 
-const SKY = explorerArt.post.natural.sky;
 const noSubscription = () => () => undefined;
 /**
  * Rotation de l'île au doigt : modifiée par le geste, lue à chaque image par la caméra
@@ -60,11 +79,15 @@ const noSubscription = () => () => undefined;
 const STAGE_ORBIT = createOrbit();
 /** Défilement de la carte d'une région (X2b) : même principe que la rotation de l'île. */
 const MAP_SCROLL = createScroll();
-/** Marge de la caméra au-delà des points de niveau extrêmes (mètres) : l'île déborde un peu de l'écran. */
-const CAMERA_MARGIN = 0.6;
 
 /** Positions à l'écran des points de la carte, prises quand la caméra s'est posée sur une région. */
 type MapSnapshot = { points: ScreenPoint[]; camera: { x: number; z: number }; regionId: string };
+
+/** Centre de la ville où se trouve le pion : la carte d'une région s'ouvre dessus. */
+function homeOf(map: RegionMap): { x: number; z: number } {
+  const city = map.cities.find((c) => c.id === map.nodes[map.pawnIndex]?.cityId);
+  return city?.center ?? { x: 0, z: 0 };
+}
 
 /** Au-delà de la marche la plus longue vers un niveau touché (2,5 s), la fiche s'ouvre sans attendre. */
 const ARRIVAL_TIMEOUT_MS = 3500;
@@ -77,6 +100,18 @@ const DIVE_MS = 100;
  * régions d'une île, carte d'une région). La vue est dans l'adresse (`?ile=…&region=…`) ; chaque
  * vue a son cadrage de caméra et son interface, et la caméra glisse de l'un à l'autre. Sans WebGL,
  * ou si la scène échoue, une image fixe remplace la 3D.
+ *
+ * Sur Android, la scène est dessinée sous la pile de navigation, par l'hôte de la racine (`stage/`),
+ * qui garde son contexte 3D d'une visite à l'autre : l'écran lui confie ses props (`ExplorerStage`),
+ * dont `shown` (hors de l'onglet, elle se cache), et reste transparent là où elle se voit. Sur iOS
+ * et le web, `ExplorerStage` la dessine ici.
+ *
+ * La carte d'une région pré-rendue (`PRERENDERED_MAPS`) n'est pas en 3D : ses tuiles, son chemin et
+ * ses niveaux sont dessinés par React Native (`RegionMapWorld`, ses boutons dans `RegionMapMarkers`)
+ * et déplacés sur le fil de l'interface (`useMapPan`). Seul l'avatar y est en 3D, dans une petite vue
+ * posée dans la carte (`MapAvatarView`). La scène de l'île reste alors montée, cachée et en pause,
+ * prête pour le retour. Au retour d'un niveau qui fait progresser, la carte le célèbre (étoiles,
+ * ville, chemin, niveau ouvert) avant que l'avatar ne rejoigne son niveau (`useMapCelebration`).
  */
 export function ExplorerScreen() {
   const router = useRouter();
@@ -97,9 +132,10 @@ export function ExplorerScreen() {
     zoneRef.current?.measureInWindow((_x, y, _width, zoneHeight) =>
       setFrame(frameFor({ top: y, height: zoneHeight }, screen)),
     );
+  // L'onglet est affiché et l'app au premier plan : la scène calcule des images.
   const active = useSceneActive();
-  // Android : la scène est recréée à chaque retour sur l'écran (son contexte 3D a été détruit).
-  const sceneKey = useSceneKey();
+  // L'onglet est choisi, même sous un niveau ou l'avatar : la scène se voit.
+  const shown = useTabShown();
   // Première visite sans avatar : l'éditeur « Crée ton avatar » est proposé une fois.
   useAvatarOfferOnVisit(active && view.kind === 'carousel');
   // L'avatar de l'élève tient lieu de pion sur la carte d'une région.
@@ -108,6 +144,8 @@ export function ExplorerScreen() {
   const screenReader = useScreenReader();
   // Faux au rendu serveur (web) : pas de WebGL côté serveur, pas de décalage à l'hydratation.
   const webgl = useSyncExternalStore(noSubscription, canUseWebGL, () => false);
+  // Compteur de performance (développement seulement), allumé depuis l'atelier d'Explorer.
+  const perfHud = usePerfHud();
 
   const slide = slides[index] ?? slides[0];
   const subjectId = view.kind === 'carousel' ? (slide?.subjectId ?? 'maths') : view.subjectId;
@@ -120,14 +158,43 @@ export function ExplorerScreen() {
   const [diving, setDiving] = useState<string | null>(null);
   const veil = useSkyVeil(animated);
   // Carte de la région ouverte (X2b) : positions à l'écran de ses points quand la caméra s'est posée.
-  const map = useRegionMap(subjectId, view.kind === 'region' ? view.regionId : null);
+  const { map, loaded: mapLoaded } = useRegionMap(
+    subjectId,
+    view.kind === 'region' ? view.regionId : null,
+  );
   const [snapshot, setSnapshot] = useState<MapSnapshot | null>(null);
+  // Progrès depuis la dernière visite de la carte, célébré une fois, et réponse des disques au toucher.
+  // Une carte sans les résultats (chargement en échec) ne sert pas de référence : leur retour ne
+  // ferait pas fêter tout le progrès de l'élève comme neuf.
+  const celebration = useMapCelebration({ map: mapLoaded ? map : null, active, animated });
+  const discTouch = useDiscTouch(animated);
+  // Carte pré-rendue de la région (tuiles) : dessinée par React Native et déplacée sur le fil de
+  // l'interface. La scène 3D, cachée et sans images, garde l'île pour le retour. Les autres régions
+  // gardent la carte 3D.
+  const tiles = view.kind === 'region' ? PRERENDERED_MAPS[view.regionId] : undefined;
+  const viewport = useMemo(
+    () => ({ width: screen.width, height: screen.height }),
+    [screen.width, screen.height],
+  );
+  // Échelle de la carte à l'écran (dp par mètre).
+  const pxPerMeterX = dpPerMeter(screen.width);
+  const tiledPan = useMapPan({ k: pxPerMeterX, animated, running: active && tiles !== undefined });
+  // Bornes du défilement (les niveaux, dans l'image rendue) et point d'arrivée de la carte pré-rendue.
+  const tiledPlace = useMemo(() => {
+    if (!map || !tiles) return null;
+    const bounds = tiledScrollBounds(map.nodes, tiles, viewport, pxPerMeterX);
+    const home = homeOf(map);
+    return { bounds, start: clampScroll(home.x, home.z, bounds) };
+  }, [map, tiles, viewport, pxPerMeterX]);
   const [showList, setShowList] = useState(false);
   // Fiche du niveau touché sur la carte (X3).
   const [sheet, setSheet] = useState<MapNode | null>(null);
   // Niveau touché sur la carte : l'avatar y marche, puis la fiche s'ouvre à son arrivée.
   const [walkTo, setWalkTo] = useState<{ regionId: string; levelId: string } | null>(null);
   const [arriving, setArriving] = useState<MapNode | null>(null);
+  // Marche vers un niveau touché, lancée quand son disque s'est enfoncé.
+  const walkDelay = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(walkDelay.current), []);
   // Si l'arrivée n'est jamais annoncée (scène en panne), la fiche s'ouvre quand même.
   useEffect(() => {
     if (!arriving) return;
@@ -144,41 +211,35 @@ export function ExplorerScreen() {
   const measureMapZone = () =>
     mapZoneRef.current?.measureInWindow((_x, y, _width, height) => setMapZone({ top: y, height }));
   const openedRegion = useRef<string | null>(null);
+  const { setBounds: setTiledBounds, jumpTo: jumpTiled } = tiledPan;
   useEffect(() => {
     if (!map) {
       openedRegion.current = null;
       return;
     }
-    // Bornes de la caméra : le rectangle des points de niveau, avec un peu de marge.
-    const xs = map.nodes.map((n) => n.x);
-    const zs = map.nodes.map((n) => n.z);
-    setBounds(MAP_SCROLL, {
-      minX: Math.min(...xs) - CAMERA_MARGIN,
-      maxX: Math.max(...xs) + CAMERA_MARGIN,
-      minZ: Math.min(...zs) - CAMERA_MARGIN,
-      maxZ: Math.max(...zs) + CAMERA_MARGIN,
-    });
-    if (openedRegion.current !== map.regionId) {
-      openedRegion.current = map.regionId;
-      // On arrive centré sur la ville où se trouve le pion.
-      const home = map.cities.find((c) => c.id === map.nodes[map.pawnIndex]?.cityId);
-      jumpTo(MAP_SCROLL, home?.center.x ?? 0, home?.center.z ?? 0);
+    // On arrive centré sur la ville où se trouve le pion.
+    const opening = openedRegion.current !== map.regionId;
+    openedRegion.current = map.regionId;
+    if (tiledPlace) {
+      setTiledBounds(tiledPlace.bounds);
+      if (opening) jumpTiled(tiledPlace.start.x, tiledPlace.start.z);
+      return;
     }
-  }, [map]);
+    // Bornes de la caméra : le rectangle des points de niveau, avec un peu de marge.
+    setBounds(MAP_SCROLL, nodeScrollBounds(map.nodes));
+    if (opening) {
+      const home = homeOf(map);
+      jumpTo(MAP_SCROLL, home.x, home.z);
+    }
+    // La caméra suit le défilement : la scène, peut-être endormie, doit le voir.
+    requestSceneFrames();
+  }, [map, tiledPlace, setTiledBounds, jumpTiled]);
   const mapAnchors = useMemo<readonly StageAnchor[]>(
     () =>
       map
         ? [
             ...map.nodes.map((n) => ({ id: n.levelId, position: [n.x, 0.06, n.z] as const })),
-            ...map.cities.map((c) => ({
-              id: cityAnchorId(c.id),
-              // Le bandeau se pose derrière le cercle des niveaux, pour ne cacher aucun point.
-              position: [
-                c.center.x,
-                0.3,
-                c.center.z - (c.radius - MAP_LAYOUT.clearing) - 0.35,
-              ] as const,
-            })),
+            ...map.cities.map((c) => ({ id: cityAnchorId(c.id), position: cityBannerAnchor(c) })),
           ]
         : [],
     [map],
@@ -203,10 +264,14 @@ export function ExplorerScreen() {
     if (!diving) return;
     const timer = setTimeout(
       () =>
-        pass(() => {
-          setDiving(null);
-          router.setParams(paramsOf({ kind: 'region', subjectId, regionId: diving }));
-        }),
+        pass(
+          () => {
+            setDiving(null);
+            router.setParams(paramsOf({ kind: 'region', subjectId, regionId: diving }));
+          },
+          // Vers une carte pré-rendue, le voile attend que ses tuiles à l'écran soient chargées.
+          PRERENDERED_MAPS[diving] !== undefined,
+        ),
       DIVE_MS,
     );
     return () => clearTimeout(timer);
@@ -230,21 +295,28 @@ export function ExplorerScreen() {
     [view.kind, selectedId],
   );
   const focusPoint = useMemo(() => (selectedId ? focusOf(selectedId) : null), [selectedId]);
-  // Les modèles de la région choisie se chargent pendant qu'on la regarde et pendant le plongeon.
+  // Les modèles de la région choisie se chargent pendant qu'on la regarde et pendant le plongeon
+  // (une carte pré-rendue n'a besoin que de la figurine de l'avatar).
   useEffect(() => {
-    if (webgl && view.kind === 'regions' && selectedId) preloadRegion(selectedId);
+    if (!webgl || view.kind !== 'regions' || !selectedId) return;
+    if (PRERENDERED_MAPS[selectedId]) preloadAvatar();
+    else preloadRegion(selectedId);
   }, [webgl, view.kind, selectedId]);
   const diveFocus = diving ? focusOf(diving) : null;
 
   if (!slide) return null;
   // Échelle à l'écran : la vue plongeante raccourcit l'axe z du sinus de l'élévation.
-  const pxPerMeterX = screen.width / MAP_VISIBLE_WIDTH;
   const pxPerMeterZ = pxPerMeterX * Math.sin((MAP_ELEVATION * Math.PI) / 180);
-  // Glisser le doigt sur la carte d'une région la déplace dans tous les sens, avec de l'élan.
+  // Glisser le doigt sur la carte d'une région la déplace dans tous les sens, avec de l'élan. Le
+  // geste réveille la scène, endormie quand les animations sont réduites (FrameDriver) ; la caméra
+  // redemande ensuite des images tant qu'elle n'est pas au repos.
   const pan = Gesture.Pan()
     .runOnJS(true)
     .minDistance(8)
-    .onBegin(() => beginScroll(MAP_SCROLL))
+    .onBegin(() => {
+      beginScroll(MAP_SCROLL);
+      requestSceneFrames();
+    })
     .onUpdate((event) =>
       dragScroll(MAP_SCROLL, event.translationX, event.translationY, pxPerMeterX, pxPerMeterZ),
     )
@@ -263,13 +335,19 @@ export function ExplorerScreen() {
   const rotate = Gesture.Pan()
     .runOnJS(true)
     .activeOffsetX([-8, 8])
-    .onBegin(() => beginDrag(STAGE_ORBIT))
+    .onBegin(() => {
+      beginDrag(STAGE_ORBIT);
+      requestSceneFrames();
+    })
     .onUpdate((event) => drag(STAGE_ORBIT, event.translationX, shot.azimuthRange))
     .onFinalize((event) => release(STAGE_ORBIT, event.velocityX, animated));
 
   const mapListMode = !webgl || screenReader || showList;
+  // Carte 3D : les boutons attendent les points projetés par la scène. Une carte pré-rendue place les
+  // siens par le calcul (RegionMapMarkers).
   const readyMap =
-    map && snapshot && snapshot.regionId === map.regionId && !mapListMode ? snapshot : null;
+    !map || mapListMode || tiles ? null : snapshot?.regionId === map.regionId ? snapshot : null;
+  const showMarkers = tiles !== undefined && tiledPlace !== null && !mapListMode;
   // L'avatar se tient sur le niveau touché, sinon sur celui à jouer.
   const avatarLevelId = map
     ? walkTo?.regionId === map.regionId
@@ -277,20 +355,36 @@ export function ExplorerScreen() {
       : (map.nodes[map.pawnIndex]?.levelId ?? null)
     : null;
   const canWalk = animated && webgl && !mapListMode && avatarLook !== null;
-  // Un niveau ouvert : l'avatar y marche d'abord, comme sur la carte d'un jeu. Un niveau fermé, ou
-  // sans animation : la fiche s'ouvre tout de suite.
+  // Sur une carte pré-rendue, l'avatar attend la fin de la célébration d'un niveau terminé là où il
+  // s'est arrêté (le dernier niveau atteint, `SEEN_LEVEL`, immobile pendant l'attente) : il n'est pas
+  // encore sur son niveau.
+  const avatarHeld = tiles !== undefined && webgl && avatarLook !== null && celebration.holding;
+  const avatarSpot =
+    map && avatarHeld ? (SEEN_LEVEL.get(map.regionId) ?? avatarLevelId) : avatarLevelId;
+  // Un niveau ouvert : l'avatar y marche d'abord, comme sur la carte d'un jeu, une fois le disque
+  // enfoncé (une célébration en cours le laisse partir). Un niveau fermé, celui où se tient l'avatar,
+  // ou sans animation : la fiche s'ouvre tout de suite. Le disque touché répond dans tous les cas.
   const openNode = (node: MapNode) => {
+    clearTimeout(walkDelay.current);
+    if (map) discTouch.press(map.nodes.findIndex((n) => n.levelId === node.levelId));
     if (node.state === 'locked' || !map) {
       setSheet(node);
       return;
     }
-    setWalkTo({ regionId: map.regionId, levelId: node.levelId });
-    if (!canWalk || node.levelId === avatarLevelId) {
-      setArriving(null);
+    const target = { regionId: map.regionId, levelId: node.levelId };
+    const { release } = celebration;
+    setArriving(null);
+    if (!canWalk || node.levelId === avatarSpot) {
+      release();
+      setWalkTo(target);
       setSheet(node);
       return;
     }
-    setArriving(node);
+    walkDelay.current = setTimeout(() => {
+      release();
+      setWalkTo(target);
+      setArriving(node);
+    }, PRESS_DIP_SECONDS * 1000);
   };
   const onAvatarArrive = (levelId: string) => {
     if (arriving?.levelId !== levelId) return;
@@ -304,7 +398,14 @@ export function ExplorerScreen() {
     setWalkTo(null);
     router.push({ pathname: '/niveau', params: { id: node.levelId, mode } });
   };
-  const goToCity = (city: MapCity) => goTo(MAP_SCROLL, city.center.x, city.center.z);
+  const goToCity = (city: MapCity) => {
+    if (tiles) {
+      tiledPan.goTo(city.center.x, city.center.z);
+      return;
+    }
+    goTo(MAP_SCROLL, city.center.x, city.center.z);
+    requestSceneFrames();
+  };
   // Les points projetés servent aux boutons et bandeaux posés sur la carte d'une région.
   const onProject = (projected: ScreenPoint[] | null, camera: { x: number; z: number }) => {
     if (view.kind === 'region' && projected) {
@@ -314,26 +415,18 @@ export function ExplorerScreen() {
 
   return (
     <GestureHandlerRootView style={styles.screen}>
-      <GradientSurface
-        gradient={{ colors: [SKY.top, SKY.middle, SKY.horizon], locations: [0, 0.55, 1] }}
-        angle={180}
-        style={StyleSheet.absoluteFill}
-      />
       {webgl ? (
-        <SceneBoundary
-          key={sceneKey}
-          scope="explorer.scene"
-          fallback={<StageFallback slide={slide} frame={frame} />}>
-          <IslandStage
-            slides={slides}
-            index={index}
-            shot={shot}
-            orbit={STAGE_ORBIT}
-            regions={look}
-            anchors={mapAnchors}
-            onProject={onProject}
-            region={
-              map && view.kind === 'region'
+        <ExplorerStage
+          stage={{
+            slides,
+            index,
+            shot,
+            orbit: STAGE_ORBIT,
+            regions: look,
+            anchors: mapAnchors,
+            onProject,
+            region:
+              map && view.kind === 'region' && !tiles
                 ? {
                     map,
                     color: explorerArt.regions[view.regionId as keyof typeof explorerArt.regions],
@@ -348,15 +441,58 @@ export function ExplorerScreen() {
                           }
                         : null,
                   }
-                : null
-            }
-            active={active}
-            animated={animated}
-          />
-        </SceneBoundary>
-      ) : (
-        <StageFallback slide={slide} frame={frame} />
-      )}
+                : null,
+            // Carte pré-rendue affichée : la scène ne calcule plus d'images et se cache, comme hors
+            // de l'onglet (le ciel des tuiles laisserait sinon voir l'île).
+            active: active && !tiles,
+            animated,
+            probe: perfHud,
+          }}
+          fallback={{ slide, frame }}
+          shown={shown && !tiles}
+        />
+      ) : null}
+      {!webgl && !tiles ? (
+        <>
+          <SkyBackdrop />
+          <StageFallback slide={slide} frame={frame} />
+        </>
+      ) : null}
+      {tiles ? (
+        <>
+          <SkyBackdrop />
+          {map && tiledPlace ? (
+            <RegionMapWorld
+              key={map.regionId}
+              tiles={tiles}
+              screen={viewport}
+              map={map}
+              start={tiledPlace.start}
+              terrainScale={TERRAIN_SCALES[map.regionId]}
+              ambient={active && animated}
+              probe={perfHud}
+              celebration={celebration.shown}
+              touch={discTouch.values}
+              onReady={veil.ready}>
+              {webgl && avatarLook ? (
+                <MapAvatarView
+                  map={map}
+                  tiles={tiles}
+                  screen={viewport}
+                  look={avatarLook}
+                  levelId={avatarLevelId}
+                  quick={arriving !== null}
+                  active={active}
+                  animated={animated}
+                  probe={perfHud}
+                  hold={avatarHeld}
+                  onArrive={onAvatarArrive}
+                />
+              ) : null}
+            </RegionMapWorld>
+          ) : null}
+        </>
+      ) : null}
       <View
         pointerEvents="box-none"
         style={[
@@ -393,7 +529,7 @@ export function ExplorerScreen() {
             map={map}
             regionName={regions.find((r) => r.regionId === map.regionId)?.region.name ?? ''}
             onBack={goBack}
-            pan={pan}
+            pan={tiles ? tiledPan.gesture : pan}
             listMode={mapListMode}
             onToggleList={() => setShowList((value) => !value)}
             onNode={openNode}
@@ -404,22 +540,35 @@ export function ExplorerScreen() {
           />
         ) : null}
       </View>
-      {readyMap && map && mapZone ? (
-        // Les boutons suivent la 3D, y compris sous l'en-tête et le panneau : on les rogne à la zone.
+      {map && mapZone && (readyMap || showMarkers) ? (
+        // Les boutons suivent la carte, y compris sous l'en-tête et le panneau : on les rogne à la zone.
         <View
           pointerEvents="box-none"
           style={[styles.mapClip, { top: mapZone.top, height: mapZone.height }]}>
           <View
             pointerEvents="box-none"
             style={[styles.mapClipInner, { top: -mapZone.top, height: screen.height }]}>
-            <MapOverlay
-              map={map}
-              points={readyMap.points}
-              camera0={readyMap.camera}
-              avatarLevelId={avatarLevelId}
-              onNode={openNode}
-              onCity={goToCity}
-            />
+            {tiles ? (
+              <RegionMapMarkers
+                key={map.regionId}
+                map={map}
+                tiles={tiles}
+                screen={viewport}
+                avatarLevelId={avatarSpot}
+                onNode={openNode}
+                onCity={goToCity}
+                celebration={celebration.shown}
+              />
+            ) : readyMap ? (
+              <MapOverlay
+                map={map}
+                points={readyMap.points}
+                camera0={readyMap.camera}
+                avatarLevelId={avatarLevelId}
+                onNode={openNode}
+                onCity={goToCity}
+              />
+            ) : null}
           </View>
         </View>
       ) : null}
@@ -435,6 +584,7 @@ export function ExplorerScreen() {
         />
       ) : null}
       <SkyVeil style={veil.style} />
+      {perfHud ? <PerfHud /> : null}
       {/* Les objets de la garde-robe gagnés depuis la dernière visite. */}
       <WardrobeNews visible={active && !diving} />
     </GestureHandlerRootView>
@@ -442,7 +592,8 @@ export function ExplorerScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: theme.colors.bg },
+  // Transparent : sur Android, la scène 3D, montée sous la pile de navigation, se voit à travers.
+  screen: { flex: 1 },
   mapClip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden' },
   mapClipInner: { position: 'absolute', left: 0, right: 0 },
   content: {

@@ -178,7 +178,9 @@ def export(filename, jpeg_quality=90):
         export_yup=True,
         export_apply=True,
         export_image_format="JPEG",
-        export_jpeg_quality=jpeg_quality,
+        # Blender 5.2 garde export_jpeg_quality sans le lire : la qualité vient de
+        # export_image_quality (75 par défaut, celle de tous les modèles cuits avant ce correctif).
+        export_image_quality=jpeg_quality,
         export_materials="EXPORT",
     )
     return path

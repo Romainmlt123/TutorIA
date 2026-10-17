@@ -9,3 +9,5 @@ src/theme/tokens.generated.ts
 CLAUDE.md
 PROMPT_CLAUDE_CODE.md
 expo-env.d.ts
+src/features/explorer/tiles/*.generated.ts
+tools/explorer-3d/layouts/
