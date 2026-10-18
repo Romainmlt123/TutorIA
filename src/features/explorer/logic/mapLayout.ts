@@ -54,10 +54,50 @@ function cityCenter(i: number, count: number): Vec {
 }
 
 const TAU = Math.PI * 2;
+const NEIGHBOR_IMAGE_SIN = Math.sin((52 * Math.PI) / 180);
+const DISC_MARGIN = 0.06;
 
 /** Écart d'angle ramené entre -π et π. */
 function wrap(angle: number): number {
   return angle - TAU * Math.round(angle / TAU);
+}
+
+function lateralOffset(point: Vec, center: Vec, toward: Vec): number {
+  const dx = toward.x - center.x;
+  const dz = toward.z - center.z;
+  const length = Math.hypot(dx, dz);
+  return ((point.x - center.x) * -dz + (point.z - center.z) * dx) / length;
+}
+
+function projectedDiscsOverlap(a: Vec, aRadius: number, b: Vec, bRadius: number): boolean {
+  const horizontalRadius = aRadius + bRadius + DISC_MARGIN;
+  const verticalRadius = (aRadius + bRadius) * NEIGHBOR_IMAGE_SIN + DISC_MARGIN;
+  const dx = a.x - b.x;
+  const dv = (a.z - b.z) * NEIGHBOR_IMAGE_SIN;
+  return (dx / horizontalRadius) ** 2 + (dv / verticalRadius) ** 2 < 1;
+}
+
+function spreadEndpoint(
+  city: CityLayout,
+  radius: number,
+  toward: Vec,
+  adjacent: Vec | undefined,
+  index: number,
+  fallbackSide: number,
+): void {
+  if (Math.hypot(toward.x - city.center.x, toward.z - city.center.z) === 0) return;
+  const endpoint = city.nodes[index]!;
+  const currentOffset = lateralOffset(endpoint, city.center, toward);
+  if (Math.abs(currentOffset) >= MAP_LAYOUT.clearing || radius <= MAP_LAYOUT.clearing) return;
+
+  const adjacentOffset = adjacent ? lateralOffset(adjacent, city.center, toward) : 0;
+  const side = adjacentOffset === 0 ? fallbackSide : -Math.sign(adjacentOffset);
+  const direction = Math.atan2(toward.z - city.center.z, toward.x - city.center.x);
+  const angle = direction + Math.asin((side * MAP_LAYOUT.clearing) / radius);
+  city.nodes[index] = {
+    x: city.center.x + radius * Math.cos(angle),
+    z: city.center.z + radius * Math.sin(angle),
+  };
 }
 
 /**
@@ -85,7 +125,8 @@ export function layoutCities(
 ): CityLayout[] {
   const centers = cities.map((_, i) => sites?.[i]?.center ?? cityCenter(i, cities.length));
   const vias = cities.map((_, i) => sites?.[i]?.via ?? []);
-  return cities.map((levels, i) => {
+  const radii: number[] = [];
+  const layouts = cities.map((levels, i) => {
     const center = centers[i]!;
     // On entre du côté du premier détour (ou de la ville précédente), on sort du côté du suivant.
     const before = vias[i]![0] ?? centers[i - 1] ?? { x: center.x - 1, z: center.z };
@@ -101,12 +142,45 @@ export function layoutCities(
       MAP_LAYOUT.maxRadius,
       Math.max(MAP_LAYOUT.minRadius, ((count - 1) * MAP_LAYOUT.step) / Math.abs(sweep)),
     );
+    radii[i] = radius;
     const nodes = levels.map((_, k) => {
       const angle = fromAngle + (count > 1 ? (sweep * k) / (count - 1) : 0);
       return { x: center.x + radius * Math.cos(angle), z: center.z + radius * Math.sin(angle) };
     });
     return { center, via: vias[i]!, radius: radius + MAP_LAYOUT.clearing, nodes };
   });
+
+  for (let i = 0; i < layouts.length - 1; i++) {
+    const current = layouts[i]!;
+    const next = layouts[i + 1]!;
+    const currentType = cities[i]!.at(-1);
+    const nextType = cities[i + 1]![0];
+    if (
+      !currentType ||
+      !nextType ||
+      current.nodes.length < 2 ||
+      next.nodes.length < 2 ||
+      !projectedDiscsOverlap(
+        current.nodes.at(-1)!,
+        nodeRadius(currentType),
+        next.nodes[0]!,
+        nodeRadius(nextType),
+      )
+    )
+      continue;
+
+    spreadEndpoint(
+      current,
+      radii[i]!,
+      next.center,
+      current.nodes.at(-2),
+      current.nodes.length - 1,
+      i % 2 === 0 ? -1 : 1,
+    );
+    spreadEndpoint(next, radii[i + 1]!, current.center, next.nodes[1], 0, i % 2 === 0 ? 1 : -1);
+  }
+
+  return layouts;
 }
 
 /** Un point par lequel passe le chemin : `u` = rang du niveau (ou fraction, pour un détour entre deux niveaux). */
