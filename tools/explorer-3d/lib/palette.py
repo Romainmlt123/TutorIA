@@ -39,6 +39,10 @@ COLORS = {
     "crust-dark": "#a8652a", "sack": "#e6dbc0", "sack-dark": "#cdb98f", "ceramic-blue": "#3b6ea8", "shutter": "#4f8a5b", "glass": "#9fcfe0",
     "stone-warm": "#c9b99c", "stone-warm-light": "#e2d6bd", "stone-warm-dark": "#8e7f68", "brick": "#a24a32",
     "brick-light": "#c5674a", "iron": "#4b4f55", "iron-light": "#7a8088",
+    "town-roof-violet-dark": "#443867",
+    "c1-pave": "#bfae90", "c1-pave-light": "#cdbd9f", "c1-roof-cherry": "#8a1f2e",
+    "c1-roof-blue": "#2a4d7c", "c1-lamp": "#ffd27a", "c1-window": "#ffad3d",
+    "c1-window-deep": "#e8782a", "c1-lamp-hot": "#ff9c33", "c1-point-light": "#ffb860",
     # fleurs des champs
     "flower-white": "#efece2", "flower-yellow": "#e3c75a", "flower-violet": "#9f8fc4",
     # lumière

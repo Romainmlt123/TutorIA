@@ -70,6 +70,7 @@ exec(compile(source.split(MARKER)[0], REGION_MAP, "exec"), ns)
 bake, geo, M, app = ns["bake"], ns["geo"], ns["M"], ns["app"]
 from lib.palette import calibrated  # noqa: E402
 from lib import mapwater  # noqa: E402
+from lib.towns import dress_towns  # noqa: E402
 SCALE = ns["SCALE"]
 print("SCENE", round(time.time() - T0, 1), "s", flush=True)
 
@@ -540,6 +541,8 @@ for mat in bpy.data.materials:
     for node in mat.node_tree.nodes if mat.node_tree else []:
         if node.bl_idname == "ShaderNodeBsdfPrincipled":
             node.inputs["Specular IOR Level"].default_value = 0.0
+
+dress_towns(globals())
 
 for mat in bpy.data.materials:
     if not mat.name.startswith(("peinture-", "c1-")) or not mat.node_tree:
