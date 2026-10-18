@@ -541,6 +541,14 @@ for mat in bpy.data.materials:
         if node.bl_idname == "ShaderNodeBsdfPrincipled":
             node.inputs["Specular IOR Level"].default_value = 0.0
 
+for mat in bpy.data.materials:
+    if not mat.name.startswith(("peinture-", "c1-")) or not mat.node_tree:
+        continue
+    for node in mat.node_tree.nodes:
+        if node.bl_idname == "ShaderNodeBsdfPrincipled":
+            node.inputs["Specular IOR Level"].default_value = 0.25
+            node.inputs["Roughness"].default_value = 0.45
+            node.inputs["Coat Weight"].default_value = 0.0
 
 
 scene = bpy.context.scene

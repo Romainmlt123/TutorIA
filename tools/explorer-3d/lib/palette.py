@@ -6,8 +6,8 @@ douces et légèrement passées. En sRGB ; converties en linéaire pour Blender.
 
 COLORS = {
     # herbe de prairie, de l'ombre à l'herbe sèche
-    "grass-dark": "#3b5423", "grass": "#5b7a33", "grass-light": "#7f9a45", "grass-tip": "#a7ad63",
-    "grass-dry": "#9c9258", "moss": "#4c6a2c", "grass-wet": "#2f4a1f", "mud": "#4a4030",
+    "grass-dark": "#3b5423", "grass": "#4f7d2d", "grass-light": "#6f9a3f", "grass-tip": "#a7ad63",
+    "grass-dry": "#93904f", "moss": "#3f6826", "grass-wet": "#2f4a1f", "mud": "#4a4030",
     # terre, du sol sous l'herbe au fond de la motte
     "topsoil": "#3f2e22", "dirt-dark": "#3a2b20", "dirt": "#654b37", "dirt-light": "#86694f",
     "clay": "#77583f", "clay-light": "#9a7c5c", "earth-deep": "#2a211b", "root": "#4b3526",

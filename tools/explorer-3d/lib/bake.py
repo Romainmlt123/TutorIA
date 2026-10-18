@@ -27,9 +27,9 @@ def apply_all():
 def lights():
     """Soleil doré de fin d'après-midi (ombres douces), ciel bleu clair qui éclaire les ombres."""
     sun_data = bpy.data.lights.new("Soleil", "SUN")
-    sun_data.energy = 5.0
+    sun_data.energy = 5.6
     sun_data.color = palette.rgb("sun")
-    sun_data.angle = math.radians(6)
+    sun_data.angle = math.radians(4)
     sun = bpy.data.objects.new("Soleil", sun_data)
     bpy.context.scene.collection.objects.link(sun)
     # Soleil haut, à gauche et devant (repère de l'app : devant = -y en Blender).
@@ -38,7 +38,7 @@ def lights():
     world.use_nodes = True
     background = world.node_tree.nodes["Background"]
     background.inputs["Color"].default_value = (*palette.rgb("sky"), 1)
-    background.inputs["Strength"].default_value = 1.25
+    background.inputs["Strength"].default_value = 1.0
     bpy.context.scene.world = world
     return sun
 
