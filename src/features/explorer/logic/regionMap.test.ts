@@ -49,7 +49,7 @@ describe('carte d’une région (X2b)', () => {
     const map = buildRegionMap(maths, 'maths-nombres', new Map())!;
     const equations = map.cities.find((c) => c.id === 'maths-equations')!;
     expect(equations.open).toBe(false);
-    expect(equations.missing).toEqual(['Ville du Calcul littéral']);
+    expect(equations.missing).toEqual(['Village du Calcul littéral']);
     expect(equations.status).toBe('locked');
     expect(map.cities.find((c) => c.id === 'maths-relatifs')).toMatchObject({
       open: true,
