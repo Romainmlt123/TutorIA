@@ -68,7 +68,7 @@ assert source.count(MARKER) == 1, "ligne repère absente ou en double dans regio
 ns = {"__file__": REGION_MAP, "__name__": "region_map"}
 exec(compile(source.split(MARKER)[0], REGION_MAP, "exec"), ns)
 bake, geo, M, app = ns["bake"], ns["geo"], ns["M"], ns["app"]
-from lib.palette import calibrated  # noqa: E402
+from lib.palette import calibrated, rgb as palette_rgb  # noqa: E402
 from lib import mapwater  # noqa: E402
 from lib.towns import dress_towns  # noqa: E402
 SCALE = ns["SCALE"]
@@ -144,7 +144,7 @@ def slope_wet_bank():
             (pi, river, half),
         )
         distance = inside * SCALE
-        slope = 0.05 * mapwater.smoothstep(-0.45, 0.0, distance)
+        slope = 0.05 * mapwater.smoothstep(-mapwater.WET_SLOPE_WIDTH, 0.0, distance)
         for vertex, drop in zip(vertices, np.where(distance < 0.0, slope, 0.0)):
             vertex.co.z -= float(drop)
 
@@ -642,6 +642,195 @@ LIGHT_TINT = np.array(srgb_to_linear(LAYOUT["gradeColors"]["highlights"]), dtype
 # des images déjà rendues.
 WATER_GEOMETRY = (np.array(ns["ns"]["pi_outline"], dtype=np.float64), np.array(ns["ns"]["river"], dtype=np.float64),
                   float(ns["ns"]["half"]))
+
+
+def footprint_points(feature, spacing=0.1):
+    if "points" in feature:
+        return np.asarray(feature["points"], dtype=np.float64)
+    x, z = feature["x"], feature["z"]
+    if feature["shape"] == "circle":
+        radius = feature["radius"]
+        axis = np.arange(-radius, radius + spacing / 2, spacing)
+        dx, dz = np.meshgrid(axis, axis)
+        inside = dx * dx + dz * dz <= radius * radius
+        angle = np.arange(0.0, math.tau, spacing / max(radius, spacing))
+        edge = np.column_stack((radius * np.cos(angle), radius * np.sin(angle)))
+        points = np.column_stack((dx[inside], dz[inside]))
+        points = np.concatenate((points, edge), axis=0)
+        return points + np.array([x, z])
+    if feature["shape"] == "rectangle":
+        half_x, half_z = feature["half_x"], feature["half_z"]
+        local_x = np.linspace(-half_x, half_x, max(1, math.ceil(2 * half_x / spacing)) + 1)
+        local_z = np.linspace(-half_z, half_z, max(1, math.ceil(2 * half_z / spacing)) + 1)
+        dx, dz = np.meshgrid(local_x, local_z)
+        yaw = feature["yaw"]
+        rotated_x = math.cos(yaw) * dx + math.sin(yaw) * dz
+        rotated_z = -math.sin(yaw) * dx + math.cos(yaw) * dz
+        return np.column_stack((x + rotated_x.ravel(), z + rotated_z.ravel()))
+    raise ValueError(f"empreinte inconnue : {feature['shape']}")
+
+
+def path_footprints():
+    path = [(point[0], point[1]) for point in LAYOUT["path"]]
+    half_width = float(LAYOUT["bladeRule"]["pathHalf"])
+    across = np.linspace(-half_width, half_width, max(2, math.ceil(2 * half_width / 0.1) + 1))
+    city_points = {city["id"]: [] for city in LAYOUT["cities"]}
+    city_centers = {city["id"]: [] for city in LAYOUT["cities"]}
+    step = 0.1
+    next_sample = 0.0
+    traveled = 0.0
+    for (ax, az), (bx, bz) in zip(path, path[1:]):
+        dx, dz = bx - ax, bz - az
+        length = math.hypot(dx, dz)
+        if length <= 1e-9:
+            continue
+        while next_sample <= traveled + length + 1e-9:
+            local = max(0.0, next_sample - traveled)
+            t = min(1.0, local / length)
+            x, z = ax + dx * t, az + dz * t
+            nx, nz = -dz / length, dx / length
+            points = np.column_stack((x + nx * across, z + nz * across))
+            city = min(LAYOUT["cities"], key=lambda item: math.hypot(x - item["x"], z - item["z"]))
+            city_points[city["id"]].extend(points.tolist())
+            city_centers[city["id"]].append([x, z])
+            next_sample += step
+        traveled += length
+    if path:
+        x, z = path[-1]
+        dx, dz = path[-1][0] - path[-2][0], path[-1][1] - path[-2][1]
+        length = math.hypot(dx, dz)
+        if length > 1e-9 and next_sample - step < traveled - 1e-9:
+            nx, nz = -dz / length, dx / length
+            points = np.column_stack((x + nx * across, z + nz * across))
+            city = min(LAYOUT["cities"], key=lambda item: math.hypot(x - item["x"], z - item["z"]))
+            city_points[city["id"]].extend(points.tolist())
+            city_centers[city["id"]].append([x, z])
+    return [
+        {
+            "name": "chemin",
+            "city": city_id,
+            "points": points,
+            "centerline": city_centers[city_id],
+            "half_width": half_width,
+        }
+        for city_id, points in city_points.items()
+        if points
+    ]
+
+
+def validate_shore_clearance():
+    features = list(globals().get("TOWN_FOOTPRINTS", []))
+    features.extend(
+        {
+            "name": f"disque-{node['levelId']}",
+            "city": node["cityId"],
+            "shape": "circle",
+            "x": node["x"],
+            "z": node["z"],
+            "radius": node["radius"],
+        }
+        for node in LAYOUT["nodes"]
+    )
+    for index, (x, z, radius) in enumerate(ns["LANDMARKS"]):
+        city = min(LAYOUT["cities"], key=lambda item: math.hypot(x - item["x"], z - item["z"]))
+        features.append({
+            "name": f"repère-{index}",
+            "city": city["id"],
+            "shape": "circle",
+            "x": x,
+            "z": z,
+            "radius": radius,
+        })
+    features.extend(path_footprints())
+
+    global WATER_GEOMETRY
+    bank_width = max(mapwater.WET_BANK_WIDTH * SCALE, mapwater.WET_SLOPE_WIDTH)
+    required_clearance = max(0.3, bank_width + 0.15) + 0.02
+    protected = []
+    for feature in features:
+        if "centerline" in feature:
+            protected.extend(
+                (x, z, feature["half_width"] + required_clearance)
+                for x, z in feature["centerline"]
+            )
+        elif feature["shape"] == "circle":
+            protected.append((
+                feature["x"],
+                feature["z"],
+                feature["radius"] + required_clearance,
+            ))
+        elif feature["shape"] == "rectangle":
+            radius = math.hypot(feature["half_x"], feature["half_z"])
+            protected.append((
+                feature["x"],
+                feature["z"],
+                radius + required_clearance,
+            ))
+    WATER_GEOMETRY = (*WATER_GEOMETRY[:3], protected)
+
+    sampled = []
+    bounds = []
+    for feature in features:
+        points = footprint_points(feature)
+        start = len(sampled)
+        sampled.extend(points)
+        bounds.append((feature, start, len(sampled)))
+    coordinates = np.asarray(sampled, dtype=np.float64)
+    inside = mapwater.water_distance(
+        coordinates[:, 0], coordinates[:, 1], SCALE, WATER_GEOMETRY
+    )
+    water_clearance = -inside * SCALE
+    bank_clearance = water_clearance - bank_width
+
+    margins = []
+    violations = []
+    for feature, start, end in bounds:
+        segment = slice(start, end)
+        water_index = start + int(np.argmin(water_clearance[segment]))
+        bank_index = start + int(np.argmin(bank_clearance[segment]))
+        water_margin = float(water_clearance[water_index])
+        bank_margin = float(bank_clearance[bank_index])
+        tightness = min(water_margin - 0.3, bank_margin - 0.15)
+        nearest = water_index if water_margin - 0.3 <= bank_margin - 0.15 else bank_index
+        entry = {
+            "tightness": tightness,
+            "name": feature["name"],
+            "city": feature["city"],
+            "water": water_margin,
+            "bank": bank_margin,
+            "x": float(coordinates[nearest, 0]),
+            "z": float(coordinates[nearest, 1]),
+        }
+        margins.append(entry)
+        if water_margin < 0.3 or bank_margin < 0.15:
+            violations.append(entry)
+
+    margins.sort(key=lambda item: item["tightness"])
+    print("BERGE 10 MARGES LES PLUS SERRÉES", flush=True)
+    for index, margin in enumerate(margins[:10], start=1):
+        print(
+            f"BERGE {index} {margin['name']} ville={margin['city']} "
+            f"eau={margin['water']:.3f} m berge={margin['bank']:.3f} m "
+            f"point=({margin['x']:.3f}, {margin['z']:.3f})",
+            flush=True,
+        )
+    for index, margin in enumerate(margins[:3], start=1):
+        print(
+            f"SHORE_HOTSPOT {index} {margin['x']:.5f} {margin['z']:.5f} "
+            f"{margin['name']} {margin['city']}",
+            flush=True,
+        )
+    if violations:
+        details = [
+            f"{item['name']} (ville {item['city']}): eau {item['water']:.3f} m, "
+            f"berge {item['bank']:.3f} m au point ({item['x']:.3f}, {item['z']:.3f})"
+            for item in violations
+        ]
+        raise RuntimeError("Marges de berge insuffisantes :\n" + "\n".join(details))
+    print(f"BERGE VALIDÉE {len(features)} éléments, eau >= 0.30 m, berge >= 0.15 m", flush=True)
+
+
+validate_shore_clearance()
 SUN = np.array(LAYOUT["sun"], dtype=np.float64)
 SUN = SUN / np.linalg.norm(SUN)
 VIEW = np.array([0.0, SIN, COS])  # vers la caméra orthographique (repère de l'app : x, y, z)
@@ -655,12 +844,19 @@ def with_water(rgba, px0, py0):
     vs = V0 + (py0 + np.arange(h) + 0.5) / PPM
     x, v = np.meshgrid(xs, vs)
     z = (v + mapwater.SURFACE * SCALE * COS) / SIN
+    raw_inside = mapwater.water_distance(x, z, SCALE, WATER_GEOMETRY[:3])
     color, alpha, inside = mapwater.water(x, z, SCALE, WATER_GEOMETRY, WATER_COLORS, SUN, VIEW)
-    if not (inside > -0.16).any():
+    carved_land = (raw_inside > 0.0) & (inside < 0.0)
+    if not (inside > -mapwater.WET_BANK_WIDTH).any() and not carved_land.any():
         return rgba, np.zeros((h, w), dtype=np.float32)
     out = rgba.astype(np.float64)
-    wet = mapwater.smoothstep(-0.16, 0.0, inside)[..., None]
-    out[..., :3] *= 1.0 - 0.12 * wet
+    out[..., :3] = np.where(
+        carved_land[..., None],
+        np.asarray(palette_rgb("grass")),
+        out[..., :3],
+    )
+    wet = mapwater.smoothstep(-mapwater.WET_BANK_WIDTH, 0.0, inside)[..., None]
+    out[..., :3] = out[..., :3] * (1.0 - wet) + np.asarray(palette_rgb("clay-light")) * wet
     out[..., :3] = out[..., :3] * (1.0 - alpha) + color * alpha
     out[..., 3:4] = out[..., 3:4] + (1.0 - out[..., 3:4]) * alpha
     return out.astype(np.float32), alpha[..., 0]

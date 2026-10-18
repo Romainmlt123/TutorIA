@@ -21,6 +21,7 @@ def dress_towns(g):
     templates = {o.name.split(".")[0] for o in g["templates"].values()}
     occupied = []
     min_margins = {}
+    footprints = []
 
     roofs = {
         "maths-relatifs": (("cherry", "cherry-light", "c1-roof-cherry"),
@@ -247,7 +248,18 @@ def dress_towns(g):
                                     M.paint(("flower-pink", "flower-yellow")[j % 2]), segments=8))
         parts.append(geo.box((width * 0.24, depth * 0.15, top + roof_height * 0.68), (0.065, 0.065, 0.16),
                              M.paint("brick"), bevel_width=0.01))
-        group(f"maison-{city['id']}-{index}", parts, x, z, face_center(city, x, z))
+        yaw = face_center(city, x, z)
+        group(f"maison-{city['id']}-{index}", parts, x, z, yaw)
+        return {
+            "name": f"maison-{city['id']}-{index}",
+            "city": city["id"],
+            "shape": "rectangle",
+            "x": x,
+            "z": z,
+            "half_x": width / 2 + 0.055,
+            "half_z": depth / 2 + 0.045,
+            "yaw": yaw,
+        }
 
     def tree(city, index, x, z, rng):
         canopy = [((0, 0, 0.3), 0.17), ((0.08, 0.05, 0.36), 0.13), ((-0.07, -0.04, 0.38), 0.12)]
@@ -256,6 +268,14 @@ def dress_towns(g):
             geo.blob(canopy, M.paint("crown", "crown-light"), name="Couronne"),
         ]
         group(f"arbre-{city['id']}-{index}", parts, x, z, rng.uniform(0, math.tau))
+        return {
+            "name": f"arbre-{city['id']}-{index}",
+            "city": city["id"],
+            "shape": "circle",
+            "x": x,
+            "z": z,
+            "radius": 0.22,
+        }
 
     def lantern(city, index, x, z):
         parts = [
@@ -271,6 +291,14 @@ def dress_towns(g):
         parts.append(halo)
         place_pool(parts, (0, 0, 0.012), 0.45, 0.7)
         group(f"lanterne-{city['id']}-{index}", parts, x, z)
+        return {
+            "name": f"lanterne-{city['id']}-{index}",
+            "city": city["id"],
+            "shape": "circle",
+            "x": x,
+            "z": z,
+            "radius": 0.45,
+        }
 
     for city_index, city in enumerate(cities):
         cx, cz = city["x"], city["z"]
@@ -279,6 +307,22 @@ def dress_towns(g):
         largest_node = max((n["radius"] for n in nodes if n["cityId"] == city["id"]), default=0.255)
         place_radius = min(1.16, city["radius"] - largest_node - 0.05)
         geo.cylinder(at(cx, cz, -0.04), place_radius, 0.12, M.paint("stone-warm-dark"), vertices=96)
+        footprints.append({
+            "name": f"socle-{city['id']}",
+            "city": city["id"],
+            "shape": "circle",
+            "x": cx,
+            "z": cz,
+            "radius": place_radius,
+        })
+        footprints.append({
+            "name": f"monument-{city['id']}",
+            "city": city["id"],
+            "shape": "circle",
+            "x": cx,
+            "z": cz,
+            "radius": 0.95,
+        })
         stones = {"c1-pave": [], "c1-pave-light": []}
         radius = 0.16
         while radius < place_radius - 0.14:
@@ -314,20 +358,20 @@ def dress_towns(g):
         houses, house_margins = spots(city, rng, 5, 1.95, 4.6, 0.95, 0.44, 0.44, 0.32)
         for index, (x, z) in enumerate(houses):
             clear_decor(x, z, 0.5)
-            house(city, index, x, z, rng)
+            footprints.append(house(city, index, x, z, rng))
 
         trees, tree_margins = spots(city, rng, 3, 2.0, 4.8, 0.8, 0.32, 0.32, 0.22)
         for index, (x, z) in enumerate(trees):
             clear_decor(x, z, 0.35)
-            tree(city, index, x, z, rng)
+            footprints.append(tree(city, index, x, z, rng))
 
         for index, x, z in fixed_lanterns:
             clear_decor(x, z, 0.2)
-            lantern(city, index, x, z)
+            footprints.append(lantern(city, index, x, z))
         extra_lanterns, lantern_margins = spots(city, rng, 2, 1.8, 2.9, 0.8, 0.2, 0.45, 0.45)
         for index, (x, z) in enumerate(extra_lanterns, start=2):
             clear_decor(x, z, 0.2)
-            lantern(city, index, x, z)
+            footprints.append(lantern(city, index, x, z))
 
         all_margins = house_margins + tree_margins + lantern_margins
         for index, x, z in fixed_lanterns:
@@ -342,4 +386,5 @@ def dress_towns(g):
               f"{len(fixed_lanterns) + len(extra_lanterns)} marge-disque {fmt(min_disk)} "
               f"marge-chemin {fmt(min_path)}", flush=True)
 
+    g["TOWN_FOOTPRINTS"] = footprints
     return min_margins

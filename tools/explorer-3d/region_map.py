@@ -141,7 +141,13 @@ def blocked(x, z, margin=0.0):
 
 
 # --- Terrain neuf : dessus d'herbe, bord d'herbe qui déborde, motte de terre -----------------------
-mask = water_mask(size=2048, extent=3.6, scale=SCALE, shore_roughness=mapwater.SHORE_ROUGHNESS)
+mask = water_mask(
+    size=2048,
+    extent=3.6,
+    scale=SCALE,
+    shore_roughness=mapwater.SHORE_ROUGHNESS,
+    wet_bank_width=mapwater.WET_BANK_WIDTH,
+)
 grass = M.grass(mask, extent=3.6 * SCALE)
 N = len(OUTLINE_S)
 rng = random.Random(3)

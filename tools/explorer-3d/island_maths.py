@@ -56,7 +56,7 @@ def smoothstep(a, b, x):
     return t * t * (3 - 2 * t)
 
 
-def water_mask(size=512, extent=3.6, scale=1.0, shore_roughness=0.0):
+def water_mask(size=512, extent=3.6, scale=1.0, shore_roughness=0.0, wet_bank_width=0.16):
     """Image vue du dessus (repère Blender, [-extent, extent]²) : rouge = rive humide autour de
     l'eau, vert = sous l'eau. Même distance signée que le shader de l'eau de l'app. `shore_roughness`
     est un retrait facultatif en mètres de carte, activé seulement pour le terrain pré-rendu."""
@@ -80,7 +80,7 @@ def water_mask(size=512, extent=3.6, scale=1.0, shore_roughness=0.0):
         t = np.clip(((x - ax) * ex + (z - az) * ez) / (ex * ex + ez * ez), 0.0, 1.0)
         distance = np.minimum(distance, np.hypot(x - ax - ex * t, z - az - ez * t) - half)
     pixels = np.zeros((size, size, 4), dtype=np.float32)
-    pixels[..., 0] = 1.0 - smoothstep(0.0, 0.16, distance)
+    pixels[..., 0] = 1.0 - smoothstep(0.0, wet_bank_width, distance)
     pixels[..., 1] = smoothstep(0.01, -0.03, distance)
     pixels[..., 3] = 1.0
     image = bpy.data.images.new("rive", size, size, float_buffer=True)
