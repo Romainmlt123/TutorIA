@@ -65,7 +65,7 @@ def rewater(crop):
         bpy.data.images.remove(image)
         return 0
     fresh = mapwater.graded(np.concatenate([color, np.ones_like(color[..., :1])], axis=-1).astype(np.float32),
-                            LAYOUT["grade"], SHADOW_TINT, LIGHT_TINT, DITHER)
+                            LAYOUT["grade"], SHADOW_TINT, LIGHT_TINT, DITHER, np.zeros_like(inside))
     rgba[full] = fresh[full]
     image.pixels.foreach_set(np.ascontiguousarray(rgba[::-1]).ravel())
     image.filepath_raw = path

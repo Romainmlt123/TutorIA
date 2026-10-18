@@ -3,16 +3,16 @@ Eau et étalonnage des cartes de région pré-rendues (region_tiles.py, rewater.
 
 L'eau n'est pas rendue par Cycles : la carte rend le fond (vase, rive mouillée), puis l'eau est posée
 par-dessus, pixel par pixel, d'après le shader de l'app (stylized3d/water.ts) adapté à l'échelle de la
-carte : fond moins profond, reflet du ciel plus présent, caustiques d'environ 0,45 m sans motif répété,
-bord net. Comme ce calcul ne dépend que de la position, rewater.py peut le refaire sur des images déjà
-rendues, sans relancer Cycles.
+carte : fond moins profond, reflet du ciel, caustiques discrètes à deux échelles et bord adouci. Comme ce
+calcul ne dépend que de la position, rewater.py peut le refaire sur des images déjà rendues, sans relancer
+Cycles.
 """
 import math
 
 import numpy as np
 
 SURFACE = 0.022  # hauteur de l'eau sur l'île (water.ts), agrandie avec la région
-EDGE = 0.004  # largeur du bord fondu, en unités de l'île (≈ 2,4 cm sur une carte agrandie 6 fois)
+EDGE = 0.012  # largeur du bord fondu, en unités de l'île (≈ 7 cm sur une carte agrandie 6 fois)
 
 
 def srgb_to_linear(hex_color):
@@ -97,21 +97,21 @@ def water(x, z, scale, geometry, colors, sun, view):
         slope_z += dz * wave
     normal = np.stack([-slope_x * 0.09, np.ones_like(px), -slope_z * 0.09], axis=-1)
     normal /= np.linalg.norm(normal, axis=-1, keepdims=True)
-    depth = (0.65 * smoothstep(0.0, 0.07, inside))[..., None]
+    depth = (0.85 * smoothstep(0.0, 0.12, inside))[..., None]
     color = colors["shallow"] + (colors["deep"] - colors["shallow"]) * depth
     fresnel = np.power(1.0 - np.clip(normal @ view, 0.0, None), 4.0)[..., None]
     color = color + (colors["sky"] - color) * (0.12 + fresnel * 0.3)
     light = map_caustics(x, z)[..., None]
-    color = color + colors["glow"] * light * (0.22 + (0.12 - 0.22) * depth)
-    meniscus = (0.35 * (1.0 - smoothstep(0.0, 0.003, inside)))[..., None]
+    color = color + colors["glow"] * light * (0.08 + (0.04 - 0.08) * depth)
+    meniscus = (0.3 * (1.0 - smoothstep(0.0, 0.004, inside)))[..., None]
     color = color + (colors["foam"] - color) * meniscus
     reflected = 2.0 * (normal @ sun)[..., None] * normal - sun
     sparkle = np.power(np.clip(reflected @ view, 0.0, None), 180.0)[..., None]
     color = color + np.array([1.0, 0.97, 0.9]) * sparkle * 1.4
-    return color, smoothstep(0.0, EDGE, inside)[..., None], inside
+    return color, smoothstep(-0.004, EDGE, inside)[..., None], inside
 
 
-def graded(rgba, grade, shadow_tint, light_tint, rng):
+def graded(rgba, grade, shadow_tint, light_tint, rng, dither_mask=None):
     """Étalonnage de la passe finale de Hd2dPost (saturation, ombres froides, lumières dorées, exposition)
     sur la couleur linéaire prémultipliée, puis encodage sRGB, tramé de ±1/255 contre les bandes.
     Ni halo, ni vignette, ni ciel : l'app pose le ciel. Renvoie du RGBA sRGB à alpha droit, de 0 à 1."""
@@ -124,5 +124,7 @@ def graded(rgba, grade, shadow_tint, light_tint, rng):
     color = np.clip(color * grade["exposure"], 0.0, 1.0)
     encoded = np.where(color <= 0.0031308, color * 12.92, 1.055 * np.power(color, 1 / 2.4) - 0.055)
     noise = rng.random(encoded.shape, dtype=np.float32) - rng.random(encoded.shape, dtype=np.float32)
+    if dither_mask is not None:
+        noise *= np.asarray(dither_mask, dtype=np.float32)[..., None]
     encoded = np.clip(encoded + noise / 255.0, 0.0, 1.0)
     return np.concatenate([encoded, np.clip(alpha, 0.0, 1.0)], axis=-1)

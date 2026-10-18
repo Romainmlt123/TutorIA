@@ -127,6 +127,28 @@ for kind, build in strip_kit.DECOR.items():
     templates[kind] = obj
 
 bake.apply_all()
+
+def slope_wet_bank():
+    pi = np.array(ns["ns"]["pi_outline"], dtype=np.float64)
+    river = np.array(ns["ns"]["river"], dtype=np.float64)
+    half = float(ns["ns"]["half"])
+    for obj in terrain:
+        if obj.name not in bpy.data.objects or obj.name.split(".")[0] != "Plateau" or obj.type != "MESH":
+            continue
+        vertices = obj.data.vertices
+        points = np.array([(v.co.x / SCALE, -v.co.y / SCALE) for v in vertices])
+        inside = np.maximum(
+            -mapwater.pi_distance(pi, points[:, 0], points[:, 1]),
+            half - mapwater.river_distance(river, points[:, 0], points[:, 1]),
+        )
+        distance = inside * SCALE
+        slope = 0.05 * mapwater.smoothstep(-0.45, 0.0, distance)
+        for vertex, drop in zip(vertices, np.where(distance < 0.0, slope, 0.0)):
+            vertex.co.z -= float(drop)
+
+
+slope_wet_bank()
+
 # Terrain et repères : sommets à leur place dans la carte, comme pour la cuisson (coordonnées « Object »).
 bpy.ops.object.select_all(action="DESELECT")
 for obj in terrain:
@@ -632,16 +654,18 @@ def with_water(rgba, px0, py0):
     x, v = np.meshgrid(xs, vs)
     z = (v + mapwater.SURFACE * SCALE * COS) / SIN
     color, alpha, inside = mapwater.water(x, z, SCALE, WATER_GEOMETRY, WATER_COLORS, SUN, VIEW)
-    if not (inside > -0.01).any():
-        return rgba
+    if not (inside > -0.16).any():
+        return rgba, np.zeros((h, w), dtype=np.float32)
     out = rgba.astype(np.float64)
+    wet = mapwater.smoothstep(-0.16, 0.0, inside)[..., None]
+    out[..., :3] *= 1.0 - 0.12 * wet
     out[..., :3] = out[..., :3] * (1.0 - alpha) + color * alpha
     out[..., 3:4] = out[..., 3:4] + (1.0 - out[..., 3:4]) * alpha
-    return out.astype(np.float32)
+    return out.astype(np.float32), alpha[..., 0]
 
 
-def graded(rgba):
-    return mapwater.graded(rgba, GRADE, SHADOW_TINT, LIGHT_TINT, DITHER)
+def graded(rgba, dither_mask=None):
+    return mapwater.graded(rgba, GRADE, SHADOW_TINT, LIGHT_TINT, DITHER, dither_mask)
 
 
 def render_crop(px0, py0, px1, py1, name, water=True, save=True, raw=False):
@@ -669,7 +693,11 @@ def render_crop(px0, py0, px1, py1, name, water=True, save=True, raw=False):
     rgba = rgba[oy:oy + (py1 - py0), ox:ox + (px1 - px0)]
     if raw:
         return rgba
-    rgba = graded(with_water(rgba, px0, py0) if water else rgba)
+    if water:
+        rgba, water_alpha = with_water(rgba, px0, py0)
+        rgba = graded(rgba, 1.0 - water_alpha)
+    else:
+        rgba = graded(rgba)
     if not save:
         return rgba
     out = bpy.data.images.new(name, px1 - px0, py1 - py0, alpha=True, float_buffer=False)
