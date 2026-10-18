@@ -137,9 +137,11 @@ def slope_wet_bank():
             continue
         vertices = obj.data.vertices
         points = np.array([(v.co.x / SCALE, -v.co.y / SCALE) for v in vertices])
-        inside = np.maximum(
-            -mapwater.pi_distance(pi, points[:, 0], points[:, 1]),
-            half - mapwater.river_distance(river, points[:, 0], points[:, 1]),
+        inside = mapwater.water_distance(
+            points[:, 0] * SCALE,
+            points[:, 1] * SCALE,
+            SCALE,
+            (pi, river, half),
         )
         distance = inside * SCALE
         slope = 0.05 * mapwater.smoothstep(-0.45, 0.0, distance)

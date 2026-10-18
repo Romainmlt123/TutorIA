@@ -43,6 +43,7 @@ MARKER = "# --- fin de la construction des accessoires"
 ns = {"__file__": ISLAND, "__name__": "island_maths"}
 exec(compile(open(ISLAND).read().split(MARKER)[0], ISLAND, "exec"), ns)
 geo, M, bake, app, edge = ns["geo"], ns["M"], ns["bake"], ns["app"], ns["edge"]
+mapwater = ns["mapwater"]
 near_water, water_mask = ns["near_water"], ns["water_mask"]
 occupied, claim_names = ns["occupied"], ns["claim_names"]
 # Repères de l'île laissés de côté sur la carte, pour faire de la place aux villes (noms de claim()).
@@ -140,7 +141,7 @@ def blocked(x, z, margin=0.0):
 
 
 # --- Terrain neuf : dessus d'herbe, bord d'herbe qui déborde, motte de terre -----------------------
-mask = water_mask(size=2048, extent=3.6)
+mask = water_mask(size=2048, extent=3.6, scale=SCALE, shore_roughness=mapwater.SHORE_ROUGHNESS)
 grass = M.grass(mask, extent=3.6 * SCALE)
 N = len(OUTLINE_S)
 rng = random.Random(3)

@@ -20,7 +20,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from lib import bake, geo  # noqa: E402
+from lib import bake, geo, mapwater  # noqa: E402
 from lib import materials as M  # noqa: E402
 from lib.geo import app, edge  # noqa: E402
 
@@ -56,9 +56,10 @@ def smoothstep(a, b, x):
     return t * t * (3 - 2 * t)
 
 
-def water_mask(size=512, extent=3.6):
+def water_mask(size=512, extent=3.6, scale=1.0, shore_roughness=0.0):
     """Image vue du dessus (repère Blender, [-extent, extent]²) : rouge = rive humide autour de
-    l'eau, vert = sous l'eau. Même distance signée que le shader de l'eau de l'app."""
+    l'eau, vert = sous l'eau. Même distance signée que le shader de l'eau de l'app. `shore_roughness`
+    est un retrait facultatif en mètres de carte, activé seulement pour le terrain pré-rendu."""
     coords = (np.arange(size) + 0.5) / size * 2 * extent - extent
     bx, by = np.meshgrid(coords, coords)
     x, z = bx, -by
@@ -72,6 +73,8 @@ def water_mask(size=512, extent=3.6):
         if az != cz:
             within ^= ((az > z) != (cz > z)) & (x < ax + (z - az) * ex / ez)
     distance = np.sqrt(nearest) * np.where(within, -1.0, 1.0)
+    if shore_roughness:
+        distance += mapwater.shoreline_offset(x * scale, z * scale, shore_roughness) / scale
     for (ax, az), (cx, cz) in zip(river, river[1:]):
         ex, ez = cx - ax, cz - az
         t = np.clip(((x - ax) * ex + (z - az) * ez) / (ex * ex + ez * ez), 0.0, 1.0)
