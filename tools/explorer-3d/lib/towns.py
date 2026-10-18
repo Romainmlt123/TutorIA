@@ -32,7 +32,7 @@ def dress_towns(g):
         "maths-puissances": (("violet", "violet-light", "town-roof-violet-dark"),
                              ("blue", "blue-light", "c1-roof-blue")),
         "maths-calcul-litteral": (("terracotta", "terracotta-light", "terracotta-dark"),
-                                 ("blue", "blue-light", "c1-roof-blue")),
+                                 ("plaster", "plaster-light", "stone-warm-dark")),
         "maths-equations": (("cherry", "cherry-light", "c1-roof-cherry"),
                             ("brass", "brass-light", "brass-dark")),
     }
@@ -64,7 +64,7 @@ def dress_towns(g):
         if any(c["id"] != city["id"] and
                math.hypot(x - c["x"], z - c["z"]) < c["radius"] + edge_margin for c in cities):
             return None
-        return path_clearance - path_margin, disk_clearance - disk_margin
+        return path_clearance, disk_clearance
 
     def spots(city, rng, count, rmin, rmax, spacing, path_margin, disk_margin, footprint):
         cx, cz = city["x"], city["z"]
@@ -276,9 +276,8 @@ def dress_towns(g):
         cx, cz = city["x"], city["z"]
         rng = random.Random(7 + city_index * 1009)
         clear_decor(cx, cz, 1.25)
-        levels_radius = city["radius"] - 0.6
         largest_node = max((n["radius"] for n in nodes if n["cityId"] == city["id"]), default=0.255)
-        place_radius = min(1.16, levels_radius - largest_node - 0.05)
+        place_radius = min(1.16, city["radius"] - largest_node - 0.05)
         geo.cylinder(at(cx, cz, -0.04), place_radius, 0.12, M.paint("stone-warm-dark"), vertices=96)
         stones = {"c1-pave": [], "c1-pave-light": []}
         radius = 0.16
