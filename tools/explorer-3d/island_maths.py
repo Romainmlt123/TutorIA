@@ -56,7 +56,13 @@ def smoothstep(a, b, x):
     return t * t * (3 - 2 * t)
 
 
-def water_mask(size=512, extent=3.6, scale=1.0, shore_roughness=0.0, wet_bank_width=0.16):
+def water_mask(
+    size=512,
+    extent=3.6,
+    scale=1.0,
+    shore_roughness=0.0,
+    wet_bank_width=0.16,
+):
     """Image vue du dessus (repère Blender, [-extent, extent]²) : rouge = rive humide autour de
     l'eau, vert = sous l'eau. Même distance signée que le shader de l'eau de l'app. `shore_roughness`
     est un retrait facultatif en mètres de carte, activé seulement pour le terrain pré-rendu."""
@@ -91,7 +97,13 @@ def water_mask(size=512, extent=3.6, scale=1.0, shore_roughness=0.0, wet_bank_wi
 
 
 geo.reset()
-geo.island_body(shore=water_mask())
+geo.island_body(
+    shore=water_mask(),
+    sides=128,
+    underside_rings=20,
+    lip_sides=26 * 8,
+    detail=0.7,
+)
 
 # ---------------------------------------------------------------------------
 # Placement : chaque objet réserve un disque, hors de l'eau et dans l'île
@@ -210,11 +222,6 @@ for x, z, size, color in ((-0.25, 1.95, 0.9, "orange"), (-0.95, 2.45, 0.62, "blu
                                     rotation=(0, 0, 0.5))
     geo.bevel(M.assign(bpy.context.active_object, M.paint(color)), 0.03, 2)
 
-ix, iz = 1.3, 0.2
-claim(ix, iz, 0.3, "icosaedre")
-bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=0.3, location=app(ix, iz, 0.3))
-geo.bevel(M.assign(bpy.context.active_object, M.paint("green-toy")), 0.02, 2)
-
 ox, oz = -2.6, 1.3
 claim(ox, oz, 0.25, "octaedre")
 bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.26, depth=0.26, location=app(ox, oz, 0.39))
@@ -249,12 +256,8 @@ for size, offset in (((1.15, 0.1, 0.1), (0, 1.0)), ((1.15, 0.1, 0.1), (0, 0.12))
 for row, color in enumerate(("blue", "violet", "cyan", "orange")):
     y = 0.32 + row * 0.18
     geo.cylinder(app(ax, az, y), 0.012, 1.0, metal, 8, rotation=(0, math.pi / 2, 0))
-    for k in range(5):
-        geo.sphere(app(ax - 0.36 + k * 0.12 + (row % 2) * 0.1, az, y), 0.055, M.paint(color), 10)
-
-claim(0.85, -1.05, 0.2, "balle")
-geo.sphere(app(0.85, -1.05, 0.16), 0.16, M.paint("blue"))
-
+    for k in range(4):
+        geo.sphere(app(ax - 0.36 + k * 0.15 + (row % 2) * 0.1, az, y), 0.055, M.paint(color), 8)
 
 # ---------------------------------------------------------------------------
 # Arbres-signes et arbres ronds
@@ -293,7 +296,10 @@ def round_tree(x, z, height, seed):
         centers.append((app(x + math.cos(a) * height * 0.22, z + math.sin(a) * height * 0.15,
                             height * (0.74 + rng.uniform(-0.08, 0.12))), height * rng.uniform(0.17, 0.23)))
     centers.append((app(x, z, height * 1.0), height * 0.2))
-    geo.blob(centers, M.leaves("grass"))
+    canopy = geo.blob(centers, M.leaves("grass"), voxel=0.075)
+    for modifier in canopy.modifiers:
+        if modifier.type == "DISPLACE":
+            modifier.strength *= 0.55
 
 
 sign_tree(-2.3, -0.95, "+", "green-toy")
@@ -309,24 +315,24 @@ rng = random.Random(9)
 bush = M.leaves("moss")
 flowers = [M.flat("flower-white"), M.flat("flower-yellow"), M.flat("flower-violet"), M.flat("flower-white")]
 bushes = flowers_placed = tries = 0
-while (bushes < 16 or flowers_placed < 70) and tries < 20000:
+while (bushes < 14 or flowers_placed < 42) and tries < 20000:
     tries += 1
     a = rng.uniform(0, math.tau)
     rim = rng.random() < 0.6
     r = edge(a) * (rng.uniform(0.8, 0.92) if rim else math.sqrt(rng.random()) * 0.9)
     x, z = math.cos(a) * r, math.sin(a) * r
-    if bushes < 16 and rim:
+    if bushes < 14 and rim:
         size = rng.uniform(0.1, 0.17)
         if not free(x, z, size):
             continue
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=size, location=app(x, z, size * 0.45))
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=size, location=app(x, z, size * 0.45))
         obj = bpy.context.active_object
         obj.scale = (1, 1, 0.75)
-        geo.displace(obj, "Buisson", 0.05, 0.035)
+        geo.displace(obj, "Buisson", 0.05, 0.02)
         geo.smooth(M.assign(obj, bush))
         occupied.append((x, z, size))
         bushes += 1
-    elif flowers_placed < 70 and free(x, z, 0.03):
+    elif flowers_placed < 42 and free(x, z, 0.03):
         geo.sphere(app(x, z, 0.03), 0.032, rng.choice(flowers), 6)
         flowers_placed += 1
 
@@ -461,7 +467,7 @@ blades_rng = random.Random(31)
 bm = bmesh.new()
 uv = bm.loops.layers.uv.new("UVMap")
 tufts = tries = 0
-while tufts < 380 and tries < 40000:
+while tufts < 300 and tries < 40000:
     tries += 1
     kind = blades_rng.random()
     a = blades_rng.uniform(0, math.tau)
@@ -479,5 +485,5 @@ blade_material = bpy.data.materials.new("brins")
 M.assign(blades, blade_material)
 print("BRINS", tufts, "touffes,", len(blades.data.polygons), "brins")
 
-path = bake.export("island-maths-3d.glb")
+path = bake.export("island-maths-3d.glb", jpeg_quality=75)
 print("GLB", path, os.path.getsize(path), "octets")

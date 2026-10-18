@@ -269,7 +269,7 @@ def meadow_map(shore, extent, quiet=None):
     return _cached("prairie-carte" if shore is not None else "prairie-carte-sans-rive", build)
 
 
-def soil(top=0.0, bottom=-3.9):
+def soil(top=0.0, bottom=-3.9, detail=1.0):
     """Dessous de l'île : sol sombre sous l'herbe, strates d'argile plus ou moins claires, taches
     rousses et grises, fissures, cailloux de plusieurs tailles, racines, et une terre de plus en
     plus sombre vers la pointe."""
@@ -289,7 +289,9 @@ def soil(top=0.0, bottom=-3.9):
         color = g.mix(g.times(g.mask(patches, 0.58, 0.72), 0.5), color, "earth-red")
         color = g.mix(g.times(g.mask(patches, 0.4, 0.28), 0.35), color, "earth-grey")
         grain = g.noise(18.0, 5)
-        color = g.mix(0.3, color, g.ramp(grain, [(0.35, "dirt-dark"), (0.65, "dirt-light")]), "OVERLAY")
+        color = g.mix(
+            0.3 * detail, color, g.ramp(grain, [(0.35, "dirt-dark"), (0.65, "dirt-light")]), "OVERLAY"
+        )
         # Fissures : bords de cellules de Voronoï déformées, fines, et seulement par endroits.
         cracks = g.mask(g.voronoi(2.6, g.warped(1.8, 0.6), feature="DISTANCE_TO_EDGE"), 0.022, 0.0)
         cracks = g.times(cracks, g.mask(g.noise(1.4, 3), 0.52, 0.66))
@@ -309,7 +311,7 @@ def soil(top=0.0, bottom=-3.9):
         color = g.mix(g.times(fine_roots, 0.5), color, "root")
         relief = g.mix(0.5, g.mix(0.5, grain, pebbles, "ADD"), roots, "SUBTRACT")
         relief = g.mix(0.6, relief, cracks, "SUBTRACT")
-        g.bump(relief, 0.9, 0.035)
+        g.bump(relief, 0.9 * detail, 0.035 * detail)
         return g.finish(g.wear(color, 0.35), 0.95)
     return _cached("terre", build)
 
