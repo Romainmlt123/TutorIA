@@ -1,4 +1,4 @@
-import { FEET, MAP_SCALE } from '../stylized3d/avatarChoreo';
+import { FEET, MAP_SCALE, MAP_SCALE_RATIO } from '../stylized3d/avatarChoreo';
 import { imageV } from './mapProjection';
 import type { RegionMap } from './regionMap';
 
@@ -19,7 +19,11 @@ export type MonumentBox = { min: Vec3; max: Vec3 };
  * La figurine debout sur un niveau, en mètres : demi-largeur, demi-profondeur et sommet (chapeau et
  * bras levés du salut compris, MapAvatar).
  */
-const FIGURE = { halfWidth: 0.25, halfDepth: 0.15, top: FEET + 1.2 * MAP_SCALE } as const;
+const FIGURE = {
+  halfWidth: 0.25 * MAP_SCALE_RATIO,
+  halfDepth: 0.15 * MAP_SCALE_RATIO,
+  top: FEET + 1.2 * MAP_SCALE,
+} as const;
 /**
  * Recouvrement négligé (mètres du plan image, environ 5 dp à l'écran) : deux coins de boîtes qui se
  * touchent (le bord haut d'un monument et le bout des pieds), pas un monument qui cache l'avatar.

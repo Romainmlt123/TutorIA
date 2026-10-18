@@ -1,3 +1,4 @@
+import { MAP_AVATAR_SHADOW, MAP_SCALE, MAP_SCALE_RATIO } from '../stylized3d/avatarChoreo';
 import { SUN_DIRECTION } from '../stylized3d/sun';
 import { AVATAR_VIEW, avatarFrame, avatarShadow } from './avatarFrame';
 
@@ -32,6 +33,19 @@ describe('vue 3D de l’avatar dans la carte pré-rendue', () => {
     expect(-frustum.left * k).toBeCloseTo(-frame.left, 9);
     expect(frustum.top * k).toBeCloseTo(-frame.top, 9);
   });
+
+  it('réduit le cadre et l’ombre en proportion de la figurine', () => {
+    expect(MAP_SCALE).toBe(0.5);
+    expect(AVATAR_VIEW).toEqual({
+      width: 1.2 * MAP_SCALE_RATIO,
+      above: 1.25 * MAP_SCALE_RATIO,
+      below: 0.35 * MAP_SCALE_RATIO,
+    });
+    expect(MAP_AVATAR_SHADOW).toEqual({
+      radius: 0.28 * MAP_SCALE_RATIO,
+      height: 0.6 * MAP_SCALE_RATIO,
+    });
+  });
 });
 
 describe('ombre de contact de l’avatar', () => {
@@ -42,9 +56,11 @@ describe('ombre de contact de l’avatar', () => {
     const [sx, sy, sz] = SUN_DIRECTION;
     const centerX = shadow.left + shadow.size / 2;
     const centerY = shadow.top + shadow.size / 2;
-    // groundShadows : décalage de 0,35 m par mètre de hauteur (0,6 m), tache posée à 0,04 m.
-    expect(centerX).toBeCloseTo((-sx / sy) * 0.35 * 0.6 * k);
-    expect(centerY).toBeCloseTo(((-sz / sy) * 0.35 * 0.6 * SIN - 0.04 * COS) * k);
+    // groundShadows : décalage de 0,35 m par mètre de hauteur, tache posée à 0,04 m.
+    expect(centerX).toBeCloseTo((-sx / sy) * 0.35 * MAP_AVATAR_SHADOW.height * k);
+    expect(centerY).toBeCloseTo(
+      ((-sz / sy) * 0.35 * MAP_AVATAR_SHADOW.height * SIN - 0.04 * COS) * k,
+    );
   });
 
   it('s’écrase sur le sol vu à 52°', () => {
