@@ -160,7 +160,7 @@ def top_surface():
             x = FOCUS_S[0] + (ox - FOCUS_S[0]) * k / rings
             z = FOCUS_S[1] + (oz - FOCUS_S[1]) * k / rings
             u, v = x / SCALE, z / SCALE
-            bump = 0.036 * math.sin(u * 2.3 + 1) * math.sin(v * 1.9) + rng.uniform(-0.006, 0.006)
+            bump = 0.036 * math.sin(u * 2.3 + 1) * math.sin(v * 1.9)
             ring.append(bm.verts.new(to_bl(x, z, bump if k < rings else 0.0)))
         grid.append(ring)
     # Le centre est un seul polygone : un éventail de centaines de triangles pointus étirerait la texture.
