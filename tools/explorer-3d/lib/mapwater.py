@@ -13,8 +13,9 @@ import numpy as np
 
 SURFACE = 0.022  # hauteur de l'eau sur l'île (water.ts), agrandie avec la région
 SHORE_ROUGHNESS = 0.52  # retrait maximal du π en mètres de carte ; toujours à l'intérieur de son tracé
-WET_BANK_WIDTH = 0.08  # largeur de la berge humide en unités de l'île
-WET_SLOPE_WIDTH = 0.45  # largeur de la pente de berge en mètres de carte
+WET_BANK_WIDTH = 0.0125  # largeur de la berge humide en unités de l'île
+WET_SLOPE_WIDTH = 0.075  # largeur de la pente de berge en mètres de carte
+PROTECTION_BLEND_WIDTH = 0.5  # transition douce des retraits autour des éléments protégés, en mètres
 CAMERA_ANGLE = math.radians(52)
 CAMERA_SIN, CAMERA_COS = math.sin(CAMERA_ANGLE), math.cos(CAMERA_ANGLE)
 
@@ -81,6 +82,12 @@ def shoreline_offset(x, z, maximum=SHORE_ROUGHNESS):
     return maximum * (0.18 + 0.82 * noise)
 
 
+def smooth_min(a, b, width):
+    difference = np.abs(a - b)
+    blend = np.clip(1.0 - difference / width, 0.0, 1.0)
+    return np.minimum(a, b) - width * 0.25 * blend * blend
+
+
 def water_distance(x, z, scale, geometry):
     """Distance signée au π érodé et à la rivière, positive dans l'eau (coordonnées de carte)."""
     pi, river, half = geometry[:3]
@@ -90,12 +97,14 @@ def water_distance(x, z, scale, geometry):
     if len(geometry) > 3:
         xs, zs = np.asarray(x), np.asarray(z)
         bounds = (float(np.min(xs)), float(np.max(xs)), float(np.min(zs)), float(np.max(zs)))
+        protected_inside = np.full_like(inside, np.inf)
         for protect_x, protect_z, radius in geometry[3]:
             if (protect_x + radius < bounds[0] or protect_x - radius > bounds[1]
                     or protect_z + radius < bounds[2] or protect_z - radius > bounds[3]):
                 continue
             protected_distance = np.hypot(xs - protect_x, zs - protect_z) / scale - radius / scale
-            inside = np.minimum(inside, protected_distance)
+            protected_inside = np.minimum(protected_inside, protected_distance)
+        inside = smooth_min(inside, protected_inside, PROTECTION_BLEND_WIDTH / scale)
     return inside
 
 
@@ -142,7 +151,7 @@ def water(x, z, scale, geometry, colors, sun, view):
         slope_z += dz * wave
     normal = np.stack([-slope_x * 0.09, np.ones_like(px), -slope_z * 0.09], axis=-1)
     normal /= np.linalg.norm(normal, axis=-1, keepdims=True)
-    depth = (0.92 * smoothstep(0.0, 0.42, inside))[..., None]
+    depth = (0.92 * smoothstep(0.0, 0.26, inside))[..., None]
     color = colors["shallow"] + (colors["deep"] - colors["shallow"]) * depth
     fresnel = np.power(1.0 - np.clip(normal @ view, 0.0, None), 4.0)[..., None]
     screen_v = z * CAMERA_SIN - SURFACE * scale * CAMERA_COS
@@ -151,9 +160,7 @@ def water(x, z, scale, geometry, colors, sun, view):
     sky_up = 1.0 - smoothstep(pi_v_min, pi_v_max, screen_v)
     sky_reflection = 0.04 + fresnel * 0.24 + sky_up[..., None] * 0.22
     color = color + (colors["sky"] - color) * np.clip(sky_reflection, 0.0, 0.46)
-    shore_tint = (0.14 * (1.0 - smoothstep(0.0, 0.42, inside)))[..., None]
-    color = color + (colors["sky"] - color) * shore_tint
-    shore_light = (1.0 - smoothstep(0.02, 0.72, inside))[..., None]
+    shore_light = (1.0 - smoothstep(0.02, 0.2, inside))[..., None]
     light = map_caustics(x, z)[..., None] * shore_light
     color = color + colors["glow"] * light * (0.24 + (0.12 - 0.24) * depth)
     meniscus = (0.72 * (1.0 - smoothstep(0.0, 0.003, inside)))[..., None]
@@ -161,7 +168,7 @@ def water(x, z, scale, geometry, colors, sun, view):
     reflected = 2.0 * (normal @ sun)[..., None] * normal - sun
     sparkle = np.power(np.clip(reflected @ view, 0.0, None), 180.0)[..., None]
     color = color + np.array([1.0, 0.97, 0.9]) * sparkle * 1.4
-    alpha = (0.04 + 0.96 * smoothstep(0.0, 0.18, inside)) * (inside >= 0.0)
+    alpha = (0.08 + 0.92 * smoothstep(0.0, 0.025, inside)) * (inside >= 0.0)
     foam_alpha = 0.42 * (1.0 - smoothstep(0.0, 0.003, inside)) * (inside >= 0.0)
     return color, np.maximum(alpha, foam_alpha)[..., None], inside
 

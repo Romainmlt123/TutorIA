@@ -23,6 +23,7 @@ sys.dont_write_bytecode = True  # pas de __pycache__ dans tools/
 import json  # noqa: E402
 import math  # noqa: E402
 import os  # noqa: E402
+import random  # noqa: E402
 import time  # noqa: E402
 
 import bmesh  # noqa: E402
@@ -144,7 +145,7 @@ def slope_wet_bank():
             (pi, river, half),
         )
         distance = inside * SCALE
-        slope = 0.05 * mapwater.smoothstep(-mapwater.WET_SLOPE_WIDTH, 0.0, distance)
+        slope = 0.003 * mapwater.smoothstep(-mapwater.WET_SLOPE_WIDTH, 0.0, distance)
         for vertex, drop in zip(vertices, np.where(distance < 0.0, slope, 0.0)):
             vertex.co.z -= float(drop)
 
@@ -343,7 +344,7 @@ def quiet_mask(ppm=20):
     return image, x0, -z1, x1 - x0, z1 - z0
 
 
-meadow = M.meadow_map(ns["mask"], 3.6 * SCALE, quiet=quiet_mask())
+meadow = M.meadow_map(None, 3.6 * SCALE, quiet=quiet_mask())
 for obj in terrain:
     if obj.name in bpy.data.objects and obj.name.split(".")[0] in {"Plateau", "Bordure"}:
         obj.data.materials.clear()
@@ -831,6 +832,59 @@ def validate_shore_clearance():
 
 
 validate_shore_clearance()
+
+
+def restore_shore_blades():
+    """Ajoute des touffes sur les anciennes zones d'eau désormais protégées comme terre."""
+    spacing = 0.32
+    xs = np.arange(min(ns["xs_i"]) * SCALE + spacing / 2, max(ns["xs_i"]) * SCALE, spacing)
+    zs = np.arange(min(ns["zs_i"]) * SCALE + spacing / 2, max(ns["zs_i"]) * SCALE, spacing)
+    x, z = np.meshgrid(xs, zs)
+    rng = np.random.default_rng(73)
+    x += rng.uniform(-spacing * 0.3, spacing * 0.3, x.shape)
+    z += rng.uniform(-spacing * 0.3, spacing * 0.3, z.shape)
+    raw_inside = mapwater.water_distance(x, z, SCALE, WATER_GEOMETRY[:3])
+    inside = mapwater.water_distance(x, z, SCALE, WATER_GEOMETRY)
+    rows, columns = np.where((raw_inside > 0.0) & (inside < 0.0))
+    candidate_x, candidate_z = x[rows, columns], z[rows, columns]
+    bank_width = max(mapwater.WET_BANK_WIDTH * SCALE, mapwater.WET_SLOPE_WIDTH)
+    required_clearance = max(0.3, bank_width + 0.15) + 0.02
+    safe = np.ones(candidate_x.shape, dtype=bool)
+    bounds = (
+        float(np.min(candidate_x)) if candidate_x.size else 0.0,
+        float(np.max(candidate_x)) if candidate_x.size else 0.0,
+        float(np.min(candidate_z)) if candidate_z.size else 0.0,
+        float(np.max(candidate_z)) if candidate_z.size else 0.0,
+    )
+    for protect_x, protect_z, radius in WATER_GEOMETRY[3]:
+        actual_radius = max(0.0, radius - required_clearance) + 0.06
+        if (protect_x + actual_radius < bounds[0] or protect_x - actual_radius > bounds[1]
+                or protect_z + actual_radius < bounds[2] or protect_z - actual_radius > bounds[3]):
+            continue
+        safe &= np.hypot(candidate_x - protect_x, candidate_z - protect_z) >= actual_radius
+    candidates = np.column_stack((rows[safe], columns[safe]))
+    source = random.Random(73)
+    gate = random.Random(73)
+    bm = bmesh.new()
+    uv = bm.loops.layers.uv.new("UVMap")
+    placed = 0
+    for row, column in candidates:
+        px, pz = float(x[row, column]), float(z[row, column])
+        if ns["blocked"](px, pz, 0.0) or gate.random() >= 0.25:
+            continue
+        map_tuft(bm, uv, px, pz, source, tall=True)
+        placed += 1
+    if not placed:
+        bm.free()
+        print("BRINS RIVE 0", flush=True)
+        return
+    obj = geo.link("brins-rive", bm)
+    obj.data.materials.append(grass)
+    obj.visible_shadow = False
+    print("BRINS RIVE", placed, "touffes restaurées", flush=True)
+
+
+restore_shore_blades()
 SUN = np.array(LAYOUT["sun"], dtype=np.float64)
 SUN = SUN / np.linalg.norm(SUN)
 VIEW = np.array([0.0, SIN, COS])  # vers la caméra orthographique (repère de l'app : x, y, z)
@@ -846,17 +900,44 @@ def with_water(rgba, px0, py0):
     z = (v + mapwater.SURFACE * SCALE * COS) / SIN
     raw_inside = mapwater.water_distance(x, z, SCALE, WATER_GEOMETRY[:3])
     color, alpha, inside = mapwater.water(x, z, SCALE, WATER_GEOMETRY, WATER_COLORS, SUN, VIEW)
-    carved_land = (raw_inside > 0.0) & (inside < 0.0)
-    if not (inside > -mapwater.WET_BANK_WIDTH).any() and not carved_land.any():
+    if not (inside > -mapwater.WET_BANK_WIDTH).any() and not ((raw_inside > 0.0) & (inside < 0.0)).any():
         return rgba, np.zeros((h, w), dtype=np.float32)
     out = rgba.astype(np.float64)
-    out[..., :3] = np.where(
-        carved_land[..., None],
-        np.asarray(palette_rgb("grass")),
-        out[..., :3],
+    transition = mapwater.PROTECTION_BLEND_WIDTH / SCALE
+    carved_weight = (
+        mapwater.smoothstep(0.0, transition, raw_inside)
+        * (1.0 - mapwater.smoothstep(-transition, 0.0, inside))
+    )[..., None]
+    carved_pixels = carved_weight[..., 0] > 0.0
+    if carved_pixels.any():
+        variation = 0.18 + 0.25 * mapwater.value_noise(
+            x[carved_pixels], z[carved_pixels], 0.38, 47
+        )
+        grass = np.asarray(palette_rgb("grass"))
+        grass_light = np.asarray(palette_rgb("grass-light"))
+        grass_fill = grass + (grass_light - grass) * variation[..., None]
+        fill_weight = carved_weight[carved_pixels]
+        out[carved_pixels, :3] = (
+            out[carved_pixels, :3] * (1.0 - fill_weight) + grass_fill * fill_weight
+        )
+    wet = (
+        mapwater.smoothstep(-mapwater.WET_BANK_WIDTH, 0.0, inside)
+        * (inside < 0.0)
+    )[..., None]
+    out[..., :3] = out[..., :3] * (1.0 - wet) + np.asarray(palette_rgb("wood-light")) * wet
+    shallow_bottom = (
+        (1.0 - mapwater.smoothstep(0.0, 0.025, inside))
+        * (inside >= 0.0)
+    )[..., None]
+    out[..., :3] = (
+        out[..., :3] * (1.0 - shallow_bottom)
+        + np.asarray(palette_rgb("wood-light")) * shallow_bottom
     )
-    wet = mapwater.smoothstep(-mapwater.WET_BANK_WIDTH, 0.0, inside)[..., None]
-    out[..., :3] = out[..., :3] * (1.0 - wet) + np.asarray(palette_rgb("clay-light")) * wet
+    shore_lift = (
+        0.15 * mapwater.smoothstep(-0.15, -0.015, inside)
+        * (inside < 0.0)
+    )[..., None]
+    out[..., :3] *= 1.0 + shore_lift
     out[..., :3] = out[..., :3] * (1.0 - alpha) + color * alpha
     out[..., 3:4] = out[..., 3:4] + (1.0 - out[..., 3:4]) * alpha
     return out.astype(np.float32), alpha[..., 0]
