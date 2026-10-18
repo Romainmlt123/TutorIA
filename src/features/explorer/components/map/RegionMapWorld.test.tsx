@@ -61,7 +61,7 @@ const node = (
     stars: 0,
     x,
     z,
-    radius: type === 'evaluation' ? 0.34 : 0.26,
+    radius: type === 'evaluation' ? 0.255 : 0.195,
   }) satisfies MapNode;
 
 /** Un niveau terminé, celui du pion (à jouer), puis deux fermés ; le pion est le plus au fond. */

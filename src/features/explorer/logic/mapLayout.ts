@@ -20,9 +20,9 @@ export const MAP_LAYOUT = {
   maxRadius: 2.2,
   /** Marge entre le bord du cercle de niveaux et le bord de la clairière. */
   clearing: 0.6,
-  /** Rayon d'un point de niveau (0,26 m, 0,34 m pour une évaluation). */
-  nodeRadius: 0.26,
-  evaluationRadius: 0.34,
+  /** Rayon d'un point de niveau (0,195 m, 0,255 m pour une évaluation). */
+  nodeRadius: 0.195,
+  evaluationRadius: 0.255,
 } as const;
 
 export function nodeRadius(type: LevelType): number {

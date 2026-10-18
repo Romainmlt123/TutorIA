@@ -228,7 +228,7 @@ describe('carte pré-rendue : places des bandeaux des villes', () => {
       center: { x: 0, z: 0 },
       radius: 1 + MAP_LAYOUT.clearing,
     };
-    const intruder = { x: 0, z: -1.75, radius: 0.26, state: 'locked' } as MapNode;
+    const intruder = { x: 0, z: -1.75, radius: 0.195, state: 'locked' } as MapNode;
     const map = { cities: [city as MapCity], nodes: [intruder] };
     const rect = cityBannerPlaces(map, FRAME, 100, new Map([['a', { width: 80, height: 40 }]])).get(
       'a',

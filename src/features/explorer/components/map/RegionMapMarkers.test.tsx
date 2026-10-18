@@ -48,7 +48,7 @@ const node = (levelId: string, state: MapNode['state'], stars: MapNode['stars'],
     stars,
     x,
     z: 0,
-    radius: 0.26,
+    radius: 0.195,
   }) satisfies MapNode;
 
 const CITY: MapCity = {

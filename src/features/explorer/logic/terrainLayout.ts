@@ -79,7 +79,7 @@ const DECOR_KINDS: readonly { kind: DecorKind; radius: number; per100m2: number 
   { kind: 'barriere', radius: 0.45, per100m2: 3 },
 ];
 
-/** Distance minimale entre un décor et le chemin (le point de niveau le plus large fait 0,34 m). */
+/** Distance minimale entre un décor et le chemin (le point de niveau le plus large fait 0,255 m). */
 const PATH_CLEARANCE = 0.55;
 /** Une barrière longe le chemin à cette distance, et s'aligne sur lui. */
 const FENCE_DISTANCE: readonly [number, number] = [0.7, 1.1];
