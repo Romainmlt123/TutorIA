@@ -94,7 +94,7 @@ npm run web:local  # l'app web branchée sur Supabase local, sans modifier .env
 | `npm run android` / `npm run ios`                  | Émulateur ou simulateur                                                                                               |
 | `npm run tokens`                                   | Régénère `src/theme/tokens.generated.ts` depuis `design/tokens/`                                                      |
 | `npm run explorer:models`                          | Régénère les îles, la bande de terre des régions et les monuments avec Blender 5.2 (environ 30 min)                   |
-| `npm run avatar:model`                             | Régénère la figurine des avatars (corps, coiffures, tenue de base, animations) avec Blender 5.2 (environ 3 min)       |
+| `npm run avatar:model`                             | Régénère la figurine vernie A1 et ses six animations avec Blender 5.2 (environ 3 min)                                 |
 | `npm run explorer:clean`                           | Allège les modèles 3D (GLB) sans changer l'image ; lancé aussi par les deux commandes ci-dessus                       |
 | `npm run check`                                    | Lint, vérification des types et tests                                                                                 |
 | `npm run lint` / `npm run typecheck` / `npm test`  | Chaque vérification séparément                                                                                        |
