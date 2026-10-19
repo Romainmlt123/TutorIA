@@ -21,7 +21,7 @@ import { type FaceUniforms, faceMaterial, fitFace, setFace } from './faceMateria
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- asset Metro (identifiant en natif, URL sur le web)
 const AVATAR_GLB: string = require('../../../../assets/avatar/avatar.glb');
 
-export type AvatarAnimation = 'attente' | 'marche' | 'saut' | 'salut';
+export type AvatarAnimation = 'attente' | 'marche' | 'saut' | 'salut' | 'bravo' | 'encouragement';
 
 type Piece = { name: string; meshes: THREE.Mesh[] };
 

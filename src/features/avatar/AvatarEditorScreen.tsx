@@ -47,12 +47,14 @@ const WEB_TOP = 56;
  * objet de module (un seul éditeur à la fois), comme la rotation de l'île d'Explorer.
  */
 const TURN = createTurn();
-/** Durée des animations jouées en réaction : le saut (au hasard) et le salut (enregistré). */
+/** Durée des animations jouées en réaction avant le retour à l'attente. */
 const REACTION_MS: Record<AvatarAnimation, number> = {
   attente: 0,
   marche: 0,
   saut: 1200,
   salut: 1500,
+  bravo: 2000,
+  encouragement: 1400,
 };
 
 /**
@@ -122,7 +124,7 @@ export function AvatarEditorScreen() {
     goBack();
   }, [goBack]);
 
-  // Le saut et le salut ne se jouent qu'une fois, puis la figurine revient à l'attente.
+  // Les animations de réaction reviennent à l'attente après leur durée prévue.
   useEffect(() => {
     const duration = REACTION_MS[animation];
     if (!duration) return;

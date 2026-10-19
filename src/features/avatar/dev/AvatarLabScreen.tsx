@@ -19,7 +19,14 @@ import {
   type AvatarLook,
 } from '../logic/avatarLook';
 
-const ANIMATIONS: readonly AvatarAnimation[] = ['attente', 'marche', 'salut', 'saut', 'attente'];
+const ANIMATIONS: readonly AvatarAnimation[] = [
+  'attente',
+  'marche',
+  'saut',
+  'salut',
+  'bravo',
+  'encouragement',
+];
 
 /** Caméra posée une fois : regarde le point `aim` depuis `from`. */
 function Aim({ from, aim }: { from: readonly number[]; aim: readonly number[] }) {
