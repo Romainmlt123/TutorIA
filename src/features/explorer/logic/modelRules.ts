@@ -90,7 +90,7 @@ export const MODEL_RULES: readonly ModelRule[] = [
     nodes: { '*': BAKED },
   },
   {
-    // Avatar3D.tsx : toute la garde-robe dans un seul fichier.
+    // Avatar3D.tsx : toute la garde-robe, ceintures des shorts et pantalons comprises.
     file: 'assets/avatar/avatar.glb',
     maxBytes: 599_999,
     nodes: { '*': FIGURINE },

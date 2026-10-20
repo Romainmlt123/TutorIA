@@ -19,6 +19,7 @@
 ## Zones du corps et capuchons
 
 - Construis, simplifie, remodèle et pèse d'abord le corps complet. La découpe en zones est la dernière opération avant l'export : chaque zone copie les positions, normales, poids et forme `fort` du corps final.
+- Les hauts masquent les maillages `*-ceinture` séparés des shorts et pantalons ; le générateur ajoute leurs contrats de masque à `bodyZones.json`.
 - Après le classement des faces, la propagation ne peut déplacer une face vers une zone que si toutes les pièces qui masquent cette zone couvrent son centre aux trois carrures avec le même prédicat et la marge d'ourlet que `bodyZones.json`. Pour résoudre un îlot ou un pincement, privilégie parmi les voisines la zone masquée par le moins de pièces (`corps` en dernier recours) ; la connexité et la fermeture restent bloquantes.
 - Ferme chaque boucle de bord de chaque zone, `corps` compris, par un capuchon triangulé. Contrôle l'orientation par la normale pondérée par l'aire du capuchon et l'enroulement cohérent de ses arêtes, pas triangle par triangle.
 - `ZONE_SEAM_CHECK` bloque l'export si les coutures ne coïncident pas, si une zone capuchonnée n'est pas fermée et 2-variété, ou si l'orientation agrégée d'un capuchon est incohérente. La couverture statique et la caméra officielle en liaison contrôlent ensuite les tenues ; les impacts caméra sont regroupés en cellules de 2 cm reliées par six voisins, et un amas de 20 impacts ou plus est signalé par `VISIBLE_DEFECT_WARNING` sans bloquer l'export.

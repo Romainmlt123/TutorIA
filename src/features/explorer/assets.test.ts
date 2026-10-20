@@ -156,6 +156,8 @@ describe('modèles 3D', () => {
       ) as Record<string, string[]>;
       const names = new Set(meshNodes(glb.json).map((node) => node.name));
       const expectedZones = [
+        'bas-pantalon-ceinture',
+        'bas-short-ceinture',
         'corps',
         'corps-avant-bras',
         'corps-bras-haut',
@@ -165,6 +167,11 @@ describe('modèles 3D', () => {
         'corps-torse-haut',
       ];
       expect(Object.keys(bodyZones)).toEqual(expectedZones);
+      expect(bodyZones).not.toHaveProperty('bas-jupe-ceinture');
+      expect(names.has('bas-jupe-ceinture')).toBe(false);
+      for (const belt of ['bas-pantalon-ceinture', 'bas-short-ceinture']) {
+        expect(bodyZones[belt]).toEqual(['haut-sweat', 'haut-tshirt']);
+      }
       for (const zone of Object.keys(bodyZones)) expect(names.has(zone)).toBe(true);
       for (const pieces of Object.values(bodyZones)) {
         for (const piece of pieces) expect(names.has(piece)).toBe(true);

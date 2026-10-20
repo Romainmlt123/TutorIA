@@ -19,6 +19,11 @@ export function visiblePieces(look: AvatarLook): Set<string> {
   );
   const visible = new Set(['corps', 'tete', `cheveux-${look.hair.style}`, ...worn]);
   for (const [zone, masks] of Object.entries(bodyZones)) {
+    if (zone.endsWith('-ceinture')) {
+      const bottom = zone.slice(0, -'-ceinture'.length);
+      if (worn.includes(bottom) && !masks.some((piece) => worn.includes(piece))) visible.add(zone);
+      continue;
+    }
     if (zone !== 'corps' && !masks.some((piece) => worn.includes(piece))) visible.add(zone);
   }
   return visible;

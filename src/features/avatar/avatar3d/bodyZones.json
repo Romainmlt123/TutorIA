@@ -1,4 +1,6 @@
 {
+  "bas-pantalon-ceinture": ["haut-sweat", "haut-tshirt"],
+  "bas-short-ceinture": ["haut-sweat", "haut-tshirt"],
   "corps": [],
   "corps-avant-bras": ["haut-sweat"],
   "corps-bras-haut": ["haut-sweat"],

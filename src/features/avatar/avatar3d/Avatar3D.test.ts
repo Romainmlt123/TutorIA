@@ -38,4 +38,18 @@ describe('zones visibles de la figurine', () => {
     expect(bodyZones('tshirt', 'pantalon')).toEqual(['corps-avant-bras', 'corps-bras-haut']);
     expect(bodyZones('tshirt', 'salopette')).toEqual(['corps-avant-bras', 'corps-bras-haut']);
   });
+
+  it('masque la ceinture du pantalon sous le t-shirt', () => {
+    expect(visiblePieces(outfitLook('tshirt', 'pantalon')).has('bas-pantalon-ceinture')).toBe(
+      false,
+    );
+  });
+
+  it('ne montre jamais la ceinture du short non porté', () => {
+    expect(visiblePieces(outfitLook('tshirt', 'pantalon')).has('bas-short-ceinture')).toBe(false);
+  });
+
+  it('ne crée pas de ceinture séparée pour la jupe', () => {
+    expect(visiblePieces(outfitLook('tshirt', 'jupe')).has('bas-jupe-ceinture')).toBe(false);
+  });
 });

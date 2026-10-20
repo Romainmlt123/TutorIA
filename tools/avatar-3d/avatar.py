@@ -699,8 +699,8 @@ def tshirt_cuts():
     return cuts
 
 
-def short_cuts():
-    cuts = [cut_plane((0, 0, 0.355), (0, 0, 1), -1, ("torse",))]
+def short_cuts(hem_z=0.355):
+    cuts = [cut_plane((0, 0, hem_z), (0, 0, 1), -1, ("torse",))]
     for _, sx in SIDES:
         point, normal = leg_cut(0.46, sx)
         cuts.append(cut_plane(point, normal, -1, ("jambe",), sx))
@@ -715,8 +715,8 @@ def sweat_cuts():
     return cuts
 
 
-def trousers_cuts():
-    cuts = [cut_plane((0, 0, 0.355), (0, 0, 1), -1, ("torse",))]
+def trousers_cuts(hem_z=0.355):
+    cuts = [cut_plane((0, 0, hem_z), (0, 0, 1), -1, ("torse",))]
     for _, sx in SIDES:
         point, normal = leg_cut(0.965, sx)
         cuts.append(cut_plane(point, normal, -1, ("jambe",), sx))
@@ -948,7 +948,7 @@ def flatten_shell_inner_layer(obj, skin, open_edge_segments, piece_name):
         skin_normal = skin_normal.normalized()
         candidates += 1
         zone = body_zone(hit)
-        if piece_name not in BODY_ZONE_MASKS.get(zone, ()):
+        if piece_name.removesuffix("-ceinture") not in BODY_ZONE_MASKS.get(zone, ()):
             unmasked_zone += 1
             continue
         edge_distance = min(
@@ -1148,7 +1148,7 @@ def shell(name, body, keep, offset, thickness, mat, cuts=()):
         "sweat": "haut-sweat",
         "salopette": "bas-salopette",
         "bavette": "bas-salopette",
-    }.get(name, name)
+    }.get(name, name.removesuffix("-ceinture"))
     piece = PIECES.get(shell_piece_name)
     masks_body_zones = bool(piece and piece.masks_zones)
     if masks_body_zones:
@@ -1323,7 +1323,12 @@ def shell(name, body, keep, offset, thickness, mat, cuts=()):
     mod.offset = -1
     apply(obj)
     if masks_body_zones:
-        SHELL_INNER_LAYER_OPEN_EDGES[shell_piece_name].extend(open_edge_segments)
+        edge_piece_name = {
+            "sweat": "haut-sweat",
+            "salopette": "bas-salopette",
+            "bavette": "bas-salopette",
+        }.get(name, name)
+        SHELL_INNER_LAYER_OPEN_EDGES[edge_piece_name].extend(open_edge_segments)
     obj = geo.smooth(assign(obj, mat))
     return obj
 
@@ -1357,10 +1362,38 @@ def tshirt(body):
 
 
 def shorts(body):
-    cuts = short_cuts()
-    lower = shell("bas-short", body, lambda p, part, side, t: (part == "torse" and p.z < 0.355) or
-                  (part == "jambe" and t < 0.46), 0.011, 0.006, "tissu", cuts)
+    cuts = short_cuts(BOTTOM_BELT_CUT_Z)
+    lower = shell(
+        "bas-short",
+        body,
+        lambda p, part, side, t: (
+            part == "torse" and p.z < BOTTOM_BELT_CUT_Z
+        ) or (
+            part == "jambe" and p.z < BOTTOM_BELT_CUT_Z and t < 0.46
+        ),
+        0.011,
+        0.006,
+        "tissu",
+        cuts,
+    )
     return geo.smooth(lower)
+
+
+def bottom_belt(body, name, waist_z, offset):
+    cuts = [
+        cut_plane((0, 0, BOTTOM_BELT_CUT_Z), (0, 0, 1), 1, ("torse",)),
+        cut_plane((0, 0, waist_z), (0, 0, 1), -1, ("torse",)),
+    ]
+    return shell(
+        f"{name}-ceinture",
+        body,
+        lambda p, part, side, t: part in ("torse", "jambe")
+        and BOTTOM_BELT_CUT_Z <= p.z <= waist_z,
+        offset,
+        0.006,
+        "tissu",
+        cuts,
+    )
 
 
 # Bord du bout blanc de la basket : un plan incliné, plus bas vers la pointe.
@@ -1491,7 +1524,7 @@ def normalize_weights(obj, max_influences=MAX_SKIN_INFLUENCES):
 
 
 def smooth_skinning_weights(obj, rigid_assignments=None):
-    piece = PIECES.get(obj.name)
+    piece = PIECES.get(obj.name.removesuffix("-ceinture"))
     groups_by_slot = {
         "haut": ("spine", "chest", "upperarm.L", "upperarm.R", "forearm.L", "forearm.R"),
         "bas": ("hips", "spine", "thigh.L", "thigh.R", "shin.L", "shin.R"),
@@ -1741,6 +1774,20 @@ def shape_coordinates(obj, build):
     return [point + (key.data[index].co - point) * build for index, point in enumerate(basis)]
 
 
+def wardrobe_piece_tree(garment, build):
+    coordinates = shape_coordinates(garment, build)
+    polygons = [tuple(polygon.vertices) for polygon in garment.data.polygons]
+    belt = PIECE_OBJECTS.get(f"{garment.name}-ceinture")
+    if belt is not None:
+        offset = len(coordinates)
+        coordinates.extend(shape_coordinates(belt, build))
+        polygons.extend(
+            tuple(index + offset for index in polygon.vertices)
+            for polygon in belt.data.polygons
+        )
+    return BVHTree.FromPolygons(coordinates, polygons)
+
+
 def covers_tshirt(point, part, t):
     return (part == "torse" and point.z > 0.295) or (part == "bras" and t < 0.46)
 
@@ -1840,10 +1887,8 @@ def validate_wardrobe_coverage(body, garments):
 
     trees = {}
     for garment in tops + bottoms:
-        polygons = [tuple(polygon.vertices) for polygon in garment.data.polygons]
         for build in (-1.0, 0.0, 1.0):
-            trees[(garment.name, build)] = BVHTree.FromPolygons(
-                shape_coordinates(garment, build), polygons)
+            trees[(garment.name, build)] = wardrobe_piece_tree(garment, build)
 
     checks = 0
     coverage_errors = []
@@ -2592,9 +2637,20 @@ def crown():
 
 def trousers(body):
     """Pantalon : comme le short, mais jusqu'au-dessus des chaussures."""
-    cuts = trousers_cuts()
-    return shell("bas-pantalon", body, lambda p, part, side, t: (part == "torse" and p.z < 0.355) or
-                 (part == "jambe" and t < 1.0), 0.014, 0.006, "tissu", cuts)
+    cuts = trousers_cuts(BOTTOM_BELT_CUT_Z)
+    return shell(
+        "bas-pantalon",
+        body,
+        lambda p, part, side, t: (
+            part == "torse" and p.z < BOTTOM_BELT_CUT_Z
+        ) or (
+            part == "jambe" and p.z < BOTTOM_BELT_CUT_Z and t < 1.0
+        ),
+        0.014,
+        0.006,
+        "tissu",
+        cuts,
+    )
 
 
 def weigh_to_trunk(obj):
@@ -2632,6 +2688,13 @@ def skirt():
     mod.thickness = 0.007
     apply(obj)
     return weigh_to_trunk(geo.smooth(assign(obj, "tissu")))
+
+
+def build_bottom_belts(body):
+    return [
+        bottom_belt(body, "bas-short", 0.355, 0.011),
+        bottom_belt(body, "bas-pantalon", 0.355, 0.014),
+    ]
 
 
 def overall_bib_region(point, part=None, side=None, t=None):
@@ -2782,6 +2845,13 @@ PIECE_TRIANGLE_CAPS = {
 }
 BASE_TRIANGLE_CAPS = {"corps": 1380, "tete": 780, "cheveux": 520}
 SOFT_HAIR_TRIANGLE_CAP = 500
+BOTTOM_BELT_PIECES = ("bas-short", "bas-pantalon")
+BOTTOM_BELT_CUT_Z = 0.295
+BOTTOM_BELT_TRIANGLE_RESERVE = 230
+BOTTOM_BELT_MASKS = {
+    f"{name}-ceinture": ("haut-sweat", "haut-tshirt")
+    for name in BOTTOM_BELT_PIECES
+}
 DEFAULT_PIECES = ("haut-tshirt", "bas-short", "chaussures-baskets")
 
 PIECES = {
@@ -2914,6 +2984,10 @@ def write_body_zone_masks(masks):
     zones_path = os.path.normpath(os.path.join(
         HERE, "..", "..", "src", "features", "avatar", "avatar3d", "bodyZones.json"
     ))
+    masks = {
+        **masks,
+        **{name: list(maskers) for name, maskers in BOTTOM_BELT_MASKS.items()},
+    }
     with open(zones_path, "w", encoding="utf-8") as zones_file:
         json.dump(masks, zones_file, ensure_ascii=False, indent=2, sort_keys=True)
         zones_file.write("\n")
@@ -3903,7 +3977,10 @@ def wardrobe(body):
     return [build_piece(name, body) for name in PIECES if name not in DEFAULT_PIECES]
 
 
-FOLLOW_BUILD = tuple(name for name, piece in PIECES.items() if piece.follows_build)
+FOLLOW_BUILD = (
+    tuple(name for name, piece in PIECES.items() if piece.follows_build)
+    + tuple(f"{name}-ceinture" for name in BOTTOM_BELT_PIECES)
+)
 
 
 def triangle_count(obj):
@@ -3919,8 +3996,32 @@ def triangle_cap(name):
         return SOFT_HAIR_TRIANGLE_CAP
     if name.startswith("cheveux-"):
         return BASE_TRIANGLE_CAPS["cheveux"]
-    piece = PIECES.get(name)
-    return PIECE_TRIANGLE_CAPS[piece.slot] if piece else None
+    piece_name = name.removesuffix("-ceinture")
+    piece = PIECES.get(piece_name)
+    if piece is None:
+        return None
+    cap = PIECE_TRIANGLE_CAPS[piece.slot]
+    if piece_name in BOTTOM_BELT_PIECES:
+        return (
+            BOTTOM_BELT_TRIANGLE_RESERVE
+            if name != piece_name
+            else cap - BOTTOM_BELT_TRIANGLE_RESERVE
+        )
+    return cap
+
+
+def validate_bottom_belt_budgets(objects):
+    by_name = {obj.name: obj for obj in objects}
+    cap = PIECE_TRIANGLE_CAPS["bas"]
+    for name in BOTTOM_BELT_PIECES:
+        lower = triangle_count(by_name[name])
+        belt = triangle_count(by_name[f"{name}-ceinture"])
+        total = lower + belt
+        if total > cap:
+            raise RuntimeError(
+                f"Budget de triangles dépassé après construction de {name}: {total}/{cap}"
+            )
+        print("BOTTOM_BELT_BUDGET", name, f"triangles={total}/{cap}", flush=True)
 
 
 def clean_mesh_normals(obj):
@@ -4726,8 +4827,14 @@ def validate_visible_defects(
     scenarios=None,
 ):
     validate_avatar_object_names([rig] + pieces + hairs)
-    tops = [obj for obj in PIECE_OBJECTS.values() if PIECES[obj.name].slot == "haut"]
-    bottoms = [obj for obj in PIECE_OBJECTS.values() if PIECES[obj.name].slot == "bas"]
+    tops = [
+        obj for obj in PIECE_OBJECTS.values()
+        if PIECES.get(obj.name) and PIECES[obj.name].slot == "haut"
+    ]
+    bottoms = [
+        obj for obj in PIECE_OBJECTS.values()
+        if PIECES.get(obj.name) and PIECES[obj.name].slot == "bas"
+    ]
     shoes = PIECE_OBJECTS["chaussures-baskets"]
     builds = (-1.0, 0.0, 1.0) if builds is None else tuple(builds)
     pairs = [(top, bottom) for top in tops for bottom in bottoms] if pairs is None else list(pairs)
@@ -5103,8 +5210,14 @@ pieces = [body, head] + default_clothes
 hairs = [assign_weights(build_hair(style), "tete") for style in HAIRS]
 clothes = wardrobe(body)
 pieces += clothes
-PIECE_OBJECTS = {obj.name: obj for obj in pieces if obj.name in PIECES}
+pieces.extend(build_bottom_belts(body))
+PIECE_OBJECTS = {
+    obj.name: obj
+    for obj in pieces
+    if obj.name in PIECES or obj.name.endswith("-ceinture")
+}
 simplify_pieces(pieces + hairs)
+validate_bottom_belt_budgets(pieces)
 add_neck_geometry(body)
 RIGID_BODY_ASSIGNMENTS = rigid_body_groups(body)
 for obj in pieces + hairs:
@@ -5154,7 +5267,7 @@ for piece_name in SHELL_INNER_LAYER_OPEN_EDGES:
     obj = PIECE_OBJECTS.get(piece_name)
     if obj is None:
         raise RuntimeError(f"Coque de carrure introuvable: {piece_name}")
-    preserve_shell_build_layers(obj, body, piece_name)
+    preserve_shell_build_layers(obj, body, piece_name.removesuffix("-ceinture"))
 for obj in pieces + hairs:
     smooth_skinning_weights(obj, RIGID_BODY_ASSIGNMENTS)
 transfer_over_piece_weights(pieces)
@@ -5212,7 +5325,16 @@ def piece_count(name):
 
 def outfit_triangle_count(worn, hair_name):
     visible_zones = visible_body_zone_names(worn)
-    visible_objects = [*visible_zones, "tete", hair_name, *worn]
+    worn_set = set(worn)
+    has_top = any(
+        PIECES[name].slot == "haut" for name in worn_set if name in PIECES
+    )
+    visible_belts = [
+        f"{name}-ceinture"
+        for name in BOTTOM_BELT_PIECES
+        if name in worn_set and not has_top
+    ]
+    visible_objects = [*visible_zones, "tete", hair_name, *worn, *visible_belts]
     return sum(piece_count(name) for name in visible_objects), visible_zones
 
 
@@ -5419,7 +5541,14 @@ if os.environ.get("AVATAR_PREVIEW"):
         chosen_hair = next(hair for hair in hairs if hair.name == f"cheveux-{hair_style}")
         worn_pieces = {top.name, bottom.name, shoes.name, *(obj.name for obj in extra)}
         visible_body = [BODY_ZONE_OBJECTS[name] for name in visible_body_zone_names(worn_pieces)]
-        chosen = visible_body + [head, top, bottom, shoes, chosen_hair] + extra
+        belt = PIECE_OBJECTS.get(f"{bottom.name}-ceinture")
+        visible_belt = (
+            [belt]
+            if belt is not None
+            and not any(PIECES.get(name) and PIECES[name].slot == "haut" for name in worn_pieces)
+            else []
+        )
+        chosen = visible_body + [head, top, bottom, shoes, chosen_hair] + extra + visible_belt
         colors = {"peau": skin_c, "cheveux": hair_c}
         new_rig, objs = clone(rig, chosen, ((k - (len(panels) - 1) / 2) * spacing, 0, 0), colors)
         for obj in objs:
