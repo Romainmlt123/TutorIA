@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { GameButton } from '@/components/game/GameButton';
 import { GameText } from '@/components/game/GameText';
@@ -22,6 +22,13 @@ type Props = {
   /** Les deux bouts du curseur et les libellés des boutons − et +. */
   ends: { min: string; max: string; less: string; more: string };
 };
+
+export function trackValue(x: number | undefined, width: number): number | null {
+  if (typeof x !== 'number' || !Number.isFinite(x) || !Number.isFinite(width) || width <= 0) {
+    return null;
+  }
+  return snap(x / width);
+}
 
 /**
  * Curseur à crans du HUD de jeu : boutons − et + en relief, jauge creusée dans le bois qu'on touche
@@ -60,7 +67,14 @@ export function StepSlider({ value, onChange, label, ends }: Props) {
           accessible={false}
           onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
           onPress={(event) => {
-            if (width > 0) onChange(snap(event.nativeEvent.locationX / width));
+            // Web's onPress has DOM click coordinates; native keeps the responder's local coordinate.
+            const x =
+              Platform.OS === 'web'
+                ? (event.nativeEvent as typeof event.nativeEvent & { clientX: number }).clientX -
+                  (event.currentTarget as unknown as HTMLElement).getBoundingClientRect().left
+                : event.nativeEvent.locationX;
+            const nextValue = trackValue(x, width);
+            if (nextValue !== null) onChange(nextValue);
           }}
           style={styles.track}>
           <View style={styles.groove}>
