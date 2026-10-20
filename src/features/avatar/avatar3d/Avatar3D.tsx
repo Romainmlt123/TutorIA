@@ -10,9 +10,12 @@ import { avatarArt } from '@/theme/avatarArt';
 import type { AvatarLook } from '../logic/avatarLook';
 import { avatarBuild, avatarScale, faceParams } from '../logic/face';
 import { type FaceUniforms, faceMaterial, fitFace, setFace } from './faceMaterial';
+import { SLOTS, SLOT_PREFIX, visiblePieces } from './visiblePieces';
+
+export { visiblePieces } from './visiblePieces';
 
 /*
- * Figurine de l'avatar d'un élève (modèle Blender assets/avatar/avatar.glb, tools/avatar-3d) : une
+ * Figurine A1 de l'avatar d'un élève (modèle Blender assets/avatar/avatar.glb, tools/avatar-3d) : une
  * copie du modèle par avatar affiché, qui en partage la géométrie. On n'y montre que les pièces
  * choisies (coiffure, vêtements), colorées d'après le nom de leur matière, et le visage est dessiné
  * sur la tête par faceMaterial. Les matières sont éclairées : la scène doit contenir AvatarLights.
@@ -57,19 +60,6 @@ type Role =
   | 'detail'
   | 'lens'
   | 'jewel';
-
-/** Préfixe du nom des pièces de chaque emplacement de la tenue (tools/avatar-3d/avatar.py). */
-const SLOT_PREFIX = {
-  top: 'haut-',
-  bottom: 'bas-',
-  shoes: 'chaussures-',
-  hat: 'tete-',
-  glasses: 'visage-',
-  neck: 'cou-',
-  back: 'dos-',
-} as const;
-
-const SLOTS = Object.keys(SLOT_PREFIX) as (keyof typeof SLOT_PREFIX)[];
 
 function roleOf(piece: string, material: string): Role | null {
   if (material === 'peau') return 'skin';
@@ -143,14 +133,6 @@ function buildRig(gltf: GLTF): Rig {
     morphs,
     playing: null,
   };
-}
-
-/** Pièces visibles pour une apparence : le corps, la tête, la coiffure, la tenue et les accessoires. */
-export function visiblePieces(look: AvatarLook): Set<string> {
-  const worn = SLOTS.filter((slot) => look.outfit[slot].item !== 'aucun').map(
-    (slot) => `${SLOT_PREFIX[slot]}${look.outfit[slot].item}`,
-  );
-  return new Set(['corps', 'tete', `cheveux-${look.hair.style}`, ...worn]);
 }
 
 function dress(rig: Rig, look: AvatarLook) {

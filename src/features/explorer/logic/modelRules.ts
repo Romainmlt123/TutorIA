@@ -92,7 +92,7 @@ export const MODEL_RULES: readonly ModelRule[] = [
   {
     // Avatar3D.tsx : toute la garde-robe dans un seul fichier.
     file: 'assets/avatar/avatar.glb',
-    maxBytes: 1_590_000,
+    maxBytes: 599_999,
     nodes: { '*': FIGURINE },
   },
 ];

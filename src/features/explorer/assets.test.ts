@@ -56,7 +56,12 @@ function meshNodes(json: Gltf): { name: string; primitives: Primitive[] }[] {
   return (json.nodes ?? []).flatMap((node) =>
     node.mesh === undefined
       ? []
-      : [{ name: node.name ?? '', primitives: json.meshes?.[node.mesh]?.primitives ?? [] }],
+      : [
+          {
+            name: node.name ?? '',
+            primitives: json.meshes?.[node.mesh]?.primitives ?? [],
+          },
+        ],
   );
 }
 
@@ -142,6 +147,32 @@ describe('modèles 3D', () => {
 
     it('tient sous son plafond de poids', () => {
       expect(glb.size).toBeLessThanOrEqual(rule.maxBytes);
+    });
+
+    it('relie les zones du corps et leurs vêtements à des nœuds du GLB', () => {
+      if (rule.file !== 'assets/avatar/avatar.glb') return;
+      const bodyZones = JSON.parse(
+        readFileSync(join(ROOT, 'src/features/avatar/avatar3d/bodyZones.json'), 'utf8'),
+      ) as Record<string, string[]>;
+      const names = new Set(meshNodes(glb.json).map((node) => node.name));
+      const expectedZones = [
+        'corps',
+        'corps-avant-bras',
+        'corps-bras-haut',
+        'corps-cuisse',
+        'corps-mollet',
+        'corps-torse-bas',
+        'corps-torse-haut',
+      ];
+      expect(Object.keys(bodyZones)).toEqual(expectedZones);
+      for (const zone of Object.keys(bodyZones)) expect(names.has(zone)).toBe(true);
+      for (const pieces of Object.values(bodyZones)) {
+        for (const piece of pieces) expect(names.has(piece)).toBe(true);
+      }
+      expect(rule.nodes).toHaveProperty('*');
+      for (const name of [...Object.keys(bodyZones), ...Object.values(bodyZones).flat()]) {
+        expect(ruleKey(rule, name)).toBe('*');
+      }
     });
   });
 });

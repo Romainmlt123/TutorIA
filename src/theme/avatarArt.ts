@@ -1,5 +1,5 @@
 /**
- * Palettes des avatars des élèves (figurines façon Mii, `src/features/avatar`). L'avatar enregistre
+ * Palettes des avatars des élèves (`src/features/avatar`). L'avatar enregistre
  * des rangs dans ces listes, jamais des couleurs : on peut retoucher une teinte sans toucher aux
  * avatars déjà créés, mais on n'en retire jamais (on ajoute à la fin).
  */

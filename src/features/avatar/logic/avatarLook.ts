@@ -1,7 +1,7 @@
 import { avatarArt } from '@/theme/avatarArt';
 
 /*
- * Apparence de l'avatar d'un élève, façon Mii : peau, coiffure, visage (dessiné par l'app sur la
+ * Apparence de l'avatar A1 d'un élève : peau, coiffure, visage (dessiné par l'app sur la
  * tête de la figurine), taille et tenue. Les couleurs sont des rangs dans les palettes de
  * `avatarArt`, les formes des noms stables : c'est ce qui est enregistré, il ne faut jamais en
  * renommer une. Aucune donnée personnelle : l'élève compose sa figurine à la main, sans photo.

@@ -1,0 +1,9 @@
+{
+  "corps": [],
+  "corps-avant-bras": ["haut-sweat"],
+  "corps-bras-haut": ["haut-sweat"],
+  "corps-cuisse": ["bas-pantalon", "bas-salopette", "bas-short"],
+  "corps-mollet": ["bas-pantalon", "bas-salopette"],
+  "corps-torse-bas": ["bas-pantalon", "bas-salopette", "bas-short"],
+  "corps-torse-haut": ["haut-sweat", "haut-tshirt"]
+}
