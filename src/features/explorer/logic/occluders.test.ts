@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { islandOf } from '../content';
+import { ISLANDS, islandOf } from '../content';
+import { PRERENDERED_MAPS } from '../tiles';
+import { buildMapExport } from './mapExport';
 import { hiddenLevels, type MonumentBox } from './occluders';
 import { buildRegionMap, type MapCity, type MapNode } from './regionMap';
 
@@ -90,17 +92,49 @@ describe('monuments qui cacheraient l’avatar sur la carte pré-rendue', () => 
     expect(hiddenLevels(map, { tour: TOWER })).toEqual([]);
   });
 
-  it('ne trouve, dans Nombres, que le bilan des Puissances derrière sa tour', () => {
+  it('ne cache aucun niveau dans Nombres', () => {
     const map = buildRegionMap(islandOf('maths')!, 'maths-nombres', new Map())!;
     const boxes = monumentBoxes('assets/explorer/models/strip-nombres.glb');
     // Tour des Puissances : 0,62 m de côté, 1,75 m de haut (mesuré avec gltf-transform).
     expect(boxes['tour-puissances']!.max[1]).toBeCloseTo(1.75, 2);
     expect(map.cities.every((c) => boxes[c.monument])).toBe(true);
-    // Défaut connu de la disposition, à corriger avant la prochaine cuisson des tuiles : le disque
-    // est posé juste derrière la tour, dont le haut couvrirait les jambes de l'avatar. Une fois le
-    // niveau déplacé, cette liste doit être vide.
-    expect(hiddenLevels(map, boxes).map((h) => `${h.levelId} (${h.monument})`)).toEqual([
-      'maths-puissances.bilan (tour-puissances)',
-    ]);
+    expect(hiddenLevels(map, boxes)).toEqual([]);
   });
 });
+
+const IMAGE_SIN = Math.sin((52 * Math.PI) / 180);
+const DISC_MARGIN = 0.06;
+
+describe.each(Object.keys(PRERENDERED_MAPS))(
+  'sécurité de disposition pré-rendue %s',
+  (regionId) => {
+    it('sépare les ellipses des disques sur le plan image avec une marge de 0,06 m', () => {
+      const { nodes } = buildMapExport(regionId);
+      const overlaps: string[] = [];
+
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i]!;
+        for (const b of nodes.slice(i + 1)) {
+          const horizontalRadius = a.radius + b.radius + DISC_MARGIN;
+          const verticalRadius = (a.radius + b.radius) * IMAGE_SIN + DISC_MARGIN;
+          const dx = a.x - b.x;
+          const dv = (a.z - b.z) * IMAGE_SIN;
+          if ((dx / horizontalRadius) ** 2 + (dv / verticalRadius) ** 2 < 1) {
+            overlaps.push(`${a.levelId} / ${b.levelId}`);
+          }
+        }
+      }
+
+      expect(overlaps).toEqual([]);
+    });
+
+    it('ne cache aucun disque derrière un monument', () => {
+      const island = ISLANDS.find((candidate) =>
+        candidate.regions.some((region) => region.id === regionId),
+      )!;
+      const map = buildRegionMap(island, regionId, new Map())!;
+      const model = `assets/explorer/models/strip-${regionId.replace(/^[^-]+-/, '')}.glb`;
+      expect(hiddenLevels(map, monumentBoxes(model))).toEqual([]);
+    });
+  },
+);

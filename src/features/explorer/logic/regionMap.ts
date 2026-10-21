@@ -37,7 +37,7 @@ export type MapNode = {
   stars: Stars;
   x: number;
   z: number;
-  /** Rayon du point (0,26 m, 0,34 m pour une évaluation). */
+  /** Rayon du point (0,195 m, 0,255 m pour une évaluation). */
   radius: number;
 };
 

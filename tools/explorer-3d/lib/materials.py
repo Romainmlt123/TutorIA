@@ -261,11 +261,12 @@ def meadow_map(shore, extent, quiet=None):
             color = g.mix(worn, color, "dirt")
             rim = g.mask(path, 0.25, 0.7)
             color = g.mix(g.times(rim, 0.18), color, "grass-dry")
-        color = g.shore(color, shore, extent)
+        if shore is not None:
+            color = g.shore(color, shore, extent)
         g.bump(g.noise(9.0, 2.0), 0.2, 0.01)
         # Couleurs vives, comme l'herbe d'avant (Romain préfère la couleur) : ni voile ni désaturation.
         return g.finish(color, 0.9)
-    return _cached("prairie-carte", build)
+    return _cached("prairie-carte" if shore is not None else "prairie-carte-sans-rive", build)
 
 
 def soil(top=0.0, bottom=-3.9):

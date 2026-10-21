@@ -9,7 +9,7 @@
  "height": 4868,
  "tile": 512,
  "bleed": 1,
- "layoutHash": "78c23e72dae1da0e",
+ "layoutHash": "80ac049b017963ef",
  "underlay": {
   "file": "sous-couche.webp",
   "factor": 4
@@ -843,7 +843,7 @@
    "x": 767,
    "y": 2909,
    "width": 313,
-   "height": 112,
+   "height": 111,
    "file": "troncon-07.webp"
   },
   {
@@ -867,7 +867,7 @@
    "x": 546,
    "y": 3288,
    "width": 245,
-   "height": 180,
+   "height": 171,
    "file": "troncon-10.webp"
   },
   {
@@ -882,7 +882,7 @@
    "gap": 12,
    "x": 1017,
    "y": 3201,
-   "width": 212,
+   "width": 211,
    "height": 243,
    "file": "troncon-12.webp"
   },
@@ -920,9 +920,9 @@
   },
   {
    "gap": 17,
-   "x": 2557,
+   "x": 2558,
    "y": 3249,
-   "width": 131,
+   "width": 130,
    "height": 247,
    "file": "troncon-17.webp"
   },
@@ -936,18 +936,18 @@
   },
   {
    "gap": 19,
-   "x": 2952,
+   "x": 2954,
    "y": 3039,
-   "width": 198,
-   "height": 176,
+   "width": 196,
+   "height": 159,
    "file": "troncon-19.webp"
   },
   {
    "gap": 20,
-   "x": 3130,
+   "x": 3134,
    "y": 3146,
-   "width": 215,
-   "height": 80,
+   "width": 200,
+   "height": 79,
    "file": "troncon-20.webp"
   },
   {
@@ -955,7 +955,7 @@
    "x": 3325,
    "y": 3041,
    "width": 223,
-   "height": 167,
+   "height": 153,
    "file": "troncon-21.webp"
   },
   {
@@ -968,154 +968,154 @@
   },
   {
    "gap": 23,
-   "x": 3419,
+   "x": 3422,
    "y": 2721,
-   "width": 167,
-   "height": 167,
+   "width": 165,
+   "height": 166,
    "file": "troncon-23.webp"
   },
   {
    "gap": 24,
-   "x": 3218,
-   "y": 2662,
-   "width": 250,
-   "height": 107,
+   "x": 3072,
+   "y": 2673,
+   "width": 394,
+   "height": 97,
    "file": "troncon-24.webp"
   },
   {
    "gap": 25,
-   "x": 3181,
-   "y": 2560,
-   "width": 99,
-   "height": 123,
+   "x": 3071,
+   "y": 2566,
+   "width": 313,
+   "height": 156,
    "file": "troncon-25.webp"
   },
   {
    "gap": 26,
-   "x": 3045,
-   "y": 2528,
-   "width": 183,
-   "height": 84,
+   "x": 3036,
+   "y": 2525,
+   "width": 366,
+   "height": 79,
    "file": "troncon-26.webp"
   },
   {
    "gap": 27,
-   "x": 2890,
-   "y": 2465,
-   "width": 182,
-   "height": 126,
+   "x": 2879,
+   "y": 2461,
+   "width": 184,
+   "height": 130,
    "file": "troncon-27.webp"
   },
   {
    "gap": 28,
-   "x": 2770,
-   "y": 2344,
-   "width": 172,
-   "height": 169,
+   "x": 2776,
+   "y": 2361,
+   "width": 158,
+   "height": 146,
    "file": "troncon-28.webp"
   },
   {
    "gap": 29,
-   "x": 2730,
-   "y": 2225,
-   "width": 118,
-   "height": 141,
+   "x": 2729,
+   "y": 2219,
+   "width": 125,
+   "height": 170,
    "file": "troncon-29.webp"
   },
   {
    "gap": 30,
-   "x": 2732,
-   "y": 2087,
+   "x": 2731,
+   "y": 2080,
    "width": 113,
-   "height": 139,
+   "height": 141,
    "file": "troncon-30.webp"
   },
   {
    "gap": 31,
    "x": 2771,
-   "y": 1941,
-   "width": 176,
-   "height": 167,
+   "y": 1957,
+   "width": 156,
+   "height": 148,
    "file": "troncon-31.webp"
   },
   {
    "gap": 32,
-   "x": 2892,
+   "x": 2872,
    "y": 1860,
-   "width": 181,
-   "height": 128,
+   "width": 207,
+   "height": 142,
    "file": "troncon-32.webp"
   },
   {
    "gap": 33,
-   "x": 3051,
-   "y": 1843,
+   "x": 3060,
+   "y": 1845,
    "width": 187,
-   "height": 82,
+   "height": 80,
    "file": "troncon-33.webp"
   },
   {
    "gap": 34,
    "x": 3194,
-   "y": 1656,
-   "width": 107,
-   "height": 238,
+   "y": 1650,
+   "width": 108,
+   "height": 235,
    "file": "troncon-34.webp"
   },
   {
    "gap": 35,
-   "x": 3044,
-   "y": 1590,
-   "width": 227,
-   "height": 91,
+   "x": 3036,
+   "y": 1591,
+   "width": 229,
+   "height": 90,
    "file": "troncon-35.webp"
   },
   {
    "gap": 36,
-   "x": 2889,
-   "y": 1520,
-   "width": 179,
-   "height": 132,
+   "x": 2887,
+   "y": 1515,
+   "width": 178,
+   "height": 135,
    "file": "troncon-36.webp"
   },
   {
    "gap": 37,
-   "x": 2799,
-   "y": 1391,
-   "width": 154,
-   "height": 172,
+   "x": 2805,
+   "y": 1408,
+   "width": 145,
+   "height": 148,
    "file": "troncon-37.webp"
   },
   {
    "gap": 38,
-   "x": 2785,
-   "y": 1263,
-   "width": 98,
-   "height": 140,
+   "x": 2786,
+   "y": 1253,
+   "width": 102,
+   "height": 174,
    "file": "troncon-38.webp"
   },
   {
    "gap": 39,
-   "x": 2806,
-   "y": 1130,
-   "width": 140,
+   "x": 2802,
+   "y": 1125,
+   "width": 150,
    "height": 145,
    "file": "troncon-39.webp"
   },
   {
    "gap": 40,
-   "x": 2882,
-   "y": 1022,
-   "width": 204,
-   "height": 146,
+   "x": 2891,
+   "y": 1031,
+   "width": 173,
+   "height": 133,
    "file": "troncon-40.webp"
   },
   {
    "gap": 41,
-   "x": 3058,
-   "y": 976,
-   "width": 283,
-   "height": 107,
+   "x": 3030,
+   "y": 981,
+   "width": 286,
+   "height": 113,
    "file": "troncon-41.webp"
   }
  ]

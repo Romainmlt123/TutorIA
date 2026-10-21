@@ -111,7 +111,7 @@ Ils viennent de captures de l'app web en 390 px, avec Léa :
 
 ### 3.2 Le monde
 
-- **Matières :** une maquette miniature réaliste. Herbe de prairie avec des zones sèches, terre sombre, pierre grise, bois clair. Jouets peints aux couleurs douces et passées, arêtes usées, biseaux. Monuments soignés comme des figurines. Pas d'arbres ni de buissons sur les cartes.
+- **Matières :** une maquette miniature réaliste. Herbe de prairie avec des zones sèches, terre sombre, pierre grise, bois clair. Jouets peints aux couleurs douces et passées, arêtes usées, biseaux. Monuments soignés comme des figurines. Arbres et buissons seulement dans les villes, en petit nombre (direction C1 ci-dessous), jamais sur le chemin ni contre un disque.
 - **Lumière :** un seul soleil de fin d'après-midi plus le ciel, le même partout (cuisson, eau, pré-rendu, avatar) : direction `sun` de la disposition exportée, `[-0.67, 0.656, 0.348]`. Les ombres sont teintées, jamais noires.
 - **Détail par fréquence (contre le bruit) :** des variations à grande échelle (0,5 à 5 m : zones sèches, bande foulée le long du chemin, clairières plus claires, bords humides) ; touffes, trèfle et galets en vraie géométrie ; **aucun détail cuit sous 2 px à l'écran**.
 - **Zones calmes :** sous le chemin, les niveaux et les bannières, l'herbe est moins contrastée. L'interface reste l'élément le plus contrasté de l'écran.
@@ -122,6 +122,22 @@ Ils viennent de captures de l'app web en 390 px, avec Léa :
   - une **rive** qui fait la transition : berge humide plus sombre, légère pente, fine ligne d'écume ;
   - jamais une coupure nette entre l'herbe et l'eau.
 - **Étalonnage :** un seul, `post.natural`, défini dans `hd2d/grade.ts`, appliqué à l'île en temps réel, aux tuiles pré-rendues et à l'avatar.
+
+### 3.2 bis Direction C1 : « Diorama habité » (choisie par Romain, 18 octobre 2026)
+
+Inspiration : _Captain Toad: Treasure Tracker_ pour le diorama, _Royal Match_ pour la lisibilité. Chaque ville est un petit diorama habité autour de son monument. Image cible validée : la Ville des Relatifs (pull request de C1). Elle s'applique aux six villes en C2, à l'île en C3.
+
+- **Place :** un socle de pierre (rayon 1,16 m, pierre `#8e7f68`) qui dépasse de l'herbe, une bordure de pierres taillées, puis des pavés en anneaux concentriques de deux tons proches (`#bfae90`, `#cdbd9f`) jusqu'à 1,02 m du centre. Le monument est posé dessus. Les pavés restent peu contrastés : le monument et les disques passent devant.
+- **Maisons-jouets :** cinq par ville, entre 1,95 et 4,6 m du centre, à au moins 0,44 m du chemin et des disques, la porte tournée vers la place. Corps de 0,38 à 0,46 m sur 0,32 à 0,37 m, un étage (0,27 à 0,32 m) ou deux (0,46 m), soubassement de pierre, murs de plâtre (`#efe4cc`, `#faf3e2`, `#e2d6bd`), toit à deux pans de 0,21 m avec débord et faîtage plus sombre, porte encadrée de blanc et seuil de pierre, fenêtres à volets verts (`#4f8a5b`), une jardinière fleurie, une cheminée de brique.
+- **Couleur porteuse de sens :** les toits reprennent les couleurs du monument. Pour les Relatifs, toits rouges (`#b8283c`, faîtage `#8a1f2e`) du côté des négatifs, bleus (`#3b6ea8`, faîtage `#2a4d7c`) du côté des positifs.
+- **Végétation et mobilier :** trois arbres ronds (tronc d'écorce, couronne fondue `crown`), deux lanternes de fer à lumière chaude (`#ffd27a`) près de la place. Fleurs et rochers de la carte gardés autour, mais jamais sous une maison.
+- **Lumières d'ambiance :** fenêtres émissives chaudes (`#ffad3d`, `#e8782a`), lampe de porte, lanternes à halo additif diffus et flaques chaudes (`#ff9c33`). Une lanterne reste à au moins 0,45 m du bord de tout disque ; son halo et sa flaque ne passent jamais sous un disque.
+- **Disques :** rayon de 0,195 m pour un niveau et de 0,255 m pour une évaluation.
+- **Herbe :** plus profonde que l'herbe vive actuelle : `grass` `#4f7d2d`, `grass-light` `#6f9a3f`, `grass-dry` `#93904f`, `moss` `#3f6826` ; brins `base` `#2e461b`, `tip` `#86a047`, `dry` `#a9a261`.
+- **Lumière :** même direction `sun`, même couleur, mais un soleil plus net (diamètre apparent 4° au lieu de 6°, énergie 5,6) et un ciel moins fort (1,0) : des ombres plus franches, qui posent les maisons au sol.
+- **Étalonnage (`post.natural`) :** saturation 1,06, exposition 1,02, teinte des ombres 0,12 (`#8a7ad6`), des lumières 0,12 (`#ffe2b0`).
+- **Lisibilité :** l'interface reste le plus contrasté de l'écran. Les maisons, arbres et lanternes ne touchent ni le chemin ni les disques, et le centre de la place reste calme.
+- **Coût mobile :** tout est pré-rendu dans les tuiles : aucun objet, aucun appel de dessin en plus à l'exécution. Seul le poids des tuiles WebP peut monter avec le détail : il reste sous le budget du § 3.5 (2 000 000 octets par région).
 
 ### 3.3 Le HUD de la carte
 
