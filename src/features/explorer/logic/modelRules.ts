@@ -53,9 +53,9 @@ const FIGURINE: NodeRule = { attributes: ['POSITION', 'NORMAL', 'JOINTS_0', 'WEI
 export const MODEL_RULES: readonly ModelRule[] = [
   {
     // MathsIsland3D.tsx (la teinte des régions lit la position). Budget : 1 500 000 octets
-    // (docs/explorer-creer-une-ile.md, § 4), à atteindre à la prochaine cuisson de l'île.
+    // (docs/explorer-creer-une-ile.md, § 4).
     file: 'assets/explorer/models/island-maths-3d.glb',
-    maxBytes: 1_560_000,
+    maxBytes: 1_500_000,
     nodes: { ile: BAKED, brins: BLADES, 'chiffre_*': PLAIN },
   },
   {

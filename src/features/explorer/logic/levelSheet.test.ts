@@ -17,7 +17,7 @@ describe('fiche d’un niveau', () => {
   it('nomme les villes à terminer avant une ville fermée', () => {
     expect(lockOf(fresh, node(fresh, 'maths-equations.isoler-x'))).toEqual({
       kind: 'city',
-      names: ['Ville du Calcul littéral'],
+      names: ['Village du Calcul littéral'],
     });
   });
 

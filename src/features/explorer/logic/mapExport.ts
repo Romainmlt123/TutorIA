@@ -40,6 +40,7 @@ export type MapExport = {
   bounds: RegionMap['bounds'];
   /** Décors posés : [sorte, x, z, angle, échelle]. */
   decor: [string, number, number, number, number][];
+  planks: typeof explorerArt.map.planks;
   /** Brins des touffes d'herbe des clairières : triangles (x, y, z) et leurs UV. */
   tufts: { position: number[]; uv: number[] };
   bladeRule: typeof BLADE_RULE;
@@ -113,6 +114,7 @@ export function buildMapExport(regionId: string, islands: readonly Island[] = IS
     path: parts.path,
     bounds: map.bounds,
     decor: parts.decor,
+    planks: explorerArt.map.planks,
     tufts: parts.tufts,
     bladeRule: BLADE_RULE,
     grade: explorerArt.post.natural,

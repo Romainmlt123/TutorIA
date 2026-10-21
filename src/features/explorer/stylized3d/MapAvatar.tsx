@@ -7,7 +7,15 @@ import type { AvatarLook } from '@/features/avatar/logic/avatarLook';
 import { SCENE_TIME } from '@/lib/three/sceneClock';
 
 import type { RegionMap } from '../logic/regionMap';
-import { createChoreo, FEET, MAP_SCALE, takeArrival, tick, WALK_PLAYBACK } from './avatarChoreo';
+import {
+  createChoreo,
+  FEET,
+  MAP_AVATAR_SHADOW,
+  MAP_SCALE,
+  takeArrival,
+  tick,
+  WALK_PLAYBACK,
+} from './avatarChoreo';
 import { groundShadows } from './groundShadows';
 
 /*
@@ -35,7 +43,7 @@ export function MapAvatar({ map, avatar, animated }: Props) {
   const to = found >= 0 ? found : map.pawnIndex;
   const figure = useRef<THREE.Group>(null);
   const choreo = useMemo(() => createChoreo(), []);
-  const shadow = useMemo(() => groundShadows([{ x: 0, z: 0, radius: 0.28, height: 0.6 }]), []);
+  const shadow = useMemo(() => groundShadows([{ x: 0, z: 0, ...MAP_AVATAR_SHADOW }]), []);
   useEffect(
     () => () => {
       shadow.geometry.dispose();

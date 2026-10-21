@@ -77,33 +77,32 @@ def subdivide(obj, levels=1):
 SIDES = 160
 
 
-def _angle(i):
+def _angle(i, sides=SIDES):
     # Sens horaire en Blender = sens trigonométrique dans l'app (z inversé).
-    return -(i / SIDES) * math.tau
+    return -(i / sides) * math.tau
 
 
-def plateau(shore=None):
+def plateau(shore=None, sides=SIDES, rings=14):
     """Plateau d'herbe presque plat (léger moutonnement), au contour de l'app."""
     rng = random.Random(3)
-    rings = 14
     bm = bmesh.new()
     center = bm.verts.new((0, 0, 0.02))
     grid = []
     for k in range(1, rings + 1):
         ring = []
-        for i in range(SIDES):
-            a = _angle(i)
+        for i in range(sides):
+            a = _angle(i, sides)
             r = edge(-a) * k / rings
             x, y = math.cos(a) * r, math.sin(a) * r
             bump = 0.012 * math.sin(x * 2.3 + 1) * math.sin(y * 1.9) + rng.uniform(-0.003, 0.003)
             ring.append(bm.verts.new((x, y, bump if k < rings else 0.0)))
         grid.append(ring)
     # Les angles tournent en sens horaire vu du dessus : faces listées à l'envers pour regarder en haut.
-    for i in range(SIDES):
-        bm.faces.new((center, grid[0][(i + 1) % SIDES], grid[0][i]))
+    for i in range(sides):
+        bm.faces.new((center, grid[0][(i + 1) % sides], grid[0][i]))
     for k in range(rings - 1):
-        for i in range(SIDES):
-            j = (i + 1) % SIDES
+        for i in range(sides):
+            j = (i + 1) % sides
             bm.faces.new((grid[k][i], grid[k][j], grid[k + 1][j], grid[k + 1][i]))
     obj = link("Plateau", bm)
     return smooth(M.assign(obj, M.grass(shore)))
@@ -167,7 +166,7 @@ def displace(obj, name, scale, strength, depth=2):
     return obj
 
 
-def underside(rings=36):
+def underside(rings=36, sides=SIDES, detail=1.0):
     """Motte de terre d'un seul tenant : du bord du plateau jusqu'à une pointe arrondie."""
     rng = random.Random(4)
     phases = [rng.uniform(0, math.tau) for _ in range(3)]
@@ -177,8 +176,8 @@ def underside(rings=36):
         t = k / rings
         z = TOP - t * DEPTH
         row = []
-        for i in range(SIDES):
-            a = _angle(i)
+        for i in range(sides):
+            a = _angle(i, sides)
             lumps = (0.05 * math.sin(a * 3 + t * 4.1 + phases[0]) + 0.035 * math.sin(a * 7 - t * 6.3 + phases[1])
                      + 0.02 * math.sin(a * 13 + t * 11 + phases[2]))
             # Tout en haut, la terre reste en retrait sous le rebord d'herbe : ses bosses ne le percent pas.
@@ -187,16 +186,16 @@ def underside(rings=36):
             row.append(bm.verts.new((math.cos(a) * r, math.sin(a) * r, z)))
         verts.append(row)
     for k in range(rings):
-        for i in range(SIDES):
-            j = (i + 1) % SIDES
+        for i in range(sides):
+            j = (i + 1) % sides
             bm.faces.new((verts[k][i], verts[k][j], verts[k + 1][j], verts[k + 1][i]))
     bmesh.ops.remove_doubles(bm, verts=verts[-1], dist=1e-4)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
     obj = link("Motte", bm)
-    displace(obj, "Motte bosses", 0.7, 0.22)
-    displace(obj, "Motte mottes", 0.32, 0.09)
-    displace(obj, "Motte grain", 0.14, 0.05)
-    return smooth(M.assign(obj, M.soil(TOP, TOP - DEPTH)))
+    displace(obj, "Motte bosses", 0.7, 0.22 * detail)
+    displace(obj, "Motte mottes", 0.32, 0.09 * detail)
+    displace(obj, "Motte grain", 0.14, 0.05 * detail)
+    return smooth(M.assign(obj, M.soil(TOP, TOP - DEPTH, detail)))
 
 
 def underside_point(angle, t, inset=0.0):
@@ -205,10 +204,14 @@ def underside_point(angle, t, inset=0.0):
     return (math.cos(angle) * r, -math.sin(angle) * r, TOP - t * DEPTH)
 
 
-def island_body(shore=None):
+def island_body(shore=None, sides=SIDES, underside_rings=36, lip_sides=26 * 12, detail=1.0):
     lip = band("Bordure", [(1.0, 0.0, 0), (1.028, -0.1, 0.004), (1.02, -0.22, 0.006)], M.grass(),
-               sides=26 * 12, scallops=(26, 0.1))
-    return [plateau(shore), lip, underside()]
+               sides=lip_sides, scallops=(26, 0.1))
+    return [
+        plateau(shore, sides=sides),
+        lip,
+        underside(rings=underside_rings, sides=sides, detail=detail),
+    ]
 
 
 # ---------------------------------------------------------------------------

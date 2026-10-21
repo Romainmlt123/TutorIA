@@ -20,11 +20,12 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from lib import bake, geo  # noqa: E402
+from lib import bake, geo, mapwater, palette  # noqa: E402
 from lib import materials as M  # noqa: E402
 from lib.geo import app, edge  # noqa: E402
 
 WATER = json.load(open(os.path.join(geo.ROOT, "src", "features", "explorer", "stylized3d", "water.json")))
+REGION_LAYOUT = json.load(open(os.path.join(geo.ROOT, "src", "features", "explorer", "stylized3d", "regions.json")))["regions"]
 
 # ---------------------------------------------------------------------------
 # Eau : tracé du π et de la rivière (l'eau elle-même est dans l'app), et rive peinte dans l'herbe
@@ -43,12 +44,29 @@ def inside(poly, x, z):
     return result
 
 
+def segment_distance(point, start, end):
+    px, pz = point
+    ax, az = start
+    bx, bz = end
+    dx, dz = bx - ax, bz - az
+    t = np.clip(((px - ax) * dx + (pz - az) * dz) / (dx * dx + dz * dz or 1.0), 0.0, 1.0)
+    return math.hypot(px - (ax + t * dx), pz - (az + t * dz))
+
+
+def polygon_clearance(poly, x, z):
+    distance = min(segment_distance((x, z), start, end)
+                   for start, end in zip(poly, poly[1:] + poly[:1]))
+    return -distance if inside(poly, x, z) else distance
+
+
+def water_clearance(x, z):
+    pi = polygon_clearance(pi_outline, x, z)
+    river_clearance = min(segment_distance((x, z), start, end) for start, end in zip(river, river[1:])) - half
+    return min(pi, river_clearance)
+
+
 def near_water(x, z, margin):
-    if inside(pi_outline, x, z) or any(
-        math.hypot(x - px, z - pz) < margin for px, pz in pi_outline
-    ):
-        return True
-    return any(math.hypot(x - rx, z - rz) < half + margin for rx, rz in river)
+    return water_clearance(x, z) < margin
 
 
 def smoothstep(a, b, x):
@@ -56,9 +74,16 @@ def smoothstep(a, b, x):
     return t * t * (3 - 2 * t)
 
 
-def water_mask(size=512, extent=3.6):
+def water_mask(
+    size=512,
+    extent=3.6,
+    scale=1.0,
+    shore_roughness=0.0,
+    wet_bank_width=0.16,
+):
     """Image vue du dessus (repère Blender, [-extent, extent]²) : rouge = rive humide autour de
-    l'eau, vert = sous l'eau. Même distance signée que le shader de l'eau de l'app."""
+    l'eau, vert = sous l'eau. Même distance signée que le shader de l'eau de l'app. `shore_roughness`
+    est un retrait facultatif en mètres de carte, activé seulement pour le terrain pré-rendu."""
     coords = (np.arange(size) + 0.5) / size * 2 * extent - extent
     bx, by = np.meshgrid(coords, coords)
     x, z = bx, -by
@@ -72,12 +97,14 @@ def water_mask(size=512, extent=3.6):
         if az != cz:
             within ^= ((az > z) != (cz > z)) & (x < ax + (z - az) * ex / ez)
     distance = np.sqrt(nearest) * np.where(within, -1.0, 1.0)
+    if shore_roughness:
+        distance += mapwater.shoreline_offset(x * scale, z * scale, shore_roughness) / scale
     for (ax, az), (cx, cz) in zip(river, river[1:]):
         ex, ez = cx - ax, cz - az
         t = np.clip(((x - ax) * ex + (z - az) * ez) / (ex * ex + ez * ez), 0.0, 1.0)
         distance = np.minimum(distance, np.hypot(x - ax - ex * t, z - az - ez * t) - half)
     pixels = np.zeros((size, size, 4), dtype=np.float32)
-    pixels[..., 0] = 1.0 - smoothstep(0.0, 0.16, distance)
+    pixels[..., 0] = 1.0 - smoothstep(0.0, wet_bank_width, distance)
     pixels[..., 1] = smoothstep(0.01, -0.03, distance)
     pixels[..., 3] = 1.0
     image = bpy.data.images.new("rive", size, size, float_buffer=True)
@@ -88,13 +115,40 @@ def water_mask(size=512, extent=3.6):
 
 
 geo.reset()
-geo.island_body(shore=water_mask())
+geo.island_body(
+    shore=water_mask(),
+    sides=128,
+    underside_rings=20,
+    lip_sides=26 * 8,
+    detail=0.7,
+)
 
 # ---------------------------------------------------------------------------
 # Placement : chaque objet réserve un disque, hors de l'eau et dans l'île
 # ---------------------------------------------------------------------------
 occupied = []
 claim_names = []
+LANDMARKS = (
+    "grue",
+    "rapporteur",
+    "compas",
+    "M",
+    "pyramide",
+    "octaedre",
+    "de",
+    "cubes",
+    "boulier",
+    "arbre ",
+)
+placement_records = []
+
+
+def triangle_count(objects):
+    return sum(len(polygon.vertices) - 2 for obj in objects if obj.type == "MESH" for polygon in obj.data.polygons)
+
+MIN_WATER_MARGIN = 0.30
+MIN_BANK_MARGIN = 0.15
+WET_BANK_WIDTH = 0.16
 
 
 def claim(x, z, radius, name):
@@ -111,6 +165,37 @@ def free(x, z, radius):
     if near_water(x, z, radius + 0.04):
         return False
     return all(math.hypot(x - ox, z - oz) > radius + orad for ox, oz, orad in occupied)
+
+
+def fallback_plane(x, z, y=0.0):
+    azimuth = -0.2
+    elevation = math.radians(24)
+    xr = math.cos(azimuth) * x - math.sin(azimuth) * z
+    zr = math.sin(azimuth) * x + math.cos(azimuth) * z
+    return xr, zr * math.sin(elevation) - y * math.cos(elevation)
+
+
+def projected_bounds(x, z, half_width, half_depth, height):
+    points = [fallback_plane(x + dx, z + dz, y)
+              for dx in (-half_width, half_width)
+              for dz in (-half_depth, half_depth)
+              for y in (0, height)]
+    return (min(p[0] for p in points), min(p[1] for p in points),
+            max(p[0] for p in points), max(p[1] for p in points))
+
+
+def projected_overlap(x, z, width, depth, height, name, ox, oz, radius):
+    house = projected_bounds(x, z, width / 2, depth / 2, height)
+    rep_height = {
+        "grue": 3.2, "rapporteur": 1.8, "compas": 1.9, "M": 1.7,
+        "pyramide": 1.0, "octaedre": 0.7, "de": 0.8, "cubes": 1.2,
+        "boulier": 1.2,
+    }.get(name, 1.8)
+    rep = projected_bounds(ox, oz, radius, radius, rep_height)
+    iw = max(0.0, min(house[2], rep[2]) - max(house[0], rep[0]))
+    ih = max(0.0, min(house[3], rep[3]) - max(house[1], rep[1]))
+    area = max((rep[2] - rep[0]) * (rep[3] - rep[1]), 1e-6)
+    return iw * ih / area
 
 
 wood, ink, white = M.wood(), M.flat("ink"), M.flat("white")
@@ -207,11 +292,6 @@ for x, z, size, color in ((-0.25, 1.95, 0.9, "orange"), (-0.95, 2.45, 0.62, "blu
                                     rotation=(0, 0, 0.5))
     geo.bevel(M.assign(bpy.context.active_object, M.paint(color)), 0.03, 2)
 
-ix, iz = 1.3, 0.2
-claim(ix, iz, 0.3, "icosaedre")
-bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=0.3, location=app(ix, iz, 0.3))
-geo.bevel(M.assign(bpy.context.active_object, M.paint("green-toy")), 0.02, 2)
-
 ox, oz = -2.6, 1.3
 claim(ox, oz, 0.25, "octaedre")
 bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.26, depth=0.26, location=app(ox, oz, 0.39))
@@ -246,12 +326,8 @@ for size, offset in (((1.15, 0.1, 0.1), (0, 1.0)), ((1.15, 0.1, 0.1), (0, 0.12))
 for row, color in enumerate(("blue", "violet", "cyan", "orange")):
     y = 0.32 + row * 0.18
     geo.cylinder(app(ax, az, y), 0.012, 1.0, metal, 8, rotation=(0, math.pi / 2, 0))
-    for k in range(5):
-        geo.sphere(app(ax - 0.36 + k * 0.12 + (row % 2) * 0.1, az, y), 0.055, M.paint(color), 10)
-
-claim(0.85, -1.05, 0.2, "balle")
-geo.sphere(app(0.85, -1.05, 0.16), 0.16, M.paint("blue"))
-
+    for k in range(4):
+        geo.sphere(app(ax - 0.36 + k * 0.15 + (row % 2) * 0.1, az, y), 0.055, M.paint(color), 8)
 
 # ---------------------------------------------------------------------------
 # Arbres-signes et arbres ronds
@@ -290,7 +366,10 @@ def round_tree(x, z, height, seed):
         centers.append((app(x + math.cos(a) * height * 0.22, z + math.sin(a) * height * 0.15,
                             height * (0.74 + rng.uniform(-0.08, 0.12))), height * rng.uniform(0.17, 0.23)))
     centers.append((app(x, z, height * 1.0), height * 0.2))
-    geo.blob(centers, M.leaves("grass"))
+    canopy = geo.blob(centers, M.leaves("grass"), voxel=0.075)
+    for modifier in canopy.modifiers:
+        if modifier.type == "DISPLACE":
+            modifier.strength *= 0.55
 
 
 sign_tree(-2.3, -0.95, "+", "green-toy")
@@ -299,6 +378,167 @@ sign_tree(1.4, 2.3, "÷", "cyan")
 for i, (x, z, h) in enumerate(((-2.1, -1.85, 1.0), (-1.55, -2.35, 1.1), (1.45, -2.45, 1.05))):
     round_tree(x, z, h, i + 1)
 
+
+def warm_material(name, base, strength):
+    def build():
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = True
+        bsdf = mat.node_tree.nodes["Principled BSDF"]
+        bsdf.inputs["Base Color"].default_value = palette.rgba(base)
+        bsdf.inputs["Roughness"].default_value = 0.45
+        bsdf.inputs["Emission Color"].default_value = palette.rgba(base)
+        bsdf.inputs["Emission Strength"].default_value = strength
+        return mat
+
+    return M._cached(name, build)
+
+
+def warm_light(location, energy, name):
+    data = bpy.data.lights.new(name, "POINT")
+    data.energy = energy
+    data.shadow_soft_size = 0.04
+    data.color = palette.rgb("c1-point-light")
+    obj = bpy.data.objects.new(name, data)
+    obj.location = location
+    bpy.context.scene.collection.objects.link(obj)
+
+
+def warm_pool(x, z, radius):
+    bpy.ops.mesh.primitive_circle_add(vertices=12, radius=radius, fill_type="TRIFAN", location=app(x, z, 0.025))
+    M.assign(bpy.context.active_object, warm_material("hameau-sol", "c1-lamp-hot", 0.4))
+
+
+ROOF_MATERIALS = {
+    "maths-nombres": ("blue", "blue-light"),
+    "maths-donnees": ("orange", "orange"),
+    "maths-espace": ("violet", "violet-light"),
+}
+
+
+def hamlet_house(region_id, index, x, z):
+    rng = random.Random(1300 + index)
+    width = rng.uniform(0.32, 0.36)
+    depth = rng.uniform(0.28, 0.32)
+    height = 0.30 if index % 3 else 0.36
+    roof, roof_light = ROOF_MATERIALS[region_id]
+    roof_top = height + 0.04
+    front = -z - depth / 2 - 0.008
+    parts = [
+        geo.box(app(x, z, 0.025), (width + 0.05, depth + 0.05, 0.05), M.paint("stone-warm-dark"),
+                bevel_width=0),
+        geo.box(app(x, z, height / 2 + 0.04), (width, depth, height), M.paint("plaster"),
+                bevel_width=0),
+        geo.extruded([(-width / 2 - 0.05, 0), (width / 2 + 0.05, 0), (0, 0.20)], depth + 0.08,
+                     M.paint(roof, roof_light), app(x, z, roof_top), bevel_width=0, name="Toit hameau"),
+        geo.box((x, front, roof_top + 0.18), (0.035, depth + 0.08, 0.035), M.paint("stone-warm-dark"),
+                bevel_width=0),
+        geo.box((x + width * 0.24, -z + depth * 0.15, roof_top + 0.10), (0.065, 0.065, 0.16),
+                M.paint("brick"), bevel_width=0),
+        geo.box((x, front - 0.01, 0.14), (0.11, 0.014, 0.18), M.paint("wood-dark"), bevel_width=0),
+        geo.box((x + 0.08, front - 0.015, 0.30), (0.055, 0.035, 0.025),
+                M.paint("iron"), bevel_width=0),
+        geo.box((x + 0.08, front - 0.025, 0.25), (0.05, 0.025, 0.07),
+                warm_material("hameau-lampe", "c1-lamp-hot", 4.0), bevel_width=0),
+        geo.box((x + 0.08, front - 0.018, 0.20), (0.065, 0.032, 0.018),
+                M.paint("iron"), bevel_width=0),
+    ]
+    lantern_parts = parts[-3:]
+    glass = warm_material("hameau-fenetre", "c1-window", 3.5)
+    for side in (-1, 1):
+        parts.append(geo.box((x + side * width * 0.28, front - 0.012, 0.22), (0.095, 0.012, 0.085),
+                             M.paint("cream"), bevel_width=0))
+        parts.append(geo.box((x + side * width * 0.28, front - 0.021, 0.22), (0.065, 0.012, 0.06),
+                             glass, bevel_width=0))
+    house_triangles = triangle_count(parts)
+    lantern_triangles = triangle_count(lantern_parts)
+    if house_triangles > 250:
+        raise RuntimeError(f"Maison {region_id}-{index} trop détaillée: {house_triangles} triangles")
+    if lantern_triangles > 60:
+        raise RuntimeError(f"Lanterne {region_id}-{index} trop détaillée: {lantern_triangles} triangles")
+    warm_light((x + 0.08, front - 0.06, 0.25), 4.0, f"lampe-{region_id}-{index}")
+    warm_pool(x, z + depth * 0.55, 0.22)
+    return width / 2 + 0.055, depth / 2 + 0.045
+
+
+def hamlet_site(region, footprint, used):
+    polygon = [tuple(point) for point in region["polygon"]]
+    focus_x, focus_z = region["focus"]
+    candidates = []
+    min_x = min(point[0] for point in polygon)
+    max_x = max(point[0] for point in polygon)
+    min_z = min(point[1] for point in polygon)
+    max_z = max(point[1] for point in polygon)
+    for ix in range(round((max_x - min_x) / 0.12) + 1):
+        x = min_x + ix * 0.12
+        for iz in range(round((max_z - min_z) / 0.12) + 1):
+            z = min_z + iz * 0.12
+            if not inside(polygon, x, z):
+                continue
+            a = math.atan2(z, x)
+            if math.hypot(x, z) + footprint > edge(a) * 0.97:
+                continue
+            if not free(x, z, footprint):
+                continue
+            water_margin = water_clearance(x, z) - footprint
+            bank_margin = water_margin - WET_BANK_WIDTH
+            if water_margin < MIN_WATER_MARGIN or bank_margin < MIN_BANK_MARGIN:
+                continue
+            if any(math.hypot(x - ux, z - uz) < footprint * 2.05 for ux, uz in used):
+                continue
+            overlaps = [
+                projected_overlap(x, z, 0.36, 0.32, 0.66, name, ox, oz, radius)
+                for name, (ox, oz, radius) in zip(claim_names, occupied)
+                if name.startswith(LANDMARKS)
+            ]
+            overlap = max(overlaps, default=0.0)
+            if overlap > 0.25:
+                continue
+            candidates.append((overlap, math.hypot(x - focus_x, z - focus_z),
+                               x, z, water_margin, bank_margin))
+    candidates.sort()
+    return candidates
+
+
+def place_hamlets():
+    footprint = 0.28
+    for region in REGION_LAYOUT:
+        sites = []
+        for candidate in hamlet_site(region, footprint, sites):
+            if any(math.hypot(candidate[2] - ux, candidate[3] - uz) < footprint * 2.05
+                   for ux, uz in sites):
+                continue
+            sites.append((candidate[2], candidate[3]))
+            if len(sites) == 3:
+                break
+        if len(sites) < 2:
+            raise RuntimeError(f"Hameau {region['id']} impossible: {len(sites)}/2 maisons minimum")
+        for index, (x, z) in enumerate(sites):
+            radius = hamlet_house(region["id"], index, x, z)
+            claim(x, z, footprint, f"hameau {region['id']} maison-{index + 1}")
+            margin = water_clearance(x, z) - radius[0]
+            overlaps = [
+                projected_overlap(x, z, 0.36, 0.32, 0.66, name, ox, oz, oradius)
+                for name, (ox, oz, oradius) in zip(claim_names[:-1], occupied[:-1])
+                if name.startswith(LANDMARKS)
+            ]
+            overlap = max(overlaps, default=0.0)
+            placement_records.append((f"maison-{region['id']}-{index + 1}", region["id"], x, z,
+                                      margin, margin - WET_BANK_WIDTH, overlap))
+        x, z = sites[0]
+        water_margin = water_clearance(x, z) - footprint
+        bank_margin = water_margin - WET_BANK_WIDTH
+        placement_records.append((f"lanterne-porte-{region['id']}", region["id"], x, z,
+                                  water_margin, bank_margin, 0.0))
+        print(f"HAMEAU {region['id']} maisons={len(sites)} lanternes=1", flush=True)
+
+
+place_hamlets()
+for name, region_id, x, z, water_margin, bank_margin, overlap in placement_records:
+    print(f"PLACEMENT {name} région={region_id} x={x:.2f} z={z:.2f} "
+          f"eau={water_margin:.3f} berge={bank_margin:.3f} masquage={overlap:.1%}", flush=True)
+print("MARGES_SERRÉES")
+for record in sorted(placement_records, key=lambda item: item[5])[:10]:
+    print(f"MARGE {record[0]} région={record[1]} eau={record[4]:.3f} berge={record[5]:.3f}", flush=True)
 # ---------------------------------------------------------------------------
 # Buissons et fleurs, semés là où il reste de la place
 # ---------------------------------------------------------------------------
@@ -306,24 +546,24 @@ rng = random.Random(9)
 bush = M.leaves("moss")
 flowers = [M.flat("flower-white"), M.flat("flower-yellow"), M.flat("flower-violet"), M.flat("flower-white")]
 bushes = flowers_placed = tries = 0
-while (bushes < 16 or flowers_placed < 70) and tries < 20000:
+while (bushes < 14 or flowers_placed < 42) and tries < 20000:
     tries += 1
     a = rng.uniform(0, math.tau)
     rim = rng.random() < 0.6
     r = edge(a) * (rng.uniform(0.8, 0.92) if rim else math.sqrt(rng.random()) * 0.9)
     x, z = math.cos(a) * r, math.sin(a) * r
-    if bushes < 16 and rim:
+    if bushes < 14 and rim:
         size = rng.uniform(0.1, 0.17)
         if not free(x, z, size):
             continue
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=size, location=app(x, z, size * 0.45))
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=size, location=app(x, z, size * 0.45))
         obj = bpy.context.active_object
         obj.scale = (1, 1, 0.75)
-        geo.displace(obj, "Buisson", 0.05, 0.035)
+        geo.displace(obj, "Buisson", 0.05, 0.02)
         geo.smooth(M.assign(obj, bush))
         occupied.append((x, z, size))
         bushes += 1
-    elif flowers_placed < 70 and free(x, z, 0.03):
+    elif flowers_placed < 42 and free(x, z, 0.03):
         geo.sphere(app(x, z, 0.03), 0.032, rng.choice(flowers), 6)
         flowers_placed += 1
 
@@ -395,6 +635,7 @@ def water_surfaces():
 
 
 # --- fin de la construction des accessoires (region_map.py reprend la scène jusqu'ici) ---
+
 if os.environ.get("EXPLORER_FALLBACK"):
     water_surfaces()
     bake.lights()
@@ -458,7 +699,7 @@ blades_rng = random.Random(31)
 bm = bmesh.new()
 uv = bm.loops.layers.uv.new("UVMap")
 tufts = tries = 0
-while tufts < 380 and tries < 40000:
+while tufts < 300 and tries < 40000:
     tries += 1
     kind = blades_rng.random()
     a = blades_rng.uniform(0, math.tau)
@@ -476,5 +717,5 @@ blade_material = bpy.data.materials.new("brins")
 M.assign(blades, blade_material)
 print("BRINS", tufts, "touffes,", len(blades.data.polygons), "brins")
 
-path = bake.export("island-maths-3d.glb")
+path = bake.export("island-maths-3d.glb", jpeg_quality=75)
 print("GLB", path, os.path.getsize(path), "octets")

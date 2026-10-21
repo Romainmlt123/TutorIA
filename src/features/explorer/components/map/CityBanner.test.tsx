@@ -15,7 +15,7 @@ const fixed = <T,>(value: T) => ({ value, get: () => value }) as unknown as Shar
 
 const CITY: MapCity = {
   id: 'maths-relatifs',
-  name: 'Ville des Relatifs',
+  name: 'Village des Relatifs',
   monument: 'relatifs',
   status: 'done',
   open: true,
