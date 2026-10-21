@@ -1,7 +1,9 @@
 import { useRouter } from 'expo-router';
+import { useEffect, useRef } from 'react';
 
 import { WoodDialog } from '@/components/game/WoodDialog';
 import { fr } from '@/i18n/fr';
+import { playCue } from '@/lib/feedback';
 
 import { useAvatarLook } from '../hooks/useAvatarLook';
 import { useWardrobe } from '../hooks/useWardrobe';
@@ -19,6 +21,11 @@ export function WardrobeNews({ visible }: { visible: boolean }) {
   const { fresh, markAnnounced } = useWardrobe();
   const labels: Readonly<Record<string, string>> = t.items;
   const show = visible && saved.data != null && fresh.length > 0;
+  const wasVisible = useRef(false);
+  useEffect(() => {
+    if (show && !wasVisible.current) void playCue('reward');
+    wasVisible.current = show;
+  }, [show]);
   return (
     <WoodDialog
       visible={show}

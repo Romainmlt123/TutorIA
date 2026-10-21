@@ -202,6 +202,7 @@ tools/avatar-3d/   script Blender de la figurine des avatars (squelette, coiffur
 docs/             guides (explorer-creer-une-ile.md : refaire une île d'Explorer et ses régions ; explorer-passation.md : état et backlog du rendu d'Explorer, pour un agent sans contexte)
 design/           maquettes et design system (référence visuelle)
 assets/           logos, police Satoshi, palette
+assets/sounds/    sons courts CC0 de l'Explorer et leur licence
 ```
 
 Les conventions (thème, nommage, frontière app / serveur, Supabase) sont détaillées dans `CLAUDE.md`. L'ordre des chantiers et l'étape en cours sont dans `ROADMAP.md`.

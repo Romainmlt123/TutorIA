@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { Easing, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 
+import { playCue } from '@/lib/feedback';
+
 import { TOUCH_SECONDS } from '../logic/juice';
 
 /** Niveau touché sur la carte (rang dans `map.nodes`, -1 : aucun) et avancée de sa réponse, de 0 à 1. */
@@ -16,7 +18,9 @@ export function useDiscTouch(animated: boolean) {
   const progress = useSharedValue(1);
   const values = useMemo<DiscTouch>(() => ({ index, progress }), [index, progress]);
   const press = (at: number) => {
-    if (!animated || at < 0) return;
+    if (at < 0) return;
+    void playCue('tap');
+    if (!animated) return;
     index.set(at);
     progress.set(0);
     progress.set(withTiming(1, { duration: TOUCH_SECONDS * 1000, easing: Easing.linear }));

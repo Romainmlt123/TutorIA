@@ -876,7 +876,7 @@ export const fr = {
       captions: 'Sous-titres pendant l’appel',
       captionsHint: 'Le texte du tuteur s’affiche en direct',
       sounds: 'Sons et vibrations',
-      soundsHint: 'Bonnes réponses, série, trophées (bientôt)',
+      soundsHint: 'Bonnes réponses, série, trophées',
       saveFailed: 'Le réglage n’a pas pu être enregistré. Réessaie dans un instant.',
     },
     account: {

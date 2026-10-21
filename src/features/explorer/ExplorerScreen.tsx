@@ -11,6 +11,7 @@ import { WardrobeNews } from '@/features/avatar/components/WardrobeNews';
 import { useStudentLook } from '@/features/avatar/hooks/useAvatarLook';
 import { useAvatarOfferOnVisit } from '@/features/avatar/hooks/useAvatarOfferOnVisit';
 import { useStudyRules } from '@/lib/session/useStudyRules';
+import { playCue } from '@/lib/feedback';
 import { requestSceneFrames } from '@/lib/three/FrameDriver';
 import { PerfHud } from '@/lib/three/PerfHud';
 import { usePerfHud } from '@/lib/three/perfHudFlag';
@@ -285,8 +286,10 @@ export function ExplorerScreen() {
   const enter = (regionId: string) => {
     markSeen(regionId);
     setChoice(regionId);
-    if (animated && webgl) setDiving(regionId);
-    else open({ kind: 'region', subjectId, regionId });
+    if (animated && webgl) {
+      void playCue('dive');
+      setDiving(regionId);
+    } else open({ kind: 'region', subjectId, regionId });
   };
 
   // Teinte des régions : la région choisie est allumée, les autres sont grises.
