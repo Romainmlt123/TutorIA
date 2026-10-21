@@ -447,6 +447,7 @@ EXPLORER_LAYOUT=tools/explorer-3d/layouts/maths-nombres.json EXPLORER_REGION_SCA
 EXPLORER_TILES_OUT=<dossier> EXPLORER_TILES_PASS=sol blender -b -P tools/explorer-3d/region_tiles.py
 # puis la même commande avec EXPLORER_TILES_PASS=planches
 python3 -I tools/explorer-3d/tile_map.py <dossier> assets/explorer/tiles/maths-nombres src/features/explorer/tiles/maths-nombres.generated.ts
+python3 -I tools/explorer-3d/context_map.py <dossier-contexte> maths-nombres
 ```
 
 - **Passe `sol` :** tout, sauf le chemin parcouru. Elle écrit les morceaux du rendu (PNG 8 bits sRGB, étalonnés comme l'île, alpha droit) et `crops.json`.
@@ -462,6 +463,7 @@ python3 -I tools/explorer-3d/tile_map.py <dossier> assets/explorer/tiles/maths-n
 - une sous-couche, l'image entière au quart (`sous-couche.webp`), posée sous les tuiles pour qu'aucun trou n'apparaisse pendant un lancer ;
 - un tronçon miel par écart entre deux niveaux (`troncon-<i>.webp`) ;
 - le manifeste (`manifest.json`) et le module de l'app (`<id>.generated.ts`, un `require` statique par image, à ne jamais modifier à la main).
+- le terrain complet basse résolution, rendu à part sur une zone plus large puis assemblé par `context_map.py` sous `contexte.webp` et son module généré `<id>.context.generated.ts`.
 
 **Le manifeste :** `version`, `regionId`, `ppm` (224), `elevation` (52), `x0` et `v0` (point du plan image du pixel (0, 0)), `width` et `height` (pixels), `tile` (512), `bleed` (1), `layoutHash`, `underlay` (`file`, `factor`), `tiles` (`col`, `row`, `file`, `x`, `y`, `width`, `height`) et `doneSegments` (`gap`, `file`, `x`, `y`, `width`, `height`). `tile_map.py` refuse des planches rendues pour une autre zone ou une autre empreinte que le sol.
 
