@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative, sep } from 'node:path';
 
 /*
  * Garde des fonds de la navigation. Sur Android, la scène d'Explorer, montée sous la pile de la
@@ -70,7 +70,7 @@ function seeThroughOf(code: string) {
 }
 
 const layouts = layoutsOf(APP).map((path) => ({
-  name: relative(APP, path),
+  name: relative(APP, path).split(sep).join('/'),
   code: codeOf(readFileSync(path, 'utf8')),
 }));
 
