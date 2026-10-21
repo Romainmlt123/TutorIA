@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react-native';
 import type { MapCity } from '../../logic/regionMap';
 import { CityPanel } from './CityPanel';
 
+jest.mock('@/lib/feedback', () => ({ playCue: jest.fn() }));
+
 const CITY: MapCity = {
   id: 'maths-triangles-quadrilateres',
   name: 'Village des Triangles et Quadrilatères',
