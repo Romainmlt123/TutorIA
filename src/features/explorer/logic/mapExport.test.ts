@@ -48,6 +48,7 @@ describe('export de la disposition d’une carte pré-rendue', () => {
       'path',
       'bounds',
       'decor',
+      'planks',
       'tufts',
       'bladeRule',
       'grade',

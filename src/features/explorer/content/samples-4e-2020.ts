@@ -18,7 +18,7 @@ export const francais4e2020: Island = {
       cities: [
         city({
           id: 'fr-discours-rapporte',
-          name: 'Ville du Discours rapporté',
+          name: 'Village du Discours rapporté',
           monument: 'imprimerie-guillemets',
           source: `${CYCLE4} · Français · les formes du discours rapporté`,
           playable: true,
@@ -72,7 +72,7 @@ export const histoireGeo4e2020: Island = {
       cities: [
         city({
           id: 'hg-lumieres',
-          name: 'Ville des Lumières',
+          name: 'Village des Lumières',
           monument: 'salon-encyclopedie',
           source: `${CYCLE4} · Histoire 4e · Thème 1, l’Europe des Lumières`,
           playable: true,
@@ -123,7 +123,7 @@ export const physiqueChimie4e2020: Island = {
       cities: [
         city({
           id: 'pc-etats-matiere',
-          name: 'Ville des États de la matière',
+          name: 'Village des États de la matière',
           monument: 'dome-laboratoire',
           source: `${CYCLE4} · Physique-chimie · organisation et transformations de la matière`,
           playable: true,
@@ -174,7 +174,7 @@ export const svt4e2020: Island = {
       cities: [
         city({
           id: 'svt-reproduction',
-          name: 'Ville de la Reproduction',
+          name: 'Village de la Reproduction',
           monument: 'serre-cellules',
           source: `${CYCLE4} · SVT · le corps humain et la santé`,
           playable: true,
@@ -219,7 +219,7 @@ export const anglais4e2020: Island = {
       cities: [
         city({
           id: 'en-preterit',
-          name: 'Ville du Prétérit',
+          name: 'Village du Prétérit',
           monument: 'gare-horloge',
           source: `${CYCLE4} · Langues vivantes · raconter des faits passés`,
           playable: true,

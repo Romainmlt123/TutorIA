@@ -40,7 +40,10 @@ export function CityPanel({ city, next, onPrevious, onNext }: Props) {
           style={onPrevious ? null : styles.off}
         />
         <View style={styles.title}>
-          <GameText size={18} align="center" numberOfLines={1}>
+          <GameText
+            size={city.name.length > 32 ? 16 : 18}
+            align="center"
+            numberOfLines={city.name.length > 32 ? 2 : 1}>
             {city.name}
           </GameText>
           <GameText size={12} align="center" stroke={2} drop={1}>

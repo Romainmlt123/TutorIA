@@ -1,3 +1,4 @@
+import { MAP_AVATAR_SHADOW, MAP_SCALE_RATIO } from '../stylized3d/avatarChoreo';
 import { SHADOW_FALL } from '../stylized3d/sun';
 import { imageV } from './mapProjection';
 import { MAP_ELEVATION } from './shots';
@@ -13,7 +14,11 @@ import { MAP_ELEVATION } from './shots';
  * Ce que montre la vue autour du point du sol sous la figurine, en mètres du plan image : la largeur,
  * et la hauteur au-dessus (tête, chapeau, bras levés du salut, saut) et en dessous (pieds en avant).
  */
-export const AVATAR_VIEW = { width: 1.2, above: 1.25, below: 0.35 } as const;
+export const AVATAR_VIEW = {
+  width: 1.2 * MAP_SCALE_RATIO,
+  above: 1.25 * MAP_SCALE_RATIO,
+  below: 0.35 * MAP_SCALE_RATIO,
+} as const;
 
 export type AvatarFrame = {
   /** Taille de la vue (dp). */
@@ -43,11 +48,11 @@ export function avatarFrame(k: number, ratio: number): AvatarFrame {
 }
 
 /**
- * Tache d'ombre de la carte 3D sous l'avatar (MapAvatar, groundShadows) : rayon 0,28 m pour un
- * objet de 0,6 m, posée à 0,04 m, opacité 0,42 au centre. Le carré de la tache fait 2,6 rayons de
- * côté, et 1,15 fois plus en largeur.
+ * Tache d'ombre de la carte 3D sous l'avatar (MapAvatar, groundShadows) : rayon et hauteur ajustés
+ * à l'échelle de la figurine, posée à 0,04 m, opacité 0,42 au centre. Le carré de la tache fait 2,6
+ * rayons de côté, et 1,15 fois plus en largeur.
  */
-const SHADOW = { radius: 0.28, height: 0.6, lift: 0.04, opacity: 0.42 } as const;
+const SHADOW = { ...MAP_AVATAR_SHADOW, lift: 0.04, opacity: 0.42 } as const;
 /** Demi-largeur de la tache (mètres). */
 const SHADOW_HALF = SHADOW.radius * 1.3 * 1.15;
 

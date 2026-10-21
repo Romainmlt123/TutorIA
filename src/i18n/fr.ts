@@ -372,10 +372,11 @@ export const fr = {
       done: 'Validée',
     },
     regionSign: (name: string, done: number, total: number, stars: number, status: string) =>
-      `${name}, ${done} ${plural(done, 'ville validée', 'villes validées')} sur ${total}, ${stars} ${plural(stars, 'étoile', 'étoiles')}, ${status}`,
+      `${name}, ${done} ${plural(done, 'village validé', 'villages validés')} sur ${total}, ${stars} ${plural(stars, 'étoile', 'étoiles')}, ${status}`,
     regionsList: 'Régions de l’île',
     enterRegion: 'Entrer dans la région',
-    toConsolidate: (n: number) => `${n} ${plural(n, 'ville à consolider', 'villes à consolider')}`,
+    toConsolidate: (n: number) =>
+      `${n} ${plural(n, 'village à consolider', 'villages à consolider')}`,
     regionTab: 'Région',
     backToRegions: 'Retour aux régions',
     regionMapLabel: (region: string) => `Carte de la région ${region}`,
@@ -384,16 +385,16 @@ export const fr = {
     cityLevels: (done: number, total: number) =>
       `${done} ${plural(done, 'niveau', 'niveaux')} sur ${total}`,
     continueWith: (type: string, title: string) => `Continuer : ${type} · ${title}`,
-    cityTab: 'Ville',
-    previousCity: 'Ville précédente',
-    nextCity: 'Ville suivante',
+    cityTab: 'Village',
+    previousCity: 'Village précédent',
+    nextCity: 'Village suivant',
     recall: (text: string) => `Rappel de 5e : ${text}`,
     lockedBy: (names: string) => `Termine d’abord le Bilan de : ${names}.`,
     cityStatus: {
-      done: 'validée',
+      done: 'validé',
       current: 'en cours',
       consolidate: 'à consolider',
-      locked: 'fermée',
+      locked: 'fermé',
     },
     levelState: { completed: 'terminé', active: 'à jouer', locked: 'fermé' },
     levelLabel: (type: string, title: string, state: string, stars: number) =>
@@ -405,7 +406,7 @@ export const fr = {
     celebration: {
       stars: (n: number, type: string, title: string) =>
         `${n} ${plural(n, 'étoile gagnée', 'étoiles gagnées')} : ${type} · ${title}.`,
-      cityDone: (name: string) => `Bravo, ${name} est validée !`,
+      cityDone: (name: string) => `Bravo, ${name} est validé !`,
       cityConsolidate: (name: string) =>
         `${name} : à consolider. Tu as bien avancé, tu pourras retenter le bilan quand tu veux.`,
       unlocked: (type: string, title: string) => `Nouveau niveau ouvert : ${type} · ${title}.`,
@@ -413,9 +414,9 @@ export const fr = {
     progressLabel: 'Progression sur l’île',
     questTab: 'Ta quête',
     citiesCount: (done: number, total: number) => `${done} / ${total}`,
-    citiesWord: (done: number) => plural(done, 'ville validée', 'villes validées'),
+    citiesWord: (done: number) => plural(done, 'village validé', 'villages validés'),
     cities: (done: number, total: number) =>
-      `${done} ${plural(done, 'ville validée', 'villes validées')} sur ${total}`,
+      `${done} ${plural(done, 'village validé', 'villages validés')} sur ${total}`,
     levelTypes: { lecon: 'Leçon', exercices: 'Exercices', evaluation: 'Évaluation' },
     nextStep: (type: string, title: string) => `Prochaine étape : ${type} · ${title}`,
     startWith: (type: string, title: string) => `Commence par : ${type} · ${title}`,
@@ -447,7 +448,7 @@ export const fr = {
         soon: 'Ce niveau arrive bientôt.',
         city: (names: string) => `Termine d’abord le Bilan de : ${names}.`,
         bilan: (n: number) =>
-          `Termine d’abord ${n === 1 ? 'le dernier niveau' : `les ${n} niveaux`} de la ville pour débloquer le bilan.`,
+          `Termine d’abord ${n === 1 ? 'le dernier niveau' : `les ${n} niveaux`} du village pour débloquer le bilan.`,
         previous: (type: string, title: string) => `Termine d’abord : ${type} · ${title}.`,
       },
       // X4 · discussion
@@ -463,7 +464,7 @@ export const fr = {
         exercices: (title: string, n: number) =>
           `${n} exercices pour t’entraîner : « ${title} ». Tu cherches, et je te donne un indice si tu bloques. On y va ?`,
         evaluation: (title: string, n: number) =>
-          `C’est le bilan de la ville, « ${title} » : ${n} questions, sans aide cette fois. Rédige ta démarche à chaque réponse. On commence ?`,
+          `C’est le bilan du village, « ${title} » : ${n} questions, sans aide cette fois. Rédige ta démarche à chaque réponse. On commence ?`,
       },
       go: 'C’est parti !',
       stepDone: (n: number) => `Étape ${n} réussie !`,
@@ -490,7 +491,7 @@ export const fr = {
         exercices:
           'Il faut une étoile pour ouvrir la suite. On revoit la notion, et tu retentes quand tu veux.',
         evaluation:
-          'Il faut 70 % pour valider la ville. On consolide, et tu retentes quand tu veux.',
+          'Il faut 70 % pour valider le village. On consolide, et tu retentes quand tu veux.',
       },
       lessonScore: (done: number, total: number) => `${done} étapes sur ${total}`,
       score: (correct: number, total: number, percent: number) =>
@@ -852,7 +853,7 @@ export const fr = {
         'region-donnees': 'Région Données',
         'region-espace': 'Région Espace',
         'region-algo': 'Îlot Algorithmique',
-        'ville-parfaite': 'Ville parfaite',
+        'ville-parfaite': 'Village parfait',
         'notions-1': '1re notion acquise',
         'notions-5': '5 notions acquises',
         'notions-10': '10 notions acquises',
@@ -966,13 +967,13 @@ export const fr = {
       levels: (n: number) => (n === 1 ? 'Termine ton premier niveau' : `Termine ${n} niveaux`),
       bilans: (n: number) => (n === 1 ? 'Tente ton premier bilan' : `Tente ${n} bilans`),
       stars: (n: number) => `Gagne ${n} étoiles`,
-      cities: (n: number) => (n === 1 ? 'Valide ta première ville' : `Valide ${n} villes`),
+      cities: (n: number) => (n === 1 ? 'Valide ton premier village' : `Valide ${n} villages`),
       regions: (n: number) => (n === 1 ? 'Valide ta première région' : `Valide ${n} régions`),
       streak: (n: number) => `Révise ${n} jours d’affilée`,
       perfectCities: (n: number) =>
         n === 1
-          ? 'Gagne les 3 étoiles à chaque niveau d’une ville'
-          : `Gagne les 3 étoiles à chaque niveau de ${n} villes`,
+          ? 'Gagne les 3 étoiles à chaque niveau d’un village'
+          : `Gagne les 3 étoiles à chaque niveau de ${n} villages`,
     },
     locked: (item: string, condition: string) => `${item}, à gagner : ${condition}`,
     lockedHint: (item: string, condition: string) => `${item} : ${condition} pour l’obtenir.`,

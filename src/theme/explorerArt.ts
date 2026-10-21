@@ -19,7 +19,7 @@ export const explorerArt = {
     gold: ['#5a3a06', '#8a5c0d', '#b98317', '#e0ac2c', '#f6cf5a', '#fff0a8'],
   },
   light: { sun: '#ffe2a8', skyFill: '#dbeaff', groundFill: '#8a73c9', rim: '#bff0ff' },
-  grade: { shadows: '#9c8ce0', highlights: '#ffe6b8' },
+  grade: { shadows: '#8a7ad6', highlights: '#ffe2b0' },
   crystals: ['#62e6f0', '#b98cff', '#74b4ff'],
   dust: '#fff0c8',
   fog: '#d6e8ff',
@@ -32,7 +32,7 @@ export const explorerArt = {
     glow: '#fff6dc',
   },
   cloud: { top: '#ffffff', bottom: '#b9c8dc' },
-  grassBlades: { base: '#34491f', tip: '#8fa04a', dry: '#b0a765' },
+  grassBlades: { base: '#2e461b', tip: '#86a047', dry: '#a9a261' },
   digit: '#f2fbff',
   /** Régions de l'île des Maths (X2a) : teinte sur l'herbe et couleur des panneaux. */
   regions: {
@@ -117,10 +117,10 @@ export const explorerArt = {
     },
     natural: {
       bloom: [0.84, 0.99],
-      saturation: 1.04,
-      shadowTint: 0.1,
-      lightTint: 0.1,
-      exposure: 1.04,
+      saturation: 1.06,
+      shadowTint: 0.12,
+      lightTint: 0.12,
+      exposure: 1.02,
       // Ciel franchement bleu jusqu'en bas : la barre de navigation blanche s'en détache.
       sky: { top: '#2f6fd0', middle: '#5f9ce8', horizon: '#8fc0f2' },
     },

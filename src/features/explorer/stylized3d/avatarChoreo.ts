@@ -25,7 +25,12 @@ import type { RegionMap } from '../logic/regionMap';
  * Taille de la figurine sur la carte (1 m à l'échelle 1) : vue de haut, plus petite, elle ne
  * montrerait que ses cheveux. Elle reste moins haute que les monuments (environ 1,2 m).
  */
-export const MAP_SCALE = 0.9;
+export const MAP_SCALE = 0.5;
+export const MAP_SCALE_RATIO = MAP_SCALE / 0.9;
+export const MAP_AVATAR_SHADOW = {
+  radius: 0.28 * MAP_SCALE_RATIO,
+  height: 0.6 * MAP_SCALE_RATIO,
+} as const;
 /** Hauteur des pieds : sur les points de niveau, au-dessus du chemin pavé. */
 export const FEET = 0.1;
 /** Durées des animations jouées une fois (tools/avatar-3d/avatar.py) : salut et saut. */
