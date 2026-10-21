@@ -2,7 +2,7 @@
 
 **Pour qui :** une IA de code (ou une personne) qui travaille sur Windows pour Romain, sans contexte.
 **À lire avec :** `CLAUDE.md` (conventions, elles font foi) et `docs/explorer-passation.md` (le chantier Explorer).
-**Honnêteté :** ce guide a été écrit depuis Linux. Les commandes Windows ci-dessous sont déduites des scripts du dépôt et n'ont **pas** été exécutées sur Windows. Si une commande échoue, le dire à Romain et corriger ce guide.
+**Honnêteté :** ce guide a été écrit depuis Linux, puis vérifié sur Windows 11 le 21 octobre 2026 (installation, `npm ci`, lint, types, tests, Metro web et Labo). Ce qui n'a **pas** été exécuté sur Windows : Blender, Docker et Supabase local, et les scripts `explorer:*` / `avatar:model`. Si une commande échoue, le dire à Romain et corriger ce guide.
 
 ---
 
@@ -20,6 +20,8 @@ Le dépôt est écrit pour bash (Linux, macOS).
 | `npm run explorer:layout`, `npm run explorer:models`, `npm run avatar:model`                            | **bash seulement** (variables d'environnement avant la commande)       |
 | Les commandes Blender de `docs/explorer-passation.md` § 5                                               | **bash seulement**                                                     |
 
+**Attention :** sous Windows, `npm run` lance les scripts avec `cmd.exe`, même depuis Git Bash, d'où l'échec des scripts « bash seulement ». Le correctif, propre à la machine (rien à commiter) : un fichier `.npmrc` à la racine du dépôt, ignoré par git via `.git/info/exclude`, contenant `script-shell=C:\\Program Files\\Git\\bin\\bash.exe`. Vérifié avec `npm run start:labo`. Ne pas mettre ce chemin dans un `.npmrc` commité.
+
 **Règle simple : travailler dans Git Bash** (installé avec Git for Windows) ou dans WSL. Tout ce guide suppose Git Bash. Dans PowerShell, `EXPO_PUBLIC_BACKEND=mock npm start` ne marche pas : écrire `$env:EXPO_PUBLIC_BACKEND="mock"; npm start`.
 
 ---
@@ -27,7 +29,7 @@ Le dépôt est écrit pour bash (Linux, macOS).
 ## 2. Installation de la machine
 
 1. **Git for Windows.** Puis, une fois : `git config --global core.autocrlf false` (ne jamais laisser Git convertir les fins de ligne : Prettier et ESLint attendent du LF).
-2. **Node 24.13.0 et npm 11** (fixés par `.nvmrc`, `engines` et `eas.json` : npm 10 refuse le fichier de verrouillage produit par npm 11). Avec nvm-windows : `nvm install 24.13.0`, `nvm use 24.13.0`, puis `npm install -g npm@11`. Vérifier : `node -v` donne `v24.13.0`.
+2. **Node 24.13.0 et npm 11** (fixés par `.nvmrc`, `engines` et `eas.json` : npm 10 refuse le fichier de verrouillage produit par npm 11). Sans droits administrateur, ou pour garder un autre Node installé : `winget install Schniz.fnm --scope user`, puis `fnm install 24.13.0`, et la ligne `fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression` dans le profil PowerShell (`eval "$(fnm env --use-on-cd --shell bash)"` dans `~/.bashrc` pour Git Bash). fnm lit `.nvmrc` en entrant dans le dossier. Node 24.13.0 embarque npm 11.6.2, suffisant. Avec nvm-windows : `nvm install 24.13.0`, `nvm use 24.13.0`. Vérifier : `node -v` donne `v24.13.0`.
 3. **Visual Studio Code** (et l'extension Claude Code si l'agent y travaille).
 4. **Seulement pour refaire des rendus 3D :**
    - **Blender 5.2.2**, dossier ajouté au `PATH` pour que `blender --version` marche dans Git Bash ;
@@ -62,6 +64,8 @@ EXPO_PUBLIC_BACKEND=mock EXPO_PUBLIC_TUTOR_MODE=mock npm start
 ## 4. Pièges propres à Windows
 
 - **Fins de ligne :** tout le dépôt est en LF. Si Prettier signale des centaines de fichiers, c'est du CRLF : `git config core.autocrlf false`, puis `npx prettier --write .` sur la copie de travail, jamais sur un autre dossier. Un `.gitattributes` avec `* text=auto eol=lf` réglerait le problème à la source (à proposer à Romain).
+- **Clone déjà fait avec `autocrlf=true` :** passer la config à `false` ne réécrit pas les fichiers. Si le lint annonce des dizaines de milliers d'erreurs « Delete `␍` », sur un arbre sans modification : supprimer `.git/index` puis `git reset --hard HEAD`.
+- **`expo-env.d.ts` :** ignoré par git, créé par `expo start`, et indispensable à `npm run typecheck` (le type `transitionProperty` en dépend). Sans lui : `echo '/// <reference types="expo/types" />' > expo-env.d.ts`, comme la CI.
 - **Chemins :** les scripts et tests utilisent des `/`. Ne pas écrire de chemins avec `\` dans le code ; passer par `path.join` ou `path.posix`. Les alias d'import sont `@/…` (= `src/`).
 - **Chemins longs :** si `npm ci` ou git échoue sur un chemin trop long, `git config --global core.longpaths true`, et cloner près de la racine (`C:\dev\TutorIA`), pas dans OneDrive ni Bureau.
 - **Antivirus et OneDrive :** exclure le dossier du projet de OneDrive et, si possible, de la surveillance en temps réel de l'antivirus : `node_modules` compte des dizaines de milliers de fichiers.
