@@ -2,8 +2,9 @@ import { fireEvent, render } from '@testing-library/react-native';
 
 import { logError } from '@/lib/logger';
 
+import { MAP_ZOOM } from '../../hooks/mapScrollValue';
 import type { MapTiles as MapTilesData } from '../../tiles';
-import { MapTiles } from './MapTiles';
+import { MapTiles, onTileError } from './MapTiles';
 
 jest.mock('@/lib/logger', () => ({ logError: jest.fn() }));
 
@@ -30,11 +31,12 @@ const TILES: MapTilesData = {
   bleed: 1,
   layoutHash: 'essai',
   underlay: { factor: 4, source: 9 },
+  context: { ppm: 50, x0: -2, v0: -1, width: 100, height: 50, source: 10 },
   tiles: [tile(0), tile(1), tile(2)],
   doneSegments: [],
 };
 
-/** Les images montées : la sous-couche d'abord, puis les tuiles dans l'ordre du manifeste. */
+/** Les images montées : le contexte, la sous-couche, puis les tuiles du manifeste. */
 async function imagesOf(watched: readonly number[], onReady: () => void, scale = 1) {
   const { container } = await render(
     <MapTiles tiles={TILES} scale={scale} watched={watched} onReady={onReady} />,
@@ -43,23 +45,38 @@ async function imagesOf(watched: readonly number[], onReady: () => void, scale =
 }
 
 describe('sol d’une carte pré-rendue', () => {
-  beforeEach(() => jest.mocked(logError).mockClear());
+  beforeEach(() => {
+    jest.mocked(logError).mockClear();
+    MAP_ZOOM.value = 1;
+  });
 
-  it('monte la sous-couche puis toutes les tuiles, chacune à sa place, sans fondu', async () => {
-    const [underlay, ...tiles] = await imagesOf([], jest.fn(), 0.5);
+  it('monte le contexte, la sous-couche et les tuiles à leur place, sans fondu', async () => {
+    const [context, underlay, ...tiles] = await imagesOf([], jest.fn(), 0.5);
+    expect(context!.props.source).toBe(10);
+    expect(context!.props.fadeDuration).toBe(0);
+    expect(context!.props.onError).toBe(onTileError);
+    expect(context!.props.style).toEqual([
+      { position: 'absolute' },
+      { left: -100, top: -50, width: 100, height: 50 },
+    ]);
     expect(underlay!.props.source).toBe(9);
+    expect(underlay!.props.style).toEqual([
+      { position: 'absolute' },
+      { left: 0, top: 0, width: 150, height: 50 },
+    ]);
     expect(tiles.map((image) => image.props.source)).toEqual([1, 2, 3]);
     expect(tiles.every((image) => image.props.fadeDuration === 0)).toBe(true);
     // La tuile du milieu commence 1 px avant sa case et déborde de 1 px sur la suivante.
     expect(tiles[1]!.props.style).toEqual([
       { position: 'absolute' },
       { left: 49.5, top: 0, width: 51, height: 50 },
+      { opacity: 1 },
     ]);
   });
 
   it('est prête une seule fois, quand les tuiles à l’écran sont chargées ou en échec', async () => {
     const onReady = jest.fn();
-    const [, first, second, third] = await imagesOf([0, 2], onReady);
+    const [, , first, second, third] = await imagesOf([0, 2], onReady);
     await fireEvent(first!, 'load');
     await fireEvent(second!, 'load');
     expect(onReady).not.toHaveBeenCalled();

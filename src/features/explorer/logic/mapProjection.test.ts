@@ -20,6 +20,7 @@ import {
   worldToImagePx,
   type ImageFrame,
 } from './mapProjection';
+import { discFace } from './mapMarkers';
 import { MAP_VISIBLE_WIDTH } from './shots';
 
 const SIN = Math.sin((52 * Math.PI) / 180);
@@ -110,6 +111,39 @@ describe('carte pré-rendue : défilement', () => {
       const point = worldToContentDp(BLENDER_ZONE, k, x, z, 0);
       expect(point.x + shift.translateX).toBeCloseTo(screen.width / 2, 9);
       expect(point.y + shift.translateY).toBeCloseTo(0.45 * screen.height, 9);
+    }
+  });
+
+  it('garde le centre d’un disque sur sa projection du monde aux zooms testés', () => {
+    const tracked = { x: -10, z: 2 };
+    const disk = discFace(BLENDER_ZONE, k, { x: -11.5, z: 1.5 });
+    const followed = worldToContentDp(BLENDER_ZONE, k, tracked.x, tracked.z, 0);
+    const area = tileRect(
+      { x: 0, y: 0, width: BLENDER_ZONE.width, height: BLENDER_ZONE.height },
+      imageScale(BLENDER_ZONE, k),
+    );
+
+    for (const zoom of [0.25, 0.5, 1]) {
+      const translation = scrollToContentTranslation(
+        tracked.x,
+        tracked.z,
+        screen,
+        BLENDER_ZONE,
+        k * zoom,
+      );
+      const shiftX = snapToPixel(translation.translateX - (area.width / 2) * (1 - zoom), 1);
+      const shiftY = snapToPixel(translation.translateY - (area.height / 2) * (1 - zoom), 1);
+      const actual = {
+        x: area.width / 2 + zoom * (disk.x - area.width / 2) + shiftX,
+        y: area.height / 2 + zoom * (disk.y - area.height / 2) + shiftY,
+      };
+      const expected = {
+        x: screen.width / 2 + zoom * (disk.x - followed.x),
+        y: MAP_AIM_ROW * screen.height + zoom * (disk.y - followed.y),
+      };
+
+      expect(Math.abs(actual.x - expected.x)).toBeLessThanOrEqual(2);
+      expect(Math.abs(actual.y - expected.y)).toBeLessThanOrEqual(2);
     }
   });
 });

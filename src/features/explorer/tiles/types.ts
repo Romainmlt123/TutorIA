@@ -2,7 +2,7 @@ import type { ImageSourcePropType } from 'react-native';
 
 /*
  * Cartes de région pré-rendues (X2b) : ce que décrivent les modules générés par
- * tools/explorer-3d/tile_map.py et sprite_pack.py (`*.generated.ts`, ne pas les modifier à la main).
+ * tools/explorer-3d/tile_map.py, context_map.py et sprite_pack.py (`*.generated.ts`, générés).
  * Plan image : x de la carte vers la droite, v = z·sin52 − y·cos52 vers le bas, en mètres ; le pixel
  * (0, 0) de l'image rendue est au point (x0, v0).
  */
@@ -17,6 +17,16 @@ export type MapTile = PixelRect & { col: number; row: number; source: ImageAsset
 
 /** Planches miel d'un tronçon du chemin (entre le niveau `gap` et le suivant), posées sur les grises. */
 export type DoneSegment = PixelRect & { gap: number; source: ImageAsset };
+
+/** Image basse résolution du terrain complet, dans le même plan image que les tuiles. */
+export type MapContext = {
+  ppm: number;
+  x0: number;
+  v0: number;
+  width: number;
+  height: number;
+  source: ImageAsset;
+};
 
 export type MapTiles = {
   version: number;
@@ -36,6 +46,8 @@ export type MapTiles = {
   layoutHash: string;
   /** Toute l'image en basse résolution (`factor` fois plus petite), posée sous les tuiles. */
   underlay: { factor: number; source: ImageAsset };
+  /** Terrain complet basse résolution, sous la sous-couche et au-dessus des ombres voisines. */
+  context?: MapContext;
   tiles: readonly MapTile[];
   doneSegments: readonly DoneSegment[];
 };

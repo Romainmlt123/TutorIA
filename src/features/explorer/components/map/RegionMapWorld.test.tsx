@@ -18,6 +18,7 @@ jest.mock('../../hooks/useMapClock', () => ({ useMapClock: jest.fn(() => ({ valu
 jest.mock('../../hooks/mapScrollValue', () => ({
   MAP_SCROLL_X: { value: 0 },
   MAP_SCROLL_Z: { value: 0 },
+  MAP_ZOOM: { value: 1 },
 }));
 
 /** Une tuile, et trois tronçons du chemin (entre les niveaux 0-1, 1-2 et 2-3). */
@@ -34,6 +35,7 @@ const TILES: MapTilesData = {
   bleed: 1,
   layoutHash: 'essai',
   underlay: { factor: 4, source: 9 },
+  context: { ppm: 50, x0: -2, v0: -1, width: 100, height: 50, source: 10 },
   tiles: [{ col: 0, row: 0, x: 0, y: 0, width: 400, height: 400, source: 1 }],
   doneSegments: [0, 1, 2].map((gap) => ({
     gap,
@@ -88,11 +90,16 @@ const NO_TOUCH: DiscTouch = { index: fixed(-1), progress: fixed(1) };
 async function mount(
   ambient = true,
   terrainScale?: number,
-  extra: { map?: RegionMap; celebration?: MapCelebration; touch?: DiscTouch } = {},
+  extra: {
+    map?: RegionMap;
+    tiles?: MapTilesData;
+    celebration?: MapCelebration;
+    touch?: DiscTouch;
+  } = {},
 ) {
   const { container } = await render(
     <RegionMapWorld
-      tiles={TILES}
+      tiles={extra.tiles ?? TILES}
       screen={{ width: 400, height: 800 }}
       map={extra.map ?? MAP}
       start={{ x: 0, z: 0 }}
@@ -144,7 +151,8 @@ describe('carte pré-rendue : ce qui est posé sur le sol', () => {
   it('pose, dans l’ordre, le sol, les tronçons d’avant le pion, les halos puis les disques', async () => {
     const sources = (await world()).map((props) => props.source);
     expect(sources).toEqual([
-      // Sous-couche et tuile, puis le seul tronçon parcouru (entre a et b).
+      // Contexte, sous-couche et tuile, puis le seul tronçon parcouru (entre a et b).
+      10,
       9,
       1,
       100,
@@ -160,6 +168,40 @@ describe('carte pré-rendue : ce qui est posé sur le sol', () => {
       nodeSprites.verrou.source,
       nodeSprites['verrou-grand'].source,
     ]);
+  });
+
+  it('pose le contexte au-dessus des silhouettes SVG et sous la sous-couche', async () => {
+    const container = await mount(true, undefined, {
+      tiles: { ...TILES, regionId: 'maths-nombres' },
+    });
+    const layers = container.queryAll(
+      (node) =>
+        node.props.testID === 'explorer-region-shadows' ||
+        node.type === 'Image' ||
+        (typeof node.props.testID === 'string' && node.props.testID.startsWith('explorer-region-')),
+    );
+    const shadows = layers.findIndex((node) => node.props.testID === 'explorer-region-shadows');
+    const context = layers.findIndex((node) => node.type === 'Image' && node.props.source === 10);
+    const underlay = layers.findIndex((node) => node.type === 'Image' && node.props.source === 9);
+    expect(shadows).toBeGreaterThanOrEqual(0);
+    expect(shadows).toBeLessThan(context);
+    expect(context).toBeLessThan(underlay);
+
+    const path = (testID: string) => layers.find((node) => node.props.testID === testID)?.props;
+    const land = path('explorer-region-land');
+    const donnees = path('explorer-region-outline-maths-donnees');
+    const espace = path('explorer-region-outline-maths-espace');
+    const islet = path('explorer-region-islet');
+    expect(land?.fill).not.toBe('none');
+    expect(donnees?.fill).toBeFalsy();
+    expect(espace?.fill).toBeFalsy();
+    expect(islet?.fill).not.toBe('none');
+    expect(layers.findIndex((node) => node.props.testID === 'explorer-region-land')).toBeLessThan(
+      layers.findIndex((node) => node.props.testID === 'explorer-region-outline-maths-donnees'),
+    );
+    expect(
+      layers.findIndex((node) => node.props.testID === 'explorer-region-outline-maths-espace'),
+    ).toBeLessThan(layers.findIndex((node) => node.props.testID === 'explorer-region-islet'));
   });
 
   it('pose le disque sur le pied du niveau, à l’échelle de la carte', async () => {

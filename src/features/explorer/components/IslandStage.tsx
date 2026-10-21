@@ -1,6 +1,7 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 import * as THREE from 'three';
 
 import type { AvatarOnMap } from '../stylized3d/MapAvatar';
@@ -14,7 +15,7 @@ import { Clouds, type CloudSpec } from '../stylized3d/Clouds';
 import { coastScroll, type MapScroll } from '../logic/mapScroll';
 import { coast, type Orbit } from '../logic/orbit';
 import type { RegionMap } from '../logic/regionMap';
-import { easeShot, type Shot } from '../logic/shots';
+import { easeShot, flightAt, type CameraPose, type FlightEasing, type Shot } from '../logic/shots';
 import { MAP_SCROLL_X, MAP_SCROLL_Z } from '../hooks/mapScrollValue';
 import { IsletAlgo } from '../stylized3d/IsletAlgo';
 import { MathsIsland3D } from '../stylized3d/MathsIsland3D';
@@ -28,13 +29,13 @@ import { RegionWorld } from '../stylized3d/RegionWorld';
  * change si les animations sont réduites.
  */
 
-const SPACING = 8;
+export const ISLAND_SPACING = 8;
 const FOV = 26;
 
 /** Nuages du ciel, répartis le long de la rangée d'îles, qui dérivent lentement. */
 function skyClouds(count: number): CloudSpec[] {
   return Array.from({ length: count * 2 + 2 }, (_, i) => ({
-    x: -6 + i * (SPACING / 2) + (i % 3) * 0.7,
+    x: -6 + i * (ISLAND_SPACING / 2) + (i % 3) * 0.7,
     y: i % 2 === 0 ? 2.2 + (i % 3) * 0.4 : -3.2 - (i % 4) * 0.3,
     z: -4.5 + (i % 3) * 1.6,
     scale: 0.8 + (i % 4) * 0.18,
@@ -44,7 +45,7 @@ function skyClouds(count: number): CloudSpec[] {
 }
 
 function stageClouds(count: number): { clouds: CloudSpec[]; wrap: readonly [number, number] } {
-  return { clouds: skyClouds(count), wrap: [-8, count * SPACING + 8] };
+  return { clouds: skyClouds(count), wrap: [-8, count * ISLAND_SPACING + 8] };
 }
 
 /** Nuages sous l'île d'une région : on la voit de haut, ils ne doivent pas la cacher. */
@@ -68,6 +69,16 @@ function mapClouds(bounds: RegionMap['bounds']): {
 
 /** État lissé de la caméra : position sur la rangée d'îles, cadrage courant, et si elle est au repos. */
 type CameraState = { x: number; z: number; shot: Shot; settled: boolean };
+
+export type CameraFlight = {
+  id: number;
+  progress: SharedValue<number>;
+  easing: FlightEasing;
+  arc: number;
+  snap?: boolean;
+  to?: { x: number; z: number; shot: Shot };
+  from?: { x: number; z: number; shot: Shot };
+};
 
 /** Point de la scène (repère de l'île) où l'interface pose un panneau, avec son identifiant. */
 export type StageAnchor = { id: string; position: readonly [number, number, number] };
@@ -190,6 +201,55 @@ function moveCamera(
   return { x, z, shot, settled: still && isSettled({ x, z, shot }, goal, orbitState) };
 }
 
+function cameraPose(
+  size: { width: number; height: number },
+  x: number,
+  z: number,
+  shot: Shot,
+  azimuth: number,
+): CameraPose {
+  const distance = distanceToFit(7.4, shot.fov, size.width / size.height, shot.fill);
+  const target: [number, number, number] = [x + shot.lookX, shot.lookY, z + shot.lookZ];
+  return {
+    position: orbit(target, distance, shot.elevation, shot.azimuth ?? azimuth),
+    target,
+    fov: shot.fov,
+  };
+}
+
+function applyCameraPose(
+  state: { camera: THREE.Camera; scene: THREE.Scene; size: { width: number; height: number } },
+  pose: CameraPose,
+  shot: Shot,
+) {
+  const camera = state.camera as THREE.PerspectiveCamera;
+  const distance = new THREE.Vector3(...pose.position).distanceTo(
+    new THREE.Vector3(...pose.target),
+  );
+  camera.fov = pose.fov;
+  camera.position.set(...pose.position);
+  camera.lookAt(new THREE.Vector3(...pose.target));
+  camera.far = distance * 4;
+  camera.near = shot.fov < 10 ? distance * 0.6 : 0.1;
+  camera.setViewOffset(
+    state.size.width,
+    state.size.height,
+    0,
+    (0.5 - shot.aimY) * state.size.height,
+    state.size.width,
+    state.size.height,
+  );
+  camera.updateProjectionMatrix();
+  camera.updateMatrixWorld();
+  state.scene.userData.focus = 1 - shot.aimY;
+  if (state.scene.fog instanceof THREE.Fog) {
+    state.scene.fog.near = distance + 4;
+    state.scene.fog.far = distance + 30;
+  } else {
+    state.scene.fog = new THREE.Fog(explorerArt.fog, distance + 4, distance + 30);
+  }
+}
+
 type CameraProps = {
   index: number;
   shot: Shot;
@@ -199,6 +259,7 @@ type CameraProps = {
   anchors: readonly StageAnchor[];
   /** Défilement de la carte d'une région, ou null sur l'île. */
   scroll: MapScroll | null;
+  flight?: CameraFlight | null;
   /**
    * Appelée quand la caméra se met au repos (avec les positions à l'écran, et la position de la
    * caméra sur la carte) ou se remet en route (null).
@@ -214,9 +275,18 @@ function StageCamera({
   animated,
   anchors,
   scroll,
+  flight,
   onProject,
 }: CameraProps) {
   const current = useRef<CameraState | null>(null);
+  const flightState = useRef<{
+    id: number;
+    from: CameraPose;
+    to: CameraPose;
+    fromX: number;
+    fromZ: number;
+  } | null>(null);
+  const lastPose = useRef<CameraPose | null>(null);
   // Une scène en pause (onglet caché, carte pré-rendue affichée à sa place) reprend posée sur son
   // cadrage : la caméra ne finit pas un trajet commencé avant la pause, comme le plongeon vers une
   // région qu'on quitte pour revenir à l'île.
@@ -231,21 +301,86 @@ function StageCamera({
   // pas la scène, elle se pose directement sur son nouveau cadrage.
   const hadScroll = useRef(scroll !== null);
   useFrame((state, delta) => {
+    const target = flight?.to ?? { x: index * ISLAND_SPACING, z: 0, shot };
+    if (
+      flight &&
+      (flight.progress.value < 1 ||
+        flight.snap ||
+        flightState.current?.id !== flight.id ||
+        (flightState.current?.id === flight.id && !current.current?.settled))
+    ) {
+      if (flightState.current?.id !== flight.id) {
+        const camera = state.camera as THREE.PerspectiveCamera;
+        const source = flight.from;
+        const previous = current.current;
+        const fromPose = source
+          ? cameraPose(state.size, source.x, source.z, source.shot, orbitState.azimuth)
+          : (lastPose.current ??
+            (previous
+              ? cameraPose(state.size, previous.x, previous.z, previous.shot, orbitState.azimuth)
+              : {
+                  position: camera.position.toArray() as [number, number, number],
+                  target: [0, 0, 0] as const,
+                  fov: camera.fov,
+                }));
+        const fromX = source?.x ?? previous?.x ?? target.x;
+        const fromZ = source?.z ?? previous?.z ?? target.z;
+        flightState.current = {
+          id: flight.id,
+          from: fromPose,
+          to: cameraPose(state.size, target.x, target.z, target.shot, orbitState.azimuth),
+          fromX,
+          fromZ,
+        };
+      }
+      const flightPose = flightAt(
+        flight.progress.value,
+        flightState.current.from,
+        flightState.current.to,
+        flight.easing,
+        flight.arc,
+      );
+      applyCameraPose(state, flightPose, target.shot);
+      const progress = Math.max(0, Math.min(1, flight.progress.value));
+      const next = {
+        x: flightState.current.fromX + (target.x - flightState.current.fromX) * progress,
+        z: flightState.current.fromZ + (target.z - flightState.current.fromZ) * progress,
+        shot: target.shot,
+        settled: progress >= 1,
+      };
+      current.current = next;
+      lastPose.current = flightPose;
+      if (progress < 1) state.invalidate();
+      const last = projected.current;
+      if (
+        progress >= 1 &&
+        (!last || last.anchors !== anchors || last.x !== next.x || last.z !== next.z)
+      ) {
+        projected.current = { anchors, x: next.x, z: next.z };
+        onProject?.(
+          projectAnchors(state.camera, anchors, scroll ? 0 : index * ISLAND_SPACING, state.size),
+          { x: next.x + next.shot.lookX, z: next.z + next.shot.lookZ },
+        );
+      } else if (progress < 1 && projected.current) {
+        projected.current = null;
+        onProject?.(null, { x: next.x + next.shot.lookX, z: next.z + next.shot.lookZ });
+      }
+      return;
+    }
+    if (!flight || flightState.current?.id !== flight.id) flightState.current = null;
     if (hadScroll.current !== (scroll !== null)) {
       hadScroll.current = scroll !== null;
       current.current = null;
     }
     const before = current.current?.settled ?? false;
-    const next = moveCamera(
-      state,
-      current.current,
-      { x: index * SPACING, z: 0, shot },
-      orbitState,
-      scroll,
-      delta,
-      animated,
-    );
+    const next = moveCamera(state, current.current, target, orbitState, scroll, delta, animated);
     current.current = next;
+    const camera = state.camera as THREE.PerspectiveCamera;
+    lastPose.current = {
+      position: camera.position.toArray() as [number, number, number],
+      target: [next.x + next.shot.lookX, next.shot.lookY, next.z + next.shot.lookZ],
+      fov: camera.fov,
+    };
     // Animations réduites, la scène ne se dessine qu'à la demande (FrameDriver) : doigt posé, élan
     // ou ville visée, la caméra n'est pas au repos et redemande des images.
     if (!next.settled) state.invalidate();
@@ -257,10 +392,13 @@ function StageCamera({
       Math.abs(last.z - next.z) > EPSILON;
     if (next.settled && stale) {
       projected.current = { anchors, x: next.x, z: next.z };
-      onProject?.(projectAnchors(state.camera, anchors, scroll ? 0 : index * SPACING, state.size), {
-        x: next.x + next.shot.lookX,
-        z: next.z + next.shot.lookZ,
-      });
+      onProject?.(
+        projectAnchors(state.camera, anchors, scroll ? 0 : index * ISLAND_SPACING, state.size),
+        {
+          x: next.x + next.shot.lookX,
+          z: next.z + next.shot.lookZ,
+        },
+      );
     } else if (!next.settled && before) {
       projected.current = null;
       onProject?.(null, { x: next.x + next.shot.lookX, z: next.z + next.shot.lookZ });
@@ -288,6 +426,8 @@ export type IslandStageProps = {
   active: boolean;
   /** Faux avec « Réduire les animations » : scène figée, dessinée seulement quand elle change. */
   animated: boolean;
+  /** Vol temporaire de la caméra, piloté sur le fil UI et appliqué dans la boucle 3D. */
+  flight?: CameraFlight | null;
   /** Sonde du compteur de performance (développement seulement, `usePerfHud`). */
   probe?: boolean;
 };
@@ -303,6 +443,7 @@ export function IslandStage({
   region = null,
   active,
   animated,
+  flight,
   probe = false,
 }: IslandStageProps) {
   const bounds = region?.map.bounds;
@@ -328,11 +469,12 @@ export function IslandStage({
         animated={animated}
         anchors={anchors}
         scroll={region?.scroll ?? null}
+        flight={flight}
         onProject={onProject}
       />
       <Clouds clouds={clouds} wrap={wrap} />
       {mathsIndex >= 0 ? (
-        <group position={[mathsIndex * SPACING, 0, 0]} visible={!region}>
+        <group position={[mathsIndex * ISLAND_SPACING, 0, 0]} visible={!region}>
           <MathsIsland3D animated={animated} regions={regions} />
           <IsletAlgo mix={regions.mix} animated={animated} />
         </group>
