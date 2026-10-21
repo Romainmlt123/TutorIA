@@ -72,12 +72,22 @@ export type RegionMap = {
   pawnIndex: number;
 };
 
-/** Forme du fichier regionSites.json, écrit par tools/explorer-3d/region_map.py (points [x, z] en mètres). */
-type SitesFile = Record<string, { cities: Record<string, { center: number[]; via: number[][] }> }>;
+const pointOf = (coordinates: readonly number[]): Vec => {
+  const [x, z] = coordinates;
+  if (
+    typeof x !== 'number' ||
+    !Number.isFinite(x) ||
+    typeof z !== 'number' ||
+    !Number.isFinite(z)
+  ) {
+    throw new Error('Coordonnée de ville invalide dans regionSites.json');
+  }
+  return { x, z };
+};
 
 const siteOf = (site: { center: number[]; via: number[][] }): CitySite => ({
-  center: { x: site.center[0]!, z: site.center[1]! },
-  via: site.via.map(([x, z]) => ({ x: x!, z: z! })),
+  center: pointOf(site.center),
+  via: site.via.map(pointOf),
 });
 
 export function buildRegionMap(
@@ -91,21 +101,32 @@ export function buildRegionMap(
   // Les villes de la région dans l'ordre du chemin, chacune avec ses niveaux.
   const order = region.cities.filter((c) => places.some((p) => p.city.id === c.id));
   // Emplacements choisis pour la région (regionSites.json) ; sans eux, les villes se rangent en serpentin.
-  const chosen = (sites as SitesFile)[regionId]?.cities;
-  const placed =
-    chosen && order.every((c) => chosen[c.id])
-      ? order.map((c) => siteOf(chosen[c.id]!))
-      : undefined;
+  const chosen = Object.entries(sites).find(([id]) => id === regionId)?.[1].cities;
+  const candidates = chosen
+    ? order.flatMap((city) => {
+        const site = Object.entries(chosen).find(([id]) => id === city.id)?.[1];
+        return site ? [siteOf(site)] : [];
+      })
+    : undefined;
+  const placed = candidates?.length === order.length ? candidates : undefined;
   const layouts = layoutCities(
     order.map((c) => places.filter((p) => p.city.id === c.id).map((p) => p.level.type)),
     placed,
   );
-  const cityLayout = new Map(order.map((c, i) => [c.id, layouts[i]!]));
+  const cityLayout = new Map(
+    order.map((city, index) => {
+      const layout = layouts[index];
+      if (!layout) throw new Error(`Disposition absente pour la ville ${city.id}`);
+      return [city.id, layout] as const;
+    }),
+  );
   const taken = new Map<string, number>();
   const nodes: MapNode[] = places.map((place) => {
     const k = taken.get(place.city.id) ?? 0;
     taken.set(place.city.id, k + 1);
-    const at = cityLayout.get(place.city.id)!.nodes[k]!;
+    const layout = cityLayout.get(place.city.id);
+    const at = layout?.nodes[k];
+    if (!at) throw new Error(`Niveau absent de la disposition de ${place.city.id}`);
     return {
       levelId: place.level.id,
       cityId: place.city.id,
@@ -122,6 +143,8 @@ export function buildRegionMap(
     const own = places.filter((p) => p.city.id === city.id);
     const evaluation = own.find((p) => p.level.type === 'evaluation');
     const record = evaluation ? records.get(evaluation.level.id) : undefined;
+    const placement = cityLayout.get(city.id);
+    if (!placement) throw new Error(`Disposition absente pour la ville ${city.id}`);
     let status: CityStatus = 'locked';
     if (record?.finished) status = (record.bestScore ?? 0) >= 0.7 ? 'done' : 'consolidate';
     else if (own.some((p) => p.state === 'active')) status = 'current';
@@ -134,8 +157,8 @@ export function buildRegionMap(
         open: isCityOpen(island, city, records),
         missing: missingRequirements(island, city, records).map((c) => c.name),
         recall: city.recall,
-        center: cityLayout.get(city.id)!.center,
-        radius: cityLayout.get(city.id)!.radius,
+        center: placement.center,
+        radius: placement.radius,
         levelsDone: own.filter((p) => p.state === 'completed').length,
         levelsTotal: own.length,
         stars: own.reduce((sum, p) => sum + p.stars, 0),

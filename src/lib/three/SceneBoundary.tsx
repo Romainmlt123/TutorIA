@@ -8,7 +8,7 @@ type Props = {
   /** Origine de l'erreur dans le journal (`explorer.scene`, `avatar.scene`). */
   scope: string;
   /** Prévenu de l'échec, après le journal (pour retenter plus tard la scène, sous une autre clé). */
-  onError?: () => void;
+  onError?: (error: unknown) => void;
 };
 type State = { failed: boolean };
 
@@ -26,7 +26,7 @@ export class SceneBoundary extends Component<Props, State> {
 
   override componentDidCatch(error: unknown) {
     logError(this.props.scope, error);
-    this.props.onError?.();
+    this.props.onError?.(error);
   }
 
   override render() {

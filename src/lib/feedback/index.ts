@@ -43,7 +43,6 @@ function configureAudio(): Promise<void> {
       interruptionMode: 'mixWithOthers',
     }).catch((error: unknown) => {
       audioMode = null;
-      logError('feedback.play', error);
       throw error;
     });
   }
@@ -68,7 +67,8 @@ export async function playCue(cue: Cue): Promise<void> {
   let audioReady = true;
   try {
     await configureAudio();
-  } catch {
+  } catch (error: unknown) {
+    logError('feedback.configure', error);
     audioReady = false;
   }
   if (audioReady) {

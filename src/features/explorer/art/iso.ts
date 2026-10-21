@@ -47,6 +47,15 @@ function normalize(v: V3): V3 {
   return [v[0] / l, v[1] / l, v[2] / l];
 }
 
+function average(points: readonly V3[]): V3 {
+  if (points.length === 0) throw new Error('Un volume doit contenir au moins un sommet.');
+  const sum = points.reduce<[number, number, number]>(
+    (total, point) => [total[0] + point[0], total[1] + point[1], total[2] + point[2]],
+    [0, 0, 0],
+  );
+  return [sum[0] / points.length, sum[1] / points.length, sum[2] / points.length];
+}
+
 function rotate(view: View, [x, y, z]: V3): V3 {
   const c = Math.cos(view.yaw);
   const s = Math.sin(view.yaw);
@@ -76,7 +85,8 @@ export function pathOf(points: readonly V2[], closed = true): string {
 }
 
 function normalOf(face: readonly V3[]): V3 {
-  const [a, b, c] = face as [V3, V3, V3];
+  const [a, b, c] = face;
+  if (!a || !b || !c) throw new Error('Une face doit contenir au moins trois sommets.');
   const u: V3 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
   const v: V3 = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
   return normalize([
@@ -108,21 +118,18 @@ export type Solid = { faces: readonly (readonly V3[])[]; color: string; outline?
 export function drawSolid(view: View, solid: Solid, strokeWidth = 1.6): Shape[] {
   const rotated = solid.faces.map((face) => face.map((p) => rotate(view, p)));
   const all = rotated.flat();
-  const center: V3 = [0, 1, 2].map(
-    (i) => all.reduce((sum, p) => sum + p[i]!, 0) / all.length,
-  ) as unknown as V3;
+  const center = average(all);
   const shapes: Shape[] = [];
   const viewer = towardViewer(view);
   rotated.forEach((face, index) => {
     let normal = normalOf(face);
-    const mid: V3 = [0, 1, 2].map(
-      (i) => face.reduce((sum, p) => sum + p[i]!, 0) / face.length,
-    ) as unknown as V3;
+    const mid = average(face);
     if (dot(normal, [mid[0] - center[0], mid[1] - center[1], mid[2] - center[2]]) < 0) {
       normal = [-normal[0], -normal[1], -normal[2]];
     }
     if (dot(normal, viewer) <= 0.02) return;
-    const source = solid.faces[index]!;
+    const source = solid.faces[index];
+    if (!source) throw new Error('La face source est introuvable.');
     shapes.push({
       d: pathOf(source.map((p) => project(view, p))),
       fill: toneOf(solid.color, normal),
