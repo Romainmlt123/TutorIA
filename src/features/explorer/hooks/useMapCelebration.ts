@@ -2,7 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
 import { Easing, makeMutable, withTiming, type SharedValue } from 'react-native-reanimated';
 
-import { CELEBRATION, planCelebration, type CelebrationPlan } from '../logic/celebration';
+import { playCue } from '@/lib/feedback';
+
+import {
+  CELEBRATION,
+  celebrationCues,
+  planCelebration,
+  type CelebrationPlan,
+} from '../logic/celebration';
 import { progressMessage, progressSince, type MapProgress } from '../logic/mapProgress';
 import type { RegionMap } from '../logic/regionMap';
 
@@ -66,6 +73,14 @@ export function useMapCelebration({ map, active, animated }: Options) {
     const { clock, plan } = run;
     if (!animated) clock.set(plan.end);
     else clock.set(withTiming(plan.end, { duration: plan.end * 1000, easing: Easing.linear }));
+  }, [run, animated]);
+
+  useEffect(() => {
+    if (!run) return;
+    const timers = celebrationCues(run.plan, animated).map(({ cue, at }) =>
+      setTimeout(() => void playCue(cue), at * 1000),
+    );
+    return () => timers.forEach(clearTimeout);
   }, [run, animated]);
 
   // Le progrès est annoncé une fois l'écran posé : dit pendant le retour, il serait couvert par

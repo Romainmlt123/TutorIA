@@ -16,9 +16,9 @@ import { useWardrobe } from '@/features/avatar/hooks/useWardrobe';
 import { requestReminderPermission } from '@/features/onboarding/logic/reminder';
 import { useCaptionsPreference } from '@/features/tutor/hooks/useCaptionsPreference';
 import { fr } from '@/i18n/fr';
+import { useSoundsPreference } from '@/lib/feedback/soundsPreference';
 import { logError } from '@/lib/logger';
 import { monthIndex, parisDay } from '@/lib/parisTime';
-import { useDevicePreference } from '@/lib/useDevicePreference';
 import { authService } from '@/services/auth';
 import { familyService } from '@/services/family';
 import { onboardingService } from '@/services/onboarding';
@@ -32,8 +32,6 @@ import { useAccountActions } from './hooks/useAccountActions';
 import { useProfileData } from './hooks/useProfileData';
 
 const t = fr.profile;
-/** Sons et vibrations : retenu sur l'appareil, sans effet pour l'instant (feuille de route). */
-const SOUNDS_KEY = 'tutoria.sounds';
 const onboardingKey = ['onboarding', 'answers'] as const;
 
 /**
@@ -53,7 +51,7 @@ export function ProfileScreen() {
   const { fresh } = useWardrobe();
   const answers = useQuery({ queryKey: onboardingKey, queryFn: () => onboardingService.load() });
   const { captionsOn, setCaptionsOn } = useCaptionsPreference();
-  const [sounds, setSounds] = useDevicePreference(SOUNDS_KEY, false);
+  const [sounds, setSounds] = useSoundsPreference();
   const account = useAccountActions();
   const { message, setMessage } = account;
 

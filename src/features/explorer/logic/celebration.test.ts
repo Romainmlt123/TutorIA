@@ -1,4 +1,4 @@
-import { CELEBRATION, planCelebration, starSlots } from './celebration';
+import { CELEBRATION, celebrationCues, planCelebration, starSlots } from './celebration';
 import type { MapProgress } from './mapProgress';
 
 const NOTHING: MapProgress = { stars: [], gaps: [], unlocked: [], cities: [] };
@@ -18,6 +18,7 @@ const BILAN_PASSED: MapProgress = {
   unlocked: ['fractions', 'litteral'],
   cities: [{ cityId: 'relatifs', from: 'current', to: 'done' }],
 };
+const NOTHING_PLAN = planCelebration(NOTHING);
 
 describe('ordre des étoiles qui apparaissent', () => {
   it('de gauche à droite, celle du milieu (la plus haute) en dernier', () => {
@@ -34,6 +35,45 @@ describe('ordre des étoiles qui apparaissent', () => {
 });
 
 describe('déroulé de la célébration', () => {
+  it('programme les sons des étoiles, de la ville et du déverrouillage', () => {
+    const plan = planCelebration(BILAN_PASSED);
+    expect(celebrationCues(plan, true)).toEqual([
+      ...plan.stars[0]!.pops.map((pop, index) => ({ cue: `star${index + 1}`, at: pop.at })),
+      { cue: 'cityDone', at: plan.cities[0]!.at },
+      ...plan.unlocks.map((unlock) => ({ cue: 'unlock', at: unlock.at })),
+    ]);
+    const encouragement = planCelebration({
+      ...NOTHING,
+      cities: [{ cityId: 'relatifs', from: 'current', to: 'consolidate' }],
+    });
+    expect(celebrationCues(encouragement, true)).toEqual([
+      { cue: 'cityCue', at: encouragement.cities[0]!.at },
+    ]);
+  });
+
+  it('réduit selon la priorité des cues ou ne joue rien', () => {
+    const plan = planCelebration(BILAN_PASSED);
+    expect(celebrationCues(plan, false)).toEqual([{ cue: 'cityDone', at: 0 }]);
+    const starAndUnlock = planCelebration({
+      ...NOTHING,
+      stars: [{ levelId: 'lecon', from: 0, to: 3, firstTime: true }],
+      unlocked: ['exercices'],
+    });
+    expect(celebrationCues(starAndUnlock, false)).toEqual([{ cue: 'star3', at: 0 }]);
+    const unlockAndCue = planCelebration({
+      ...NOTHING,
+      cities: [{ cityId: 'relatifs', from: 'current', to: 'consolidate' }],
+      unlocked: ['fractions'],
+    });
+    expect(celebrationCues(unlockAndCue, false)).toEqual([{ cue: 'unlock', at: 0 }]);
+    const cityCue = planCelebration({
+      ...NOTHING,
+      cities: [{ cityId: 'relatifs', from: 'current', to: 'consolidate' }],
+    });
+    expect(celebrationCues(cityCue, false)).toEqual([{ cue: 'cityCue', at: 0 }]);
+    expect(celebrationCues(NOTHING_PLAN, false)).toEqual([]);
+  });
+
   it('laisse l’écran se poser, montre la rangée, puis les étoiles une à une', () => {
     const plan = planCelebration(LESSON_DONE);
     const [stars] = plan.stars;

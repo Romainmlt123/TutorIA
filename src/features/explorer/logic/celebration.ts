@@ -1,3 +1,5 @@
+import type { Cue } from '@/lib/feedback';
+
 import type { CityChange, MapProgress } from './mapProgress';
 
 /*
@@ -87,4 +89,29 @@ export function planCelebration(progress: MapProgress): CelebrationPlan {
   const unlocks = progress.unlocked.map((levelId, i) => ({ levelId, at: t + i * T.unlockStep }));
   if (unlocks.length > 0) t = unlocks[unlocks.length - 1]!.at + T.unlock;
   return { stars, cities, gaps, unlocks, walkAt: t, end: Math.max(end, t) };
+}
+
+/** Choisit les cues associés au déroulé d'une célébration. */
+export function celebrationCues(
+  plan: CelebrationPlan,
+  animated: boolean,
+): { cue: Cue; at: number }[] {
+  if (!animated) {
+    if (plan.cities.some((city) => city.to === 'done')) return [{ cue: 'cityDone', at: 0 }];
+    if (plan.stars.some((stars) => stars.pops.length >= 3)) return [{ cue: 'star3', at: 0 }];
+    if (plan.unlocks.length > 0) return [{ cue: 'unlock', at: 0 }];
+    if (plan.cities.length > 0) return [{ cue: 'cityCue', at: 0 }];
+    return [];
+  }
+  const cues: { cue: Cue; at: number }[] = [];
+  for (const stars of plan.stars) {
+    stars.pops.forEach((pop, index) => {
+      cues.push({ cue: `star${index + 1}` as Cue, at: pop.at });
+    });
+  }
+  for (const city of plan.cities) {
+    cues.push({ cue: city.to === 'done' ? 'cityDone' : 'cityCue', at: city.at });
+  }
+  for (const unlock of plan.unlocks) cues.push({ cue: 'unlock', at: unlock.at });
+  return cues.sort((left, right) => left.at - right.at);
 }

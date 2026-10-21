@@ -8,6 +8,8 @@ import type { LevelRecord } from '../logic/progression';
 import { buildRegionMap, type RegionMap } from '../logic/regionMap';
 import { useMapCelebration } from './useMapCelebration';
 
+jest.mock('@/lib/feedback', () => ({ playCue: jest.fn() }));
+
 /*
  * La doublure de Reanimated rend une valeur brute pour `makeMutable` : ici, une valeur partagée
  * lisible et modifiable, comme celle de `useSharedValue`. Elle finit chaque animation tout de suite

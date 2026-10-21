@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { GameButton } from '@/components/game/GameButton';
@@ -6,6 +7,7 @@ import { Parchment, WoodFrame } from '@/components/game/WoodFrame';
 import { GradientSurface } from '@/components/GradientSurface';
 import { Icon } from '@/components/Icon';
 import { fr } from '@/i18n/fr';
+import { playCue } from '@/lib/feedback';
 import type { LevelOutcome } from '@/services/tutor/api-contract';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
@@ -42,6 +44,9 @@ export function LevelResultPanel({
   onContinue,
   onReview,
 }: Props) {
+  useEffect(() => {
+    if (outcome.passed) void playCue('levelPassed');
+  }, [outcome.passed]);
   const verdict = T.verdict[level.type][outcome.passed ? 'passed' : 'retry'];
   const title = outcome.passed ? T.passedTitle(firstName) : T.retryTitle(firstName);
   return (
