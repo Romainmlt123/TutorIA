@@ -84,6 +84,6 @@ describe('feedback', () => {
     expect(audio.setAudioModeAsync).toHaveBeenCalledTimes(2);
     expect(audio.createAudioPlayer).toHaveBeenCalledTimes(1);
     expect(isolatedLogError).toHaveBeenCalledTimes(1);
-    expect(isolatedLogError).toHaveBeenCalledWith('feedback.play', error);
+    expect(isolatedLogError).toHaveBeenCalledWith('feedback.configure', error);
   });
 });

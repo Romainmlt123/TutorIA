@@ -5,6 +5,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import type { AvatarLook } from '@/features/avatar/logic/avatarLook';
 import { SceneBoundary } from '@/lib/three/SceneBoundary';
 import { useSceneKey } from '@/lib/three/useSceneKey';
+import { logError } from '@/lib/logger';
 import { explorerArt } from '@/theme/explorerArt';
 
 import { useAvatarWalk } from '../../hooks/useAvatarWalk';
@@ -141,7 +142,10 @@ export function MapAvatarView({
         <SceneBoundary
           key={sceneKey}
           scope="explorer.avatar"
-          onError={() => setShownKey(sceneKey)}
+          onError={(error) => {
+            logError('explorer.avatar.asset', error);
+            setShownKey(sceneKey);
+          }}
           fallback={null}>
           <MapAvatarCanvas
             look={look}

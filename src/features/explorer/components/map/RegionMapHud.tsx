@@ -1,10 +1,15 @@
 import { useCallback, useRef, useState, type RefObject } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  GestureDetector,
+  type GestureType,
+  type SimultaneousGesture,
+} from 'react-native-gesture-handler';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
 import { fr } from '@/i18n/fr';
 import { theme } from '@/theme';
+import { explorerArt } from '@/theme/explorerArt';
 
 import { MAP_SCROLL_X, MAP_SCROLL_Z } from '../../hooks/mapScrollValue';
 import { cityAt, type MapCity, type MapNode, type RegionMap } from '../../logic/regionMap';
@@ -18,7 +23,7 @@ type Props = {
   regionName: string;
   onBack: () => void;
   /** Geste qui fait défiler la carte. */
-  pan: ReturnType<typeof Gesture.Pan>;
+  pan: GestureType | SimultaneousGesture;
   /** Liste à la place de la carte 3D (sans WebGL, lecteur d'écran, ou choix de l'élève). */
   listMode: boolean;
   onToggleList: () => void;
@@ -26,6 +31,7 @@ type Props = {
   onCity: (city: MapCity) => void;
   /** Fait glisser la carte jusqu'à une ville. */
   onGoToCity: (city: MapCity) => void;
+  onRecenter?: () => void;
   /** Zone libre entre l'en-tête et le panneau, mesurée par l'écran pour y rogner les boutons posés sur la carte. */
   zoneRef: RefObject<View | null>;
   onZoneLayout: () => void;
@@ -73,6 +79,7 @@ export function RegionMapHud({
   onNode,
   onCity,
   onGoToCity,
+  onRecenter,
   zoneRef,
   onZoneLayout,
 }: Props) {
@@ -91,20 +98,35 @@ export function RegionMapHud({
         <GameButton
           tone="yellow"
           round
-          size={48}
+          size={explorerArt.regionMap.buttonSize}
           icon="chevron-gauche"
           accessibilityLabel={fr.explorer.backToRegions}
           onPress={onBack}
         />
+        {onRecenter ? (
+          <GameButton
+            tone="blue"
+            round
+            size={explorerArt.regionMap.buttonSize}
+            icon="cible"
+            accessibilityLabel={fr.explorer.recenterAvatar}
+            onPress={onRecenter}
+          />
+        ) : null}
         <View
           style={styles.titles}
           accessible
           accessibilityLabel={fr.explorer.regionMapLabel(regionName)}>
-          <GameText size={13} align="center" stroke={2} drop={1} numberOfLines={1}>
+          <GameText
+            size={explorerArt.regionMap.titleMeta}
+            align="center"
+            stroke={2}
+            drop={1}
+            numberOfLines={1}>
             {regionName}
           </GameText>
           <GameText
-            size={long ? 18 : 22}
+            size={long ? explorerArt.regionMap.titleCompact : explorerArt.regionMap.title}
             align="center"
             numberOfLines={long ? 2 : 1}
             style={styles.title}>
@@ -114,7 +136,7 @@ export function RegionMapHud({
         <GameButton
           tone="green"
           round
-          size={48}
+          size={explorerArt.regionMap.buttonSize}
           icon={listMode ? 'boussole' : 'revisions'}
           accessibilityLabel={listMode ? fr.explorer.viewMap : fr.explorer.viewList}
           onPress={onToggleList}
@@ -126,7 +148,13 @@ export function RegionMapHud({
         </View>
       ) : (
         <GestureDetector gesture={pan}>
-          <View ref={zoneRef} collapsable={false} onLayout={onZoneLayout} style={styles.zone} />
+          <View
+            ref={zoneRef}
+            testID="explorer-region-map-zone"
+            collapsable={false}
+            onLayout={onZoneLayout}
+            style={styles.zone}
+          />
         </GestureDetector>
       )}
       <CityPanel

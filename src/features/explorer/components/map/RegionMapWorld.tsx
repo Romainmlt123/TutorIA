@@ -21,6 +21,7 @@ import { LevelDisc, LevelHalo } from './LevelDisc';
 import { MapClouds, WaterGlints } from './MapAmbient';
 import { MapTiles, onTileError } from './MapTiles';
 import { RevealSegment } from './RevealSegment';
+import { RegionShadowLayer } from './RegionShadowLayer';
 
 type Props = {
   tiles: MapTilesData;
@@ -51,9 +52,9 @@ type Props = {
 /**
  * Carte d'une région pré-rendue (X2b), dessinée par React Native, sans 3D : le contenu est un seul
  * plan que le fil de l'interface déplace d'après le point suivi (`useMapContent`). De bas en haut :
- * les nuages qui dérivent sous l'île, le sol en tuiles, les reflets du soleil sur l'eau, les
- * tronçons miel du chemin parcouru (honeyGaps), les halos des niveaux ouverts, les disques des niveaux, du
- * fond vers l'avant, puis l'avatar (`children`). Tout est monté une fois pour toutes : seule la
+ * les nuages, les silhouettes SVG, le terrain de contexte et le sol en tuiles, les reflets de l'eau,
+ * les tronçons miel du chemin parcouru (honeyGaps), les halos puis les disques des niveaux, et l'avatar.
+ * Tout est monté une fois pour toutes : seule la
  * progression change ce qui est posé, jamais le défilement. Les nuages, les reflets et le halo du
  * niveau à jouer suivent une seule horloge à 30 Hz (`useMapClock`), arrêtée avec `ambient`. Au
  * retour d'un niveau, la célébration (`celebration`) dévoile les tronçons nouveaux et ouvre les
@@ -120,8 +121,9 @@ export const RegionMapWorld = memo(function RegionMapWorld({
 
   return (
     <View pointerEvents="none" aria-hidden style={styles.world}>
-      <Animated.View style={[styles.content, area, shift]}>
+      <Animated.View testID="explorer-map-world" style={[styles.content, area, shift]}>
         <MapClouds field={clouds} origin={origin} k={k} clock={clock} />
+        <RegionShadowLayer tiles={tiles} scale={scale} />
         <MapTiles tiles={tiles} scale={scale} watched={watched} onReady={onReady} />
         {water ? (
           <WaterGlints
@@ -189,6 +191,6 @@ export const RegionMapWorld = memo(function RegionMapWorld({
 const styles = StyleSheet.create({
   // Le contenu est bien plus grand que l'écran : il est rogné, et n'agrandit pas la page sur le web.
   world: { ...StyleSheet.absoluteFill, overflow: 'hidden' },
-  content: { position: 'absolute' },
+  content: { position: 'absolute', overflow: 'visible' },
   image: { position: 'absolute' },
 });

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { SceneBoundary } from '@/lib/three/SceneBoundary';
+import { logError } from '@/lib/logger';
 
 import { IslandStage } from '../components/IslandStage';
 import { SkyBackdrop } from '../components/SkyBackdrop';
@@ -41,7 +42,10 @@ export function StageView({ stage, fallback, shown }: StageScene) {
       <SceneBoundary
         key={visit.key}
         scope="explorer.scene"
-        onError={() => setAttempt((current) => ({ ...current, failed: true }))}
+        onError={(error) => {
+          logError('explorer.scene.asset', error);
+          setAttempt((current) => ({ ...current, failed: true }));
+        }}
         fallback={<StageFallback {...fallback} />}>
         <IslandStage {...stage} />
       </SceneBoundary>

@@ -12,6 +12,7 @@ import { RegionMapMarkers } from './RegionMapMarkers';
 jest.mock('../../hooks/mapScrollValue', () => ({
   MAP_SCROLL_X: { value: 0 },
   MAP_SCROLL_Z: { value: 0 },
+  MAP_ZOOM: { value: 1 },
 }));
 // Les étoiles d'un niveau, réduites à un texte : on vérifie lesquelles sont posées.
 jest.mock('./NodeStars', () => {

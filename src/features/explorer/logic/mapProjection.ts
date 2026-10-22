@@ -84,6 +84,7 @@ export function scrollToContentTranslation(
 
 /** Bornes du point suivi : le rectangle des points de niveau, avec la marge de la caméra. */
 export function nodeScrollBounds(nodes: Nodes): Bounds {
+  'worklet';
   const xs = nodes.map((n) => n.x);
   const zs = nodes.map((n) => n.z);
   return {
@@ -111,14 +112,17 @@ export function renderedRectOf(nodes: Nodes): [number, number, number, number] {
 }
 
 /** Intervalle borné ; inversé (image plus petite que l'écran), il devient son milieu. */
-const span = (min: number, max: number): [number, number] =>
-  min <= max ? [min, max] : [(min + max) / 2, (min + max) / 2];
+function span(min: number, max: number): [number, number] {
+  'worklet';
+  return min <= max ? [min, max] : [(min + max) / 2, (min + max) / 2];
+}
 
 /**
  * Bornes du point suivi pour que l'écran ne sorte jamais de l'image rendue : au-delà, rien n'est
  * dessiné. Une image plus petite que l'écran sur un axe y reste centrée.
  */
 export function imageScrollBounds(frame: ImageFrame, screen: ScreenSize, k: number): Bounds {
+  'worklet';
   const halfWidth = screen.width / 2 / k;
   const above = (screen.height * MAP_AIM_ROW) / k;
   const below = (screen.height * (1 - MAP_AIM_ROW)) / k;
@@ -138,6 +142,7 @@ export function clampScroll(x: number, z: number, bounds: Bounds): { x: number; 
 
 /** Bornes des niveaux ramenées dans celles de l'image : la caméra ne s'y pose jamais hors du rendu. */
 export function boundsInside(bounds: Bounds, outer: Bounds): Bounds {
+  'worklet';
   const low = clampScroll(bounds.minX, bounds.minZ, outer);
   const high = clampScroll(bounds.maxX, bounds.maxZ, outer);
   return { minX: low.x, maxX: high.x, minZ: low.z, maxZ: high.z };
@@ -153,6 +158,7 @@ export function tiledScrollBounds(
   screen: ScreenSize,
   k: number,
 ): Bounds {
+  'worklet';
   return boundsInside(nodeScrollBounds(nodes), imageScrollBounds(frame, screen, k));
 }
 

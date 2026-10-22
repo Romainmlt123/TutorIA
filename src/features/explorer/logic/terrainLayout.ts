@@ -269,11 +269,28 @@ export function pathDistance(map: RegionMap): (x: number, z: number) => number {
 export type DecorEntry = readonly [string, number, number, number, number];
 
 /** Décors des cartes cuites, par région (regionDecor.json, écrit par region_map.py). */
-export const BAKED_DECOR = regionDecor as unknown as Readonly<
-  Record<string, readonly DecorEntry[]>
->;
+function parseDecorEntry(entry: readonly unknown[]): DecorEntry {
+  const [rawKind, x, z, yaw, scale] = entry;
+  const decor = DECOR_KINDS.find(({ kind }) => kind === rawKind);
+  if (
+    !decor ||
+    typeof x !== 'number' ||
+    !Number.isFinite(x) ||
+    typeof z !== 'number' ||
+    !Number.isFinite(z) ||
+    typeof yaw !== 'number' ||
+    !Number.isFinite(yaw) ||
+    typeof scale !== 'number' ||
+    !Number.isFinite(scale)
+  ) {
+    throw new Error('Entrée invalide dans stylized3d/regionDecor.json');
+  }
+  return [decor.kind, x, z, yaw, scale];
+}
 
-const RADIUS = new Map<string, number>(DECOR_KINDS.map((k) => [k.kind, k.radius]));
+export const BAKED_DECOR: Readonly<Record<string, readonly DecorEntry[]>> = Object.fromEntries(
+  Object.entries(regionDecor).map(([region, entries]) => [region, entries.map(parseDecorEntry)]),
+);
 
 /**
  * Décors d'une carte cuite : ceux de Blender, qui évitent déjà l'eau, les repères et les villes,
@@ -282,12 +299,12 @@ const RADIUS = new Map<string, number>(DECOR_KINDS.map((k) => [k.kind, k.radius]
 export function placedDecor(map: RegionMap, entries: readonly DecorEntry[]): Decor[] {
   const near = pathDistance(map);
   return entries.flatMap(([kind, x, z, yaw, scale]) => {
-    const base = RADIUS.get(kind);
-    if (base === undefined) return [];
-    const radius = base * scale;
+    const definition = DECOR_KINDS.find((decor) => decor.kind === kind);
+    if (!definition) return [];
+    const radius = definition.radius * scale;
     if (near(x, z) < PATH_CLEARANCE + radius * 0.5) return [];
     if (map.nodes.some((n) => Math.hypot(n.x - x, n.z - z) < n.radius + radius)) return [];
-    return [{ kind: kind as DecorKind, x, z, yaw, scale }];
+    return [{ kind: definition.kind, x, z, yaw, scale }];
   });
 }
 
@@ -348,7 +365,9 @@ export function clearingDressing(map: RegionMap, seed: number): { decor: Decor[]
       return { x: city.center.x + Math.cos(angle) * r, z: city.center.z + Math.sin(angle) * r };
     };
     for (const { kind, count } of CLEARING_DECOR) {
-      const radius = RADIUS.get(kind) ?? 0.15;
+      const definition = DECOR_KINDS.find((decor) => decor.kind === kind);
+      if (!definition) throw new Error(`Rayon absent pour le décor ${kind}`);
+      const radius = definition.radius;
       let done = 0;
       for (let tries = 0; done < count && tries < count * 40; tries++) {
         const { x, z } = spot();

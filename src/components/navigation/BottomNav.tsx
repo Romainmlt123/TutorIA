@@ -1,5 +1,5 @@
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { fr } from '@/i18n/fr';
 import { useKeyboardVisible } from '@/lib/useKeyboardVisible';
@@ -92,6 +92,7 @@ type Props = BottomTabBarProps & {
 export function BottomNav({
   state,
   navigation,
+  descriptors,
   tabs = STUDENT_TABS,
   accessibilityLabel = fr.nav.label,
 }: Props) {
@@ -99,11 +100,21 @@ export function BottomNav({
   const keyboardVisible = useKeyboardVisible();
   const active = state.routes[state.index];
   const activeName = active?.name;
+  const tabBarStyle = active
+    ? StyleSheet.flatten(descriptors?.[active.key]?.options.tabBarStyle as StyleProp<ViewStyle>)
+    : null;
   // L'appel vocal (v2.6) et la session de flashcards (v2.12) sont plein écran : la barre s'y masque.
   const nested = active?.state;
   const nestedName = nested?.routes[nested.index ?? 0]?.name;
   const fullScreen = nestedName === 'vocal' || nestedName === 'session';
-  if (keyboardVisible || fullScreen || !tabs.some((tab) => tab.name === activeName)) return null;
+  if (
+    keyboardVisible ||
+    fullScreen ||
+    tabBarStyle?.display === 'none' ||
+    !tabs.some((tab) => tab.name === activeName)
+  ) {
+    return null;
+  }
 
   return (
     <View

@@ -55,9 +55,23 @@ describe('BottomNav', () => {
     name,
   }));
 
-  function renderNav(index: number) {
+  function renderNav(index: number, hidden = false) {
     const navigation = { emit: jest.fn(() => ({ defaultPrevented: false })), navigate: jest.fn() };
-    const props = { state: { index, routes }, navigation } as unknown as BottomTabBarProps;
+    const descriptors = Object.fromEntries(
+      routes.map((route) => [
+        route.key,
+        {
+          options: {
+            tabBarStyle: hidden && route.name === 'tuteur' ? { display: 'none' } : undefined,
+          },
+        },
+      ]),
+    );
+    const props = {
+      state: { index, routes },
+      navigation,
+      descriptors,
+    } as unknown as BottomTabBarProps;
     return {
       navigation,
       view: render(
@@ -81,5 +95,11 @@ describe('BottomNav', () => {
     await view;
     fireEvent.press(screen.getByRole('tab', { name: 'Révisions' }));
     expect(navigation.navigate).toHaveBeenCalledWith('revisions', undefined);
+  });
+
+  it('masque la barre lorsque l’onglet le demande', async () => {
+    const { view } = renderNav(2, true);
+    await view;
+    expect(screen.queryByRole('tab')).toBeNull();
   });
 });

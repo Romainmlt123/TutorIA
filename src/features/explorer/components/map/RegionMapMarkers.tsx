@@ -1,15 +1,21 @@
 import { useMemo } from 'react';
 import { PixelRatio, StyleSheet, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { PressableBase } from '@/components/PressableBase';
+import { Text } from '@/components/Text';
 import { fr } from '@/i18n/fr';
+import { explorerArt } from '@/theme/explorerArt';
 
+import { MAP_SCROLL_X, MAP_SCROLL_Z, MAP_ZOOM } from '../../hooks/mapScrollValue';
 import type { MapCelebration } from '../../hooks/useMapCelebration';
 import { useMapContent } from '../../hooks/useMapContent';
 import { cityBannerPlaces, discFace } from '../../logic/mapMarkers';
+import { worldToContentDp } from '../../logic/mapProjection';
 import type { ScreenSize } from '../../logic/mapProjection';
+import { clampPointToScreen, nearestPointOnPolygon, pointUnderFocus } from '../../logic/mapZoom';
 import type { MapCity, MapNode, RegionMap } from '../../logic/regionMap';
+import { regionShadowSet, type RegionShadow } from '../../stylized3d/regionShadows';
 import type { MapTiles } from '../../tiles';
 import { CityBanner } from './CityBanner';
 import type { CityFlip } from './CityCelebration';
@@ -26,6 +32,8 @@ type Props = {
   onCity: (city: MapCity) => void;
   /** Célébration au retour d'un niveau (useMapCelebration) : étoiles gagnées et villes. */
   celebration?: MapCelebration | null;
+  /** Les disques ne reçoivent plus les touchers sous le zoom de tap. */
+  touchable?: boolean;
 };
 
 /**
@@ -34,6 +42,58 @@ type Props = {
  */
 function bannerSize(name: string, fontScale: number) {
   return { width: 50 + 5.6 * name.length * Math.min(fontScale, 1.3), height: MAP_TARGET };
+}
+
+function ShadowName({
+  label,
+  tiles,
+  screen,
+  k,
+}: {
+  label: RegionShadow;
+  tiles: MapTiles;
+  screen: ScreenSize;
+  k: number;
+}) {
+  const position = useAnimatedStyle(() => {
+    const zoom = MAP_ZOOM.value;
+    const center = pointUnderFocus(
+      { x: MAP_SCROLL_X.value, z: MAP_SCROLL_Z.value },
+      { x: screen.width / 2, y: screen.height / 2 },
+      screen,
+      k,
+      zoom,
+    );
+    const nearest = nearestPointOnPolygon(label.polygon, center);
+    const point = clampPointToScreen(
+      nearest,
+      center,
+      screen,
+      k,
+      zoom,
+      explorerArt.regionShadow.label.width / 2 + 8,
+      explorerArt.regionShadow.label.lift + 8,
+    );
+    const contentPoint = worldToContentDp(tiles, k, point.x, point.z);
+    return { left: contentPoint.x, top: contentPoint.y };
+  }, [k, label, screen, tiles]);
+  const scale = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 / Math.max(MAP_ZOOM.value, 0.01) }],
+  }));
+  const labelText = Object.entries(fr.explorer.regionShadowNames).find(
+    ([id]) => id === label.id,
+  )?.[1];
+  if (!labelText) return null;
+
+  return (
+    <Animated.View pointerEvents="none" style={[styles.shadowLabel, position]}>
+      <Animated.View style={[styles.shadowLabelText, scale]}>
+        <Text variant="caption" weight="bold" color="textOnColor">
+          {labelText}
+        </Text>
+      </Animated.View>
+    </Animated.View>
+  );
 }
 
 /**
@@ -52,8 +112,10 @@ export function RegionMapMarkers({
   onNode,
   onCity,
   celebration = null,
+  touchable = true,
 }: Props) {
   const { k, origin, area, shift } = useMapContent(tiles, screen);
+  const labels = regionShadowSet(map.regionId)?.shadows ?? [];
   // Ce que la célébration anime : les étoiles de chaque niveau, le bandeau de chaque ville.
   const moments = useMemo(() => {
     const stars = new Map<string, StarPop>();
@@ -74,7 +136,12 @@ export function RegionMapMarkers({
     return cityBannerPlaces(map, origin, k, sizes);
   }, [map, origin, k]);
   return (
-    <Animated.View pointerEvents="box-none" style={[styles.content, area, shift]}>
+    <Animated.View
+      pointerEvents={touchable ? 'box-none' : 'none'}
+      style={[styles.content, area, shift]}>
+      {labels.map((label) => (
+        <ShadowName key={label.id} label={label} tiles={tiles} screen={screen} k={k} />
+      ))}
       {map.nodes.map((node) => {
         const face = discFace(origin, k, node);
         const label = nodeLabel(node);
@@ -127,4 +194,21 @@ const styles = StyleSheet.create({
   node: { position: 'absolute', width: MAP_TARGET, height: MAP_TARGET },
   target: { width: MAP_TARGET, height: MAP_TARGET },
   banner: { position: 'absolute', alignItems: 'center' },
+  shadowLabel: {
+    position: 'absolute',
+    zIndex: 2,
+    width: explorerArt.regionShadow.label.width,
+    marginLeft: -explorerArt.regionShadow.label.width / 2,
+    marginTop: -explorerArt.regionShadow.label.lift,
+    alignItems: 'center',
+  },
+  shadowLabelText: {
+    paddingHorizontal: explorerArt.regionShadow.label.paddingHorizontal,
+    paddingVertical: explorerArt.regionShadow.label.paddingVertical,
+    borderRadius: explorerArt.regionShadow.label.radius,
+    backgroundColor: explorerArt.regionShadow.fill,
+    borderWidth: explorerArt.regionShadow.label.borderWidth,
+    borderColor: explorerArt.regionShadow.outline,
+    alignItems: 'center',
+  },
 });

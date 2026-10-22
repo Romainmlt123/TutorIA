@@ -2,6 +2,7 @@ import {
   carouselShot,
   diveShot,
   easeShot,
+  flightAt,
   MAP_VISIBLE_WIDTH,
   REGION_SHOT,
   REGIONS_SHOT,
@@ -10,6 +11,20 @@ import {
 import { DEFAULT_FRAME } from './stageFrame';
 
 describe('cadrage de la caméra par vue', () => {
+  it('interpole position et cible sur un vol, avec un arc doux à mi-course', () => {
+    const from = { position: [0, 1, 0] as const, target: [0, 0, 0] as const, fov: 26 };
+    const to = { position: [8, 5, 4] as const, target: [6, 2, -2] as const, fov: 23 };
+    expect(flightAt(0, from, to)).toEqual(from);
+    expect(flightAt(1, from, to)).toEqual(to);
+    expect(flightAt(0.5, from, to, 'inOutCubic', 0.8)).toEqual({
+      position: [4, 3.8, 2],
+      target: [3, 1, -1],
+      fov: 24.5,
+    });
+    expect(flightAt(0.5, from, to, 'inCubic').position[0]).toBe(1);
+    expect(flightAt(0.5, from, to, 'outCubic').position[0]).toBe(7);
+  });
+
   it('cadre le carrousel dans la zone mesurée, comme avant', () => {
     expect(shotFor({ kind: 'carousel' }, DEFAULT_FRAME)).toEqual({
       fov: 26,
@@ -65,7 +80,9 @@ describe('cadrage de la caméra par vue', () => {
     const dive = diveShot([-1.7, 1.2]);
     expect(dive.lookX).toBe(-1.7);
     expect(dive.lookZ).toBe(1.2);
-    expect(dive.fill).toBeGreaterThan(REGIONS_SHOT.fill * 2);
-    expect(dive.elevation).toBeLessThan(REGIONS_SHOT.elevation);
+    expect(dive.fill).toBeCloseTo(0.85);
+    expect(dive.elevation).toBeGreaterThanOrEqual(45);
+    expect(dive.elevation).toBeLessThanOrEqual(55);
+    expect(dive.fov).toBeGreaterThanOrEqual(30);
   });
 });

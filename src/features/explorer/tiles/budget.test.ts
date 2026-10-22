@@ -11,6 +11,7 @@ import { nodeSprites, PRERENDERED_MAPS } from '.';
 /** Poids d'une région (tuiles, sous-couche et tronçons du chemin), nombre de tuiles, poids des sprites. */
 const REGION_MAX_BYTES = 2_000_000;
 const REGION_MAX_TILES = 100;
+const CONTEXT_MAX_BYTES = 250_000;
 const SPRITES_MAX_BYTES = 150_000;
 
 /** Fichiers importés par un module généré de ce dossier, en chemins absolus. */
@@ -26,6 +27,8 @@ const totalBytes = (files: readonly string[]) =>
 
 describe.each(Object.entries(PRERENDERED_MAPS))('carte pré-rendue %s', (regionId, tiles) => {
   const files = requiredFiles(`${regionId}.generated.ts`);
+  const contextFiles = tiles?.context ? requiredFiles(`${regionId}.context.generated.ts`) : [];
+  const allFiles = [...files, ...contextFiles];
 
   it('importe ses tuiles, sa sous-couche et ses tronçons, et rien d’autre', () => {
     expect(files).toHaveLength(tiles!.tiles.length + 1 + tiles!.doneSegments.length);
@@ -35,13 +38,21 @@ describe.each(Object.entries(PRERENDERED_MAPS))('carte pré-rendue %s', (regionI
   it('ne laisse aucune image de la région sans usage', () => {
     const folder = dirname(files[0]!);
     expect(basename(folder)).toBe(regionId);
-    const images = readdirSync(folder).filter((name) => name.endsWith('.webp'));
-    expect(images.filter((name) => !files.includes(join(folder, name)))).toEqual([]);
+    const images = readdirSync(folder).filter(
+      (name) => name.endsWith('.webp') && name !== 'nuage.webp',
+    );
+    expect(images.filter((name) => !allFiles.includes(join(folder, name)))).toEqual([]);
   });
 
   it(`tient en ${REGION_MAX_TILES} tuiles et ${REGION_MAX_BYTES / 1e6} Mo`, () => {
     expect(tiles!.tiles.length).toBeLessThanOrEqual(REGION_MAX_TILES);
     expect(totalBytes(files)).toBeLessThanOrEqual(REGION_MAX_BYTES);
+  });
+
+  it(`limite le terrain de contexte à ${CONTEXT_MAX_BYTES / 1000} ko`, () => {
+    expect(contextFiles).toHaveLength(1);
+    expect(contextFiles.filter((file) => !existsSync(file))).toEqual([]);
+    expect(totalBytes(contextFiles)).toBeLessThanOrEqual(CONTEXT_MAX_BYTES);
   });
 });
 
@@ -53,11 +64,22 @@ describe('sprites des points de niveau', () => {
     expect(files).toHaveLength(Object.keys(nodeSprites).length - 1);
     expect(files.filter((file) => !existsSync(file))).toEqual([]);
     const folder = dirname(files[0]!);
-    const images = readdirSync(folder).filter((name) => name.endsWith('.webp'));
+    const images = readdirSync(folder).filter(
+      (name) => name.endsWith('.webp') && name !== 'nuage.webp',
+    );
     expect(images.filter((name) => !files.includes(join(folder, name)))).toEqual([]);
   });
 
   it(`tiennent en ${SPRITES_MAX_BYTES / 1000} ko`, () => {
     expect(totalBytes(files)).toBeLessThanOrEqual(SPRITES_MAX_BYTES);
+  });
+});
+
+describe('sprite de transition du nuage', () => {
+  const file = resolve(__dirname, '../../../../assets/explorer/sprites/nuage.webp');
+
+  it('existe et reste sous 30 ko', () => {
+    expect(existsSync(file)).toBe(true);
+    expect(statSync(file).size).toBeLessThanOrEqual(30_000);
   });
 });

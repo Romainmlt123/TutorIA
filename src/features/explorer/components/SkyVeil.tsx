@@ -1,73 +1,154 @@
-import { useCallback, useRef } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { useState } from 'react';
+import { StyleSheet, useWindowDimensions } from 'react-native';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
+import { logError } from '@/lib/logger';
 import { explorerArt } from '@/theme/explorerArt';
 
-const COVER_MS = 500;
-const UNCOVER_MS = 380;
-/** Une scène qui annonce qu'elle est prête (carte pré-rendue) est attendue au plus ce temps (ms). */
-const READY_CAP_MS = 800;
+import { CLOUD_PROGRESS, DRIFT_PROGRESS } from '../hooks/useSkyVeil';
+import type { useSkyVeil } from '../hooks/useSkyVeil';
 
-/**
- * Fondu au noir qui passe sur l'écran pour cacher un changement de scène (du plongeon vers la
- * carte d'une région, et retour) : il se referme, `change` est appelée une fois l'écran couvert,
- * puis il s'ouvre. Sans animation (« Réduire les animations »), le changement est immédiat.
- *
- * Avec `waitReady`, il ne s'ouvre qu'une fois la nouvelle scène prête (`ready`, appelée par la
- * carte pré-rendue quand ses tuiles à l'écran sont chargées), ou au bout de READY_CAP_MS.
- */
-export function useSkyVeil(animated: boolean) {
-  const opacity = useSharedValue(0);
-  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
-  // Ouverture qui attend `ready` : la dernière demandée, seule à pouvoir encore s'ouvrir.
-  const held = useRef<(() => void) | null>(null);
-  const pass = useCallback(
-    (change: () => void, waitReady = false) => {
-      if (!animated) {
-        change();
-        return;
-      }
-      const uncover = () => {
-        opacity.set(withTiming(0, { duration: UNCOVER_MS }));
-      };
-      const changeThenUncover = () => {
-        change();
-        if (!waitReady) {
-          // Une image pour que la nouvelle scène soit posée avant d'ouvrir le voile.
-          setTimeout(uncover, 120);
-          return;
-        }
-        const open = () => {
-          if (held.current !== open) return;
-          held.current = null;
-          clearTimeout(timer);
-          uncover();
-        };
-        const timer = setTimeout(open, READY_CAP_MS);
-        held.current = open;
-      };
-      opacity.set(
-        withTiming(1, { duration: COVER_MS }, (finished) => {
-          if (finished) runOnJS(changeThenUncover)();
-        }),
-      );
+const CLOUD = require('../../../../assets/explorer/sprites/nuage.webp');
+
+function CoverCloud({
+  dx,
+  dy,
+  layer,
+  width,
+  height,
+  size,
+}: (typeof explorerArt.cloud.cover)[number] & { width: number; height: number; size: number }) {
+  const [spriteUnavailable, setSpriteUnavailable] = useState(false);
+  const {
+    y: layerY,
+    scale: layerScale,
+    opacity: layerOpacity,
+    delay,
+  } = explorerArt.cloud.layers[layer];
+  const style = useAnimatedStyle(() => {
+    const progress = CLOUD_PROGRESS.value;
+    const parallax = 1 + 0.5 * layer;
+    const arrival = Math.min(1, Math.max(0, (progress - delay) / (1 - delay)) * parallax);
+    const opening = Math.min(1, Math.max(0, progress - 1) * parallax);
+    const outward =
+      progress <= 1
+        ? interpolate(arrival, [0, 1], [1.35, 0.22])
+        : interpolate(opening, [0, 1], [0.22, 2.05]);
+    const sizeScale = parallax * layerScale;
+    return {
+      opacity:
+        progress <= 1
+          ? interpolate(arrival, [0, 0.5, 1], [0, layerOpacity * 0.7, layerOpacity])
+          : interpolate(opening, [0, 0.45, 1], [layerOpacity, layerOpacity * 0.6, 0]),
+      transform: [
+        { translateX: dx * width * outward * parallax },
+        { translateY: dy * height * outward * parallax },
+        {
+          scale:
+            progress <= 1
+              ? interpolate(arrival, [0, 1], [0.6, layerScale]) * parallax
+              : interpolate(opening, [0, 1], [sizeScale, sizeScale * 0.7]),
+        },
+      ],
+    };
+  });
+  const cloudStyle = [
+    styles.cloud,
+    {
+      left: width / 2 - size / 2,
+      top: (layerY - 0.5) * height + height / 2 - size * explorerArt.cloud.sprite.coverOffset,
+      width: size,
+      height: size * explorerArt.cloud.sprite.aspectRatio,
     },
-    [animated, opacity],
+    style,
+  ];
+  return spriteUnavailable ? (
+    <Animated.View pointerEvents="none" style={[cloudStyle, styles.cloudFallback]} />
+  ) : (
+    <Animated.Image
+      source={CLOUD}
+      resizeMode="contain"
+      onError={(event) => {
+        logError('explorer.cloud.sprite', event.nativeEvent.error);
+        setSpriteUnavailable(true);
+      }}
+      style={cloudStyle}
+    />
   );
-  /** La nouvelle scène est prête : le voile qui l'attend s'ouvre (sans effet sinon). */
-  const ready = useCallback(() => held.current?.(), []);
-  return { style, pass, ready };
 }
 
-/** Le voile lui-même : un aplat noir, sans réaction au toucher. */
+function DriftCloud({
+  y,
+  direction,
+  size,
+  width,
+  height,
+}: (typeof explorerArt.cloud.drift)[number] & { width: number; height: number }) {
+  const [spriteUnavailable, setSpriteUnavailable] = useState(false);
+  const cloudSize = width * size;
+  const style = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      DRIFT_PROGRESS.value,
+      [0, 0.12, 0.85, 1],
+      [0, explorerArt.cloud.sprite.driftOpacity, explorerArt.cloud.sprite.driftOpacity, 0],
+    ),
+    transform: [
+      {
+        translateX:
+          direction *
+          width *
+          interpolate(
+            DRIFT_PROGRESS.value,
+            [0, 1],
+            [explorerArt.cloud.sprite.driftStart, explorerArt.cloud.sprite.driftEnd],
+          ),
+      },
+    ],
+  }));
+  const cloudStyle = [
+    styles.cloud,
+    {
+      left: width / 2 - cloudSize / 2,
+      top: y * height - cloudSize * explorerArt.cloud.sprite.driftOffset,
+      width: cloudSize,
+      height: cloudSize * explorerArt.cloud.sprite.aspectRatio,
+    },
+    style,
+  ];
+  return spriteUnavailable ? (
+    <Animated.View pointerEvents="none" style={[cloudStyle, styles.cloudFallback]} />
+  ) : (
+    <Animated.Image
+      source={CLOUD}
+      resizeMode="contain"
+      onError={(event) => {
+        logError('explorer.cloud.sprite', event.nativeEvent.error);
+        setSpriteUnavailable(true);
+      }}
+      style={cloudStyle}
+    />
+  );
+}
+
+/** Nuages transparents sur le ciel, sans intercepter le toucher. */
 export function SkyVeil({ style }: { style: ReturnType<typeof useSkyVeil>['style'] }) {
-  return <Animated.View pointerEvents="none" style={[styles.veil, style]} />;
+  const { width, height } = useWindowDimensions();
+  const size = width * explorerArt.cloud.sprite.size;
+  return (
+    <>
+      <Animated.View pointerEvents="none" style={[styles.drift, { width, height }]}>
+        {explorerArt.cloud.drift.map((cloud, index) => (
+          <DriftCloud key={index} {...cloud} width={width} height={height} />
+        ))}
+      </Animated.View>
+      <Animated.View pointerEvents="none" style={[styles.veil, style]} />
+      <Animated.View pointerEvents="none" style={styles.coverClouds}>
+        {explorerArt.cloud.cover.map((cloud, index) => (
+          <CoverCloud key={index} {...cloud} width={width} height={height} size={size} />
+        ))}
+      </Animated.View>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -77,6 +158,13 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: explorerArt.hud.blackVeil,
+    backgroundColor: explorerArt.cloud.veil,
+  },
+  coverClouds: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 },
+  drift: { position: 'absolute', top: 0, left: 0, pointerEvents: 'none' },
+  cloud: { position: 'absolute' },
+  cloudFallback: {
+    backgroundColor: explorerArt.cloud.fallback,
+    borderRadius: explorerArt.cloud.fallbackRadius,
   },
 });

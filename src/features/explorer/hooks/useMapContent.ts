@@ -11,7 +11,7 @@ import {
   type ScreenSize,
 } from '../logic/mapProjection';
 import type { MapTiles } from '../tiles';
-import { MAP_SCROLL_X, MAP_SCROLL_Z } from './mapScrollValue';
+import { MAP_SCROLL_X, MAP_SCROLL_Z, MAP_ZOOM } from './mapScrollValue';
 
 /**
  * Contenu d'une carte pré-rendue : un plan de la taille de l'image rendue (`area`, en dp), que le fil
@@ -31,15 +31,23 @@ export function useMapContent(tiles: MapTiles, screen: ScreenSize) {
     () => ({ width: screen.width, height: screen.height }),
     [screen.width, screen.height],
   );
+  const area = tileRect({ x: 0, y: 0, width: tiles.width, height: tiles.height }, scale);
   const shift = useAnimatedStyle(() => {
-    const at = scrollToContentTranslation(MAP_SCROLL_X.value, MAP_SCROLL_Z.value, size, origin, k);
+    const zoom = MAP_ZOOM.value;
+    const at = scrollToContentTranslation(
+      MAP_SCROLL_X.value,
+      MAP_SCROLL_Z.value,
+      size,
+      origin,
+      k * zoom,
+    );
     return {
       transform: [
-        { translateX: snapToPixel(at.translateX, ratio) },
-        { translateY: snapToPixel(at.translateY, ratio) },
+        { translateX: snapToPixel(at.translateX - (area.width / 2) * (1 - zoom), ratio) },
+        { translateY: snapToPixel(at.translateY - (area.height / 2) * (1 - zoom), ratio) },
+        { scale: zoom },
       ],
     };
   });
-  const area = tileRect({ x: 0, y: 0, width: tiles.width, height: tiles.height }, scale);
   return { k, scale, origin, area, shift };
 }
