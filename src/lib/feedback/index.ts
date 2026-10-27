@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 
@@ -60,9 +60,9 @@ async function playHaptic(haptic: Haptic): Promise<void> {
   }
 }
 
-/** Joue le son et, quand disponible, le retour haptique du cue. */
+/** Joue le son et, quand disponible, le retour haptique du cue (jamais app en arrière-plan). */
 export async function playCue(cue: Cue): Promise<void> {
-  if (!soundsEnabled()) return;
+  if (!soundsEnabled() || AppState.currentState === 'background') return;
   const definition = CUES[cue];
   let audioReady = true;
   try {
