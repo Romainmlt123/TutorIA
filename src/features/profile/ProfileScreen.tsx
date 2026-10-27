@@ -19,6 +19,7 @@ import { fr } from '@/i18n/fr';
 import { useSoundsPreference } from '@/lib/feedback/soundsPreference';
 import { logError } from '@/lib/logger';
 import { monthIndex, parisDay } from '@/lib/parisTime';
+import { studentKeys } from '@/lib/session/useStudentOverview';
 import { authService } from '@/services/auth';
 import { familyService } from '@/services/family';
 import { onboardingService } from '@/services/onboarding';
@@ -32,7 +33,7 @@ import { useAccountActions } from './hooks/useAccountActions';
 import { useProfileData } from './hooks/useProfileData';
 
 const t = fr.profile;
-const onboardingKey = ['onboarding', 'answers'] as const;
+const onboardingKey = studentKeys.onboarding;
 
 /**
  * 05 · Profil de l'élève (design/screens/05-Profil.dc.html, v2.8) : bandeau avec la figurine,

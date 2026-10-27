@@ -43,6 +43,12 @@ function navigatorsWithoutBackground(code: string): string[] {
 }
 
 /**
+ * La feuille « Bientôt » (`transparentModal`) est le seul écran transparent voulu en dehors de la
+ * scène : elle se pose sur l'écran d'où l'on vient, qui a son propre fond.
+ */
+const BOTTOM_SHEET_VEIL = /^contentStyle: \{ backgroundColor: 'transparent'/;
+
+/**
  * Styles d'écran qui ne posent ni le fond du thème ni `SEE_THROUGH`. Un `contentStyle` ou un
  * `sceneStyle` propre à un écran remplace celui des options par défaut : sans fond, l'écran serait
  * transparent.
@@ -52,7 +58,9 @@ function screensWithoutBackground(code: string): string[] {
     ...code.matchAll(
       /\b(?:contentStyle|sceneStyle): (?!SEE_THROUGH\b|\{ backgroundColor: theme\.colors\.bg\b)[^,}]*/g,
     ),
-  ].map(([found]) => found.trim());
+  ]
+    .map(([found]) => found.trim())
+    .filter((found) => !BOTTOM_SHEET_VEIL.test(found));
 }
 
 /**
@@ -139,8 +147,9 @@ describe('fonds de la navigation (scène d’Explorer sous la pile)', () => {
         .filter(([, found]) => found.transparent > 0 || found.seeThrough > 0),
     );
     expect(seeThrough).toEqual({
-      // SEE_THROUGH (importé de rootStage.ts) pour le seul écran (eleve).
-      '_layout.tsx': { transparent: 0, seeThrough: 2, screens: ['(eleve) contentStyle'] },
+      // SEE_THROUGH (importé de rootStage.ts) pour le seul écran (eleve), plus les deux mentions
+      // « transparent » de la feuille « Bientôt » (`transparentModal` et son fond).
+      '_layout.tsx': { transparent: 2, seeThrough: 2, screens: ['(eleve) contentStyle'] },
       // SEE_THROUGH (importé) pour le seul onglet Explorer.
       '(eleve)/_layout.tsx': { transparent: 0, seeThrough: 2, screens: ['explorer sceneStyle'] },
     });

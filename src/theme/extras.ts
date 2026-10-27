@@ -89,6 +89,29 @@ export const waitingButton = '#eef1f6';
 
 export const bandPills = ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.06)'] as const;
 
+/**
+ * « Pas de connexion » dans la discussion (H1, v2.19.1) : le seul jaune de l'app, hors palette
+ * (écart validé n° 12), texte `orange-900`.
+ */
+export const offlineNotice = {
+  background: '#ffd43b',
+  shadow: '0 6px 16px rgba(163,100,13,0.22)',
+  iconVeil: 'rgba(255,255,255,0.45)',
+} as const;
+
+/**
+ * Pause décidée avec les parents (R1 à R3, v2.15) : badge du logo, bouton blanc, carte verte du temps
+ * du jour atteint. Relevés sur les maquettes ; la teinte du badge dépend de la raison.
+ */
+export const studyPause = {
+  badgeShadow: '0 8px 20px rgba(3,39,110,0.35)',
+  buttonShadow: '0 12px 28px rgba(3,39,110,0.35)',
+  win: { colors: ['#1bc85b', '#0c9e42', '#03702b'], locations: [0, 0.45, 1] },
+  /** Tuile du trophée et pastille de la série, sur la carte verte (la jauge y est pleine). */
+  tile: 'rgba(255,255,255,0.24)',
+  pill: 'rgba(255,255,255,0.20)',
+} as const;
+
 /** Appel vocal plein écran (v2.6) : ombres, halos et voiles relevés sur les maquettes 2B à 2F. */
 export const call = {
   avatarShadow: '0 12px 28px rgba(3,39,110,0.35)',

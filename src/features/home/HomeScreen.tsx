@@ -60,6 +60,7 @@ export function HomeScreen() {
         chapterTitle={resume.chapterTitle}
         subtitle={resume.subtitle}
         progress={resume.chapterProgress}
+        first={resume.first}
         onResume={() =>
           router.push({
             pathname: '/tuteur',
@@ -83,6 +84,7 @@ export function HomeScreen() {
               subjectId={subject.id}
               name={subject.name}
               mastery={subject.mastery}
+              fresh={subject.fresh}
               onPress={() =>
                 router.push({ pathname: '/revisions', params: { subject: subject.id } })
               }

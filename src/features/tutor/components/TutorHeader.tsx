@@ -13,6 +13,8 @@ export function TutorHeader({ children }: { children: ReactNode }) {
 
 const styles = StyleSheet.create({
   header: {
+    // La bulle du vocal coupé (R7) passe au-dessus de la carte du sujet, posée juste dessous.
+    zIndex: 2,
     alignItems: 'center',
     gap: theme.space[3],
     paddingHorizontal: theme.layout.screenPadding,

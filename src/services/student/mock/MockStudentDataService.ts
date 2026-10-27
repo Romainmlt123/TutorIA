@@ -21,8 +21,25 @@ import type {
 export class MockStudentDataService implements StudentDataService {
   private counter = 0;
   readonly answers: { sessionId: string; answer: FlashcardAnswer }[] = [];
+  /** Compte tout neuf (J1), imposé depuis `/dev/catalogue` : aucune séance, aucune progression. */
+  private firstDay = false;
+
+  setFirstDay(on: boolean): void {
+    this.firstDay = on;
+  }
 
   async overview(): Promise<StudentOverview> {
+    if (this.firstDay) {
+      return {
+        xp: 0,
+        streakDays: 0,
+        recordStreak: 0,
+        todayMinutes: 0,
+        todaySessions: 0,
+        dailyMinutes: student.dailyGoal.minutes,
+        lastChapter: null,
+      };
+    }
     return {
       xp: (student.level - 1) * student.xpForNextLevel + student.xp,
       streakDays: student.streakDays,
@@ -52,11 +69,18 @@ export class MockStudentDataService implements StudentDataService {
   }
 
   async chapters(): Promise<readonly ChapterProgress[]> {
-    return demoChapters;
+    return this.firstDay ? [] : demoChapters;
   }
 
   async masteryHistory(): Promise<MasteryHistory> {
     return { unit: 'week', points: masteryHistory };
+  }
+
+  /** Règles imposées depuis `/dev/catalogue`, pour voir chaque pause sans attendre l'heure. */
+  private rulesOverride: Partial<StudyRules> = {};
+
+  setRules(override: Partial<StudyRules>): void {
+    this.rulesOverride = override;
   }
 
   async rules(): Promise<StudyRules> {
@@ -66,6 +90,7 @@ export class MockStudentDataService implements StudentDataService {
       eveningPause: false,
       cameraEnabled: true,
       todaySeconds: 600,
+      ...this.rulesOverride,
     };
   }
 

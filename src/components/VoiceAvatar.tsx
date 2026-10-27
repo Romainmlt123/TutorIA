@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   cancelAnimation,
@@ -20,6 +20,34 @@ import { PressableBase } from './PressableBase';
 
 /** Qui a la parole : le tuteur (il rebondit), l'élève (il penche la tête), ou personne (il respire). */
 export type AvatarMood = 'speaking' | 'listening' | 'idle';
+
+const GREET = theme.auth.avatar;
+
+/**
+ * Le logo dit bonjour : un petit rebond à l'arrivée, puis il respire (connexion, pause).
+ * Rien ne bouge si l'élève a demandé moins d'animations.
+ */
+export function useAvatarGreeting() {
+  const reduceMotion = useReducedMotion();
+  const level = useSharedValue(0);
+  const [mood, setMood] = useState<AvatarMood>('idle');
+  useEffect(() => {
+    if (reduceMotion) return;
+    const hello = setTimeout(() => {
+      level.set(GREET.greetLevel);
+      setMood('speaking');
+    }, GREET.greetFromMs);
+    const rest = setTimeout(() => {
+      level.set(0);
+      setMood('idle');
+    }, GREET.greetToMs);
+    return () => {
+      clearTimeout(hello);
+      clearTimeout(rest);
+    };
+  }, [level, reduceMotion]);
+  return { level, mood };
+}
 
 const A = theme.voiceCall.avatar;
 /** Lissage du niveau de la voix, comme dans les maquettes. */

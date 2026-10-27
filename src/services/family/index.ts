@@ -8,7 +8,9 @@ import { SupabaseFamilyService } from './supabase/SupabaseFamilyService';
 
 export type { FamilyService, LinkedChild, LinkedParent, LinkRequest } from './FamilyService';
 
+/** Version simulée, pour les outils de développement (null avec Supabase). */
+export const mockFamilyService: MockFamilyService | null =
+  config.backend === 'supabase' ? null : new MockFamilyService(authService);
+
 export const familyService: FamilyService =
-  config.backend === 'supabase'
-    ? new SupabaseFamilyService(getSupabase(), authService)
-    : new MockFamilyService(authService);
+  mockFamilyService ?? new SupabaseFamilyService(getSupabase(), authService);

@@ -43,6 +43,32 @@ La livraison visuelle C5 ajoute le pincement et le recentrage, un aperçu géné
 | Interface | **v2.16 · données et confidentialité (D1 à D4)** | ✅ validé | `feat/donnees-et-confidentialite` |
 | Interface | **v2.18 · la famille (F1, F2, F3, F5)** | ✅ validé | `feat/famille` |
 
+| Chantier      | Étape                                                                         | Statut      | Branche                           |
+| ------------- | ----------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| Explorer      | X1 · les îles                                                                 | ✅ validé   | `feat/explorer-3d`                |
+| Explorer      | X2a · les régions de l'île                                                    | ✅ validé   | `feat/explorer-3d`                |
+| Explorer      | X2b · la carte d'une région (art de la région Nombres)                        | ✅ validé   | `feat/explorer-3d`                |
+| Avatar        | Figurine, visage et atelier `/dev/avatars`                                    | ✅ validé   | `feat/avatar`                     |
+| Avatar        | A1 · l'éditeur « Crée ton avatar »                                            | ✅ validé   | `feat/avatar`                     |
+| Avatar        | A2 · l'avatar sur la carte                                                    | ✅ validé   | `feat/avatar`                     |
+| Avatar        | **A3 · la garde-robe**                                                        | ✅ validé   | `feat/avatar`                     |
+| Avatar        | A4 · l'avatar dans Supabase                                                   | ✅ validé   | `feat/avatar-en-base`             |
+| Explorer      | **X3 à X5b · fiche, discussion et bilan d'un niveau**                         | ✅ validé   | `feat/avatar`                     |
+| Explorer      | La suite (art des régions, contenu, allègement…)                              | ⏸️ en pause |                                   |
+| Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé   | `feat/tuteur-visuel`              |
+| Tuteur visuel | **V4 · les visuels à la voix**                                                | ✅ validé   | `feat/appel-vocal`                |
+| Chat libre    | **C1 à C3 · historique, nouvelles discussions, titres, volet**                | ✅ validé   | `feat/chat-libre`                 |
+| Chat libre    | **C4 · la photo d'un exercice**                                               | ✅ validé   | `feat/photo-exercice`             |
+| Interface     | **v2.5 · bandeau de marque et cartes de section**                             | ✅ validé   | `feat/interface-v2-6`             |
+| Interface     | **v2.6 · l'appel vocal plein écran**                                          | ✅ validé   | `feat/appel-vocal`                |
+| Interface     | **v2.7 · la connexion plein écran (L2, L3)**                                  | ✅ validé   | `feat/connexion-plein-ecran`      |
+| Interface     | **v2.8 · le profil de l'élève**                                               | ✅ validé   | `feat/profil-eleve`               |
+| Interface     | **v2.12 et v2.17 · bandeaux, en-tête de l'Accueil, séance de flashcards**     | ✅ validé   | `feat/bandeau-et-flashcards`      |
+| Interface     | **v2.16 · données et confidentialité (D1 à D4)**                              | ✅ validé   | `feat/donnees-et-confidentialite` |
+| Interface     | **v2.18 · la famille (F1, F2, F3, F5)**                                       | ✅ validé   | `feat/famille`                    |
+| Interface     | **v2.15 · les règles des parents, côté élève (R1 à R7)**                      | ✅ validé   | `feat/regles-des-parents`         |
+| Interface     | **v2.19 · premiers jours et hors connexion (J1, J3, H1, H2, B1)**             | ✅ validé   | `feat/premiers-jours`             |
+
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
 ## Chantier 1 · L'avatar de l'élève (phase 1, sans achat)
@@ -292,6 +318,17 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - Option 1 retenue : seul le parent qui a validé le compte d'un enfant de moins de 15 ans modifie son prénom et sa classe (fonction `update_child_profile`, migration `20261016063758`, à appliquer en ligne par Romain).
   - La v2.18 est validée par Romain, et la migration `child_profile_by_parent` est appliquée en ligne (version `20261016063758`, par Romain avec `supabase db push`).
   - Les notifications (v2.20) viendront dans un lot à part.
+
+- **16/10 (v2.15, les règles des parents) :**
+  - Plan validé par Romain, avec deux choix : R4 s'affiche quand le serveur refuse l'appel (pas de nouvelle route pour le savoir avant), et « Plus que 2 minutes » est une pastille au-dessus des commandes, visible même sous-titres coupés.
+  - La pastille prévient aussi de la fin des 10 minutes d'appel, que le surveillant applique sans prévenir.
+  - 17/10 : publiée sur l'APK (EAS Update, canal `preview`) avec les lots 1 à 4, puis validée par Romain sur le Pixel.
+
+- **17/10 (v2.19, premiers jours et hors connexion) :**
+  - Plan validé par Romain, avec deux choix : pas d'`expo-network` (H2 réessaie toutes les 15 s et au retour au premier plan, sans nouvel APK) ; « Ta première séance » suit l'auto-évaluation de l'onboarding.
+  - L'entraînement hors ligne est retiré (décision de la v2.19.1). La carte « Pas de connexion » ne s'affiche que pour une vraie coupure, pas pour une erreur d'OpenAI.
+  - La feuille du choix de l'enfant (F3) et celle de « Bientôt » (B1) partagent `BottomSheet` : coins de 32 px comme les maquettes.
+  - Validé par Romain le 17/10.
 
 ## Prochaines étapes, gardées en tête (08/10)
 
