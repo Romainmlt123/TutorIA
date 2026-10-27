@@ -28,12 +28,12 @@ Il complète :
 
 ### Une île, des régions, des villes, des niveaux
 
-| Explorer | Programme               | Exemple (Maths 4e)                                 |
-| -------- | ----------------------- | -------------------------------------------------- |
-| Île      | Matière et classe       | `maths` · 4e · programme 2020                      |
-| Région   | Domaine du référentiel  | `maths-nombres` · « Nombres et calculs »           |
-| Ville    | Chapitre                | `maths-equations` · Ville des Équations (`M4-C06`) |
-| Niveau   | Leçon, exercices, bilan | `maths-equations.isoler-x`                         |
+| Explorer | Programme               | Exemple (Maths 4e)                                   |
+| -------- | ----------------------- | ---------------------------------------------------- |
+| Île      | Matière et classe       | `maths` · 4e · programme 2020                        |
+| Région   | Domaine du référentiel  | `maths-nombres` · « Nombres et calculs »             |
+| Village  | Chapitre                | `maths-equations` · Village des Équations (`M4-C06`) |
+| Niveau   | Leçon, exercices, bilan | `maths-equations.isoler-x`                           |
 
 Le référentiel propose une autre correspondance (« île = domaine »). Elle n'a pas été suivie. Une région qui n'a qu'un seul chapitre peut devenir un îlot flottant, comme l'Algorithmique.
 

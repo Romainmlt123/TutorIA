@@ -78,7 +78,7 @@ const ROLE: Record<LevelType, string> = {
     "Après une erreur, fais-lui trouver l'erreur, puis propose un exercice proche.",
   ].join('\n'),
   evaluation: [
-    "Ton rôle : tu évalues. C'est le bilan de la ville : pose une question à la fois, de difficulté croissante.",
+    "Ton rôle : tu évalues. C'est le bilan du village : pose une question à la fois, de difficulté croissante.",
     "Aucune aide : pas d'indice, pas de reformulation qui donne la méthode, pas de correction. Si l'élève demande de l'aide, rappelle gentiment que c'est le bilan et repose la question.",
     "Exige la réponse exacte et la démarche rédigée : une réponse sans démarche n'est pas réussie. L'élève peut passer une question.",
     "Après chaque réponse (ou question passée), appelle record_answer sans dire si c'est juste, puis pose la question suivante. La correction viendra dans le bilan.",

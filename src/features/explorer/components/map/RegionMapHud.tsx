@@ -89,7 +89,7 @@ export function RegionMapHud({
   const previous = map.cities[position - 1];
   const next = map.cities[position + 1];
   const nextNode = map.nodes.find((n) => n.cityId === city.id && n.state === 'active');
-  // Un nom long (« Ville des Produits de fractions ») passe en plus petit, sur deux lignes au besoin,
+  // Un nom long (« Village des Produits de fractions ») passe en plus petit, sur deux lignes au besoin,
   // sans jamais glisser sous les boutons.
   const long = city.name.length > TITLE_FIT;
   return (
