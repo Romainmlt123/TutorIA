@@ -209,14 +209,20 @@ export function useRegionCinematic({
     zone,
   });
 
+  const finishVeil = veil.finish;
   useEffect(
     () => () => {
       clearTimeout(cinemaStartTimer.current);
       clearTimeout(cinemaExitTimer.current);
+      // Les attentes en cours (plongée, retour, arrivée) vérifient `activeCinema` après chaque
+      // pause : sans séquence active, elles s'arrêtent là au lieu de rouvrir des nuages ou une
+      // vue sur un écran démonté.
+      activeCinema.current = null;
+      finishVeil();
       resetWind();
       cancelCameraFlight();
     },
-    [resetWind, cancelCameraFlight],
+    [finishVeil, resetWind, cancelCameraFlight],
   );
 
   return {
@@ -225,7 +231,6 @@ export function useRegionCinematic({
     cinemaProgress,
     diving,
     enter,
-    finishMapIntro,
     goBack,
     hudStyle,
     intro,

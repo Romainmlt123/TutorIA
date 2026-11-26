@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { PressableBase } from '@/components/PressableBase';
 import { Text } from '@/components/Text';
 import { fr } from '@/i18n/fr';
 import { explorerArt } from '@/theme/explorerArt';
@@ -19,7 +20,7 @@ export function CinemaFrame({ progress, active, onSkip }: Props) {
   const pill = useAnimatedStyle(() => ({ opacity: interpolate(progress.value, [0, 1], [0, 1]) }));
   if (!active) return null;
   return (
-    <Pressable
+    <PressableBase
       accessibilityRole="button"
       accessibilityLabel={fr.explorer.skipCinematic}
       onPress={onSkip}
@@ -35,7 +36,7 @@ export function CinemaFrame({ progress, active, onSkip }: Props) {
           {fr.explorer.skipCinematic}
         </Text>
       </Animated.View>
-    </Pressable>
+    </PressableBase>
   );
 }
 

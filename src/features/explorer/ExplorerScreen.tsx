@@ -206,6 +206,8 @@ export function ExplorerScreen() {
   useEffect(() => {
     navigation.setOptions({ tabBarStyle: cinematicActive ? { display: 'none' } : undefined });
   }, [cinematicActive, navigation]);
+  // Quitter l'écran en pleine cinématique ne doit pas laisser la barre d'onglets masquée.
+  useEffect(() => () => navigation.setOptions({ tabBarStyle: undefined }), [navigation]);
   const celebration = useMapCelebration({
     map: mapLoaded ? map : null,
     active: active && !intro && !cinematicActive,

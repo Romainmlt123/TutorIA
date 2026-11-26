@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAudioPlayer } from 'expo-audio';
@@ -40,6 +40,19 @@ describe('feedback', () => {
     await playCue('tap');
     expect(createAudioPlayer).not.toHaveBeenCalled();
     expect(Haptics.selectionAsync).not.toHaveBeenCalled();
+  });
+
+  it('ne joue rien quand l’app est en arrière-plan', async () => {
+    const original = AppState.currentState;
+    Object.defineProperty(AppState, 'currentState', { configurable: true, value: 'background' });
+    try {
+      setSoundsPreference(true);
+      await playCue('tap');
+      expect(createAudioPlayer).not.toHaveBeenCalled();
+      expect(Haptics.selectionAsync).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(AppState, 'currentState', { configurable: true, value: original });
+    }
   });
 
   it('joue sur le web sans vibration', async () => {

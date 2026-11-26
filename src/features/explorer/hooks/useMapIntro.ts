@@ -204,9 +204,7 @@ export function useMapIntro({
   useEffect(() => () => clearTimeout(introTimer.current), []);
 
   return {
-    contextFrame,
     finishMapIntro,
-    imageFrame,
     intro,
     introEndWaiter,
     introReadyWaiter,
@@ -219,7 +217,6 @@ export function useMapIntro({
     startIntro,
     tiledPan,
     tiledPlace,
-    viewport,
     worldReady,
   };
 }
