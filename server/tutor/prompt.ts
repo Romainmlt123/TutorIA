@@ -5,7 +5,7 @@
  */
 import { PHOTO_NOTE } from '@/services/tutor/api-contract';
 
-export const TUTOR_PROMPT_VERSION = '2026-10-09.1';
+export const TUTOR_PROMPT_VERSION = '2026-10-27.1';
 
 export type PromptContext = {
   mode: 'text' | 'voice';

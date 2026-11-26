@@ -2,6 +2,7 @@ import { Image, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-n
 
 import { Icon, type IconName } from '@/components/Icon';
 import { PressableBase } from '@/components/PressableBase';
+import { playCue } from '@/lib/feedback';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
@@ -27,9 +28,13 @@ type Props = {
  * posée sur un rebord ; elle s'enfonce quand on appuie.
  */
 export function WoodButton({ label, accessibilityLabel, onPress, icon, size = 48, style }: Props) {
+  const press = () => {
+    void playCue('tap');
+    onPress();
+  };
   return (
     <PressableBase
-      onPress={onPress}
+      onPress={press}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       style={[{ height: size + DEPTH }, style]}>

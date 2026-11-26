@@ -7,6 +7,8 @@ export const studentKeys = {
   chapters: ['student', 'chapters'] as const,
   activity: ['student', 'activity'] as const,
   mastery: ['student', 'mastery'] as const,
+  /** Réponses de l'onboarding (auto-évaluation, objectifs) : Profil et premier jour de l'Accueil. */
+  onboarding: ['onboarding', 'answers'] as const,
 };
 
 const EMPTY: StudentOverview = {
@@ -19,19 +21,30 @@ const EMPTY: StudentOverview = {
   lastChapter: null,
 };
 
+const overviewQuery = {
+  queryKey: studentKeys.overview,
+  queryFn: () => studentDataService.overview(),
+};
+const chaptersQuery = {
+  queryKey: studentKeys.chapters,
+  queryFn: () => studentDataService.chapters(),
+};
+
 /** XP, série et activité du jour de l'élève (partagés par l'Accueil, les Flashcards et les Stats). */
 export function useStudentOverview(): StudentOverview {
-  const query = useQuery({
-    queryKey: studentKeys.overview,
-    queryFn: () => studentDataService.overview(),
-  });
-  return query.data ?? EMPTY;
+  return useQuery(overviewQuery).data ?? EMPTY;
 }
 
 export function useStudentChapters() {
-  const query = useQuery({
-    queryKey: studentKeys.chapters,
-    queryFn: () => studentDataService.chapters(),
-  });
-  return query.data ?? [];
+  return useQuery(chaptersQuery).data ?? [];
+}
+
+/**
+ * Vue d'ensemble et chapitres lus : avant, l'Accueil ne sait pas encore si c'est le premier jour
+ * (il ne doit pas l'afficher le temps du chargement).
+ */
+export function useStudentProgressReady(): boolean {
+  const overview = useQuery(overviewQuery);
+  const chapters = useQuery(chaptersQuery);
+  return overview.isSuccess && chapters.isSuccess;
 }

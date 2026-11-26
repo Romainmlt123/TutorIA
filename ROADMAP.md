@@ -16,6 +16,33 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 
 ## Où on en est — 7 octobre 2026
 
+| Chantier | Étape                                                  | Statut                                                | Branche                   |
+| -------- | ------------------------------------------------------ | ----------------------------------------------------- | ------------------------- |
+| Explorer | X1 · les îles                                          | ✅ validé                                             | `feat/explorer-3d`        |
+| Explorer | X2a · les régions de l'île                             | ✅ validé                                             | `feat/explorer-3d`        |
+| Explorer | X2b · la carte d'une région (art de la région Nombres) | ✅ validé                                             | `feat/explorer-3d`        |
+| Explorer | **C5 · sensation de jeu, zoom, contexte et nuages**    | ✅ visuels v9/v10 approuvés, nettoyage local en cours | `explorer/c5-zoom-nuages` |
+| Avatar   | Figurine, visage et atelier `/dev/avatars`             | ✅ validé                                             | `feat/avatar`             |
+
+La livraison visuelle C5 ajoute le pincement et le recentrage, un aperçu général centré sur les nœuds, le terrain de contexte complet de Nombres et les silhouettes jointives des régions voisines. Les transitions utilisent des nuages progressifs et un souffle avec stries pendant le trajet aller seulement ; aucun tremblement de caméra ni vibration n'est ajouté. Le dézoom minimum reste indépendant du cadrage d'ensemble.
+| Avatar | A1 · l'éditeur « Crée ton avatar » | ✅ validé | `feat/avatar` |
+| Avatar | A2 · l'avatar sur la carte | ✅ validé | `feat/avatar` |
+| Avatar | **A3 · la garde-robe** | ✅ validé | `feat/avatar` |
+| Avatar | A4 · l'avatar dans Supabase | ✅ validé | `feat/avatar-en-base` |
+| Explorer | **X3 à X5b · fiche, discussion et bilan d'un niveau** | ✅ validé | `feat/avatar` |
+| Explorer | La suite (art des régions, contenu, allègement…) | ⏸️ en pause | |
+| Tuteur visuel | **V1 à V3 · graphiques, statistiques, géométrie et tableau blanc, à l'écrit** | ✅ validé | `feat/tuteur-visuel` |
+| Tuteur visuel | **V4 · les visuels à la voix** | ✅ validé | `feat/appel-vocal` |
+| Chat libre | **C1 à C3 · historique, nouvelles discussions, titres, volet** | ✅ validé | `feat/chat-libre` |
+| Chat libre | **C4 · la photo d'un exercice** | ✅ validé | `feat/photo-exercice` |
+| Interface | **v2.5 · bandeau de marque et cartes de section** | ✅ validé | `feat/interface-v2-6` |
+| Interface | **v2.6 · l'appel vocal plein écran** | ✅ validé | `feat/appel-vocal` |
+| Interface | **v2.7 · la connexion plein écran (L2, L3)** | ✅ validé | `feat/connexion-plein-ecran` |
+| Interface | **v2.8 · le profil de l'élève** | ✅ validé | `feat/profil-eleve` |
+| Interface | **v2.12 et v2.17 · bandeaux, en-tête de l'Accueil, séance de flashcards** | ✅ validé | `feat/bandeau-et-flashcards` |
+| Interface | **v2.16 · données et confidentialité (D1 à D4)** | ✅ validé | `feat/donnees-et-confidentialite` |
+| Interface | **v2.18 · la famille (F1, F2, F3, F5)** | ✅ validé | `feat/famille` |
+
 | Chantier      | Étape                                                                         | Statut      | Branche                           |
 | ------------- | ----------------------------------------------------------------------------- | ----------- | --------------------------------- |
 | Explorer      | X1 · les îles                                                                 | ✅ validé   | `feat/explorer-3d`                |
@@ -39,6 +66,8 @@ Le fil rouge du projet : ce qu'on fait maintenant, dans quel ordre, et ce qui at
 | Interface     | **v2.12 et v2.17 · bandeaux, en-tête de l'Accueil, séance de flashcards**     | ✅ validé   | `feat/bandeau-et-flashcards`      |
 | Interface     | **v2.16 · données et confidentialité (D1 à D4)**                              | ✅ validé   | `feat/donnees-et-confidentialite` |
 | Interface     | **v2.18 · la famille (F1, F2, F3, F5)**                                       | ✅ validé   | `feat/famille`                    |
+| Interface     | **v2.15 · les règles des parents, côté élève (R1 à R7)**                      | ✅ validé   | `feat/regles-des-parents`         |
+| Interface     | **v2.19 · premiers jours et hors connexion (J1, J3, H1, H2, B1)**             | ✅ validé   | `feat/premiers-jours`             |
 
 `feat/explorer-3d`, `feat/avatar` et `feat/avatar-en-base` sont fusionnées dans `dev` (pull requests #5 et #6, le 07/10).
 
@@ -290,6 +319,17 @@ Maquettes validées par Romain le 07/10 (`design/`, entrées 16 à 23 des écart
   - La v2.18 est validée par Romain, et la migration `child_profile_by_parent` est appliquée en ligne (version `20261016063758`, par Romain avec `supabase db push`).
   - Les notifications (v2.20) viendront dans un lot à part.
 
+- **16/10 (v2.15, les règles des parents) :**
+  - Plan validé par Romain, avec deux choix : R4 s'affiche quand le serveur refuse l'appel (pas de nouvelle route pour le savoir avant), et « Plus que 2 minutes » est une pastille au-dessus des commandes, visible même sous-titres coupés.
+  - La pastille prévient aussi de la fin des 10 minutes d'appel, que le surveillant applique sans prévenir.
+  - 17/10 : publiée sur l'APK (EAS Update, canal `preview`) avec les lots 1 à 4, puis validée par Romain sur le Pixel.
+
+- **17/10 (v2.19, premiers jours et hors connexion) :**
+  - Plan validé par Romain, avec deux choix : pas d'`expo-network` (H2 réessaie toutes les 15 s et au retour au premier plan, sans nouvel APK) ; « Ta première séance » suit l'auto-évaluation de l'onboarding.
+  - L'entraînement hors ligne est retiré (décision de la v2.19.1). La carte « Pas de connexion » ne s'affiche que pour une vraie coupure, pas pour une erreur d'OpenAI.
+  - La feuille du choix de l'enfant (F3) et celle de « Bientôt » (B1) partagent `BottomSheet` : coins de 32 px comme les maquettes.
+  - Validé par Romain le 17/10.
+
 ## Prochaines étapes, gardées en tête (08/10)
 
 Retenues par Romain après l'interface v2.7, sans ordre fixé :
@@ -315,3 +355,12 @@ Ces idées ne sont pas planifiées. Elles entrent dans le plan sur décision de 
 - **Sons et vibrations** : l'interrupteur du profil existe déjà (retenu sur l'appareil) mais ne commande rien. À développer : une vibration légère (`expo-haptics`, module natif, donc un nouveau build EAS) ou un son sur les bonnes réponses, les séries et les trophées.
 - La fiche détaillée d'un trophée (toucher une médaille du profil), et un trophée « Quiz parfait » une fois les sessions de flashcards réussies à 100 % enregistrées.
 - L'heure du rappel de révision, choisie par l'élève depuis son profil (nouvelle colonne et reprogrammation de la notification).
+- **Explorer, passe « effet waouh »** (après le rendu v2 de la carte et l'avatar v2, décidé le 17/10) : viser un rendu de grand jeu mobile, au-delà du « propre et cohérent » actuel. Avant de commencer, Romain fournit 2 ou 3 captures de jeux ou de cartes de référence, qui servent de cible commune.
+  - **Mise en scène de la région Nombres** : une ambiance par ville (teinte du sol, accessoires autour du monument, petits détails qui racontent quelque chose), des taches de soleil chaud qui guident l'œil vers le niveau à jouer, une légère brume sur les bords de l'île, des repères à mi-hauteur (murets de pierre sèche, panneau à l'entrée de chaque ville, bouts de barrière), sans arbres ni buissons.
+  - **Une carte vivante, même pré-rendue** (couches légères posées par l'app, figées avec « Réduire les animations ») : ombres de nuages qui passent, reflets et éclats qui bougent sur l'eau du π, touffes et fleurs qui se balancent au vent, papillons au-dessus des fleurs, poussière dorée au-dessus du niveau à jouer, ailes du moulin des Fractions qui tournent.
+  - **Décors plus riches** : décors groupés en massifs plutôt que semés au hasard, plus de variétés de fleurs (une espèce par massif), vraies pierres moussues, détails des planches (clous, coins ébréchés, planches à venir un peu envahies par l'herbe, chemin parcouru dégagé), planches plus courtes dans les virages serrés.
+  - **Contrôles automatiques de l'art** à chaque rendu (`tools/explorer-3d/check_tiles.py`) : teinte et contraste de l'herbe, pixels saturés, ordre des valeurs sol < planches à faire < planches faites, contraste des points de niveau sous chaque position du manifeste.
+  - **À décider avec Romain** : déplacer le soleil vers l'arrière-gauche pour mieux voir les ombres de contact (il est partagé par l'île, l'eau et l'avatar, donc tout serait recuit) ; réduire, garder ou retirer les repères géants de l'île sur les cartes.
+  - **Sons** : voir « Sons et vibrations » ci-dessus ; une bonne part de l'effet waouh en dépend (planche qui craque, carillon des étoiles).
+- **Les trois autres régions des Maths en pré-rendu** (Données, Espace, Algorithmique ; 9 monuments à modéliser), avec la même chaîne que Nombres (`region_tiles.py`, `tile_map.py`).
+- **Rendus Blender sur GPU** : un notebook Colab (GPU T4) ou un GPU loué pour rendre une région en 10 à 15 minutes au lieu d'environ 1 h 30 sur le portable. Utile dès qu'on retouche l'art ou qu'on ajoute une région.

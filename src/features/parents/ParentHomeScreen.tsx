@@ -5,7 +5,6 @@ import { Button } from '@/components/Button';
 import { FormMessage } from '@/components/form/FormMessage';
 import { IconButton } from '@/components/IconButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { Text } from '@/components/Text';
 import { chapterTitle } from '@/data/curriculum';
 import { fr } from '@/i18n/fr';
 import { formatDuration } from '@/lib/format';
@@ -17,6 +16,8 @@ import { subjectTheme, theme } from '@/theme';
 import { ParentBand } from './components/ParentBand';
 import { AdviceCard } from './components/AdviceCard';
 import { AlertCard } from './components/AlertCard';
+import { AddChildCard } from './components/AddChildCard';
+import { WeeklyPreviewCard } from './components/WeeklyPreviewCard';
 import { ChildSwitcher } from './components/ChildSwitcher';
 import { LinkRequestCard } from './components/LinkRequestCard';
 import { ParentKpiCard } from './components/ParentKpiCard';
@@ -144,7 +145,9 @@ export function ParentHomeScreen() {
           intro={
             child
               ? t.weekIntro(child.firstName, weekRangeLabel(addDays(parisDay(new Date()), -6)))
-              : undefined
+              : loading || failed
+                ? undefined
+                : t.welcome
           }
           top={
             <View style={styles.top}>
@@ -185,20 +188,10 @@ export function ParentHomeScreen() {
       ) : child ? (
         <ChildWeek key={child.id} child={child} />
       ) : (
-        <View style={styles.empty}>
-          <Text variant="section">{t.noChild.title}</Text>
-          <Text variant="lead" color="textSecondary">
-            {t.noChild.body}
-          </Text>
-          <Button
-            label={t.noChild.cta}
-            onPress={addChild}
-            tone="parent"
-            size="lg"
-            leadingIcon="plus"
-            highlight
-          />
-        </View>
+        <>
+          <AddChildCard onAdd={addChild} />
+          <WeeklyPreviewCard />
+        </>
       )}
     </ScreenContainer>
   );
@@ -211,11 +204,4 @@ const styles = StyleSheet.create({
   kpis: { flexDirection: 'row', gap: theme.space[3] },
   section: { gap: theme.space[3] },
   loader: { marginTop: theme.space[8] },
-  empty: {
-    gap: theme.space[3],
-    padding: theme.space[6],
-    borderRadius: theme.radius['3xl'],
-    backgroundColor: theme.colors.surface,
-    boxShadow: theme.shadow.md,
-  },
 });

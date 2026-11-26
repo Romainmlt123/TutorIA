@@ -7,8 +7,11 @@ import { preloadAvatar } from '@/features/avatar/avatar3d/Avatar3D';
 import { preloadModel, useModel } from '@/lib/three/useModel';
 import { explorerArt } from '@/theme/explorerArt';
 
+import { honeyGaps } from '../logic/mapMarkers';
 import type { RegionMap } from '../logic/regionMap';
+import { seedOf } from '../logic/regionSeed';
 import {
+  BAKED_DECOR,
   bladeAllowed,
   clearingDressing,
   decorPlan,
@@ -16,7 +19,6 @@ import {
   landDiscs,
   placedDecor,
   type Decor,
-  type DecorEntry,
 } from '../logic/terrainLayout';
 import { grassMaterial } from './grass';
 import { MapAvatar, type AvatarOnMap } from './MapAvatar';
@@ -24,7 +26,6 @@ import { groundShadows, type ShadowSpot } from './groundShadows';
 import { levelNodes } from './levelNodes';
 import { pathGeometry, pathMaterial } from './mapPath';
 import { MONUMENT_MODELS } from './monuments';
-import regionDecor from './regionDecor.json';
 import { bakedMaterial, decorMeshes, readKit, tuftsGeometry } from './stripKit';
 import { TERRAIN_MODELS, type Terrain } from './terrains';
 import { waterMeshes } from './water';
@@ -43,7 +44,6 @@ const STRIP_KIT_GLB: string = require('../../../../assets/explorer/models/strip-
  */
 
 const ART = explorerArt.map;
-const DECOR_ENTRIES = regionDecor as unknown as Readonly<Record<string, readonly DecorEntry[]>>;
 
 /** Épaisseur de l'île sous le sol. */
 const LAND_DEPTH = 0.9;
@@ -124,7 +124,7 @@ function buildBase(
     materials.push(grass, cliff);
     root.add(new THREE.Mesh(terrain.top, grass), new THREE.Mesh(terrain.cliff, cliff));
   }
-  const ribbon = pathGeometry(map.path, map.pawnIndex);
+  const ribbon = pathGeometry(map.path, new Set(honeyGaps(map.nodes, map.pawnIndex)));
   const paving = pathMaterial();
   geometries.push(ribbon);
   materials.push(paving);
@@ -149,13 +149,6 @@ function buildBase(
     }
   });
   return { root, geometries, materials };
-}
-
-/** Graine des décors : toujours la même pour une région, différente d'une région à l'autre. */
-function seedOf(regionId: string): number {
-  let hash = 7;
-  for (const char of regionId) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-  return hash;
 }
 
 type Layer = {
@@ -186,7 +179,7 @@ function buildDecor(gltf: GLTF, map: RegionMap, baked: boolean): Layer {
   // Les clairières autour des monuments reçoivent aussi leur herbe, leurs fleurs et leurs galets.
   const clearings = clearingDressing(map, seed + 3);
   const plan = [
-    ...(baked ? placedDecor(map, DECOR_ENTRIES[map.regionId] ?? []) : decorPlan(map, seed)),
+    ...(baked ? placedDecor(map, BAKED_DECOR[map.regionId] ?? []) : decorPlan(map, seed)),
     ...clearings.decor,
   ];
   const decor = decorMeshes(kit, plan);

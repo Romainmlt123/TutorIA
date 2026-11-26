@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
+import { SCENE_TIME } from '@/lib/three/sceneClock';
 import { useModel } from '@/lib/three/useModel';
 
 import { ISLET } from '../logic/regions';
@@ -71,8 +72,6 @@ function LoadedIslet({ gltf, mix, animated }: Props & { gltf: GLTF }) {
     },
     [group],
   );
-  useFrame(({ clock }, delta) =>
-    tickIslet(group, shown.current, mix, delta, clock.elapsedTime, animated),
-  );
+  useFrame((_, delta) => tickIslet(group, shown.current, mix, delta, SCENE_TIME.value, animated));
   return <primitive object={group} />;
 }

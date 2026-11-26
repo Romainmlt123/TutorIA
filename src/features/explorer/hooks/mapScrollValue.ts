@@ -1,5 +1,9 @@
 import { makeMutable } from 'react-native-reanimated';
 
+import { createScroll } from '../logic/mapScroll';
+
+export const MAP_SCROLL = createScroll();
+
 /**
  * Point de la carte d'une région au centre de l'écran (mètres), recopié à chaque image par la scène
  * 3D. Ce sont des valeurs partagées de Reanimated : les boutons et bandeaux posés sur la carte les
@@ -7,3 +11,4 @@ import { makeMutable } from 'react-native-reanimated';
  */
 export const MAP_SCROLL_X = makeMutable(0);
 export const MAP_SCROLL_Z = makeMutable(0);
+export const MAP_ZOOM = makeMutable(1);

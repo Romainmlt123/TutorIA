@@ -1,4 +1,5 @@
 import { seeded } from '../hd2d/pixels';
+import regionDecor from '../stylized3d/regionDecor.json';
 import type { PathSample, Vec } from './mapLayout';
 import type { RegionMap } from './regionMap';
 
@@ -78,7 +79,7 @@ const DECOR_KINDS: readonly { kind: DecorKind; radius: number; per100m2: number 
   { kind: 'barriere', radius: 0.45, per100m2: 3 },
 ];
 
-/** Distance minimale entre un décor et le chemin (le point de niveau le plus large fait 0,34 m). */
+/** Distance minimale entre un décor et le chemin (le point de niveau le plus large fait 0,255 m). */
 const PATH_CLEARANCE = 0.55;
 /** Une barrière longe le chemin à cette distance, et s'aligne sur lui. */
 const FENCE_DISTANCE: readonly [number, number] = [0.7, 1.1];
@@ -193,6 +194,46 @@ export function grassTufts(map: RegionMap, decor: readonly Decor[], seed: number
   return tufts;
 }
 
+/**
+ * Brins d'herbe des touffes, semés autour de chacune : des triangles (x, y, z en mètres, pied au
+ * sol) et leurs UV (v = hauteur du brin, de 0 au pied à 1 à la pointe). La carte 3D en fait un
+ * maillage (stripKit), la carte pré-rendue les transmet à Blender (mapExport).
+ */
+export function tuftBlades(
+  tufts: readonly Tuft[],
+  seed: number,
+): { position: number[]; uv: number[] } {
+  const random = seeded(seed);
+  const position: number[] = [];
+  const uv: number[] = [];
+  for (const tuft of tufts) {
+    const blades = tuft.tall ? 5 + Math.floor(random() * 5) : 4 + Math.floor(random() * 5);
+    for (let b = 0; b < blades; b++) {
+      const bx = tuft.x + (random() - 0.5) * 0.06;
+      const bz = tuft.z + (random() - 0.5) * 0.06;
+      const yaw = random() * Math.PI * 2;
+      const lean = tuft.tall ? 0.1 + random() * 0.3 : 0.15 + random() * 0.4;
+      const height = tuft.tall ? 0.11 + random() * 0.09 : 0.07 + random() * 0.08;
+      const width = 0.008 + random() * 0.006;
+      const dx = Math.cos(yaw);
+      const dz = Math.sin(yaw);
+      position.push(
+        bx - dz * width,
+        0,
+        bz + dx * width,
+        bx + dz * width,
+        0,
+        bz - dx * width,
+        bx + dx * Math.sin(lean) * height,
+        Math.cos(lean) * height,
+        bz + dz * Math.sin(lean) * height,
+      );
+      uv.push(0, 0, 1, 0, 0.5, 1);
+    }
+  }
+  return { position, uv };
+}
+
 /** Cases de la grille du chemin (mètres) : une distance jusqu'à 1,5 m se lit dans les cases voisines. */
 const GRID = 1.5;
 
@@ -227,7 +268,29 @@ export function pathDistance(map: RegionMap): (x: number, z: number) => number {
 /** Décor d'une carte cuite, tel que l'écrit tools/explorer-3d/region_map.py : [sorte, x, z, angle, échelle]. */
 export type DecorEntry = readonly [string, number, number, number, number];
 
-const RADIUS = new Map<string, number>(DECOR_KINDS.map((k) => [k.kind, k.radius]));
+/** Décors des cartes cuites, par région (regionDecor.json, écrit par region_map.py). */
+function parseDecorEntry(entry: readonly unknown[]): DecorEntry {
+  const [rawKind, x, z, yaw, scale] = entry;
+  const decor = DECOR_KINDS.find(({ kind }) => kind === rawKind);
+  if (
+    !decor ||
+    typeof x !== 'number' ||
+    !Number.isFinite(x) ||
+    typeof z !== 'number' ||
+    !Number.isFinite(z) ||
+    typeof yaw !== 'number' ||
+    !Number.isFinite(yaw) ||
+    typeof scale !== 'number' ||
+    !Number.isFinite(scale)
+  ) {
+    throw new Error('Entrée invalide dans stylized3d/regionDecor.json');
+  }
+  return [decor.kind, x, z, yaw, scale];
+}
+
+export const BAKED_DECOR: Readonly<Record<string, readonly DecorEntry[]>> = Object.fromEntries(
+  Object.entries(regionDecor).map(([region, entries]) => [region, entries.map(parseDecorEntry)]),
+);
 
 /**
  * Décors d'une carte cuite : ceux de Blender, qui évitent déjà l'eau, les repères et les villes,
@@ -236,12 +299,12 @@ const RADIUS = new Map<string, number>(DECOR_KINDS.map((k) => [k.kind, k.radius]
 export function placedDecor(map: RegionMap, entries: readonly DecorEntry[]): Decor[] {
   const near = pathDistance(map);
   return entries.flatMap(([kind, x, z, yaw, scale]) => {
-    const base = RADIUS.get(kind);
-    if (base === undefined) return [];
-    const radius = base * scale;
+    const definition = DECOR_KINDS.find((decor) => decor.kind === kind);
+    if (!definition) return [];
+    const radius = definition.radius * scale;
     if (near(x, z) < PATH_CLEARANCE + radius * 0.5) return [];
     if (map.nodes.some((n) => Math.hypot(n.x - x, n.z - z) < n.radius + radius)) return [];
-    return [{ kind: kind as DecorKind, x, z, yaw, scale }];
+    return [{ kind: definition.kind, x, z, yaw, scale }];
   });
 }
 
@@ -249,13 +312,26 @@ export function placedDecor(map: RegionMap, entries: readonly DecorEntry[]): Dec
 const PATH_WIDTH_HALF = 0.2;
 const MONUMENT_FOOTPRINT = 0.95;
 
+/**
+ * Où l'herbe ne pousse pas (mètres) : le chemin et sa marge, les points de niveau et leur marge,
+ * l'emprise des monuments. La carte pré-rendue le transmet à Blender (mapExport).
+ */
+export const BLADE_RULE = {
+  pathHalf: PATH_WIDTH_HALF,
+  pathMargin: 0.05,
+  nodeMargin: 0.04,
+  monumentFootprint: MONUMENT_FOOTPRINT,
+} as const;
+
 /** Vrai si un brin d'herbe peut pousser là : ni sur le chemin, ni sous un point de niveau ou un monument. */
 export function bladeAllowed(map: RegionMap): (x: number, z: number) => boolean {
   const near = pathDistance(map);
   return (x, z) =>
-    near(x, z) > PATH_WIDTH_HALF + 0.05 &&
-    !map.nodes.some((n) => Math.hypot(n.x - x, n.z - z) < n.radius + 0.04) &&
-    !map.cities.some((c) => Math.hypot(c.center.x - x, c.center.z - z) < MONUMENT_FOOTPRINT);
+    near(x, z) > BLADE_RULE.pathHalf + BLADE_RULE.pathMargin &&
+    !map.nodes.some((n) => Math.hypot(n.x - x, n.z - z) < n.radius + BLADE_RULE.nodeMargin) &&
+    !map.cities.some(
+      (c) => Math.hypot(c.center.x - x, c.center.z - z) < BLADE_RULE.monumentFootprint,
+    );
 }
 
 /** Touffes d'herbe par mètre carré dans une clairière, et décors semés autour de chaque monument. */
@@ -289,7 +365,9 @@ export function clearingDressing(map: RegionMap, seed: number): { decor: Decor[]
       return { x: city.center.x + Math.cos(angle) * r, z: city.center.z + Math.sin(angle) * r };
     };
     for (const { kind, count } of CLEARING_DECOR) {
-      const radius = RADIUS.get(kind) ?? 0.15;
+      const definition = DECOR_KINDS.find((decor) => decor.kind === kind);
+      if (!definition) throw new Error(`Rayon absent pour le décor ${kind}`);
+      const radius = definition.radius;
       let done = 0;
       for (let tries = 0; done < count && tries < count * 40; tries++) {
         const { x, z } = spot();

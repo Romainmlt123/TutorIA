@@ -25,8 +25,12 @@ type Props = {
   onNext: (() => void) | null;
 };
 
+/** Au-delà, le nom du village passe en plus petit, sur deux lignes. */
+const LONG_NAME = 32;
+
 /** Panneau de bois de la ville au centre de l'écran : son état, ses niveaux, sa prochaine étape. */
 export function CityPanel({ city, next, onPrevious, onNext }: Props) {
+  const isLong = city.name.length > LONG_NAME;
   return (
     <WoodFrame tab={fr.explorer.cityTab} accessibilityLabel={city.name}>
       <View style={styles.row}>
@@ -40,7 +44,7 @@ export function CityPanel({ city, next, onPrevious, onNext }: Props) {
           style={onPrevious ? null : styles.off}
         />
         <View style={styles.title}>
-          <GameText size={18} align="center" numberOfLines={1}>
+          <GameText size={isLong ? 16 : 18} align="center" numberOfLines={isLong ? 2 : 1}>
             {city.name}
           </GameText>
           <GameText size={12} align="center" stroke={2} drop={1}>

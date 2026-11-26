@@ -1,3 +1,5 @@
+import { logError } from '@/lib/logger';
+
 import type { LevelOutcome } from '@/services/tutor/api-contract';
 
 import type { Level } from '../content';
@@ -84,7 +86,8 @@ export function parseLevelCall(name: string, rawArguments: string): LevelCall | 
     const args = JSON.parse(rawArguments) as { correct?: unknown; hinted?: unknown };
     if (typeof args.correct !== 'boolean') return null;
     return { name, correct: args.correct, hinted: args.hinted === true };
-  } catch {
+  } catch (error: unknown) {
+    logError('explorer.levelCall.parse', error);
     return null;
   }
 }

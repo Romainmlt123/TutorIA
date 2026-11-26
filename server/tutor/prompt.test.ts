@@ -75,7 +75,7 @@ describe('consignes d’un niveau d’Explorer', () => {
 
   it('donne la notion, les objectifs et l’avancement, sans donnée personnelle', () => {
     const text = block('bilan');
-    expect(text).toContain('« Bilan des équations », Ville des Équations (Nombres et calculs)');
+    expect(text).toContain('« Bilan des équations », Village des Équations (Nombres et calculs)');
     expect(text).toContain('- Je résous une équation avec l’inconnue des deux côtés.');
     expect(text).toContain('Avancement : 0 sur 8');
     expect(text).not.toMatch(/Léa|prénom/);

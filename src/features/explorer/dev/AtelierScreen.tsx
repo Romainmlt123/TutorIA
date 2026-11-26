@@ -1,12 +1,19 @@
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, type RootState } from '@react-three/fiber';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { PixelRatio, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as THREE from 'three';
 
+import { Switch } from '@/components/form/Switch';
+import { Icon } from '@/components/Icon';
+import { PressableBase } from '@/components/PressableBase';
 import { Text } from '@/components/Text';
+import { fr } from '@/i18n/fr';
+import { FrameDriver } from '@/lib/three/FrameDriver';
+import { setPerfHud, usePerfHud } from '@/lib/three/perfHudFlag';
 import { SceneBoundary } from '@/lib/three/SceneBoundary';
 import { canUseWebGL } from '@/lib/three/webgl';
 import { theme } from '@/theme';
@@ -19,8 +26,16 @@ import { MathsIslandHD } from '../hd2d/MathsIslandHD';
 import { Clouds, type CloudSpec } from '../stylized3d/Clouds';
 import { MathsIsland3D } from '../stylized3d/MathsIsland3D';
 
+import { readGlCapabilities, type GlCapabilities } from './glCapabilities';
+
 const TARGET: [number, number, number] = [0, -0.9, 0];
 const FOV = 26;
+const t = fr.dev.perf;
+
+/** Rappel des scènes de l'atelier : les capacités lues sur leur contexte 3D, une fois créé. */
+type GlProbe = { onGl: (caps: GlCapabilities) => void };
+const probeGl = (onGl: GlProbe['onGl']) => (state: RootState) =>
+  onGl(readGlCapabilities(state.gl.getContext()));
 
 /**
  * Caméra et brume : la brume commence juste derrière l'île (distance de la caméra + 4) pour ne
@@ -94,12 +109,13 @@ function useOrbitGesture(initial: number) {
   return { azimuth, pan };
 }
 
-function Hd2dView() {
+function Hd2dView({ onGl }: GlProbe) {
   const { azimuth, pan } = useOrbitGesture(-0.35);
   return (
     <GestureDetector gesture={pan}>
       <View style={styles.screen} collapsable={false}>
         <Canvas
+          onCreated={probeGl(onGl)}
           dpr={[1, 2]}
           shadows
           flat
@@ -123,13 +139,23 @@ const ATELIER_CLOUDS: readonly CloudSpec[] = [
 ];
 const ATELIER_WRAP = [-6.5, 6.5] as const;
 
-/** 3D stylisée : tout est cuit dans le modèle, aucune lumière ni ombre en temps réel. */
-function Stylized3dView() {
+/**
+ * 3D stylisée : tout est cuit dans le modèle, aucune lumière ni ombre en temps réel. Les images
+ * passent par FrameDriver, comme dans Explorer : l'eau, l'herbe et les nuages suivent son horloge.
+ */
+function Stylized3dView({ onGl }: GlProbe) {
   const { azimuth, pan } = useOrbitGesture(-0.2);
   return (
     <GestureDetector gesture={pan}>
       <View style={styles.screen} collapsable={false}>
-        <Canvas dpr={[1, 2]} flat gl={{ antialias: false, alpha: true }} camera={{ fov: FOV }}>
+        <Canvas
+          onCreated={probeGl(onGl)}
+          frameloop="never"
+          dpr={[1, 2]}
+          flat
+          gl={{ antialias: false, alpha: true }}
+          camera={{ fov: FOV }}>
+          <FrameDriver active animated />
           <CameraRig azimuth={azimuth} elevation={24} />
           <Clouds clouds={ATELIER_CLOUDS} wrap={ATELIER_WRAP} />
           <MathsIsland3D />
@@ -152,6 +178,87 @@ function VectorView() {
   );
 }
 
+/** Capacités du contexte 3D, telles que le téléphone les donne. */
+function CapsList({ caps }: { caps: GlCapabilities }) {
+  const c = t.caps;
+  const rows = [
+    [c.webAssembly, caps.webAssembly],
+    [c.pixelRatio, PixelRatio.get()],
+    [c.maxTextureSize, caps.maxTextureSize],
+    [c.maxRenderbufferSize, caps.maxRenderbufferSize],
+    [c.maxSamples, caps.maxSamples],
+    [c.renderer, caps.renderer],
+    [c.vendor, caps.vendor],
+    [c.version, caps.version],
+  ] as const;
+  return (
+    <>
+      {rows.map(([label, value]) => (
+        <Text key={label} variant="caption">
+          {c.row(label, value === null ? t.unknown : String(value))}
+        </Text>
+      ))}
+      <Text variant="caption" weight="bold">
+        {c.extensions(caps.extensions.length)}
+      </Text>
+      <Text variant="caption" color="textSecondary">
+        {caps.extensions.join(', ')}
+      </Text>
+    </>
+  );
+}
+
+/**
+ * Réglages de mesure : le compteur de performance d'Explorer et, repliées par défaut pour laisser
+ * voir l'île, les capacités GL de la scène affichée.
+ */
+function MeasurePanel({ scene, caps }: { scene: boolean; caps: GlCapabilities | null }) {
+  const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  const perfHud = usePerfHud();
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={[styles.panel, { paddingBottom: insets.bottom + theme.space[2] }]}>
+      <View style={styles.row}>
+        <Text variant="bodySm" weight="bold" style={styles.rowLabel}>
+          {t.hudSwitch}
+        </Text>
+        <Switch value={perfHud} onValueChange={setPerfHud} accessibilityLabel={t.hudSwitch} />
+      </View>
+      <PressableBase
+        onPress={() => setOpen((wasOpen) => !wasOpen)}
+        accessibilityRole="button"
+        aria-expanded={open}
+        accessibilityLabel={open ? t.capsHide : t.capsShow}
+        style={styles.row}>
+        <Text variant="bodySm" weight="bold" style={styles.rowLabel}>
+          {t.capsTitle}
+        </Text>
+        <Icon
+          name={open ? 'chevron-bas' : 'chevron-haut'}
+          size={20}
+          color={theme.colors.textSecondary}
+        />
+      </PressableBase>
+      {open ? (
+        <ScrollView style={{ maxHeight: height * 0.35 }} contentContainerStyle={styles.caps}>
+          {!scene ? (
+            <Text variant="caption" color="textSecondary">
+              {t.capsNoScene}
+            </Text>
+          ) : caps ? (
+            <CapsList caps={caps} />
+          ) : (
+            <Text variant="caption" color="textSecondary">
+              {t.capsWaiting}
+            </Text>
+          )}
+        </ScrollView>
+      ) : null}
+    </View>
+  );
+}
+
 const LABELS = {
   '3d': 'Atelier · île des Maths (3D)',
   hd2d: 'Atelier · île des Maths (HD-2D)',
@@ -170,11 +277,12 @@ export function AtelierScreen() {
   const view = vue === 'hd2d' || vue === 'vecteur' ? vue : '3d';
   const scene = webgl && view !== 'vecteur';
   const label = webgl ? LABELS[view] : 'Atelier · WebGL indisponible : repli 2D';
+  const [caps, setCaps] = useState<GlCapabilities | null>(null);
   return (
     <GestureHandlerRootView style={styles.screen}>
       {scene ? (
         <SceneBoundary scope="explorer.atelier" fallback={<VectorView />}>
-          {view === 'hd2d' ? <Hd2dView /> : <Stylized3dView />}
+          {view === 'hd2d' ? <Hd2dView onGl={setCaps} /> : <Stylized3dView onGl={setCaps} />}
         </SceneBoundary>
       ) : (
         <VectorView />
@@ -184,6 +292,7 @@ export function AtelierScreen() {
           {label}
         </Text>
       </View>
+      <MeasurePanel scene={scene} caps={caps} />
     </GestureHandlerRootView>
   );
 }
@@ -200,4 +309,23 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius['2xl'],
     backgroundColor: theme.colors.surface,
   },
+  panel: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderTopLeftRadius: theme.radius['3xl'],
+    borderTopRightRadius: theme.radius['3xl'],
+    paddingTop: theme.space[2],
+    paddingHorizontal: theme.layout.screenPadding,
+    backgroundColor: theme.colors.surface,
+  },
+  caps: { gap: theme.space[1], paddingBottom: theme.space[2] },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.space[3],
+    minHeight: theme.space[12],
+  },
+  rowLabel: { flex: 1 },
 });

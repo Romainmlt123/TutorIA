@@ -57,9 +57,11 @@ export function nearestNode(nodes: readonly Vec[], at: Vec): number {
 
 /**
  * Position à une distance donnée du départ, et cap de la marche : l'angle autour de la verticale
- * qui tourne vers la direction suivie une figurine regardant +z.
+ * qui tourne vers la direction suivie une figurine regardant +z. Worklet : sur la carte pré-rendue,
+ * le fil de l'interface place l'avatar à chaque image de la marche (useAvatarWalk).
  */
 export function pointAlong(route: Route, distance: number): Vec & { heading: number } {
+  'worklet';
   const { points, at } = route;
   const last = points.length - 1;
   if (last <= 0) return { ...(points[0] ?? { x: 0, z: 0 }), heading: 0 };

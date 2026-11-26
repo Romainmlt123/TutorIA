@@ -24,6 +24,45 @@ export type Shot = {
   azimuth: number | null;
 };
 
+export type FlightEasing = 'inOutCubic' | 'inCubic' | 'outCubic';
+export type CameraPose = {
+  position: readonly [number, number, number];
+  target: readonly [number, number, number];
+  fov: number;
+};
+
+function flightEase(t: number, easing: FlightEasing): number {
+  const p = Math.max(0, Math.min(1, t));
+  if (easing === 'inCubic') return p * p * p;
+  if (easing === 'outCubic') return 1 - (1 - p) ** 3;
+  return p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2;
+}
+
+/** Interpole une pose de caméra et sa cible, avec un arc vertical optionnel. */
+export function flightAt(
+  t: number,
+  from: CameraPose,
+  to: CameraPose,
+  easing: FlightEasing = 'inOutCubic',
+  arc = 0,
+): CameraPose {
+  const progress = flightEase(t, easing);
+  const lerp = (a: number, b: number) => a + (b - a) * progress;
+  return {
+    position: [
+      lerp(from.position[0], to.position[0]),
+      lerp(from.position[1], to.position[1]) + Math.sin(Math.PI * progress) * arc,
+      lerp(from.position[2], to.position[2]),
+    ],
+    target: [
+      lerp(from.target[0], to.target[0]),
+      lerp(from.target[1], to.target[1]),
+      lerp(from.target[2], to.target[2]),
+    ],
+    fov: lerp(from.fov, to.fov),
+  };
+}
+
 /** Vue d'ensemble du plateau : plus haute, l'île entière et les panneaux de région visibles. */
 /** Champ de vision des vues de l'île. */
 export const ISLAND_FOV = 26;
@@ -93,8 +132,9 @@ export function regionsShot(focus: readonly [number, number] | null): Shot {
 export function diveShot(focus: readonly [number, number]): Shot {
   return {
     ...REGIONS_SHOT,
-    elevation: 40,
-    fill: 2.3,
+    fov: 30,
+    elevation: 50,
+    fill: 0.85,
     aimY: 0.44,
     lookX: focus[0],
     lookZ: focus[1],

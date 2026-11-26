@@ -6,8 +6,8 @@ douces et légèrement passées. En sRGB ; converties en linéaire pour Blender.
 
 COLORS = {
     # herbe de prairie, de l'ombre à l'herbe sèche
-    "grass-dark": "#3b5423", "grass": "#5b7a33", "grass-light": "#7f9a45", "grass-tip": "#a7ad63",
-    "grass-dry": "#9c9258", "moss": "#4c6a2c", "grass-wet": "#2f4a1f", "mud": "#4a4030",
+    "grass-dark": "#3b5423", "grass": "#4f7d2d", "grass-light": "#6f9a3f", "grass-tip": "#a7ad63",
+    "grass-dry": "#93904f", "moss": "#3f6826", "grass-wet": "#2f4a1f", "mud": "#4a4030",
     # terre, du sol sous l'herbe au fond de la motte
     "topsoil": "#3f2e22", "dirt-dark": "#3a2b20", "dirt": "#654b37", "dirt-light": "#86694f",
     "clay": "#77583f", "clay-light": "#9a7c5c", "earth-deep": "#2a211b", "root": "#4b3526",
@@ -39,11 +39,17 @@ COLORS = {
     "crust-dark": "#a8652a", "sack": "#e6dbc0", "sack-dark": "#cdb98f", "ceramic-blue": "#3b6ea8", "shutter": "#4f8a5b", "glass": "#9fcfe0",
     "stone-warm": "#c9b99c", "stone-warm-light": "#e2d6bd", "stone-warm-dark": "#8e7f68", "brick": "#a24a32",
     "brick-light": "#c5674a", "iron": "#4b4f55", "iron-light": "#7a8088",
+    "town-roof-violet-dark": "#443867",
+    "c1-pave": "#bfae90", "c1-pave-light": "#cdbd9f", "c1-roof-cherry": "#8a1f2e",
+    "c1-roof-blue": "#2a4d7c", "c1-lamp": "#ffd27a", "c1-window": "#ffad3d",
+    "c1-window-deep": "#e8782a", "c1-lamp-hot": "#ff9c33", "c1-point-light": "#ffb860",
     # fleurs des champs
     "flower-white": "#efece2", "flower-yellow": "#e3c75a", "flower-violet": "#9f8fc4",
     # lumière
     "crystal-cyan": "#6fd0d6", "crystal-violet": "#a78fd8", "crystal-blue": "#7fa9e0",
     "sun": "#fff0d4", "sky": "#a8c6ea",
+    # crème de la droite graduée des Relatifs : s'affiche #ebe5d8 une fois éclairée (palette.calibrated, gain 1,45)
+    "ruler-cream": "#c7c2b7",
 }
 
 
@@ -58,3 +64,13 @@ def rgb(name):
 
 def rgba(name):
     return (*rgb(name), 1.0)
+
+
+def calibrated(hex_color, gain):
+    """Couleur de base à donner à une surface pour qu'elle s'affiche avec `hex_color` une fois éclairée.
+
+    Sous le soleil et le ciel de bake.lights(), une surface tournée vers le haut renvoie environ
+    `gain` fois sa couleur de base (1,45 avec l'étalonnage des cartes, 1,6 pour les sprites seuls) :
+    on divise donc la couleur voulue, en linéaire, par ce gain. Renvoie la couleur linéaire RGBA."""
+    h = hex_color.lstrip("#")
+    return (*(_linear(int(h[i:i + 2], 16) / 255) / gain for i in (0, 2, 4)), 1.0)

@@ -9,6 +9,14 @@ import designTokens from './design/tokens/tokens.json';
 const EAS_PROJECT_ID = '44b79cfe-3c1f-484e-a2a3-ae3fa65c2d63';
 const LOGO_ON_BLUE = './assets/logo/Logo_tutoria_fond_bleu.png';
 
+/*
+ * Variante « Labo » (APP_VARIANT=labo) : une deuxième copie de l'app, lancée à côté de la
+ * principale dans Expo Go sans partager son stockage. Sans projet EAS, Expo Go la range sous une
+ * clé anonyme tirée de son slug ; son identifiant d'app ne sert qu'aux builds.
+ */
+const IS_LABO = process.env.APP_VARIANT === 'labo';
+const APP_ID = IS_LABO ? 'fr.tutoria.app.labo' : 'fr.tutoria.app';
+
 /* Permissions demandées au moment de l'usage uniquement, avec une explication claire. */
 const MICROPHONE_PERMISSION =
   "Tutor'IA utilise le micro pour que tu puisses parler au tuteur vocal.";
@@ -19,16 +27,16 @@ const CAMERA_PERMISSION =
 const backgroundColor = designTokens.color.tokens.find((t) => t.name === 'gray-100')?.value;
 
 const config: ExpoConfig = {
-  name: "Tutor'IA",
-  slug: 'tutoria',
+  name: IS_LABO ? "Tutor'IA Labo" : "Tutor'IA",
+  slug: IS_LABO ? 'tutoria-labo' : 'tutoria',
   version: '0.1.0',
   orientation: 'portrait',
-  scheme: 'tutoria',
+  scheme: IS_LABO ? 'tutoria-labo' : 'tutoria',
   userInterfaceStyle: 'light',
   icon: LOGO_ON_BLUE,
   // Numéros de build gérés par EAS (eas.json : appVersionSource « remote », autoIncrement).
   ios: {
-    bundleIdentifier: 'fr.tutoria.app',
+    bundleIdentifier: APP_ID,
     supportsTablet: true,
     infoPlist: {
       NSMicrophoneUsageDescription: MICROPHONE_PERMISSION,
@@ -36,7 +44,7 @@ const config: ExpoConfig = {
     },
   },
   android: {
-    package: 'fr.tutoria.app',
+    package: APP_ID,
     predictiveBackGestureEnabled: false,
     permissions: ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS', 'CAMERA'],
     // Collecte minimale (Google Play « Familles ») : pas d'accès au stockage ni de surimpression.
@@ -69,15 +77,17 @@ const config: ExpoConfig = {
       { microphonePermission: MICROPHONE_PERMISSION, cameraPermission: CAMERA_PERMISSION },
     ],
   ],
-  // Projet EAS (builds, mises à jour) : compte romainmlt.
-  owner: 'romainmlts-team',
-  extra: {
-    eas: { projectId: EAS_PROJECT_ID },
-  },
   // Mises à jour du JavaScript sans nouvel APK (EAS Update). L'empreinte du code natif fixe la
   // compatibilité : un module natif ajouté change l'empreinte et impose un nouveau build.
   runtimeVersion: { policy: 'fingerprint' },
-  updates: { url: `https://u.expo.dev/${EAS_PROJECT_ID}` },
+  // Projet EAS (builds, mises à jour) : équipe romainmlts-team. La variante Labo n'en a pas.
+  ...(IS_LABO
+    ? {}
+    : {
+        owner: 'romainmlts-team',
+        extra: { eas: { projectId: EAS_PROJECT_ID } },
+        updates: { url: `https://u.expo.dev/${EAS_PROJECT_ID}` },
+      }),
   experiments: {
     typedRoutes: true,
     reactCompiler: true,

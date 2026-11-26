@@ -25,7 +25,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-relatifs',
           ref: 'M4-C01',
-          name: 'Ville des Relatifs',
+          name: 'Village des Relatifs',
           monument: 'balance-signes',
           source: `${REFERENTIEL} · M4-C01 · Nombres relatifs`,
           playable: true,
@@ -103,7 +103,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-fractions',
           ref: 'M4-C02',
-          name: 'Ville des Fractions',
+          name: 'Village des Fractions',
           monument: 'tartes-fractions',
           source: `${REFERENTIEL} · M4-C02 · Nombres rationnels : addition, soustraction, comparaison`,
           playable: true,
@@ -183,7 +183,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-fractions-produits',
           ref: 'M4-C03',
-          name: 'Ville des Produits de fractions',
+          name: 'Village des Produits de fractions',
           monument: 'moulin-fractions',
           source: `${REFERENTIEL} · M4-C03 · Nombres rationnels : multiplication et division`,
           playable: true,
@@ -243,7 +243,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-puissances',
           ref: 'M4-C04',
-          name: 'Ville des Puissances',
+          name: 'Village des Puissances',
           monument: 'tour-puissances',
           source: `${REFERENTIEL} · M4-C04 · Puissances`,
           playable: true,
@@ -322,7 +322,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-calcul-litteral',
           ref: 'M4-C05',
-          name: 'Ville du Calcul littéral',
+          name: 'Village du Calcul littéral',
           monument: 'atelier-lettres',
           source: `${REFERENTIEL} · M4-C05 · Calcul littéral`,
           playable: true,
@@ -419,7 +419,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-equations',
           ref: 'M4-C06',
-          name: 'Ville des Équations',
+          name: 'Village des Équations',
           monument: 'balance-equations',
           source: `${REFERENTIEL} · M4-C06 · Équations`,
           playable: true,
@@ -511,7 +511,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-proportionnalite',
           ref: 'M4-C07',
-          name: 'Ville de la Proportionnalité',
+          name: 'Village de la Proportionnalité',
           monument: 'moulin-engrenages',
           source: `${REFERENTIEL} · M4-C07 · Proportionnalité et grandeurs`,
           playable: true,
@@ -591,7 +591,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-statistiques',
           ref: 'M4-C08',
-          name: 'Ville des Statistiques',
+          name: 'Village des Statistiques',
           monument: 'tours-barres',
           source: `${REFERENTIEL} · M4-C08 · Statistiques`,
           playable: true,
@@ -671,7 +671,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-probabilites',
           ref: 'M4-C09',
-          name: 'Ville des Probabilités',
+          name: 'Village des Probabilités',
           monument: 'des-roue',
           source: `${REFERENTIEL} · M4-C09 · Probabilités`,
           playable: true,
@@ -756,7 +756,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-transformations',
           ref: 'M4-C10',
-          name: 'Ville des Transformations',
+          name: 'Village des Transformations',
           monument: 'palais-mosaiques',
           source: `${REFERENTIEL} · M4-C10 · Construction et transformation de figures`,
           playable: true,
@@ -837,7 +837,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-triangles-quadrilateres',
           ref: 'M4-C11',
-          name: 'Ville des Triangles et Quadrilatères',
+          name: 'Village des Triangles et Quadrilatères',
           monument: 'vitrail-losanges',
           source: `${REFERENTIEL} · M4-C11 · Triangles et quadrilatères`,
           playable: true,
@@ -899,7 +899,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-thales',
           ref: 'M4-C12',
-          name: 'Ville de Thalès',
+          name: 'Village de Thalès',
           monument: 'phare-rayons',
           source: `${REFERENTIEL} · M4-C12 · Théorème de Thalès`,
           playable: true,
@@ -959,7 +959,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-pythagore',
           ref: 'M4-C13',
-          name: 'Ville de Pythagore',
+          name: 'Village de Pythagore',
           monument: 'temple-triangle',
           source: `${REFERENTIEL} · M4-C13 · Triangles rectangles`,
           playable: true,
@@ -1059,7 +1059,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-espace-solides',
           ref: 'M4-C14',
-          name: 'Ville des Solides',
+          name: 'Village des Solides',
           monument: 'cristaux-solides',
           source: `${REFERENTIEL} · M4-C14 · Solides de l'espace`,
           playable: true,
@@ -1147,7 +1147,7 @@ export const maths4e2020: Island = {
         city({
           id: 'maths-algorithmique',
           ref: 'M4-C15',
-          name: 'Ville des Algorithmes',
+          name: 'Village des Algorithmes',
           monument: 'atelier-lutin',
           source: `${REFERENTIEL} · M4-C15 · Algorithmique et programmation (Scratch)`,
           playable: true,

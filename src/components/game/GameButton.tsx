@@ -3,6 +3,7 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { GradientSurface } from '@/components/GradientSurface';
 import { Icon, type IconName } from '@/components/Icon';
 import { PressableBase } from '@/components/PressableBase';
+import { playCue } from '@/lib/feedback';
 import { theme } from '@/theme';
 import { explorerArt } from '@/theme/explorerArt';
 
@@ -47,9 +48,15 @@ export function GameButton({
 }: Props) {
   const colors = HUD.buttons[tone];
   const radius = round ? size / 2 : RADIUS;
+  const press = onPress
+    ? () => {
+        void playCue('tap');
+        onPress();
+      }
+    : undefined;
   return (
     <PressableBase
-      onPress={onPress}
+      onPress={press}
       disabled={disabled}
       role={role}
       aria-selected={role === 'tab' ? selected : undefined}

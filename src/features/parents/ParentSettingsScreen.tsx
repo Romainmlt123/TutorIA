@@ -9,7 +9,7 @@ import { FormMessage } from '@/components/form/FormMessage';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { authErrorMessage } from '@/features/auth/logic/errors';
 import { fr } from '@/i18n/fr';
-import { formatDuration } from '@/lib/format';
+import { formatDuration, formatHour } from '@/lib/format';
 import { logError } from '@/lib/logger';
 import { authService } from '@/services/auth';
 import type { ParentalSettings } from '@/services/parents';
@@ -23,12 +23,6 @@ import { useParentalSettings, useParentNotifications } from './hooks/useParentDa
 import { useSelectedChild } from './hooks/useSelectedChild';
 
 const t = fr.parent.settings;
-
-/** Heures au format de la maquette : « 17:00 » → « 17 h ». */
-const hourLabel = (time: string) => {
-  const [hours = '0', minutes = '00'] = time.split(':');
-  return minutes === '00' ? `${Number(hours)} h` : `${Number(hours)} h ${minutes}`;
-};
 
 /** P4 · Réglages : enregistrés en base et appliqués côté élève dès cette étape. */
 export function ParentSettingsScreen() {
@@ -88,8 +82,8 @@ export function ParentSettingsScreen() {
                 s.dailyLimitEnabled
                   ? t.limit.on(
                       formatDuration(s.dailyLimitMinutes),
-                      hourLabel(s.allowedFrom),
-                      hourLabel(s.allowedUntil),
+                      formatHour(s.allowedFrom),
+                      formatHour(s.allowedUntil),
                     )
                   : t.limit.off
               }

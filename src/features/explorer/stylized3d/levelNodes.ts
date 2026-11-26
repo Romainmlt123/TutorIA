@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 
+import { SCENE_TIME } from '@/lib/three/sceneClock';
 import { explorerArt } from '@/theme/explorerArt';
 
 import type { MapNode } from '../logic/regionMap';
-import { SCENE_TIME } from './time';
+import { SUN_DIRECTION } from './sun';
 
 /*
  * Points de niveau de la carte d'une région (X2b), façon cases de jeu : un disque à la couleur du
@@ -18,7 +19,7 @@ const HEIGHT = 0.07;
 const Y = 0.055;
 /** Part du rayon occupée par le disque coloré ; le reste est le rebord doré. */
 const INNER = 0.78;
-const SUN = new THREE.Vector3(-0.67, 0.656, 0.348).normalize();
+const SUN = new THREE.Vector3(...SUN_DIRECTION).normalize();
 
 const color = (hex: string) => ({ value: new THREE.Color(hex) });
 

@@ -9,11 +9,39 @@ import layout from '../stylized3d/regions.json';
 type Point = readonly [number, number];
 type RegionLayout = { id: string; polygon: readonly Point[]; focus: Point };
 
-const REGIONS: readonly RegionLayout[] = layout.regions.map((r) => ({
-  id: r.id,
-  polygon: r.polygon as unknown as Point[],
-  focus: r.focus as unknown as Point,
+function pointOf(coordinates: readonly number[]): Point {
+  const [x, z] = coordinates;
+  if (
+    typeof x !== 'number' ||
+    !Number.isFinite(x) ||
+    typeof z !== 'number' ||
+    !Number.isFinite(z)
+  ) {
+    throw new Error('Coordonnée invalide dans stylized3d/regions.json');
+  }
+  return [x, z];
+}
+
+const REGIONS: readonly RegionLayout[] = layout.regions.map((region) => ({
+  id: region.id,
+  polygon: region.polygon.map(pointOf),
+  focus: pointOf(region.focus),
 }));
+
+const isletPosition = (coordinates: readonly number[]): readonly [number, number, number] => {
+  const [x, y, z] = coordinates;
+  if (
+    typeof x !== 'number' ||
+    !Number.isFinite(x) ||
+    typeof y !== 'number' ||
+    !Number.isFinite(y) ||
+    typeof z !== 'number' ||
+    !Number.isFinite(z)
+  ) {
+    throw new Error('Position invalide dans stylized3d/regions.json');
+  }
+  return [x, y, z];
+};
 
 /** Les régions de la terre de l'île, dans l'ordre des canaux du masque (R, V, B). */
 export const PLATEAU_REGIONS: readonly string[] = REGIONS.map((r) => r.id);
@@ -21,14 +49,16 @@ export const PLATEAU_REGIONS: readonly string[] = REGIONS.map((r) => r.id);
 /** L'îlot flottant d'une région d'un seul chapitre (Algorithmique) : position et échelle. */
 export const ISLET = {
   region: layout.islet.region,
-  position: layout.islet.position as unknown as readonly [number, number, number],
+  position: isletPosition(layout.islet.position),
   scale: layout.islet.scale,
 };
 
 function inside(polygon: readonly Point[], x: number, z: number): boolean {
   let result = false;
   polygon.forEach(([ax, az], i) => {
-    const [bx, bz] = polygon[(i + 1) % polygon.length]!;
+    const next = polygon[(i + 1) % polygon.length];
+    if (!next) throw new Error('Contour de région incomplet');
+    const [bx, bz] = next;
     if (az > z !== bz > z && x < ax + ((z - az) * (bx - ax)) / (bz - az)) result = !result;
   });
   return result;
@@ -71,11 +101,11 @@ export function regionMask(size = MASK_SIZE, extent = MASK_EXTENT): Uint8Array {
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
       const at = row * size + col;
-      const index = owner[at]!;
+      const index = owner[at] ?? -1;
       const out = at * 4;
       if (index >= 0) data[out + index] = 255;
-      const right = col + 1 < size ? owner[at + 1] : index;
-      const below = row + 1 < size ? owner[at + size] : index;
+      const right = col + 1 < size ? (owner[at + 1] ?? -1) : index;
+      const below = row + 1 < size ? (owner[at + size] ?? -1) : index;
       if (index !== right || index !== below) data[out + 3] = 255;
     }
   }

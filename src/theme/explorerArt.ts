@@ -19,7 +19,7 @@ export const explorerArt = {
     gold: ['#5a3a06', '#8a5c0d', '#b98317', '#e0ac2c', '#f6cf5a', '#fff0a8'],
   },
   light: { sun: '#ffe2a8', skyFill: '#dbeaff', groundFill: '#8a73c9', rim: '#bff0ff' },
-  grade: { shadows: '#9c8ce0', highlights: '#ffe6b8' },
+  grade: { shadows: '#8a7ad6', highlights: '#ffe2b0' },
   crystals: ['#62e6f0', '#b98cff', '#74b4ff'],
   dust: '#fff0c8',
   fog: '#d6e8ff',
@@ -31,8 +31,49 @@ export const explorerArt = {
     foam: '#eef3f1',
     glow: '#fff6dc',
   },
-  cloud: { top: '#ffffff', bottom: '#b9c8dc' },
-  grassBlades: { base: '#34491f', tip: '#8fa04a', dry: '#b0a765' },
+  cloud: {
+    top: '#ffffff',
+    bottom: '#b9c8dc',
+    veil: '#e4ebf3',
+    fallback: 'rgba(228, 235, 243, 0.62)',
+    fallbackRadius: 999,
+    sprite: {
+      size: 0.9,
+      aspectRatio: 0.68,
+      coverOffset: 0.38,
+      driftOffset: 0.34,
+      driftStart: -0.75,
+      driftEnd: 1.15,
+      driftOpacity: 0.55,
+    },
+    cover: [
+      { dx: -1.15, dy: -0.12, layer: 0 },
+      { dx: -0.38, dy: 0.08, layer: 0 },
+      { dx: 0.38, dy: -0.08, layer: 0 },
+      { dx: 1.15, dy: 0.12, layer: 0 },
+      { dx: -1.15, dy: 0.1, layer: 1 },
+      { dx: -0.38, dy: -0.1, layer: 1 },
+      { dx: 0.38, dy: 0.12, layer: 1 },
+      { dx: 1.15, dy: -0.12, layer: 1 },
+      { dx: -1.15, dy: -0.08, layer: 2 },
+      { dx: -0.38, dy: 0.1, layer: 2 },
+      { dx: 0.38, dy: -0.12, layer: 2 },
+      { dx: 1.15, dy: 0.08, layer: 2 },
+    ],
+    drift: [
+      { y: 0.18, direction: 1, size: 0.82 },
+      { y: 0.38, direction: -1, size: 0.94 },
+      { y: 0.63, direction: 1, size: 0.78 },
+      { y: 0.82, direction: -1, size: 0.9 },
+    ],
+    layers: [
+      { y: 0.2, scale: 1.25, opacity: 0.58, delay: 0 },
+      { y: 0.5, scale: 1.4, opacity: 0.7, delay: 0.12 },
+      { y: 0.8, scale: 1.55, opacity: 0.82, delay: 0.24 },
+    ],
+  },
+  wind: { streak: 'rgba(235, 244, 255, 0.9)', radius: 999 },
+  grassBlades: { base: '#2e461b', tip: '#86a047', dry: '#a9a261' },
   digit: '#f2fbff',
   /** Régions de l'île des Maths (X2a) : teinte sur l'herbe et couleur des panneaux. */
   regions: {
@@ -57,6 +98,34 @@ export const explorerArt = {
   },
   /** Pointillé des frontières de région. */
   regionBorder: '#ffffff',
+  regionShadow: {
+    fill: 'rgba(4, 9, 20, 0.85)',
+    glow: 'rgba(152, 183, 226, 0.22)',
+    outline: 'rgba(190, 211, 245, 0.58)',
+    glowWidth: 8,
+    outlineWidth: 2,
+    label: {
+      width: 120,
+      lift: 16,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      radius: 12,
+      borderWidth: 1,
+    },
+  },
+  cinematic: {
+    zIndex: 100,
+    pill: {
+      background: 'rgba(7, 9, 15, 0.66)',
+      border: 'rgba(255, 255, 255, 0.22)',
+      borderWidth: 1,
+      radius: 999,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      bottomGap: 12,
+    },
+  },
+  regionMap: { buttonSize: 48, titleMeta: 13, title: 22, titleCompact: 18 },
   /**
    * HUD de l'onglet Explorer, façon jeu vidéo : textes blancs cernés de bleu nuit, boutons brillants
    * en relief (face en dégradé, rebord plus sombre dessous), gemmes et médaille dorée.
@@ -105,6 +174,14 @@ export const explorerArt = {
     /** Géométrie des boutons en relief : rebord, contour, arrondi. */
     button: { depth: 5, border: 2.5, radius: 18 },
   },
+  /** Ciel de nuit d'un niveau pendant la pause du soir (R6, v2.15) : lune et étoiles. */
+  night: {
+    top: '#16244f',
+    middle: '#2d3f8a',
+    horizon: '#5a6fc0',
+    moon: '#fff3b0',
+    star: '#ffffff',
+  },
   /** Étalonnage final (Hd2dPost) : vif pour la HD-2D, naturel pour la 3D réaliste. */
   post: {
     hd2d: {
@@ -117,10 +194,10 @@ export const explorerArt = {
     },
     natural: {
       bloom: [0.84, 0.99],
-      saturation: 1.04,
-      shadowTint: 0.1,
-      lightTint: 0.1,
-      exposure: 1.04,
+      saturation: 1.06,
+      shadowTint: 0.12,
+      lightTint: 0.12,
+      exposure: 1.02,
       // Ciel franchement bleu jusqu'en bas : la barre de navigation blanche s'en détache.
       sky: { top: '#2f6fd0', middle: '#5f9ce8', horizon: '#8fc0f2' },
     },

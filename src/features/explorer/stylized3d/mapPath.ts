@@ -8,7 +8,7 @@ import type { PathSample } from '../logic/mapLayout';
  * Chemin des niveaux sur la carte d'une région (X2b) : des planches posées en travers, comme sur un
  * plateau de jeu, avec l'herbe visible entre elles. Tout est dessiné par le shader (fil du bois,
  * arêtes, longueur un peu inégale), sans texture : il s'affiche pareil sur le web et dans Expo Go.
- * Bois miel jusqu'au pion, bois grisé ensuite.
+ * Bois miel sur le chemin parcouru (les tronçons `honey`, voir honeyGaps), bois grisé ailleurs.
  */
 
 const PLANKS = explorerArt.map.planks;
@@ -18,7 +18,14 @@ const HEIGHT = 0.05;
 /** Écart d'une planche à la suivante, le long du chemin (mètres). */
 const PITCH = 0.15;
 
-export function pathGeometry(path: readonly PathSample[], pawnIndex: number): THREE.BufferGeometry {
+/**
+ * Ruban des planches. `honey` : les tronçons miel (le tronçon `gap` va du niveau gap au suivant) ; le
+ * bout de chemin qui mène au premier niveau est toujours miel.
+ */
+export function pathGeometry(
+  path: readonly PathSample[],
+  honey: ReadonlySet<number>,
+): THREE.BufferGeometry {
   const positions: number[] = [];
   const across: number[] = [];
   const along: number[] = [];
@@ -35,7 +42,7 @@ export function pathGeometry(path: readonly PathSample[], pawnIndex: number): TH
     positions.push(p.x + nx, HEIGHT, p.z + nz, p.x - nx, HEIGHT, p.z - nz);
     across.push(1, -1);
     along.push(distance, distance);
-    const reached = p.u <= pawnIndex ? 1 : 0;
+    const reached = p.u <= 0 || honey.has(Math.ceil(p.u) - 1) ? 1 : 0;
     done.push(reached, reached);
     if (i > 0) {
       const a = (i - 1) * 2;

@@ -32,10 +32,23 @@ export function Switch({ value, onValueChange, accessibilityLabel, disabled = fa
         style={[
           StyleSheet.absoluteFill,
           styles.fill,
-          { backgroundColor: value ? theme.colors.primary : theme.palette.gray[200] },
+          {
+            backgroundColor: value ? theme.colors.primary : theme.palette.gray[200],
+            transitionProperty: 'backgroundColor',
+            transitionDuration: 200,
+          },
         ]}
       />
-      <Animated.View style={[styles.knob, { left: value ? TRACK_WIDTH - KNOB - INSET : INSET }]} />
+      <Animated.View
+        style={[
+          styles.knob,
+          {
+            left: value ? TRACK_WIDTH - KNOB - INSET : INSET,
+            transitionProperty: 'left',
+            transitionDuration: 200,
+          },
+        ]}
+      />
     </PressableBase>
   );
 }
@@ -48,11 +61,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     flexShrink: 0,
   },
-  fill: {
-    borderRadius: theme.radius.full,
-    transitionProperty: 'backgroundColor',
-    transitionDuration: 200,
-  },
+  fill: { borderRadius: theme.radius.full },
   knob: {
     position: 'absolute',
     top: INSET,
@@ -61,8 +70,6 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.full,
     backgroundColor: theme.colors.surface,
     boxShadow: extras.switchKnobShadow,
-    transitionProperty: 'left',
-    transitionDuration: 200,
   },
   disabled: { opacity: 0.4 },
 });

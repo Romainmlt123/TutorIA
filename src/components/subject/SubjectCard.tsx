@@ -11,7 +11,8 @@ import { ProgressBar } from '../ProgressBar';
 import { Text } from '../Text';
 import { Watermark } from '../Watermark';
 
-type ProgressMode = { mode: 'progress'; mastery: number };
+/** `fresh` : matière jamais ouverte (J1, v2.19), « À découvrir » sans pourcentage ni barre. */
+type ProgressMode = { mode: 'progress'; mastery: number; fresh?: boolean };
 type SelectMode = { mode: 'select'; cardCount: number; selected: boolean };
 
 export type SubjectCardProps = (ProgressMode | SelectMode) & {
@@ -26,9 +27,12 @@ export function SubjectCard(props: SubjectCardProps) {
   const subject = subjectTheme(subjectId);
   const selected = props.mode === 'select' && props.selected;
   const percent = props.mode === 'progress' ? Math.round(props.mastery * 100) : 0;
+  const fresh = props.mode === 'progress' && props.fresh === true;
   const label =
     props.mode === 'progress'
-      ? fr.home.subjectCardLabel(name, percent)
+      ? fresh
+        ? fr.home.subjectFreshLabel(name)
+        : fr.home.subjectCardLabel(name, percent)
       : `${name}, ${fr.common.cards(props.cardCount)}`;
 
   return (
@@ -49,7 +53,7 @@ export function SubjectCard(props: SubjectCardProps) {
           <View style={styles.iconVeil}>
             <Icon name={subject.icon} size={22} color={theme.colors.textOnColor} />
           </View>
-          {props.mode === 'progress' ? (
+          {props.mode === 'progress' && !fresh ? (
             <Pill
               label={`${percent} %`}
               backgroundColor={theme.onColor.veil}
@@ -62,12 +66,18 @@ export function SubjectCard(props: SubjectCardProps) {
             <Text variant="bodyLg" weight="black" color="textOnColor" numberOfLines={2}>
               {name}
             </Text>
-            <ProgressBar
-              value={props.mastery}
-              height={6}
-              trackColor={theme.onColor.track}
-              fill={theme.colors.textOnColor}
-            />
+            {fresh ? (
+              <Text variant="caption" weight="bold" color="textOnColor" style={styles.fresh}>
+                {fr.home.subjectFresh}
+              </Text>
+            ) : (
+              <ProgressBar
+                value={props.mastery}
+                height={6}
+                trackColor={theme.onColor.track}
+                fill={theme.colors.textOnColor}
+              />
+            )}
           </View>
         ) : (
           <View>
@@ -104,6 +114,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bottomProgress: { gap: theme.space[2] },
+  fresh: { marginTop: -6, opacity: 0.9 },
   check: {
     position: 'absolute',
     top: theme.space[4],

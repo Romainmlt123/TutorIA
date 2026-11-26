@@ -9,6 +9,7 @@ import {
   niceAxis,
   scaleBars,
 } from './format';
+import { formatHour } from '@/lib/format';
 
 describe('formatage des stats', () => {
   it('écrit les durées comme la maquette', () => {
@@ -57,5 +58,16 @@ describe('formatage des stats', () => {
   it('compte les jours pour battre la série record', () => {
     expect(daysToBeatRecord(12, 15)).toBe(4);
     expect(daysToBeatRecord(16, 15)).toBe(0);
+  });
+});
+
+describe('formatHour', () => {
+  it('écrit les heures pleines sans minutes', () => {
+    expect(formatHour('17:00')).toBe('17 h');
+    expect(formatHour('09:00')).toBe('9 h');
+  });
+
+  it('garde les minutes quand il y en a', () => {
+    expect(formatHour('17:30')).toBe('17 h 30');
   });
 });
